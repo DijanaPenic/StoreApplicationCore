@@ -10,7 +10,7 @@ using Store.DAL.Context;
 namespace Store.DAL.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20200909194303_CreateBookAndBookstoreTables")]
+    [Migration("20200909214318_CreateBookAndBookstoreTables")]
     partial class CreateBookAndBookstoreTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
