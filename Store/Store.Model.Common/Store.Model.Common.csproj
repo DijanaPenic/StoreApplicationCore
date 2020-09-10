@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Core\**" />
+    <EmbeddedResource Remove="Models\Core\**" />
+    <None Remove="Models\Core\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Identity\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Store.Common\Store.Common.csproj" />
+  </ItemGroup>
+
+</Project>
