@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
-using PagedList;
 using AutoMapper;
+using X.PagedList;
 
 using Store.Entities;
 using Store.DAL.Context;
@@ -12,7 +12,7 @@ using Store.Model.Common.Models;
 
 namespace Store.Repositories
 {
-    class BookRepository : GenericRepository<BookEntity, IBook>, IBookRepository
+    internal class BookRepository : GenericRepository<BookEntity, IBook>, IBookRepository
     {
         internal BookRepository(StoreDbContext context, IMapper mapper) : base(context, mapper)
         {

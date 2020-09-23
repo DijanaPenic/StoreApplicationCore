@@ -1,4 +1,4 @@
-﻿using PagedList;
+﻿using X.PagedList;
 using System.Collections.Generic;
 
 namespace Store.Common.Helpers

@@ -17,7 +17,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Repository.Core
 {
-    class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
+    internal class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
     {
         private DbSet<TEntity> _set;
 
@@ -90,7 +90,7 @@ namespace Store.Repository.Core
             return ResponseStatus.Success;
         }
 
-        public async Task<ResponseStatus> UpdateAsync(TDomain model, Guid id)
+        public async Task<ResponseStatus> UpdateAsync(TDomain model)
         {
             if (model == null)
                 return ResponseStatus.Error;
@@ -98,7 +98,7 @@ namespace Store.Repository.Core
             // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
             // Need to search context or the store because AutoMapper creates a new instance of the object during domain->entity mapping and sometimes
             // the newly created instance cannot be attached to the context (if we're already tracking the original instance)
-            TEntity entity = await Set.FindAsync(id);
+            TEntity entity = await Set.FindAsync(model.Id);
 
             if (entity == null)
                 return ResponseStatus.NotFound;

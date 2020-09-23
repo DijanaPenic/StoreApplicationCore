@@ -4,4 +4,18 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Store.DAL\Store.DAL.csproj" />
+    <ProjectReference Include="..\Store.Model.Common\Store.Model.Common.csproj" />
+    <ProjectReference Include="..\Store.Repository.Common\Store.Repository.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapper\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="X.PagedList" Version="8.0.7" />
+  </ItemGroup>
+
 </Project>

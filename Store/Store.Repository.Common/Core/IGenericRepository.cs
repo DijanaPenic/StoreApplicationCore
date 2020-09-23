@@ -23,6 +23,6 @@ namespace Store.Repository.Common.Core
 
         Task<ResponseStatus> DeleteByIdAsync(Guid id);
 
-        Task<ResponseStatus> UpdateAsync(TDomain model, Guid id);
+        Task<ResponseStatus> UpdateAsync(TDomain model);
     }
 }

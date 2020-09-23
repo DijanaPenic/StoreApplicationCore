@@ -8,7 +8,7 @@ using Store.Repository.Common.Repositories;
 
 namespace Store.Repository.Core
 {
-    class UnitOfWork
+    internal class UnitOfWork
     {
         #region Fields
 
@@ -34,8 +34,12 @@ namespace Store.Repository.Core
 
         public IBookRepository BookRepository => _bookRepository ?? (_bookRepository = new BookRepository(_context, _mapper));
 
-        public async Task<ResponseStatus> SaveChangesAsync()
+        public async Task<ResponseStatus> SaveChangesAsync(ResponseStatus currentStatus)
         {
+            // Don't save changes to the context if the current state is indicating an erroneous state (example: Error, NotFound).
+            if (currentStatus != ResponseStatus.Success)
+                return currentStatus;
+
             return await _context.SaveChangesAsync() > 0 ? ResponseStatus.Success : ResponseStatus.Error;
         }
 
