@@ -1,5 +1,5 @@
-﻿using PagedList;
-using AutoMapper;
+﻿using AutoMapper;
+using X.PagedList;
 using System.Collections.Generic;
 
 namespace Store.Common.Extensions
