@@ -25,7 +25,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("{id:guid}")]
-        public async Task<IActionResult> GetAsync([FromQuery]Guid id, [FromQuery] string[] includeProperties)
+        public async Task<IActionResult> GetAsync([FromRoute]Guid id, [FromQuery] string[] includeProperties)
         {
             if (id == Guid.Empty)
                 return BadRequest();
