@@ -30,7 +30,7 @@ namespace Store.WebAPI
             services.AddDbContext<StoreDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("StoreDB")));
 
             // Auto Mapper configuration
-            MapperConfiguration mapper = new MapperConfiguration(cfg =>
+            MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<AutoMapperWebApiProfile>();
                 cfg.AddProfile<AutoMapperRepositoryProfile>();
@@ -38,6 +38,7 @@ namespace Store.WebAPI
                 // cfg.AddExpressionMapping(); - TODO - check if this is needed
             });
 
+            IMapper mapper = mapperConfiguration.CreateMapper();
             services.AddSingleton(mapper);
 
             // Class library DI configuration
