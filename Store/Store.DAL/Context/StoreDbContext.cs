@@ -28,11 +28,16 @@ namespace Store.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Identity configurations
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new ExternalLoginConfiguration());
             modelBuilder.ApplyConfiguration(new ClaimConfiguration());
-        }
+
+            // Other configurations
+            modelBuilder.ApplyConfiguration(new BookstoreConfiguration());
+            modelBuilder.ApplyConfiguration(new BookConfiguration());
+        }   
     }
 }

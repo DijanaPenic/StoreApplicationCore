@@ -9,14 +9,16 @@ namespace Store.Common.Helpers
 
         public static SequentialGuidValueGenerator SequentialGuidGenerator
         {
-            get { return _sequentialGuidGenerator; }
+            get
+            {
+                _sequentialGuidGenerator ??= new SequentialGuidValueGenerator();
+
+                return _sequentialGuidGenerator;
+            }
 
             set
             {
-                if (value == null)
-                {
-                    _sequentialGuidGenerator = new SequentialGuidValueGenerator();
-                }
+                _sequentialGuidGenerator = value;
             }
         }
 

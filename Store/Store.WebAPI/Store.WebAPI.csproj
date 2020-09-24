@@ -5,17 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Store.DAL\Store.DAL.csproj" />
     <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
+    <ProjectReference Include="..\Store.Repository\Store.Repository.csproj" />
     <ProjectReference Include="..\Store.Service.Common\Store.Service.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mapper\" />
+    <ProjectReference Include="..\Store.Service\Store.Service.csproj" />
   </ItemGroup>
 
 

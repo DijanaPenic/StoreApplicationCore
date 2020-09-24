@@ -20,7 +20,7 @@ namespace Store.Repositories
 
         public Task<IPagedList<IBook>> FindAsync(string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            Expression<Func<IBook, bool>> filterExpression = (string.IsNullOrEmpty(searchString)) ? (Expression<Func<IBook, bool>>)null : b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
+            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(searchString) ? (Expression<Func<IBook, bool>>)null : b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
 
             return FindAsync(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }

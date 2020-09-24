@@ -35,8 +35,7 @@ namespace Store.Repository.Core
 
         public async Task<IEnumerable<TDomain>> GetAsync(params string[] includeProperties)
         {
-            IQueryable<TEntity> query = Set.Include(includeProperties);
-            IEnumerable<TEntity> entities = await query.ToListAsync();
+            IEnumerable<TEntity> entities = await Set.Include(includeProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }

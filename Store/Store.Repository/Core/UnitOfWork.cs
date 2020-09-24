@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Store.DAL.Context;
 using Store.Common.Enums;
 using Store.Repositories;
+using Store.Repository.Common.Core;
 using Store.Repository.Common.Repositories;
 
 namespace Store.Repository.Core
 {
-    internal class UnitOfWork
+    internal class UnitOfWork : IUnitOfWork
     {
         #region Fields
 
@@ -36,7 +37,7 @@ namespace Store.Repository.Core
 
         public async Task<ResponseStatus> SaveChangesAsync(ResponseStatus currentStatus)
         {
-            // Don't save changes to the context if the current state is indicating an erroneous state (example: Error, NotFound).
+            // Don't save changes to the context if the current status is indicating an erroneous state (example: Error, NotFound).
             if (currentStatus != ResponseStatus.Success)
                 return currentStatus;
 
