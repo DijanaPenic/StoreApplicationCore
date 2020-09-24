@@ -17,7 +17,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Repository.Core
 {
-    internal class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
+    public class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
     {
         private DbSet<TEntity> _set;
 

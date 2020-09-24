@@ -12,9 +12,9 @@ using Store.Model.Common.Models;
 
 namespace Store.Repositories
 {
-    internal class BookRepository : GenericRepository<BookEntity, IBook>, IBookRepository
+    public class BookRepository : GenericRepository<BookEntity, IBook>, IBookRepository
     {
-        internal BookRepository(StoreDbContext context, IMapper mapper) : base(context, mapper)
+        public BookRepository(StoreDbContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
