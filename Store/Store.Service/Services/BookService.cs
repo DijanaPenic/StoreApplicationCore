@@ -41,6 +41,13 @@ namespace Store.Services
             return await _unitOfWork.SaveChangesAsync(status);
         }
 
+        public async Task<ResponseStatus> UpdateBookAsync(Guid bookId, IBook book)
+        {
+            ResponseStatus status = await _unitOfWork.BookRepository.UpdateAsync(bookId, book);
+
+            return await _unitOfWork.SaveChangesAsync(status);
+        }
+
         public async Task<ResponseStatus> AddBookAsync(IBook book)
         {
             ResponseStatus status = await _unitOfWork.BookRepository.AddAsync(book);

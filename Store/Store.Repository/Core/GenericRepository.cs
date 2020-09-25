@@ -89,6 +89,25 @@ namespace Store.Repository.Core
             return ResponseStatus.Success;
         }
 
+        public async Task<ResponseStatus> UpdateAsync(Guid id, TDomain model)
+        {
+            if (model == null)
+                return ResponseStatus.Error;
+
+            TEntity entity = await Set.FindAsync(id);
+
+            if (entity == null)
+                return ResponseStatus.NotFound;
+
+            Mapper.Map(model, entity);
+
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
+            Context.Entry(entity).State = EntityState.Modified;
+
+            return ResponseStatus.Success;
+        }
+
         public async Task<ResponseStatus> UpdateAsync(TDomain model)
         {
             if (model == null)

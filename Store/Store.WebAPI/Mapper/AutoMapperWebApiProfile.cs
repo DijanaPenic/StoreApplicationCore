@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using X.PagedList;
 
+using Store.Models.Api;
 using Store.Models.Api.Book;
 using Store.Model.Common.Models;
+using Store.WebAPI.Mapper.Converters;
 
 namespace Store.WebAPI.Mapper
 {
@@ -18,8 +21,8 @@ namespace Store.WebAPI.Mapper
 
             // Create maps for book models
             CreateMap<BookGetApiModel, IBook>().ReverseMap();
-            //CreateMap<BookPostApiModel, IBook>().ReverseMap();
-            //CreateMap<BookPatchApiModel, IBook>().ReverseMap();
+            CreateMap<BookPostApiModel, IBook>().ReverseMap();
+            CreateMap<BookPatchApiModel, IBook>().ReverseMap();
 
             //// Create maps for reporting
             //CreateMap<BookstoreReportPOCO, IBookstore>()
@@ -52,9 +55,9 @@ namespace Store.WebAPI.Mapper
 
             //CreateMap<RefreshTokenApiModel, IRefreshToken>().ReverseMap();
 
-            //// Create maps for paging
-            //CreateMap<IPagedList, PaginationMetaData>();
-            //CreateMap(typeof(IPagedList<>), typeof(PaginationEntity<>)).ConvertUsing(typeof(PaginationEntityTypeConverter<,>));
+            // Create maps for paging
+            CreateMap<IPagedList, PaginationMetaData>();
+            CreateMap(typeof(IPagedList<>), typeof(PaginationEntity<>)).ConvertUsing(typeof(PaginationEntityTypeConverter<,>));
         }
     }
 }
