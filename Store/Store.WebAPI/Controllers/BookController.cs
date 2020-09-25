@@ -11,13 +11,12 @@ using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.WebAPI.Constants;
 using Store.Service.Common.Services;
-using Microsoft.AspNetCore.Http;
 
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BookController : ControllerBase
+    public class BookController : ExtendedControllerBase
     {
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
@@ -77,9 +76,9 @@ namespace Store.WebAPI.Controllers
             switch (result)
             {
                 case ResponseStatus.Success:
-                    return StatusCode(StatusCodes.Status201Created);
+                    return Created();
                 default:
-                    return StatusCode(StatusCodes.Status500InternalServerError);
+                    return InternalServerError();
             }
         }
 
@@ -99,7 +98,7 @@ namespace Store.WebAPI.Controllers
                 case ResponseStatus.Success:
                     return NoContent();
                 default:
-                    return StatusCode(StatusCodes.Status500InternalServerError);
+                    return InternalServerError();
             }
         }
 
@@ -119,7 +118,7 @@ namespace Store.WebAPI.Controllers
                 case ResponseStatus.Success:
                     return NoContent();
                 default:
-                    return StatusCode(StatusCodes.Status500InternalServerError);
+                    return InternalServerError();
             }
         }
     }
