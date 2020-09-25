@@ -1,0 +1,218 @@
+{
+	"info": {
+		"_postman_id": "ab1625e1-8cc3-47f2-a223-fbb0d353ea60",
+		"name": "Book",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET (by ID)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/book/6ee5782a-575a-476c-2f04-08d8608c84c3",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"book",
+						"6ee5782a-575a-476c-2f04-08d8608c84c3"
+					],
+					"query": [
+						{
+							"key": "includeProperties",
+							"value": "Bookstore",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET (filter)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/book",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"book"
+					],
+					"query": [
+						{
+							"key": "isDescendingSortOrder",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "sortOrderField",
+							"value": "Name",
+							"disabled": true
+						},
+						{
+							"key": "searchString",
+							"value": "Lord",
+							"disabled": true
+						},
+						{
+							"key": "pageSize",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "pageNumber",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "includeProperties",
+							"value": "Bookstore",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/book/1BA46C5C-FDF9-449C-83AC-20B8FAA87757",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"book",
+						"1BA46C5C-FDF9-449C-83AC-20B8FAA87757"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-HTTP-Method-Override",
+						"value": "PATCH",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"Book Name PATCH\",\r\n    \"Author\": \"Book Author PATCH\",\r\n    \"BookstoreId\": \"61C048CA-028D-4466-B7FD-4A05F0DAD647\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/book/1eaab6f8-3c50-42ed-0d73-08d8616cf887",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"book",
+						"1eaab6f8-3c50-42ed-0d73-08d8616cf887"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"Book Name POST\",\r\n    \"Author\": \"Book Author POST\",\r\n    \"BookstoreId\": \"61C048CA-028D-4466-B7FD-4A05F0DAD647\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/book/",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"book",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "db5f91ff-6371-483e-ac7a-53aca671d77b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5c52cebf-ba94-472b-94d7-2e142cf668d2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
