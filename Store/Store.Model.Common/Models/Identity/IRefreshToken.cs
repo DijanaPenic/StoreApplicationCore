@@ -4,6 +4,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models.Identity
 {
+    // TODO - need to fix
     public interface IRefreshToken : IPoco
     {
         string Value { get; set; }

@@ -4,7 +4,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
 {
-    public class RefreshToken : IRefreshToken
+    public class RefreshToken //: IRefreshToken
     {
         public Guid Id { get; set; }
 

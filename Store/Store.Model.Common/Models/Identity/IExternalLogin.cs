@@ -2,6 +2,7 @@
 
 namespace Store.Model.Common.Models.Identity
 {
+    // TODO - need to fix
     public interface IExternalLogin
     {
         string LoginProvider { get; set; }

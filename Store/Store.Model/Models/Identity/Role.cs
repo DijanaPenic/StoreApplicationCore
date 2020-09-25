@@ -6,7 +6,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
 {
-    public class Role : IIdentityRole
+    public class Role //: IIdentityRole
     {
         public Role()
         {

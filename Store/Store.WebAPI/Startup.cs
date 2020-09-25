@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +36,7 @@ namespace Store.WebAPI
                 cfg.AddProfile<AutoMapperWebApiProfile>();
                 cfg.AddProfile<AutoMapperRepositoryProfile>();
 
-                // cfg.AddExpressionMapping(); - TODO - check if this is needed
+                cfg.AddExpressionMapping();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();

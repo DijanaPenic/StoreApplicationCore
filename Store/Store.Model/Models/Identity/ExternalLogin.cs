@@ -4,7 +4,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
 {
-    public class ExternalLogin : IExternalLogin
+    public class ExternalLogin //: IExternalLogin
     {
         public string LoginProvider { get; set; }
 
