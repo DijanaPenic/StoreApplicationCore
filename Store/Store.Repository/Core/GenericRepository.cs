@@ -99,10 +99,13 @@ namespace Store.Repository.Core
             if (entity == null)
                 return ResponseStatus.NotFound;
 
+            // DateUpdatedUtc and Id properties need to be mapped from entity. Otherwise, they'll be overriden with default values.
+            model.DateUpdatedUtc = DateTime.UtcNow;
+            model.DateCreatedUtc = entity.DateCreatedUtc;
+            model.Id = entity.Id;
+
             Mapper.Map(model, entity);
-
-            entity.DateUpdatedUtc = DateTime.UtcNow;
-
+            
             Context.Entry(entity).State = EntityState.Modified;
 
             return ResponseStatus.Success;
