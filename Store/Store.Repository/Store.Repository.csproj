@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Store.DAL\Store.DAL.csproj" />
     <ProjectReference Include="..\Store.Model.Common\Store.Model.Common.csproj" />
+    <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
     <ProjectReference Include="..\Store.Repository.Common\Store.Repository.Common.csproj" />
   </ItemGroup>
 

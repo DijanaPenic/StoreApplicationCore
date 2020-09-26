@@ -10,6 +10,7 @@ namespace Store.Repository.Common.Core
         #region Properties
 
         IBookRepository BookRepository { get; }
+        IBookstoreRepository BookstoreRepository { get; }
 
         #endregion
 

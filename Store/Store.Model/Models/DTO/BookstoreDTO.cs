@@ -17,7 +17,7 @@ namespace Store.Models
 
         public string Location { get; set; }
 
-        public ICollection<BookTDO> Books { get; set; } 
+        public ICollection<BookDTO> Books { get; set; } 
 
         public int BooksCount { get; set; }
     }

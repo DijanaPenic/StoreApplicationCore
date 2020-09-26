@@ -13,11 +13,19 @@ namespace Store.Repository.Common.Core
     {
         Task<IEnumerable<TDomain>> GetAsync(params string[] includeProperties);
 
+        Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(params string[] includeProperties);
+
         Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+
+        Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
 
         Task<IEnumerable<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties);
 
+        Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties);
+
         Task<TDomain> FindByIdAsync(Guid id, params string[] includeProperties);
+
+        Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, params string[] includeProperties) where TDestination : IPoco;
 
         Task<ResponseStatus> AddAsync(TDomain model);
 

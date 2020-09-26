@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using X.PagedList;
 
@@ -31,7 +32,9 @@ namespace Store.Services
 
         public Task<IPagedList<IBook>> FindBooksAsync(string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            return _unitOfWork.BookRepository.FindAsync(searchString, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
+            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(searchString) ? (Expression<Func<IBook, bool>>)null : b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
+
+            return _unitOfWork.BookRepository.FindAsync(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
         public async Task<ResponseStatus> UpdateBookAsync(IBook book)

@@ -12,7 +12,7 @@ namespace Store.Repository.DependencyInjection
     {
         public static void ConfigureRepositoryComponents(this IServiceCollection services)
         {
-            //services.AddTransient<IBookstoreRepository, BookstoreRepository>();
+            services.AddTransient<IBookstoreRepository, BookstoreRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             //services.AddTransient<IGlobalSearchRepository, GlobalSearchRepository>();
 

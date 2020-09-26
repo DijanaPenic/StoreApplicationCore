@@ -15,9 +15,10 @@ namespace Store.Repository.Core
         private readonly StoreDbContext _context;
         private readonly IMapper _mapper;
         private IBookRepository _bookRepository;
+        private IBookstoreRepository _bookstoreRepository;
 
         public IBookRepository BookRepository => _bookRepository ??= new BookRepository(_context, _mapper);
-
+        public IBookstoreRepository BookstoreRepository => _bookstoreRepository ??= new BookstoreRepository(_context, _mapper);
 
         public UnitOfWork(StoreDbContext context, IMapper mapper)
         {

@@ -3,6 +3,7 @@ using X.PagedList;
 
 using Store.Models.Api;
 using Store.Models.Api.Book;
+using Store.Models.Api.Bookstore;
 using Store.Model.Common.Models;
 using Store.WebAPI.Mapper.Converters;
 
@@ -14,9 +15,9 @@ namespace Store.WebAPI.Mapper
         public AutoMapperWebApiProfile()
         {
             // Create maps for bookstore models
-            //CreateMap<BookstoreGetApiModel, IBookstore>().ReverseMap();
-            //CreateMap<BookstoreApiPostModel, IBookstore>().ReverseMap();
-            //CreateMap<BookstorePatchApiModel, IBookstore>().ReverseMap();
+            CreateMap<BookstoreGetApiModel, IBookstore>().ReverseMap();
+            CreateMap<BookstoreApiPostModel, IBookstore>().ReverseMap();
+            CreateMap<BookstorePatchApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstoreApiModel, IBookstore>().ReverseMap();
 
             // Create maps for book models

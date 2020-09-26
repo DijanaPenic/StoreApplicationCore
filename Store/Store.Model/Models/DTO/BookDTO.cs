@@ -4,7 +4,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Models
 {
-    public class BookTDO : IPoco
+    public class BookDTO : IPoco
     {
         public Guid Id { get; set; }
 

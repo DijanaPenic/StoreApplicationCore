@@ -1,32 +1,32 @@
 ﻿using AutoMapper;
 
-using Store.Entities;
+using Store.Models;
 using Store.Model.Common.Models;
+using Store.Entities;
 
 namespace Store.Repository.Mapper
 {
     // TODO list:
     // * resolve Identity mappings
-    // * resolve DTO mappings
     public class AutoMapperRepositoryProfile : Profile
     {
         public AutoMapperRepositoryProfile()
         {
             // Bookstore and Book mappings
             CreateMap<IBookstore, BookstoreEntity>().ReverseMap();
-            //CreateMap<IBookstore, BookstoreDTO>().ReverseMap();
+            CreateMap<IBookstore, BookstoreDTO>().ReverseMap();
 
             CreateMap<IBook, BookEntity>().ReverseMap();
-            //CreateMap<IBook, BookTDO>().ReverseMap();
+            CreateMap<IBook, BookDTO>().ReverseMap();
 
-            // Need DTO objects because AutoMapper projection doesn't work for interface destination
-            //CreateMap<BookstoreEntity, BookstoreDTO>()
-                    //.ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
-                    //.ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count))
-                    //.ReverseMap();
-            //CreateMap<BookEntity, BookTDO>()
-            //        .ForMember(dst => dst.Bookstore, opt => opt.ExplicitExpansion())
-            //        .ReverseMap();
+            // Need DTO objects because AutoMapper projection doesn't work for interface destinations
+            CreateMap<BookstoreEntity, BookstoreDTO>()
+                    .ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
+                    .ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count))
+                    .ReverseMap();
+            CreateMap<BookEntity, BookDTO>()
+                    .ForMember(dst => dst.Bookstore, opt => opt.ExplicitExpansion())
+                    .ReverseMap();
 
             // Identity mappings
             //CreateMap<UserEntity, IIdentityUser>();

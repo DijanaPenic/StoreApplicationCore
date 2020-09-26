@@ -10,7 +10,7 @@ namespace Store.Service.DependencyInjection
     {
         public static void ConfigureServiceComponents(this IServiceCollection services)
         {
-            //services.AddTransient<IBookstoreService, BookstoreService>();
+            services.AddTransient<IBookstoreService, BookstoreService>();
             services.AddTransient<IBookService, BookService>();
             //services.AddTransient<IGlobalSearchService, GlobalSearchService>();
 
