@@ -88,7 +88,9 @@ namespace Store.Repository.Core
         public async Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, params string[] includeProperties) where TDestination : IPoco
         {
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDestination, TEntity>(Mapper, includeProperties);
-            TDestination destItem = await Set.ProjectTo<TEntity, TDestination>(Mapper, entityIncludeProperties).FirstOrDefaultAsync(e => e.Id == id);
+
+            // TODO - Projection won't work if filter delegate is used in FirstOrDefaultAsync - getting exception
+            TDestination destItem = await Set.Where(e => e.Id == id).ProjectTo<TEntity, TDestination>(Mapper, entityIncludeProperties).FirstOrDefaultAsync(); 
 
             return Mapper.Map<TDomain>(destItem);
         }
