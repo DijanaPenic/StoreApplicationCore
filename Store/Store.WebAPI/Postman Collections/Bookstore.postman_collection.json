@@ -1,0 +1,303 @@
+{
+	"info": {
+		"_postman_id": "475c7821-fce7-4bfb-97f6-351d312353f9",
+		"name": "Bookstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET (by ID)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore/FA588725-0C60-4554-8EB9-20520038EE87",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore",
+						"FA588725-0C60-4554-8EB9-20520038EE87"
+					],
+					"query": [
+						{
+							"key": "includeProperties",
+							"value": "Books",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET (All)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore/all",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore",
+						"all"
+					],
+					"query": [
+						{
+							"key": "includeProperties",
+							"value": "Books",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET (filter)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore"
+					],
+					"query": [
+						{
+							"key": "isDescendingSortOrder",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "sortOrderField",
+							"value": "Name",
+							"disabled": true
+						},
+						{
+							"key": "searchString",
+							"value": "City",
+							"disabled": true
+						},
+						{
+							"key": "pageSize",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "pageNumber",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "includeProperties",
+							"value": "Books",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET (books with filter)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore/61c048ca-028d-4466-b7fd-4a05f0dad647/books",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore",
+						"61c048ca-028d-4466-b7fd-4a05f0dad647",
+						"books"
+					],
+					"query": [
+						{
+							"key": "isDescendingSortOrder",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "sortOrderField",
+							"value": "Name",
+							"disabled": true
+						},
+						{
+							"key": "searchString",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "pageSize",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "pageNumber",
+							"value": "2",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore/FA588725-0C60-4554-8EB9-20520038EE87",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore",
+						"FA588725-0C60-4554-8EB9-20520038EE87"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-HTTP-Method-Override",
+						"value": "PATCH",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"Bookstore Name PATCH\",\r\n    \"Location\": \"Bookstore Location PATCH\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore/FA588725-0C60-4554-8EB9-20520038EE87",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore",
+						"FA588725-0C60-4554-8EB9-20520038EE87"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"Bookstore Name POST\",\r\n    \"Location\": \"Bookstore Location POST\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/bookstore/",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"bookstore",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8975732c-965f-4a76-889d-afc27713ec15",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "dccfa0ee-f278-460f-96a1-1a128f4b43f4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
