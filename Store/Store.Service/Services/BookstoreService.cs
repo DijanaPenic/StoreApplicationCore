@@ -43,24 +43,32 @@ namespace Store.Services
             return _unitOfWork.BookstoreRepository.FindWithProjectionAsync<BookstoreDTO>(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
-        public Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)
+        public async Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)
         {
-            return _unitOfWork.BookstoreRepository.UpdateAsync(bookstore);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.UpdateAsync(bookstore);
+
+            return await _unitOfWork.SaveChangesAsync(status);
         }
 
-        public Task<ResponseStatus> UpdateBookstoreAsync(Guid bookstoreId, IBookstore bookstore)
+        public async Task<ResponseStatus> UpdateBookstoreAsync(Guid bookstoreId, IBookstore bookstore)
         {
-            return _unitOfWork.BookstoreRepository.UpdateAsync(bookstoreId, bookstore);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.UpdateAsync(bookstoreId, bookstore);
+
+            return await _unitOfWork.SaveChangesAsync(status);
         }
 
-        public Task<ResponseStatus> InsertBookstoreAsync(IBookstore bookstore)
+        public async Task<ResponseStatus> InsertBookstoreAsync(IBookstore bookstore)
         {
-            return _unitOfWork.BookstoreRepository.AddAsync(bookstore);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.AddAsync(bookstore);
+
+            return await _unitOfWork.SaveChangesAsync(status);
         }
 
-        public Task<ResponseStatus> DeleteBookstoreAsync(Guid bookstoreId)
+        public async Task<ResponseStatus> DeleteBookstoreAsync(Guid bookstoreId)
         {
-            return _unitOfWork.BookstoreRepository.DeleteByIdAsync(bookstoreId);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.DeleteByIdAsync(bookstoreId);
+
+            return await _unitOfWork.SaveChangesAsync(status);
         }
     }
 }
