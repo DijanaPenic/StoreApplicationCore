@@ -11,6 +11,9 @@ using Store.DAL.Context;
 using Store.WebAPI.Mapper;
 using Store.Repository.Mapper;
 using Store.Repository.DependencyInjection;
+using Store.Cache.Providers;
+using Store.Cache.Common.Providers;
+using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 
 namespace Store.WebAPI
@@ -28,7 +31,7 @@ namespace Store.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Database configuration - TODO - check if I can move this to Repository profile
-            services.AddDbContext<StoreDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("StoreDB")));
+            services.AddDbContext<StoreDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection")));
 
             // Auto Mapper configuration
             MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
@@ -42,17 +45,17 @@ namespace Store.WebAPI
             IMapper mapper = mapperConfiguration.CreateMapper();
             services.AddSingleton(mapper);
 
-            // Class library DI configuration
+            // Repository configuration
             services.ConfigureRepositoryComponents();
+
+            // Service configuration
             services.ConfigureServiceComponents();
+            
+            // Cache configuration
+            services.ConfigureCacheComponents();
+            services.AddTransient<IRedisCacheProvider>(provider => new RedisCacheProvider(Configuration.GetConnectionString("RedisConnection")));
 
-            // TODO - resolve registration of other services
-            //// register redis
-            //builder.RegisterType<RedisCacheProvider>().As<IRedisCacheProvider>().OnActivating((handler) =>
-            //{
-            //    handler.Instance.CacheName = ApplicationSettings.CacheName;
-            //}).SingleInstance();
-
+            // TODO - resolve registration of other services 
             //// register access token format
             //builder.RegisterType<TicketDataFormat>().As<ISecureDataFormat<AuthenticationTicket>>();
             //builder.RegisterType<TicketSerializer>().As<IDataSerializer<AuthenticationTicket>>();
@@ -64,9 +67,6 @@ namespace Store.WebAPI
             //builder.RegisterType<ApplicationSignInManager>();
             //builder.Register(c => HttpContext.Current.GetOwinContext().Authentication); // IAuthenticationManager instance
             //builder.RegisterType<AuthorizationServerProvider>().SingleInstance();
-
-            //// register controllers
-            //builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             services.AddControllers();
         }

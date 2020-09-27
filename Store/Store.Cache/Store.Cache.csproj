@@ -5,15 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Identity\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.1.58" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Store.Model.Common\Store.Model.Common.csproj" />
+    <ProjectReference Include="..\Store.Cache.Common\Store.Cache.Common.csproj" />
+    <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
   </ItemGroup>
 
 </Project>

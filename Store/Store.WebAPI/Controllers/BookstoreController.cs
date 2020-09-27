@@ -10,6 +10,7 @@ using Store.Models.Api.Book;
 using Store.Models.Api.Bookstore;
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Cache.Common;
 using Store.WebAPI.Constants;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
@@ -22,17 +23,19 @@ namespace Store.WebAPI.Controllers
     {
         private readonly IBookstoreService _bookstoreService;
         private readonly IMapper _mapper;
+        private readonly ICacheProvider _cacheProvider;
 
-        public BookstoreController(IBookstoreService bookstoreService, IMapper mapper)
+        public BookstoreController(IBookstoreService bookstoreService, IMapper mapper, ICacheManager cacheManager)
         {
             _bookstoreService = bookstoreService;
             _mapper = mapper;
+            _cacheProvider = cacheManager.CacheProvider;
         }
 
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<IActionResult> GetAsync([FromRoute]Guid id, [FromQuery]string[] includeProperties)
-        {
+        {        
             if (id == Guid.Empty)
                 return BadRequest();
 
@@ -70,39 +73,38 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
-        // TODO - need to implement cache provider
-        //[HttpGet]
-        //[Route("all/{*pathvalue}")] // Need *pathvalue, otherwise includeProperties would have been null if not provided
-        //public async Task<IActionResult> GetAsync([FromQuery]string[] includeProperties)
-        //{
-        //    Task<IEnumerable<IBookstore>> GetBookstoresFuncAsync()
-        //    {
-        //        return _bookstoreService.GetBookstoresAsync(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, IBookstore>(_mapper, includeProperties));
-        //    }
+       [HttpGet]
+       [Route("all")]
+        public async Task<IActionResult> GetAsync([FromQuery]string[] includeProperties)
+        {
+            Task<IEnumerable<IBookstore>> GetBookstoresFuncAsync()
+            {
+                return _bookstoreService.GetBookstoresAsync(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, IBookstore>(_mapper, includeProperties));
+            }
 
-        //    IEnumerable<IBookstore> bookstores;
+            IEnumerable<IBookstore> bookstores;
 
-        //    // We're not storing bookstore prefetch data in cache, so need to fetch from the database
-        //    if (includeProperties.Length == 0)
-        //    {
-        //        bookstores = await _cacheProvider.GetOrAddAsync
-        //        (
-        //            CacheParameters.Keys.AllBookstores,
-        //            GetBookstoresFuncAsync,
-        //            DateTimeOffset.MaxValue,
-        //            CacheParameters.Groups.Bookstores
-        //        );
-        //    }
-        //    else
-        //    {
-        //        bookstores = await GetBookstoresFuncAsync();
-        //    }
+            // Need to fetch from the database as we're not storing bookstore prefetch data in cache
+            if (includeProperties.Length == 0)
+            {
+                bookstores = await _cacheProvider.GetOrAddAsync
+                (
+                    CacheParameters.Keys.AllBookstores,
+                    GetBookstoresFuncAsync,
+                    DateTimeOffset.MaxValue,
+                    CacheParameters.Groups.Bookstores
+                );
+            }
+            else
+            {
+                bookstores = await GetBookstoresFuncAsync();
+            }
 
-        //    if (bookstores != null)
-        //        return Ok(_mapper.Map<IEnumerable<BookstoreGetApiModel>>(bookstores));
+            if (bookstores != null)
+                return Ok(_mapper.Map<IEnumerable<BookstoreGetApiModel>>(bookstores));
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery]string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, int pageSize = DefaultParameters.PageSize,
@@ -127,65 +129,65 @@ namespace Store.WebAPI.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreModel)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-        //    IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
-        //    ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
+            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
+            ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
 
-        //    switch (result)
-        //    {
-        //        case ResponseStatus.Success:
-        //            _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
-        //            return Created();
-        //        default:
-        //            return InternalServerError();
-        //    }
-        //}
+            switch (result)
+            {
+                case ResponseStatus.Success:
+                    _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
+                    return Created();
+                default:
+                    return InternalServerError();
+            }
+        }
 
-        //[HttpPatch]
-        //[Route("{id:guid}")]
-        //public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookstorePatchApiModel bookstoreModel)
-        //{
-        //    if (id == Guid.Empty || !ModelState.IsValid)
-        //        return BadRequest();
+        [HttpPatch]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookstorePatchApiModel bookstoreModel)
+        {
+            if (id == Guid.Empty || !ModelState.IsValid)
+                return BadRequest();
 
-        //    ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(id, _mapper.Map<IBookstore>(bookstoreModel));
+            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(id, _mapper.Map<IBookstore>(bookstoreModel));
 
-        //    switch (result)
-        //    {
-        //        case ResponseStatus.NotFound:
-        //            return NotFound();
-        //        case ResponseStatus.Success:
-        //            _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
-        //            return NoContent();
-        //        default:
-        //            return InternalServerError();
-        //    }
-        //}
+            switch (result)
+            {
+                case ResponseStatus.NotFound:
+                    return NotFound();
+                case ResponseStatus.Success:
+                    _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
+                    return NoContent();
+                default:
+                    return InternalServerError();
+            }
+        }
 
-        //[HttpDelete]
-        //[Route("{id:guid}")]
-        //public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
-        //{
-        //    if (id == Guid.Empty)
-        //        return BadRequest();
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
 
-        //    ResponseStatus result = await _bookstoreService.DeleteBookstoreAsync(id);
+            ResponseStatus result = await _bookstoreService.DeleteBookstoreAsync(id);
 
-        //    switch (result)
-        //    {
-        //        case ResponseStatus.NotFound:
-        //            return NotFound();
-        //        case ResponseStatus.Success:
-        //            _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
-        //            return NoContent();
-        //        default:
-        //            return InternalServerError();
-        //    }
-        //}
+            switch (result)
+            {
+                case ResponseStatus.NotFound:
+                    return NotFound();
+                case ResponseStatus.Success:
+                    _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
+                    return NoContent();
+                default:
+                    return InternalServerError();
+            }
+        }
     }
 }

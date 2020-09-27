@@ -11,19 +11,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.DAL", "Store.DAL\Stor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Common", "Store.Common\Store.Common.csproj", "{DEBE4194-2E6F-4EC3-B130-70D4E0B3D44B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Model", "Store.Model\Store.Model.csproj", "{CC3AE40D-8B8D-4B7F-8463-3A80EA4DC3E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Model", "Store.Model\Store.Model.csproj", "{CC3AE40D-8B8D-4B7F-8463-3A80EA4DC3E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Model.Common", "Store.Model.Common\Store.Model.Common.csproj", "{359120D3-B611-436D-A195-3C5B0C8A506E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Model.Common", "Store.Model.Common\Store.Model.Common.csproj", "{359120D3-B611-436D-A195-3C5B0C8A506E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Repository", "Store.Repository\Store.Repository.csproj", "{E974978A-87E9-4FFD-BB54-9E0EFE77D405}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Repository", "Store.Repository\Store.Repository.csproj", "{E974978A-87E9-4FFD-BB54-9E0EFE77D405}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Repository.Common", "Store.Repository.Common\Store.Repository.Common.csproj", "{8EF933D4-64CC-4D94-B9BB-BE948A72D597}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Repository.Common", "Store.Repository.Common\Store.Repository.Common.csproj", "{8EF933D4-64CC-4D94-B9BB-BE948A72D597}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Service", "Store.Service\Store.Service.csproj", "{9088BBFC-C002-4FB2-A7AF-34A7884D8371}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Service", "Store.Service\Store.Service.csproj", "{9088BBFC-C002-4FB2-A7AF-34A7884D8371}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Service.Common", "Store.Service.Common\Store.Service.Common.csproj", "{D2B481B1-B1DA-462E-8A7A-C13F1E29E6C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Service.Common", "Store.Service.Common\Store.Service.Common.csproj", "{D2B481B1-B1DA-462E-8A7A-C13F1E29E6C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.WebAPI", "Store.WebAPI\Store.WebAPI.csproj", "{5897D2CE-D412-4249-9241-44D40DEA6973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.WebAPI", "Store.WebAPI\Store.WebAPI.csproj", "{5897D2CE-D412-4249-9241-44D40DEA6973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Cache", "Store.Cache\Store.Cache.csproj", "{355C936C-9A92-487F-99BB-809ADA9B67CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Cache.Common", "Store.Cache.Common\Store.Cache.Common.csproj", "{13ABD502-22D6-4787-8934-B4807A89ABA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +79,14 @@ Global
 		{5897D2CE-D412-4249-9241-44D40DEA6973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5897D2CE-D412-4249-9241-44D40DEA6973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5897D2CE-D412-4249-9241-44D40DEA6973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{355C936C-9A92-487F-99BB-809ADA9B67CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{355C936C-9A92-487F-99BB-809ADA9B67CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{355C936C-9A92-487F-99BB-809ADA9B67CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{355C936C-9A92-487F-99BB-809ADA9B67CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
