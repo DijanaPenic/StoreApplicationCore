@@ -5,7 +5,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Models
 {
-    public class BookstoreDTO : IPoco
+    public class BookstoreDto : IPoco
     {
         public Guid Id { get; set; }
 
@@ -17,7 +17,7 @@ namespace Store.Models
 
         public string Location { get; set; }
 
-        public ICollection<BookDTO> Books { get; set; } 
+        public ICollection<BookDto> Books { get; set; } 
 
         public int BooksCount { get; set; }
     }

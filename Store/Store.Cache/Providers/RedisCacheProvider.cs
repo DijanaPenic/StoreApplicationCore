@@ -12,9 +12,9 @@ namespace Store.Cache.Providers
 {
     public class RedisCacheProvider : IRedisCacheProvider
     {
-        protected static object padLock = new object();
-        protected static object padLockDatabase = new object();
-        protected static volatile IDatabase _database = null; // volatile - variable must never be cached
+        private static readonly object padLock = new object();
+        private static readonly object padLockDatabase = new object();
+        private static volatile IDatabase _database = null; // volatile - variable must never be cached
         private readonly string _configuration; 
 
         public string KeyPrefix { get; set; }
@@ -27,7 +27,6 @@ namespace Store.Cache.Providers
                 {
                     lock (padLockDatabase)
                     {
-                        // TODO - need to look into other options, like timeout and such
                         ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(_configuration);
                         _database = connection.GetDatabase();
                     }

@@ -23,7 +23,7 @@ namespace Store.Services
 
         public Task<IBookstore> FindBookstoreByIdAsync(Guid bookstoreId, params string[] includeProperties)
         {
-            return _unitOfWork.BookstoreRepository.FindByIdWithProjectionAsync<BookstoreDTO>(bookstoreId, includeProperties);
+            return _unitOfWork.BookstoreRepository.FindByIdWithProjectionAsync<BookstoreDto>(bookstoreId, includeProperties);
         }
 
         public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize)
@@ -33,14 +33,14 @@ namespace Store.Services
 
         public Task<IEnumerable<IBookstore>> GetBookstoresAsync(params string[] includeProperties)
         {
-            return _unitOfWork.BookstoreRepository.GetWithProjectionAsync<BookstoreDTO>(includeProperties);
+            return _unitOfWork.BookstoreRepository.GetWithProjectionAsync<BookstoreDto>(includeProperties);
         }
 
         public Task<IPagedList<IBookstore>> FindBookstoresAsync(string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
         {
             Expression<Func<IBookstore, bool>> filterExpression = string.IsNullOrEmpty(searchString) ? (Expression<Func<IBookstore, bool>>)null : bs => bs.Name.Contains(searchString) || bs.Location.Contains(searchString);
 
-            return _unitOfWork.BookstoreRepository.FindWithProjectionAsync<BookstoreDTO>(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _unitOfWork.BookstoreRepository.FindWithProjectionAsync<BookstoreDto>(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
         public async Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)

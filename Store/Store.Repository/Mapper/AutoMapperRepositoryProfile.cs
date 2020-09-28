@@ -14,17 +14,17 @@ namespace Store.Repository.Mapper
         {
             // Bookstore and Book mappings
             CreateMap<IBookstore, BookstoreEntity>().ReverseMap();
-            CreateMap<IBookstore, BookstoreDTO>().ReverseMap();
+            CreateMap<IBookstore, BookstoreDto>().ReverseMap();
 
             CreateMap<IBook, BookEntity>().ReverseMap();
-            CreateMap<IBook, BookDTO>().ReverseMap();
+            CreateMap<IBook, BookDto>().ReverseMap();
 
             // Need DTO objects because AutoMapper projection doesn't work for interface destinations
-            CreateMap<BookstoreEntity, BookstoreDTO>()
+            CreateMap<BookstoreEntity, BookstoreDto>()
                     .ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
                     .ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count))
                     .ReverseMap();
-            CreateMap<BookEntity, BookDTO>()
+            CreateMap<BookEntity, BookDto>()
                     .ForMember(dst => dst.Bookstore, opt => opt.ExplicitExpansion())
                     .ReverseMap();
 
@@ -45,7 +45,6 @@ namespace Store.Repository.Mapper
             //CreateMap<IClient, ClientEntity>().ReverseMap();
 
             //CreateMap<IRefreshToken, RefreshTokenEntity>().ReverseMap();
-
         }
     }
 }
