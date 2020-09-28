@@ -29,6 +29,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("{id:guid}")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromRoute]Guid id, [FromQuery] string[] includeProperties)
         {
             if (id == Guid.Empty)
@@ -43,6 +44,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
                                                   int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
@@ -65,12 +67,13 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]BookPostApiModel bookModel)
+        [Consumes("application/json")]
+        public async Task<IActionResult> PostAsync([FromBody]BookPostApiModel bookViewModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            IBook book = _mapper.Map<IBook>(bookModel);
+            IBook book = _mapper.Map<IBook>(bookViewModel);
             ResponseStatus result = await _bookService.AddBookAsync(book);
 
             switch (result)
@@ -84,12 +87,13 @@ namespace Store.WebAPI.Controllers
 
         [HttpPatch]
         [Route("{id:guid}")]
-        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookPatchApiModel bookModel)
+        [Consumes("application/json")]
+        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookPatchApiModel bookViewModel)
         {
             if (id == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            ResponseStatus result = await _bookService.UpdateBookAsync(id, _mapper.Map<IBook>(bookModel));
+            ResponseStatus result = await _bookService.UpdateBookAsync(id, _mapper.Map<IBook>(bookViewModel));
 
             switch (result)
             {

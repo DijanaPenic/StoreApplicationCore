@@ -34,6 +34,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("{id:guid}")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromRoute]Guid id, [FromQuery]string[] includeProperties)
         {        
             if (id == Guid.Empty)
@@ -49,6 +50,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("{id:guid}/books")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromRoute]Guid id, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, int pageSize = DefaultParameters.PageSize,
                                                   bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
@@ -73,8 +75,9 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
-       [HttpGet]
-       [Route("all")]
+        [HttpGet]
+        [Route("all")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromQuery]string[] includeProperties)
         {
             Task<IEnumerable<IBookstore>> GetBookstoresFuncAsync()
@@ -107,6 +110,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromQuery]string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, int pageSize = DefaultParameters.PageSize,
                                                   bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(BookstoreGetApiModel.Name))
         {
@@ -130,12 +134,13 @@ namespace Store.WebAPI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreModel)
+        [Consumes("application/json")]
+        public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreViewModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
+            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreViewModel);
             ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
 
             switch (result)
@@ -150,12 +155,13 @@ namespace Store.WebAPI.Controllers
 
         [HttpPatch]
         [Route("{id:guid}")]
-        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookstorePatchApiModel bookstoreModel)
+        [Consumes("application/json")]
+        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookstorePatchApiModel bookstoreViewModel)
         {
             if (id == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(id, _mapper.Map<IBookstore>(bookstoreModel));
+            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(id, _mapper.Map<IBookstore>(bookstoreViewModel));
 
             switch (result)
             {
