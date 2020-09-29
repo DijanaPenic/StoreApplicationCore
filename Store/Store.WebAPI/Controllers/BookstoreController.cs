@@ -18,7 +18,7 @@ using Store.Service.Common.Services;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("bookstore")]
     public class BookstoreController : ExtendedControllerBase
     {
         private readonly IBookstoreService _bookstoreService;
