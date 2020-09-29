@@ -4,6 +4,7 @@ using X.PagedList;
 using Store.Models.Api;
 using Store.Models.Api.Book;
 using Store.Models.Api.Bookstore;
+using Store.Models.Api.GlobalSearch;
 using Store.Model.Common.Models;
 using Store.WebAPI.Mapper.Converters;
 
@@ -37,7 +38,7 @@ namespace Store.WebAPI.Mapper
             //    .ReverseMap();
 
             //// Create maps for global search
-            //CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
+            CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
 
             //// Create maps for identity
             //CreateMap<UserPatchApiModel, IIdentityUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately

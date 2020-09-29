@@ -12,7 +12,7 @@ namespace Store.Service.DependencyInjection
         {
             services.AddTransient<IBookstoreService, BookstoreService>();
             services.AddTransient<IBookService, BookService>();
-            //services.AddTransient<IGlobalSearchService, GlobalSearchService>();
+            services.AddTransient<IGlobalSearchService, GlobalSearchService>();
 
             //services.AddTransient<IUserStore <IIdentityUser, Guid>, UserStore>();
             //services.AddTransient<IRoleStore <IIdentityRole, Guid>, RoleStore>();
