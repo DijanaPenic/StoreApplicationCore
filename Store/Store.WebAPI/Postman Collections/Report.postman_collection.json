@@ -1,0 +1,32 @@
+{
+	"info": {
+		"_postman_id": "d822f91f-eb65-4ab9-bb22-346e3cd1923a",
+		"name": "Report",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET (BookstoresDetailedReport)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/report/bookstores-detailed-report",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"report",
+						"bookstores-detailed-report"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
