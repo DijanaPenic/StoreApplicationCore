@@ -1,0 +1,44 @@
+{
+	"info": {
+		"_postman_id": "42fa073a-fd03-488d-9e19-4992a0e03efa",
+		"name": "Global Search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Search",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer y-KZ_E8YOC7baY8kBx4Z-Vix4u303A9KEea5HPHRu0tVElMNsAgFlHdd8GyArypOagMShtGEe0-WH_pfKxILThO9ijAKDpQI9bWarbMe_t7wwglsjHcmj7jEgKjdFBV6OLuYNn77GEZ0KV0YYQ6Wu4YEx-czU2FlIhbU0-8dmBQwS7NnMUGtdwck13zCFbZIbBhLM_k5yT16ybkzt1UyPGXePigLBhcjlyY8B4OI8x2LEEdniAc4kiyad5YGFF5PXOqc1jyV3dDA5GgDnYfw8v4wc7Csr0y8qMjcz75SWX4sErZYBmfxdH6RYOakMCZApVhDXapcVuX_wSq6gCPy4vFxk5ZjenxVospWQ6RrijZ1cCkKVYJoCkE7PoG8HVyxwVWg_f8f09crkTN2zV6ipwAvyOpuA2UjVySMgadZ1H1iv6s8cBKcj4_EIvlEN0pQoTefcey9Uz8W3EQZxtt-IpCJdps_vP3CFKyamtW5o_K4bj4YOXz4YhlRYEYnA0Svdw2bnrD4CJLTpiCQn93Qlg",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://store.api.local:5001/global-search/?searchString=Strand",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"global-search",
+						""
+					],
+					"query": [
+						{
+							"key": "searchString",
+							"value": "Strand"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
