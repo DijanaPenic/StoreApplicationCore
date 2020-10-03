@@ -25,9 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Service.Common", "Sto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.WebAPI", "Store.WebAPI\Store.WebAPI.csproj", "{5897D2CE-D412-4249-9241-44D40DEA6973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Cache", "Store.Cache\Store.Cache.csproj", "{355C936C-9A92-487F-99BB-809ADA9B67CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Cache", "Store.Cache\Store.Cache.csproj", "{355C936C-9A92-487F-99BB-809ADA9B67CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Cache.Common", "Store.Cache.Common\Store.Cache.Common.csproj", "{13ABD502-22D6-4787-8934-B4807A89ABA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Cache.Common", "Store.Cache.Common\Store.Cache.Common.csproj", "{13ABD502-22D6-4787-8934-B4807A89ABA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Reporting", "Store.Reporting\Store.Reporting.csproj", "{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13ABD502-22D6-4787-8934-B4807A89ABA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
