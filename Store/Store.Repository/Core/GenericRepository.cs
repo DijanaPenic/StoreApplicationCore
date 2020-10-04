@@ -21,15 +21,15 @@ namespace Store.Repository.Core
     {
         private DbSet<TEntity> _set;
 
-        protected DbSet<TEntity> Set => _set ?? (_set = Context.Set<TEntity>());
+        protected DbSet<TEntity> Set => _set ??= DbContext.Set<TEntity>();
 
         protected IMapper Mapper { get; }
 
-        protected StoreDbContext Context { get; }
+        protected StoreDbContext DbContext { get; }
 
-        public GenericRepository(StoreDbContext context, IMapper mapper)
+        public GenericRepository(StoreDbContext dbContext, IMapper mapper)
         {
-            Context = context ?? throw new ArgumentNullException("GenericRepository - database context is missing.");
+            DbContext = dbContext ?? throw new ArgumentNullException("GenericRepository - database context is missing.");
             Mapper = mapper ?? throw new ArgumentNullException("GenericRepository - mapper is missing.");
         }
 
@@ -140,7 +140,7 @@ namespace Store.Repository.Core
 
             Mapper.Map(model, entity);
             
-            Context.Entry(entity).State = EntityState.Modified;
+            DbContext.Entry(entity).State = EntityState.Modified;
 
             return ResponseStatus.Success;
         }
@@ -164,18 +164,9 @@ namespace Store.Repository.Core
 
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Context.Entry(entity).State = EntityState.Modified;
+            DbContext.Entry(entity).State = EntityState.Modified;
 
             return ResponseStatus.Success;
-        }
-
-        private IQueryable<TEntity> Filter(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, params string[] includeProperties)
-        {
-            Expression<Func<TEntity, bool>> entityFilterExpression = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
-            string entitySortOrderProperty = ModelMapperHelper.GetPropertyMapping<TDomain, TEntity>(Mapper, sortOrderProperty);
-            string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
-
-            return Set.Filter(entityFilterExpression);
         }
 
         private IQueryable<TEntity> Find(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties)

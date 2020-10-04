@@ -10,7 +10,7 @@ namespace Store.Repositories
 {
     public class BookstoreRepository : GenericRepository<BookstoreEntity, IBookstore>, IBookstoreRepository
     {
-        public BookstoreRepository(StoreDbContext context, IMapper mapper) : base(context, mapper)
+        public BookstoreRepository(StoreDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
     }

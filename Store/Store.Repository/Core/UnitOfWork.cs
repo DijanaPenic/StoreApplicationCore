@@ -12,15 +12,15 @@ namespace Store.Repository.Core
     public class UnitOfWork : IUnitOfWork
     {
 
-        private readonly StoreDbContext _context;
+        private readonly StoreDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public IBookRepository BookRepository => new BookRepository(_context, _mapper);
-        public IBookstoreRepository BookstoreRepository => new BookstoreRepository(_context, _mapper);
+        public IBookRepository BookRepository => new BookRepository(_dbContext, _mapper);
+        public IBookstoreRepository BookstoreRepository => new BookstoreRepository(_dbContext, _mapper);
 
-        public UnitOfWork(StoreDbContext context, IMapper mapper)
+        public UnitOfWork(StoreDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
@@ -30,7 +30,7 @@ namespace Store.Repository.Core
             if (currentStatus != ResponseStatus.Success)
                 return currentStatus;
 
-            return await _context.SaveChangesAsync() > 0 ? ResponseStatus.Success : ResponseStatus.Error;
+            return await _dbContext.SaveChangesAsync() > 0 ? ResponseStatus.Success : ResponseStatus.Error;
         }
     }
 }
