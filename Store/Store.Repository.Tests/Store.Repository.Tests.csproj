@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="4.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.8" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.14.6" />
+    <PackageReference Include="X.PagedList" Version="8.0.7" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Store.Entity\Store.Entity.csproj" />
+    <ProjectReference Include="..\Store.Model.Common\Store.Model.Common.csproj" />
+    <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
+    <ProjectReference Include="..\Store.Repository.Common\Store.Repository.Common.csproj" />
+    <ProjectReference Include="..\Store.Repository\Store.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
