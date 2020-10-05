@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Cache.Common", "Store
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Reporting", "Store.Reporting\Store.Reporting.csproj", "{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Repository.Tests", "Store.Repository.Tests\Store.Repository.Tests.csproj", "{788C28D3-320D-476B-BCE0-87533D7A1A16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Repository.Tests", "Store.Repository.Tests\Store.Repository.Tests.csproj", "{788C28D3-320D-476B-BCE0-87533D7A1A16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Service.Tests", "Store.Service.Tests\Store.Service.Tests.csproj", "{2D5ADF1B-7798-4D52-8074-D71A43F264AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +101,10 @@ Global
 		{788C28D3-320D-476B-BCE0-87533D7A1A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{788C28D3-320D-476B-BCE0-87533D7A1A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{788C28D3-320D-476B-BCE0-87533D7A1A16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D5ADF1B-7798-4D52-8074-D71A43F264AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D5ADF1B-7798-4D52-8074-D71A43F264AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D5ADF1B-7798-4D52-8074-D71A43F264AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D5ADF1B-7798-4D52-8074-D71A43F264AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
