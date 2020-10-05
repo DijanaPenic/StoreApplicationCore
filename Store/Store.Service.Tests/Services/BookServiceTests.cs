@@ -27,7 +27,7 @@ namespace Store.Service.Tests.Services
             // Setup book test data
             _books = InitializeBooks();
 
-            //Setup mock repository
+            // Setup mock repository
             Mock<IBookRepository> mockBookRepository = new Mock<IBookRepository>();
 
             mockBookRepository.Setup(r => r.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_books.First());
