@@ -24,7 +24,7 @@ namespace Store.Repository.Tests
     {
         private readonly IList<BookstoreEntity> _bookstores;
         private readonly IMapper _mapper;
-        private readonly DbContextOptions<StoreDbContext> _dbContextOptions;
+        private readonly DbContextOptions<ApplicationDbContext> _dbContextOptions;
 
         public BookstoreRepositoryTests()
         {
@@ -43,9 +43,9 @@ namespace Store.Repository.Tests
             // This ensures that the test is not using (or tripping over) entities tracked by the context when seeding. 
             // It also better matches what happens in web apps and services. 
             // Source: https://docs.microsoft.com/en-us/ef/core/miscellaneous/testing/testing-sample
-            _dbContextOptions = new DbContextOptionsBuilder<StoreDbContext>().UseInMemoryDatabase(databaseName: "UnitTestsStoreDatabase").Options;
+            _dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "UnitTestsStoreDatabase").Options;
 
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             dbContext.Database.EnsureDeleted();
             dbContext.Bookstores.AddRange(_bookstores);
             dbContext.SaveChanges();
@@ -57,7 +57,7 @@ namespace Store.Repository.Tests
         {
             BookstoreEntity bookstore = _bookstores.First();
 
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             IBookstore result = await _repository.FindByIdAsync(bookstore.Id);
@@ -69,7 +69,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "GET Bookstores")]
         public async Task BookstoreGetAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             IEnumerable<IBookstore> result = await _repository.GetAsync();
@@ -83,7 +83,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "GET Bookstores")]
         public async Task BookstoreGetPagedFilteredAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             string searchString = "Name";
@@ -99,7 +99,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "GET Bookstores")]
         public async Task BookstoreGetCollectionFilteredAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             string searchString = "Name";
@@ -115,7 +115,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "UPDATE Bookstore")]
         public async Task BookstoreUpdateAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             ResponseStatus status = await _repository.UpdateAsync(new Bookstore { Id = _bookstores.First().Id, Name = "Name - updated", Location = "Location - updated" });
@@ -127,7 +127,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "UPDATE Bookstore")]
         public async Task BookstoreUpdateByIdAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             ResponseStatus status = await _repository.UpdateAsync(_bookstores.First().Id, new Bookstore { Name = "Name - updated", Location = "Location - updated" });
@@ -139,7 +139,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "INSERT Bookstore")]
         public async Task BookstoreInsertAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             ResponseStatus status = await _repository.AddAsync(new Bookstore { Name = "Name - created", Location = "Location - created" });
@@ -151,7 +151,7 @@ namespace Store.Repository.Tests
         [Trait("Category", "DELETE Bookstore")]
         public async Task BookstoreDeleteAsync()
         {
-            using StoreDbContext dbContext = new StoreDbContext(_dbContextOptions);
+            using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             BookstoreRepository _repository = new BookstoreRepository(dbContext, _mapper);
 
             ResponseStatus status = await _repository.DeleteByIdAsync(_bookstores.First().Id);

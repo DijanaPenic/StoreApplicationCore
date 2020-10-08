@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Store.Entities.Identity
 {
@@ -8,38 +7,52 @@ namespace Store.Entities.Identity
     {
         public Guid Id { get; set; }
 
+        [ProtectedPersonalData]
         public string UserName { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "First Name cannot be longer than 50 characters.")]
+        public string NormalizedUserName { get; set; }
+
+        [PersonalData] 
         public string FirstName { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "Last Name cannot be longer than 50 characters.")]
+        [PersonalData]
         public string LastName { get; set; }
+
+        [ProtectedPersonalData]
+        public string Email { get; set; }
+
+        [PersonalData]
+        public bool EmailConfirmed { get; set; }
+
+        public string NormalizedEmail { get; set; }
+
+        [ProtectedPersonalData]
+        public string PhoneNumber { get; set; }
+
+        [PersonalData]
+        public bool PhoneNumberConfirmed { get; set; }
 
         public string PasswordHash { get; set; }
 
-        public string SecurityStamp { get; set; }
+        [PersonalData]
+        public bool TwoFactorEnabled { get; set; }
 
-        public DateTime DateCreatedUtc { get; set; }
-
-        public DateTime DateUpdatedUtc { get; set; }
+        public bool LockoutEnabled { get; set; }
 
         public bool IsDeleted { get; set; }
 
         public bool IsApproved { get; set; }
 
-        public bool LockoutEnabled { get; set; }
-
         public int AccessFailedCount { get; set; }
 
-        public DateTime? LockoutEndDateUtc { get; set; }
+        public string ConcurrencyStamp { get; set; }
 
-        public ICollection<ClaimEntity> Claims { get; set; }
+        public string SecurityStamp { get; set; }
 
-        public ICollection<ExternalLoginEntity> Logins { get; set; }
+        public DateTime LockoutEndDateUtc { get; set; }
 
-        public ICollection<UserRoleEntity> Roles { get; set; }
+        public DateTime DateCreatedUtc { get; set; }
+
+        public DateTime DateUpdatedUtc { get; set; }
     }
 }

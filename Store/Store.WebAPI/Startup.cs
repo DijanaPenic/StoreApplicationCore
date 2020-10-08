@@ -2,10 +2,11 @@ using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 using Store.DAL.Context;
 using Store.WebAPI.Mapper;
@@ -14,6 +15,7 @@ using Store.Repository.DependencyInjection;
 using Store.Cache.Providers;
 using Store.Cache.Common.Providers;
 using Store.Cache.DependencyInjection;
+using Store.Entities.Identity;
 using Store.Service.DependencyInjection;
 
 namespace Store.WebAPI
@@ -31,7 +33,9 @@ namespace Store.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Database configuration - TODO - check if I can move this to Repository profile
-            services.AddDbContext<StoreDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection")));
+
+            //services.AddIdentity<UserEntity, RoleEntity>().AddDefaultTokenProviders(); // TODO - check if this is correct
 
             // Auto Mapper configuration
             MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>

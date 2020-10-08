@@ -9,7 +9,7 @@ using Store.DAL.Context;
 
 namespace Store.DAL.Migrations
 {
-    [DbContext(typeof(StoreDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20200924131951_SeedInitialData")]
     partial class SeedInitialData
     {

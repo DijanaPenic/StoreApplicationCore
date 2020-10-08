@@ -1,11 +1,12 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Store.Entities.Identity
 {
-    public class ClaimEntity
+    public class RoleClaimEntity : IDBPoco
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+
+        public  Guid RoleId { get; set; }
 
         public string ClaimType { get; set; }
 
@@ -14,10 +15,5 @@ namespace Store.Entities.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
-
-        [ForeignKey("User")]
-        public Guid UserId { get; set; }
-
-        public UserEntity User { get; set; }
     }
 }

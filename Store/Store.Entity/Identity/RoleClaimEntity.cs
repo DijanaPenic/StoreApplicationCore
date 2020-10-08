@@ -2,11 +2,15 @@
 
 namespace Store.Entities.Identity
 {
-    public class UserRoleEntity 
+    public class UserClaimEntity : IDBPoco
     {
+        public Guid Id { get; set; }
+
         public Guid UserId { get; set; }
 
-        public Guid RoleId { get; set; }
+        public string ClaimType { get; set; }
+
+        public string ClaimValue { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
 

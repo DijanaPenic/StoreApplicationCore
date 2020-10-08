@@ -25,9 +25,9 @@ namespace Store.Repository.Core
 
         protected IMapper Mapper { get; }
 
-        protected StoreDbContext DbContext { get; }
+        protected ApplicationDbContext DbContext { get; }
 
-        public GenericRepository(StoreDbContext dbContext, IMapper mapper)
+        public GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
         {
             DbContext = dbContext ?? throw new ArgumentNullException("GenericRepository - database context is missing.");
             Mapper = mapper ?? throw new ArgumentNullException("GenericRepository - mapper is missing.");

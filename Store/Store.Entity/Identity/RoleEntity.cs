@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Store.Entities.Identity
 {
@@ -9,12 +8,14 @@ namespace Store.Entities.Identity
 
         public string Name { get; set; }
 
+        public string NormalizedName { get; set; }
+
+        public string ConcurrencyStamp { get; set; }
+
         public bool Stackable { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
-
-        public ICollection<UserRoleEntity> Users { get; set; }
     }
 }
