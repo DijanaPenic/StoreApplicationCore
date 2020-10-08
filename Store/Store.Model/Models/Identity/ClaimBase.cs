@@ -2,11 +2,11 @@
 
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Models.Identity
+namespace Store.Model.Models.Identity
 {
-    public class Claim : IClaim
+    public abstract class ClaimBase : IClaimBase
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string ClaimType { get; set; }
 
@@ -15,9 +15,5 @@ namespace Store.Models.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
-
-        public Guid UserId { get; set; }
-
-        public IIdentityUser User { get; set; }
     }
 }
