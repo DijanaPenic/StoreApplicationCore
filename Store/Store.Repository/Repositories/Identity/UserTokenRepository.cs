@@ -8,7 +8,7 @@ using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Core.Dapper;
 
-namespace Store.Repository.Repositories.Identity
+namespace Store.Repositories.Identity
 {
     internal class UserTokenRepository : DapperRepositoryBase, IDapperGenericRepository<IUserToken, IUserTokenKey>
     {

@@ -2,10 +2,10 @@
 using System.Data;
 using System.Data.SqlClient;
 
-using Store.Model.Common.Models.Identity;
+using Store.Repositories.Identity;
 using Store.Repository.Common.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
-using Store.Repository.Repositories.Identity;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Core.Dapper
 {

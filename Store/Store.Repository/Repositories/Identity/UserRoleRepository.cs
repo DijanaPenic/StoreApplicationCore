@@ -8,7 +8,7 @@ using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
-namespace Store.Repository.Repositories.Identity
+namespace Store.Repositories.Identity
 {
     internal class UserRoleRepository : DapperRepositoryBase, IUserRoleRepository
     {
