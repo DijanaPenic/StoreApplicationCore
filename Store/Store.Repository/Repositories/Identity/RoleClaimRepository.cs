@@ -48,7 +48,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IRoleClaim> FindByRoleId(string roleId)
+        public IEnumerable<IRoleClaim> FindByRoleId(Guid roleId)
         {
             return Query<RoleClaim>(
                 sql: $"SELECT * FROM RoleClaim WHERE {nameof(RoleClaimEntity.RoleId)} = @{nameof(roleId)}",

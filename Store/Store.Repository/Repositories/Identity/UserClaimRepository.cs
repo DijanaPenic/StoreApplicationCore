@@ -67,7 +67,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserClaim> GetByUserId(string userId)
+        public IEnumerable<IUserClaim> GetByUserId(Guid userId)
         {
             return Query<UserClaim>(
                 sql: $@"

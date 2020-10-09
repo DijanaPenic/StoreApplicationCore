@@ -60,7 +60,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserLogin> FindByUserId(string userId)
+        public IEnumerable<IUserLogin> FindByUserId(Guid userId)
         {
             return Query<UserLogin>(
                 sql: $"SELECT * FROM UserLogin WHERE {nameof(UserLoginEntity.UserId)} = @{nameof(userId)}",

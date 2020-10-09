@@ -16,7 +16,7 @@ namespace Store.Repositories.Identity
         {
         }
 
-        public void Add(string userId, string roleName)
+        public void Add(Guid userId, string roleName)
         {
             DateTime dateCreated = DateTime.UtcNow;
 
@@ -35,7 +35,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<string> GetRoleNamesByUserId(string userId)
+        public IEnumerable<string> GetRoleNamesByUserId(Guid userId)
         {
             return Query<string>(
                 sql: $@"
@@ -60,7 +60,7 @@ namespace Store.Repositories.Identity
                 param: new { roleName });
         }
 
-        public void Delete(string userId, string roleName)
+        public void Delete(Guid userId, string roleName)
         {
             Execute(
                 sql: $@"
