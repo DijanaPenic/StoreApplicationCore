@@ -18,10 +18,15 @@ namespace Store.Repository.Repositories.Identity
 
         public void Add(IUser entity)
         {
+            entity.DateCreatedUtc = DateTime.UtcNow;
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     INSERT INTO User(
                         {nameof(UserEntity.Id)}, 
+                        {nameof(UserEntity.FirstName)}, 
+                        {nameof(UserEntity.LastName)}, 
                         {nameof(UserEntity.AccessFailedCount)}, 
                         {nameof(UserEntity.ConcurrencyStamp)}, 
                         {nameof(UserEntity.Email)}, 
@@ -35,9 +40,15 @@ namespace Store.Repository.Repositories.Identity
                         {nameof(UserEntity.PhoneNumberConfirmed)}, 
                         {nameof(UserEntity.SecurityStamp)},
 	                    {nameof(UserEntity.TwoFactorEnabled)}, 
-                        {nameof(UserEntity.UserName)})
+	                    {nameof(UserEntity.IsApproved)}, 
+	                    {nameof(UserEntity.IsDeleted)}, 
+                        {nameof(UserEntity.UserName)},
+                        {nameof(UserEntity.DateCreatedUtc)},
+                        {nameof(UserEntity.DateUpdatedUtc)})
                     VALUES(
                         @{nameof(entity.Id)}, 
+                        @{nameof(entity.FirstName)}, 
+                        @{nameof(entity.LastName)}, 
                         @{nameof(entity.AccessFailedCount)}, 
                         @{nameof(entity.ConcurrencyStamp)}, 
                         @{nameof(entity.Email)}, 
@@ -51,7 +62,11 @@ namespace Store.Repository.Repositories.Identity
                         @{nameof(entity.PhoneNumberConfirmed)}, 
                         @{nameof(entity.SecurityStamp)},
 	                    @{nameof(entity.TwoFactorEnabled)}, 
-                        @{nameof(entity.UserName)})",
+	                    @{nameof(entity.IsApproved)},
+	                    @{nameof(entity.IsDeleted)},
+                        @{nameof(entity.UserName)},
+                        @{nameof(entity.DateCreatedUtc)},
+                        @{nameof(entity.DateUpdatedUtc)})",
                 param: entity
             );
         }
@@ -97,9 +112,13 @@ namespace Store.Repository.Repositories.Identity
 
         public void Update(IUser entity)
         {
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     UPDATE User SET 
+                        {nameof(UserEntity.FirstName)} = @{nameof(entity.FirstName)},
+                        {nameof(UserEntity.LastName)} = @{nameof(entity.LastName)},
                         {nameof(UserEntity.AccessFailedCount)} = @{nameof(entity.AccessFailedCount)},
 	                    {nameof(UserEntity.ConcurrencyStamp)} = @{nameof(entity.ConcurrencyStamp)}, 
                         {nameof(UserEntity.Email)} = @{nameof(entity.Email)},
@@ -113,7 +132,11 @@ namespace Store.Repository.Repositories.Identity
                         {nameof(UserEntity.PhoneNumberConfirmed)} = @{nameof(entity.PhoneNumberConfirmed)},
 	                    {nameof(UserEntity.SecurityStamp)} = @{nameof(entity.SecurityStamp)}, 
                         {nameof(UserEntity.TwoFactorEnabled)} = @{nameof(entity.TwoFactorEnabled)},
-	                    {nameof(UserEntity.UserName)} = @{nameof(entity.UserName)}
+                        {nameof(UserEntity.IsApproved)} = @{nameof(entity.IsApproved)},
+                        {nameof(UserEntity.IsDeleted)} = @{nameof(entity.IsDeleted)},
+	                    {nameof(UserEntity.UserName)} = @{nameof(entity.UserName)},
+                        {nameof(RoleEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
+
                     WHERE {nameof(UserEntity.Id)} = @{nameof(entity.Id)}",
                 param: entity);
         }

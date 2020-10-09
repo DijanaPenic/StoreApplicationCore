@@ -9,5 +9,7 @@ namespace Store.Model.Common.Models.Identity
         string Name { get; set; }
 
         string NormalizedName { get; set; }
+
+        bool Stackable { get; set; }
     }
 }

@@ -18,18 +18,27 @@ namespace Store.Repository.Repositories.Identity
 
         public void Add(IRole entity)
         {
+            entity.DateCreatedUtc = DateTime.UtcNow;
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     INSERT INTO Role(
                         {nameof(RoleEntity.Id)}, 
                         {nameof(RoleEntity.ConcurrencyStamp)}, 
                         [{nameof(RoleEntity.Name)}], 
-                        {nameof(RoleEntity.NormalizedName)})
+                        {nameof(RoleEntity.NormalizedName)},
+                        {nameof(RoleEntity.Stackable)},
+                        {nameof(RoleEntity.DateCreatedUtc)},
+                        {nameof(RoleEntity.DateUpdatedUtc)})
                     VALUES(
                         @{nameof(entity.Id)}, 
                         @{nameof(entity.ConcurrencyStamp)}, 
                         @{nameof(entity.Name)}, 
-                        @{nameof(entity.NormalizedName)})",
+                        @{nameof(entity.NormalizedName)},
+                        @{nameof(entity.Stackable)}, 
+                        @{nameof(entity.DateCreatedUtc)},
+                        @{nameof(entity.DateUpdatedUtc)})",
                 param: entity
             );
         }
@@ -68,12 +77,16 @@ namespace Store.Repository.Repositories.Identity
 
         public void Update(IRole entity)
         {
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     UPDATE Role SET 
                         {nameof(RoleEntity.ConcurrencyStamp)} = @{nameof(entity.ConcurrencyStamp)}, 
                         [{nameof(RoleEntity.Name)}] = @{nameof(entity.Name)}, 
-                        {nameof(RoleEntity.NormalizedName)} = @{nameof(entity.NormalizedName)}
+                        {nameof(RoleEntity.NormalizedName)} = @{nameof(entity.NormalizedName)},
+                        {nameof(RoleEntity.Stackable)} = @{nameof(entity.Stackable)},
+                        {nameof(RoleEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
                     WHERE Id = @Id",
                 param: entity
             );

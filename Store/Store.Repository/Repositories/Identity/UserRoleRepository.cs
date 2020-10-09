@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Collections.Generic;
 
 using Store.Entities.Identity;
@@ -17,12 +18,20 @@ namespace Store.Repository.Repositories.Identity
 
         public void Add(string userId, string roleName)
         {
+            DateTime dateCreated = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
-                    INSERT INTO UserRole({nameof(UserRoleEntity.UserId)}, {nameof(UserRoleEntity.RoleId)})
-                    SELECT TOP 1 @{nameof(userId)}, {nameof(RoleEntity.Id)} FROM Role
-                    WHERE {nameof(RoleEntity.NormalizedName)} = @{nameof(roleName)}",
-                param: new { userId, roleName }
+                    INSERT INTO UserRole(
+                        {nameof(UserRoleEntity.UserId)}, 
+                        {nameof(UserRoleEntity.RoleId)},
+                        {nameof(UserRoleEntity.DateCreatedUtc)})
+                    SELECT TOP 1 
+                        @{nameof(userId)}, 
+                        {nameof(RoleEntity.Id)},
+                        @{nameof(dateCreated)}
+                    FROM Role WHERE {nameof(RoleEntity.NormalizedName)} = @{nameof(roleName)}",
+                param: new { userId, roleName, dateCreated }
             );
         }
 

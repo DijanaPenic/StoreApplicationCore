@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Collections.Generic;
 
 using Store.Entities.Identity;
@@ -17,18 +18,25 @@ namespace Store.Repository.Repositories.Identity
 
         public void Add(IUserLogin entity)
         {
+            entity.DateCreatedUtc = DateTime.UtcNow;
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     INSERT INTO UserLogin(
                         {nameof(UserLoginEntity.LoginProvider)}, 
                         {nameof(UserLoginEntity.ProviderKey)},
                         {nameof(UserLoginEntity.ProviderDisplayName)}, 
-                        {nameof(UserLoginEntity.UserId)})
+                        {nameof(UserLoginEntity.UserId)},
+                        {nameof(UserLoginEntity.DateCreatedUtc)},
+                        {nameof(UserLoginEntity.DateUpdatedUtc)})
                     VALUES(
                         @{nameof(entity.LoginProvider)}, 
                         @{nameof(entity.ProviderKey)}, 
                         @{nameof(entity.ProviderDisplayName)}, 
-                        @{nameof(entity.UserId)})",
+                        @{nameof(entity.UserId)},
+                        @{nameof(entity.DateCreatedUtc)},
+                        @{nameof(entity.DateUpdatedUtc)})",
                 param: entity
             );
         }
@@ -74,11 +82,14 @@ namespace Store.Repository.Repositories.Identity
 
         public void Update(IUserLogin entity)
         {
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     UPDATE UserLogin SET 
                         {nameof(UserLoginEntity.ProviderDisplayName)} = @{nameof(entity.ProviderDisplayName)},
-                        {nameof(UserLoginEntity.UserId)} = @{nameof(entity.UserId)}
+                        {nameof(UserLoginEntity.UserId)} = @{nameof(entity.UserId)},
+                        {nameof(UserLoginEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
                     WHERE 
                         {nameof(UserLoginEntity.LoginProvider)} = @{nameof(entity.LoginProvider)} AND 
                         {nameof(UserLoginEntity.ProviderKey)} = @{nameof(entity.ProviderKey)}",

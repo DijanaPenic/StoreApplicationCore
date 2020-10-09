@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Collections.Generic;
 
 using Store.Entities.Identity;
@@ -17,18 +18,25 @@ namespace Store.Repository.Repositories.Identity
 
         public void Add(IUserToken entity)
         {
+            entity.DateCreatedUtc = DateTime.UtcNow;
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     INSERT INTO UserToken(
                         {nameof(UserTokenEntity.UserId)}, 
                         {nameof(UserTokenEntity.LoginProvider)}, 
                         [{nameof(UserTokenEntity.Name)}], 
-                        {nameof(UserTokenEntity.Value)})
+                        {nameof(UserTokenEntity.Value)},
+                        {nameof(UserTokenEntity.DateCreatedUtc)},
+                        {nameof(UserTokenEntity.DateUpdatedUtc)})
                     VALUES(
                         @{nameof(entity.UserId)}, 
                         @{nameof(entity.LoginProvider)}, 
                         @{nameof(entity.Name)}, 
-                        @{nameof(entity.Value)})",
+                        @{nameof(entity.Value)},
+                        @{nameof(entity.DateCreatedUtc)},
+                        @{nameof(entity.DateUpdatedUtc)})",
                 param: entity
             );
         }
@@ -68,9 +76,13 @@ namespace Store.Repository.Repositories.Identity
 
         public void Update(IUserToken entity)
         {
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
-                    UPDATE UserToken SET {nameof(UserTokenEntity.Value)} = @{nameof(entity.Value)}
+                    UPDATE UserToken SET 
+                        {nameof(UserTokenEntity.Value)} = @{nameof(entity.Value)},
+                        {nameof(UserTokenEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
                     WHERE 
                         {nameof(UserTokenEntity.UserId)} = @{nameof(entity.UserId)} AND 
                         {nameof(UserTokenEntity.LoginProvider)} = @{nameof(entity.LoginProvider)} AND 

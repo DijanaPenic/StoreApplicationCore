@@ -9,7 +9,5 @@ namespace Store.Entities.Identity
         public Guid RoleId { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
-
-        public DateTime DateUpdatedUtc { get; set; }
     }
 }

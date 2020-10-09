@@ -14,6 +14,8 @@ namespace Store.Model.Models.Identity
 
         public string NormalizedName { get; set; }
 
+        public bool Stackable { get; set; }
+
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }

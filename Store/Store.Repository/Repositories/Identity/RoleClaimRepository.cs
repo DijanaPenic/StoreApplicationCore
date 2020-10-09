@@ -18,17 +18,24 @@ namespace Store.Repository.Repositories.Identity
 
         public void Add(IRoleClaim entity)
         {
+            entity.DateCreatedUtc = DateTime.UtcNow;
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             entity.Id = ExecuteScalar<Guid>(
                 sql: $@"
                     INSERT INTO RoleClaim(
                         {nameof(RoleClaimEntity.ClaimType)}, 
                         {nameof(RoleClaimEntity.ClaimValue)}, 
-                        {nameof(RoleClaimEntity.RoleId)})
+                        {nameof(RoleClaimEntity.RoleId)},
+                        {nameof(RoleClaimEntity.DateCreatedUtc)},
+                        {nameof(RoleClaimEntity.DateUpdatedUtc)})
                     VALUES(
                         @{nameof(entity.ClaimType)}, 
                         @{nameof(entity.ClaimValue)}, 
-                        @{nameof(entity.RoleId)});
-                    SELECT SCOPE_IDENTITY()",
+                        @{nameof(entity.RoleId)},
+                        @{nameof(entity.DateCreatedUtc)},
+                        @{nameof(entity.DateUpdatedUtc)});
+                    RETURNING {nameof(RoleClaimEntity.Id)};",
                 param: entity
             );
         }
@@ -66,12 +73,15 @@ namespace Store.Repository.Repositories.Identity
 
         public void Update(IRoleClaim entity)
         {
+            entity.DateUpdatedUtc = DateTime.UtcNow;
+
             Execute(
                 sql: $@"
                     UPDATE RoleClaim SET 
                         {nameof(RoleClaimEntity.ClaimType)} = @{nameof(entity.ClaimType)}, 
                         {nameof(RoleClaimEntity.ClaimValue)} = @{nameof(entity.ClaimType)}, 
-                        {nameof(RoleClaimEntity.RoleId)} = @{nameof(entity.ClaimType)}
+                        {nameof(RoleClaimEntity.RoleId)} = @{nameof(entity.ClaimType)},
+                        {nameof(RoleClaimEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
                     WHERE Id = @Id",
                 param: entity
             );
