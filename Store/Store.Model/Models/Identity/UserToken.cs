@@ -13,7 +13,7 @@ namespace Store.Model.Models.Identity
         public DateTime DateUpdatedUtc { get; set; }
     }
 
-    public class UserTokenKey
+    public class UserTokenKey : IUserTokenKey
     {
         public Guid UserId { get; set; }
 

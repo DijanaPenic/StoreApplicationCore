@@ -15,7 +15,7 @@ namespace Store.Model.Models.Identity
         public DateTime DateUpdatedUtc { get; set; }
     }
 
-    public class UserLoginKey
+    public class UserLoginKey : IUserLoginKey
     {
         public string LoginProvider { get; set; }
 
