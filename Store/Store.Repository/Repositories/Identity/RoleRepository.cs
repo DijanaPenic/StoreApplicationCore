@@ -3,9 +3,10 @@ using System.Data;
 using System.Collections.Generic;
 
 using Store.Entities.Identity;
+using Store.Model.Models.Identity;
+using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
-using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Repositories.Identity
 {
@@ -19,41 +20,49 @@ namespace Store.Repository.Repositories.Identity
         {
             Execute(
                 sql: $@"
-                    INSERT INTO AspNetRoles({nameof(RoleEntity.Id)}, {nameof(RoleEntity.ConcurrencyStamp)}, [{nameof(RoleEntity.Name)}], {nameof(RoleEntity.NormalizedName)})
-                    VALUES(@{nameof(IRole.Id)}, @{nameof(IRole.ConcurrencyStamp)}, @{nameof(IRole.Name)}, @{nameof(IRole.NormalizedName)})",
+                    INSERT INTO Role(
+                        {nameof(RoleEntity.Id)}, 
+                        {nameof(RoleEntity.ConcurrencyStamp)}, 
+                        [{nameof(RoleEntity.Name)}], 
+                        {nameof(RoleEntity.NormalizedName)})
+                    VALUES(
+                        @{nameof(entity.Id)}, 
+                        @{nameof(entity.ConcurrencyStamp)}, 
+                        @{nameof(entity.Name)}, 
+                        @{nameof(entity.NormalizedName)})",
                 param: entity
             );
         }
 
         public IEnumerable<IRole> Get()
         {
-            return Query<IRole>(
-                sql: "SELECT * FROM AspNetRoles"
+            return Query<Role>(
+                sql: "SELECT * FROM Role"
             );
         }
 
-        public IRole FindById(Guid id)
+        public IRole FindByKey(Guid key)
         {
-            return QuerySingleOrDefault<IRole>(
-                sql: $"SELECT * FROM AspNetRoles WHERE {nameof(RoleEntity.Id)} = @{nameof(id)}",
-                param: new { id }
+            return QuerySingleOrDefault<Role>(
+                sql: $"SELECT * FROM Role WHERE {nameof(RoleEntity.Id)} = @{nameof(key)}",
+                param: new { key }
             );
         }
 
         public IRole FindByName(string roleName)
         {
-            return QuerySingleOrDefault<IRole>(
-                sql: $"SELECT * FROM AspNetRoles WHERE [{nameof(RoleEntity.Name)}] = @{nameof(roleName)}",
+            return QuerySingleOrDefault<Role>(
+                sql: $"SELECT * FROM Role WHERE [{nameof(RoleEntity.Name)}] = @{nameof(roleName)}",
                 param: new { roleName }
             );
         }
 
 
-        public void DeleteById(Guid id)
+        public void DeleteByKey(Guid key)
         {
             Execute(
-                sql: $"DELETE FROM AspNetRoles WHERE {nameof(RoleEntity.Id)} = @{nameof(id)}",
-                param: new { id }
+                sql: $"DELETE FROM Role WHERE {nameof(RoleEntity.Id)} = @{nameof(key)}",
+                param: new { key }
             );
         }
 
@@ -61,10 +70,10 @@ namespace Store.Repository.Repositories.Identity
         {
             Execute(
                 sql: $@"
-                    UPDATE AspNetRoles SET 
-                        {nameof(RoleEntity.ConcurrencyStamp)} = @{nameof(IRole.ConcurrencyStamp)}, 
-                        [{nameof(RoleEntity.Name)}] = @{nameof(IRole.Name)}, 
-                        {nameof(RoleEntity.NormalizedName)} = @{nameof(IRole.NormalizedName)}
+                    UPDATE Role SET 
+                        {nameof(RoleEntity.ConcurrencyStamp)} = @{nameof(entity.ConcurrencyStamp)}, 
+                        [{nameof(RoleEntity.Name)}] = @{nameof(entity.Name)}, 
+                        {nameof(RoleEntity.NormalizedName)} = @{nameof(entity.NormalizedName)}
                     WHERE Id = @Id",
                 param: entity
             );

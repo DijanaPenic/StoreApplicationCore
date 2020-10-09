@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Common.Core.Dapper
@@ -8,17 +9,17 @@ namespace Store.Repository.Common.Core.Dapper
     {
         IRoleRepository RoleRepository { get; }
 
-        //IRoleClaimRepository RoleClaimRepository { get; }
+        IRoleClaimRepository RoleClaimRepository { get; }
 
-        //IUserRepository UserRepository { get; }
+        IUserRepository UserRepository { get; }
 
-        //IUserClaimRepository UserClaimRepository { get; }
+        IUserClaimRepository UserClaimRepository { get; }
 
-        //IUserLoginRepository UserLoginRepository { get; }
+        IUserLoginRepository UserLoginRepository { get; }
 
-        //IRepository<UserToken, UserTokenKey> UserTokenRepository { get; }
+        IDapperGenericRepository<IUserToken, IUserTokenKey> UserTokenRepository { get; }
 
-        //IUserRoleRepository UserRoleRepository { get; }
+        IUserRoleRepository UserRoleRepository { get; }
 
         void Commit();
     }

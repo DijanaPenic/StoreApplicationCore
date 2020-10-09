@@ -2,7 +2,7 @@
 
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IUserLogin
+    public interface IUserLogin : IUserLoginKey
     {
         string ProviderDisplayName { get; set; }
 
@@ -11,5 +11,12 @@ namespace Store.Model.Common.Models.Identity
         DateTime DateCreatedUtc { get; set; }
 
         DateTime DateUpdatedUtc { get; set; }
+    }
+
+    public interface IUserLoginKey
+    {
+        string LoginProvider { get; set; }
+
+        string ProviderKey { get; set; }
     }
 }

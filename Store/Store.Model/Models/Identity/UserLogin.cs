@@ -17,8 +17,8 @@ namespace Store.Model.Models.Identity
 
     public class UserLoginKey
     {
-        public string LoginProvider;
+        public string LoginProvider { get; set; }
 
-        public string ProviderKey;
+        public string ProviderKey { get; set; }
     }
 }
