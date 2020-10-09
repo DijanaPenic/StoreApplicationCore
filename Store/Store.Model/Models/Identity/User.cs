@@ -42,7 +42,7 @@ namespace Store.Model.Models.Identity
 
         public string SecurityStamp { get; set; }
 
-        public DateTime LockoutEndDateUtc { get; set; }
+        public DateTime? LockoutEndDateUtc { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
 
