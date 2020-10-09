@@ -8,7 +8,7 @@ namespace Store.Repository.Common.Repositories.Identity
 {
     public interface IUserClaimRepository : IDapperGenericRepository<IUserClaim, Guid>
     {
-        IEnumerable<IUserClaim> GetByUserId(string userId);
+        IEnumerable<IUserClaim> GetByUserId(Guid userId);
 
         IEnumerable<IUser> GetUsersForClaim(string claimType, string claimValue);
     }

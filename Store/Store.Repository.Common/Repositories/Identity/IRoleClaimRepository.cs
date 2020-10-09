@@ -8,6 +8,6 @@ namespace Store.Repository.Common.Repositories.Identity
 {
     public interface IRoleClaimRepository : IDapperGenericRepository<IRoleClaim, Guid>
     {
-        IEnumerable<IRoleClaim> FindByRoleId(string roleId);
+        IEnumerable<IRoleClaim> FindByRoleId(Guid roleId);
     }
 }
