@@ -12,11 +12,9 @@ using Store.DAL.Context;
 using Store.WebAPI.Mapper;
 using Store.Repository.Mapper;
 using Store.Repository.DependencyInjection;
-using Store.Cache.Providers;
-using Store.Cache.Common.Providers;
 using Store.Cache.DependencyInjection;
-using Store.Entities.Identity;
 using Store.Service.DependencyInjection;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI
 {
@@ -35,8 +33,6 @@ namespace Store.WebAPI
             // Database configuration - TODO - check if I can move this to Repository profile
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection")));
 
-            //services.AddIdentity<UserEntity, RoleEntity>().AddDefaultTokenProviders(); // TODO - check if this is correct
-
             // Auto Mapper configuration
             MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
             {
@@ -50,14 +46,16 @@ namespace Store.WebAPI
             services.AddSingleton(mapper);
 
             // Repository configuration
-            services.ConfigureRepositoryComponents();
+            services.ConfigureRepositoryComponents(Configuration.GetConnectionString("DefaultConnection"));
 
             // Service configuration
             services.ConfigureServiceComponents();
             
             // Cache configuration
-            services.ConfigureCacheComponents();
-            services.AddTransient<IRedisCacheProvider>(provider => new RedisCacheProvider(Configuration.GetConnectionString("RedisConnection")));
+            services.ConfigureCacheComponents(Configuration.GetConnectionString("RedisConnection"));
+
+            // Identity configuration
+            services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
             // TODO - resolve registration of other services 
             //// register access token format

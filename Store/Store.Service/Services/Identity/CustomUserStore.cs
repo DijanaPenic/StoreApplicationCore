@@ -10,7 +10,7 @@ using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 
-namespace Store.Service.Services.Identity
+namespace Store.Services.Identity
 {
     public class CustomUserStore :
             IUserStore<IUser>,

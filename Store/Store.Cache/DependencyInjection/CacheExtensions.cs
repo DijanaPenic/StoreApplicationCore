@@ -8,10 +8,11 @@ namespace Store.Cache.DependencyInjection
 {
     public static class CacheExtensions
     {
-        public static void ConfigureCacheComponents(this IServiceCollection services)
+        public static void ConfigureCacheComponents(this IServiceCollection services, string configuration)
         {
             services.AddTransient<ICacheManager, CacheManager>();
             services.AddTransient<ICacheProviderFactory, RedisCacheProviderFactory>();
+            services.AddTransient<IRedisCacheProvider>(provider => new RedisCacheProvider(configuration));
         }
     }
 }
