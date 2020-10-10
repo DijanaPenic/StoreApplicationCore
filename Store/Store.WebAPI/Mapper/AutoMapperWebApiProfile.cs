@@ -3,9 +3,12 @@ using X.PagedList;
 
 using Store.Models.Api;
 using Store.Models.Api.Book;
+using Store.Models.Api.Identity;
 using Store.Models.Api.Bookstore;
 using Store.Models.Api.GlobalSearch;
 using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
+using Store.Model.Models.Identity;
 using Store.WebAPI.Mapper.Converters;
 
 namespace Store.WebAPI.Mapper
@@ -46,16 +49,11 @@ namespace Store.WebAPI.Mapper
             //CreateMap<UserGetApiModel, IIdentityUser>();
             //CreateMap<IIdentityUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
 
-            //CreateMap<RegisterBindingApiModel, IIdentityUser>()
-            //    .ForMember(dst => dst.Roles, opt => opt.Ignore())
-            //    .ConstructUsing(src => new User())
-            //    .ReverseMap();
+            CreateMap<RegisterApiModel, IUser>().ConstructUsing(src => new User()).ReverseMap();
 
             //CreateMap<RoleApiModel, IIdentityRole>()
             //    .ConstructUsing(src => new Role())
             //    .ReverseMap();
-
-            //CreateMap<RefreshTokenApiModel, IRefreshToken>().ReverseMap();
 
             // Create maps for paging
             CreateMap<IPagedList, PaginationMetaData>();
