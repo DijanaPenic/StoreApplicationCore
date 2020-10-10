@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Data;
-using System.Data.SqlClient;
 
 using Store.Repositories.Identity;
 using Store.Repository.Common.Core.Dapper;
@@ -37,7 +37,7 @@ namespace Store.Repository.Core.Dapper
 
         public DapperUnitOfWork(string connectionString)
         {
-            _connection = new SqlConnection(connectionString);
+            _connection = new NpgsqlConnection(connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
         }
