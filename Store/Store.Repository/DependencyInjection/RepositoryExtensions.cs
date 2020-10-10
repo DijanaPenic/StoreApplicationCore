@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
+using Store.DAL.Context;
 using Store.Repositories;
 using Store.Repository.Core;
 using Store.Repository.Core.Dapper;
@@ -19,6 +21,7 @@ namespace Store.Repository.DependencyInjection
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<,>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IDapperUnitOfWork, DapperUnitOfWork>(provider => new DapperUnitOfWork(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
         }
     }
 }

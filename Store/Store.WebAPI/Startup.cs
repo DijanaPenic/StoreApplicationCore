@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 
-using Store.DAL.Context;
 using Store.WebAPI.Mapper;
 using Store.Repository.Mapper;
 using Store.Repository.DependencyInjection;
@@ -30,9 +28,6 @@ namespace Store.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Database configuration - TODO - check if I can move this to Repository profile
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection")));
-
             // Auto Mapper configuration
             MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
             {
@@ -46,7 +41,7 @@ namespace Store.WebAPI
             services.AddSingleton(mapper);
 
             // Repository configuration
-            services.ConfigureRepositoryComponents(Configuration.GetConnectionString("DefaultConnection"));
+            services.ConfigureRepositoryComponents(Configuration.GetConnectionString("DatabaseConnection"));
 
             // Service configuration
             services.ConfigureServiceComponents();
