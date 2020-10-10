@@ -17,7 +17,7 @@ namespace Store.DAL.Configuration.Identity
             builder.Property(t => t.Name).IsRequired().HasMaxLength(128);
 
             // Maps to the UserToken table
-            builder.ToTable("UserToken");
+            builder.ToTable("user_token");
         }
     }
 }

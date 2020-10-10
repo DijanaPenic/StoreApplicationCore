@@ -13,7 +13,7 @@ namespace Store.DAL.Configuration.Identity
             builder.HasKey(rc => rc.Id);
 
             // Maps to the RoleClaim table
-            builder.ToTable("RoleClaim");
+            builder.ToTable("role_claim");
         }
     }
 }

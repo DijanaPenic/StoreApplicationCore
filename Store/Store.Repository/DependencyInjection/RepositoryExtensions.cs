@@ -21,7 +21,7 @@ namespace Store.Repository.DependencyInjection
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<,>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IDapperUnitOfWork, DapperUnitOfWork>(provider => new DapperUnitOfWork(connectionString));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
         }
     }
 }

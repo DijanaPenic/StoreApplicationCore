@@ -17,7 +17,7 @@ namespace Store.DAL.Configuration.Identity
             builder.HasIndex(r => r.NormalizedName).HasName("RoleNameIndex").IsUnique();
 
             // Maps to the Role table
-            builder.ToTable("Role");
+            builder.ToTable("role");
 
             // A concurrency token for use with the optimistic concurrency checking
             builder.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();

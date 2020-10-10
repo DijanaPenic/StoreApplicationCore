@@ -13,7 +13,7 @@ namespace Store.DAL.Configuration.Identity
             builder.HasKey(r => new { r.UserId, r.RoleId });
 
             // Maps to the UserRole table
-            builder.ToTable("UserRole");
+            builder.ToTable("user_role");
         }
     }
 }

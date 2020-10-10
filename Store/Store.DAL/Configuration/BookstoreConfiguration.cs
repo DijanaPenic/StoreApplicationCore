@@ -10,6 +10,14 @@ namespace Store.DAL.Configuration
     {
         public void Configure(EntityTypeBuilder<BookstoreEntity> builder)
         {
+            // Maps to the Book table
+            builder.ToTable("bookstore");
+
+            // Limit the size of columns to use efficient database types
+            builder.Property(bs => bs.Name).IsRequired().HasMaxLength(50);
+            builder.Property(bs => bs.Location).IsRequired().HasMaxLength(100);
+
+            // Seed data
             builder.HasData
             (
                 new BookstoreEntity

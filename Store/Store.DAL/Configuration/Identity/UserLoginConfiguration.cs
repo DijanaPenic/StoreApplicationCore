@@ -18,7 +18,7 @@ namespace Store.DAL.Configuration.Identity
             builder.Property(l => l.ProviderKey).IsRequired().HasMaxLength(128);
 
             // Maps to the UserLogin table
-            builder.ToTable("UserLogin");
+            builder.ToTable("user_login");
         }
     }
 }

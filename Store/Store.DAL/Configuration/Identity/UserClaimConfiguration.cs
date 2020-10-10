@@ -13,7 +13,7 @@ namespace Store.DAL.Configuration.Identity
             builder.HasKey(uc => uc.Id);
 
             // Maps to the UserClaim table
-            builder.ToTable("UserClaim");
+            builder.ToTable("user_claim");
         }
     }
 }

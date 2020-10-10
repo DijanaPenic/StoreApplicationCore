@@ -17,7 +17,7 @@ namespace Store.DAL.Configuration.Identity
             builder.HasIndex(u => u.NormalizedEmail).HasName("EmailIndex");
 
             // Maps to the User table
-            builder.ToTable("User");
+            builder.ToTable("user");
 
             // A concurrency token for use with the optimistic concurrency checking
             builder.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
