@@ -43,7 +43,7 @@ namespace Store.Repository.Tests
             // This ensures that the test is not using (or tripping over) entities tracked by the context when seeding. 
             // It also better matches what happens in web apps and services. 
             // Source: https://docs.microsoft.com/en-us/ef/core/miscellaneous/testing/testing-sample
-            _dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "UnitTestsStoreDatabase").Options;
+            _dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName: "UnitTestsBookstoresDatabase").Options;
 
             using ApplicationDbContext dbContext = new ApplicationDbContext(_dbContextOptions);
             dbContext.Database.EnsureDeleted();
