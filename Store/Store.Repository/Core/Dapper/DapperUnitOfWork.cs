@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Dapper;
+using Npgsql;
 using System;
 using System.Data;
 
@@ -40,6 +41,8 @@ namespace Store.Repository.Core.Dapper
             _connection = new NpgsqlConnection(connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
+
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         #region IUnitOfWork Members
