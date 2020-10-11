@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -23,19 +23,19 @@ namespace Store.Repositories.Identity
 
             entity.Id = ExecuteScalar<Guid>(
                 sql: $@"
-                    INSERT INTO RoleClaim(
-                        {nameof(RoleClaimEntity.ClaimType)}, 
-                        {nameof(RoleClaimEntity.ClaimValue)}, 
-                        {nameof(RoleClaimEntity.RoleId)},
-                        {nameof(RoleClaimEntity.DateCreatedUtc)},
-                        {nameof(RoleClaimEntity.DateUpdatedUtc)})
+                    INSERT INTO {RoleClaimSchema.Table}(
+                        {RoleClaimSchema.Columns.ClaimType}, 
+                        {RoleClaimSchema.Columns.ClaimValue}, 
+                        {RoleClaimSchema.Columns.RoleId},
+                        {RoleClaimSchema.Columns.DateCreatedUtc},
+                        {RoleClaimSchema.Columns.DateUpdatedUtc})
                     VALUES(
                         @{nameof(entity.ClaimType)}, 
                         @{nameof(entity.ClaimValue)}, 
                         @{nameof(entity.RoleId)},
                         @{nameof(entity.DateCreatedUtc)},
                         @{nameof(entity.DateUpdatedUtc)});
-                    RETURNING {nameof(RoleClaimEntity.Id)};",
+                    RETURNING {RoleClaimSchema.Columns.Id};",
                 param: entity
             );
         }
@@ -43,7 +43,7 @@ namespace Store.Repositories.Identity
         public IRoleClaim FindByKey(Guid key)
         {
             return QuerySingleOrDefault<RoleClaim>(
-                sql: $"SELECT * FROM RoleClaim WHERE {nameof(RoleClaimEntity.Id)} = @{nameof(key)}",
+                sql: $"SELECT * FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -51,7 +51,7 @@ namespace Store.Repositories.Identity
         public IEnumerable<IRoleClaim> FindByRoleId(Guid roleId)
         {
             return Query<RoleClaim>(
-                sql: $"SELECT * FROM RoleClaim WHERE {nameof(RoleClaimEntity.RoleId)} = @{nameof(roleId)}",
+                sql: $"SELECT * FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)}",
                 param: new { roleId }
             );
         }
@@ -59,14 +59,14 @@ namespace Store.Repositories.Identity
         public IEnumerable<IRoleClaim> Get()
         {
             return Query<RoleClaim>(
-                sql: $"SELECT * FROM RoleClaim"
+                sql: $"SELECT * FROM {RoleClaimSchema.Table}"
             );
         }
 
         public void DeleteByKey(Guid key)
         {
             Execute(
-                sql: $"DELETE FROM RoleClaim WHERE {nameof(RoleClaimEntity.Id)} = @{nameof(key)}",
+                sql: $"DELETE FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -77,12 +77,12 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    UPDATE RoleClaim SET 
-                        {nameof(RoleClaimEntity.ClaimType)} = @{nameof(entity.ClaimType)}, 
-                        {nameof(RoleClaimEntity.ClaimValue)} = @{nameof(entity.ClaimType)}, 
-                        {nameof(RoleClaimEntity.RoleId)} = @{nameof(entity.ClaimType)},
-                        {nameof(RoleClaimEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
-                    WHERE Id = @Id",
+                    UPDATE {RoleClaimSchema.Table} SET 
+                        {RoleClaimSchema.Columns.ClaimType} = @{nameof(entity.ClaimType)}, 
+                        {RoleClaimSchema.Columns.ClaimValue} = @{nameof(entity.ClaimType)}, 
+                        {RoleClaimSchema.Columns.RoleId} = @{nameof(entity.ClaimType)},
+                        {RoleClaimSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
+                    WHERE {RoleClaimSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity
             );
         }

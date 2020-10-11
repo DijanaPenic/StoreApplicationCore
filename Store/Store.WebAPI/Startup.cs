@@ -28,6 +28,7 @@ namespace Store.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // TODO - use class to initialize mapper
             // Auto Mapper configuration
             MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
             {

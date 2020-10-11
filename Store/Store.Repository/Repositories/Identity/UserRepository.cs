@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -23,28 +23,28 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    INSERT INTO User(
-                        {nameof(UserEntity.Id)}, 
-                        {nameof(UserEntity.FirstName)}, 
-                        {nameof(UserEntity.LastName)}, 
-                        {nameof(UserEntity.AccessFailedCount)}, 
-                        {nameof(UserEntity.ConcurrencyStamp)}, 
-                        {nameof(UserEntity.Email)}, 
-                        {nameof(UserEntity.EmailConfirmed)},
-	                    {nameof(UserEntity.LockoutEnabled)}, 
-                        {nameof(UserEntity.LockoutEndDateUtc)}, 
-                        {nameof(UserEntity.NormalizedEmail)}, 
-                        {nameof(UserEntity.NormalizedUserName)},
-	                    {nameof(UserEntity.PasswordHash)}, 
-                        {nameof(UserEntity.PhoneNumber)}, 
-                        {nameof(UserEntity.PhoneNumberConfirmed)}, 
-                        {nameof(UserEntity.SecurityStamp)},
-	                    {nameof(UserEntity.TwoFactorEnabled)}, 
-	                    {nameof(UserEntity.IsApproved)}, 
-	                    {nameof(UserEntity.IsDeleted)}, 
-                        {nameof(UserEntity.UserName)},
-                        {nameof(UserEntity.DateCreatedUtc)},
-                        {nameof(UserEntity.DateUpdatedUtc)})
+                    INSERT INTO {UserSchema.Table}(
+                        {UserSchema.Columns.Id}, 
+                        {UserSchema.Columns.FirstName}, 
+                        {UserSchema.Columns.LastName}, 
+                        {UserSchema.Columns.AccessFailedCount}, 
+                        {UserSchema.Columns.ConcurrencyStamp}, 
+                        {UserSchema.Columns.Email}, 
+                        {UserSchema.Columns.EmailConfirmed},
+	                    {UserSchema.Columns.LockoutEnabled}, 
+                        {UserSchema.Columns.LockoutEndDateUtc}, 
+                        {UserSchema.Columns.NormalizedEmail}, 
+                        {UserSchema.Columns.NormalizedUserName},
+	                    {UserSchema.Columns.PasswordHash}, 
+                        {UserSchema.Columns.PhoneNumber}, 
+                        {UserSchema.Columns.PhoneNumberConfirmed}, 
+                        {UserSchema.Columns.SecurityStamp},
+	                    {UserSchema.Columns.TwoFactorEnabled}, 
+	                    {UserSchema.Columns.IsApproved}, 
+	                    {UserSchema.Columns.IsDeleted}, 
+                        {UserSchema.Columns.UserName},
+                        {UserSchema.Columns.DateCreatedUtc},
+                        {UserSchema.Columns.DateUpdatedUtc})
                     VALUES(
                         @{nameof(entity.Id)}, 
                         @{nameof(entity.FirstName)}, 
@@ -74,14 +74,14 @@ namespace Store.Repositories.Identity
         public IEnumerable<IUser> Get()
         {
             return Query<User>(
-                sql: $"SELECT * FROM User"
+                sql: $"SELECT * FROM {UserSchema.Table}"
             );
         }
 
         public IUser FindByKey(Guid key)
         {
             return QuerySingleOrDefault<User>(
-                sql: $"SELECT * FROM User WHERE {nameof(UserEntity.Id)} = @{nameof(key)}",
+                sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -89,7 +89,7 @@ namespace Store.Repositories.Identity
         public IUser FindByNormalizedEmail(string normalizedEmail)
         {
             return QuerySingleOrDefault<User>(
-                sql: $"SELECT * FROM User WHERE {nameof(UserEntity.NormalizedEmail)} = @{nameof(normalizedEmail)}",
+                sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.NormalizedEmail} = @{nameof(normalizedEmail)}",
                 param: new { normalizedEmail }
             );
         }
@@ -97,7 +97,7 @@ namespace Store.Repositories.Identity
         public IUser FindByNormalizedUserName(string normalizedUserName)
         {
             return QuerySingleOrDefault<User>(
-                sql: $"SELECT * FROM User WHERE {nameof(UserEntity.NormalizedUserName)} = @{nameof(normalizedUserName)}",
+                sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.NormalizedUserName} = @{nameof(normalizedUserName)}",
                 param: new { normalizedUserName }
             );
         }
@@ -105,7 +105,7 @@ namespace Store.Repositories.Identity
         public void DeleteByKey(Guid key)
         {
             Execute(
-                sql: $"DELETE FROM User WHERE {nameof(UserEntity.Id)} = @{nameof(key)}",
+                sql: $"DELETE FROM {UserSchema.Table} WHERE {UserSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -116,28 +116,28 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    UPDATE User SET 
-                        {nameof(UserEntity.FirstName)} = @{nameof(entity.FirstName)},
-                        {nameof(UserEntity.LastName)} = @{nameof(entity.LastName)},
-                        {nameof(UserEntity.AccessFailedCount)} = @{nameof(entity.AccessFailedCount)},
-	                    {nameof(UserEntity.ConcurrencyStamp)} = @{nameof(entity.ConcurrencyStamp)}, 
-                        {nameof(UserEntity.Email)} = @{nameof(entity.Email)},
-	                    {nameof(UserEntity.EmailConfirmed)} = @{nameof(entity.EmailConfirmed)}, 
-                        {nameof(UserEntity.LockoutEnabled)} = @{nameof(entity.LockoutEnabled)},
-	                    {nameof(UserEntity.LockoutEndDateUtc)} = @{nameof(entity.LockoutEndDateUtc)}, 
-                        {nameof(UserEntity.NormalizedEmail)} = @{nameof(entity.NormalizedEmail)},
-	                    {nameof(UserEntity.NormalizedUserName)} = @{nameof(entity.NormalizedUserName)}, 
-                        {nameof(UserEntity.PasswordHash)} = @{nameof(entity.PasswordHash)},
-	                    {nameof(UserEntity.PhoneNumber)} = @{nameof(entity.PhoneNumber)}, 
-                        {nameof(UserEntity.PhoneNumberConfirmed)} = @{nameof(entity.PhoneNumberConfirmed)},
-	                    {nameof(UserEntity.SecurityStamp)} = @{nameof(entity.SecurityStamp)}, 
-                        {nameof(UserEntity.TwoFactorEnabled)} = @{nameof(entity.TwoFactorEnabled)},
-                        {nameof(UserEntity.IsApproved)} = @{nameof(entity.IsApproved)},
-                        {nameof(UserEntity.IsDeleted)} = @{nameof(entity.IsDeleted)},
-	                    {nameof(UserEntity.UserName)} = @{nameof(entity.UserName)},
-                        {nameof(RoleEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
+                    UPDATE {UserSchema.Table} SET 
+                        {UserSchema.Columns.FirstName} = @{nameof(entity.FirstName)},
+                        {UserSchema.Columns.LastName} = @{nameof(entity.LastName)},
+                        {UserSchema.Columns.AccessFailedCount} = @{nameof(entity.AccessFailedCount)},
+	                    {UserSchema.Columns.ConcurrencyStamp} = @{nameof(entity.ConcurrencyStamp)}, 
+                        {UserSchema.Columns.Email} = @{nameof(entity.Email)},
+	                    {UserSchema.Columns.EmailConfirmed} = @{nameof(entity.EmailConfirmed)}, 
+                        {UserSchema.Columns.LockoutEnabled} = @{nameof(entity.LockoutEnabled)},
+	                    {UserSchema.Columns.LockoutEndDateUtc} = @{nameof(entity.LockoutEndDateUtc)}, 
+                        {UserSchema.Columns.NormalizedEmail} = @{nameof(entity.NormalizedEmail)},
+	                    {UserSchema.Columns.NormalizedUserName} = @{nameof(entity.NormalizedUserName)}, 
+                        {UserSchema.Columns.PasswordHash} = @{nameof(entity.PasswordHash)},
+	                    {UserSchema.Columns.PhoneNumber} = @{nameof(entity.PhoneNumber)}, 
+                        {UserSchema.Columns.PhoneNumberConfirmed} = @{nameof(entity.PhoneNumberConfirmed)},
+	                    {UserSchema.Columns.SecurityStamp} = @{nameof(entity.SecurityStamp)}, 
+                        {UserSchema.Columns.TwoFactorEnabled} = @{nameof(entity.TwoFactorEnabled)},
+                        {UserSchema.Columns.IsApproved} = @{nameof(entity.IsApproved)},
+                        {UserSchema.Columns.IsDeleted} = @{nameof(entity.IsDeleted)},
+	                    {UserSchema.Columns.UserName} = @{nameof(entity.UserName)},
+                        {UserSchema.Columns.DateUpdatedUtc}  = {nameof(entity.DateUpdatedUtc)}
 
-                    WHERE {nameof(UserEntity.Id)} = @{nameof(entity.Id)}",
+                    WHERE {UserSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity);
         }
     }

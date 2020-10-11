@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -23,19 +23,19 @@ namespace Store.Repositories.Identity
 
             entity.Id = ExecuteScalar<Guid>(
                 sql: $@"
-                    INSERT INTO UserClaim(
-                        {nameof(UserClaimEntity.ClaimType)}, 
-                        {nameof(UserClaimEntity.ClaimValue)}, 
-                        {nameof(UserClaimEntity.UserId)},
-                        {nameof(UserClaimEntity.DateCreatedUtc)},
-                        {nameof(UserClaimEntity.DateUpdatedUtc)})
+                    INSERT INTO {UserClaimSchema.Table}(
+                        {UserClaimSchema.Columns.ClaimType}, 
+                        {UserClaimSchema.Columns.ClaimValue}, 
+                        {UserClaimSchema.Columns.UserId},
+                        {UserClaimSchema.Columns.DateCreatedUtc},
+                        {UserClaimSchema.Columns.DateUpdatedUtc})
                     VALUES(
                         @{nameof(entity.ClaimType)}, 
                         @{nameof(entity.ClaimValue)}, 
                         @{nameof(entity.UserId)},
                         @{nameof(entity.DateCreatedUtc)},
                         @{nameof(entity.DateUpdatedUtc)});
-                    RETURNING {nameof(UserClaimEntity.Id)};",
+                    RETURNING {UserClaimSchema.Columns.Id};",
                 param: entity
             );
         }
@@ -45,11 +45,11 @@ namespace Store.Repositories.Identity
             return Query<UserClaim>(
                 sql: $@"
                     SELECT 
-                        {nameof(UserClaimEntity.Id)}, 
-                        {nameof(UserClaimEntity.ClaimType)}, 
-                        {nameof(UserClaimEntity.ClaimValue)}, 
-                        {nameof(UserClaimEntity.UserId)}
-                    FROM UserClaim"
+                        {UserClaimSchema.Columns.Id}, 
+                        {UserClaimSchema.Columns.ClaimType}, 
+                        {UserClaimSchema.Columns.ClaimValue}, 
+                        {UserClaimSchema.Columns.UserId}
+                    FROM {UserClaimSchema.Table}"
             );
         }
 
@@ -58,11 +58,11 @@ namespace Store.Repositories.Identity
             return QuerySingleOrDefault<UserClaim>(
                 sql: $@"
                     SELECT 
-                        {nameof(UserClaimEntity.Id)}, 
-                        {nameof(UserClaimEntity.ClaimType)}, 
-                        {nameof(UserClaimEntity.ClaimValue)}, 
-                        {nameof(UserClaimEntity.UserId)}
-                    FROM UserClaim WHERE {nameof(UserClaimEntity.Id)} = @{nameof(key)}",
+                        {UserClaimSchema.Columns.Id}, 
+                        {UserClaimSchema.Columns.ClaimType}, 
+                        {UserClaimSchema.Columns.ClaimValue}, 
+                        {UserClaimSchema.Columns.UserId}
+                    FROM {UserClaimSchema.Table} WHERE {UserClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -72,11 +72,11 @@ namespace Store.Repositories.Identity
             return Query<UserClaim>(
                 sql: $@"
                     SELECT 
-                        {nameof(UserClaimEntity.Id)}, 
-                        {nameof(UserClaimEntity.ClaimType)}, 
-                        {nameof(UserClaimEntity.ClaimValue)}, 
-                        {nameof(UserClaimEntity.UserId)}
-                    FROM UserClaim WHERE {nameof(UserClaimEntity.UserId)} = @{nameof(userId)}",
+                        {UserClaimSchema.Columns.Id}, 
+                        {UserClaimSchema.Columns.ClaimType}, 
+                        {UserClaimSchema.Columns.ClaimValue}, 
+                        {UserClaimSchema.Columns.UserId}
+                    FROM {UserClaimSchema.Table} WHERE {UserClaimSchema.Columns.UserId} = @{nameof(userId)}",
                 param: new { userId }
             );
         }
@@ -86,26 +86,26 @@ namespace Store.Repositories.Identity
             return Query<User>(
                 sql: $@"
                     SELECT
-	                    u.{nameof(UserEntity.Id)}, 
-                        u.{nameof(UserEntity.AccessFailedCount)}, 
-                        u.{nameof(UserEntity.ConcurrencyStamp)}, 
-                        u.{nameof(UserEntity.Email)},
-                        u.{nameof(UserEntity.EmailConfirmed)}, 
-                        u.{nameof(UserEntity.LockoutEnabled)}, 
-                        u.{nameof(UserEntity.LockoutEndDateUtc)},
-                        u.{nameof(UserEntity.NormalizedEmail)}, 
-                        u.{nameof(UserEntity.NormalizedUserName)}, 
-                        u.{nameof(UserEntity.PasswordHash)},
-                        u.{nameof(UserEntity.PhoneNumber)}, 
-                        u.{nameof(UserEntity.PhoneNumberConfirmed)}, 
-                        u.{nameof(UserEntity.SecurityStamp)},
-	                    u.{nameof(UserEntity.TwoFactorEnabled)}, 
-                        u.{nameof(UserEntity.UserName)}
-                    FROM UserClaim c 
-                        INNER JOIN User u ON c.{nameof(UserClaimEntity.UserId)} = u.{nameof(UserEntity.Id)}
+	                    u.{UserSchema.Columns.Id}, 
+                        u.{UserSchema.Columns.AccessFailedCount}, 
+                        u.{UserSchema.Columns.ConcurrencyStamp}, 
+                        u.{UserSchema.Columns.Email},
+                        u.{UserSchema.Columns.EmailConfirmed}, 
+                        u.{UserSchema.Columns.LockoutEnabled}, 
+                        u.{UserSchema.Columns.LockoutEndDateUtc},
+                        u.{UserSchema.Columns.NormalizedEmail}, 
+                        u.{UserSchema.Columns.NormalizedUserName}, 
+                        u.{UserSchema.Columns.PasswordHash},
+                        u.{UserSchema.Columns.PhoneNumber}, 
+                        u.{UserSchema.Columns.PhoneNumberConfirmed}, 
+                        u.{UserSchema.Columns.SecurityStamp},
+	                    u.{UserSchema.Columns.TwoFactorEnabled}, 
+                        u.{UserSchema.Columns.UserName}
+                    FROM {UserClaimSchema.Table} c 
+                        INNER JOIN {UserSchema.Table} u ON c.{UserClaimSchema.Columns.UserId} = u.{UserSchema.Columns.Id}
                     WHERE
-	                    c.{nameof(UserClaimEntity.ClaimType)} = @{nameof(claimType)} AND
-                        c.{nameof(UserClaimEntity.ClaimValue)} = @{nameof(claimValue)}
+	                    c.{UserClaimSchema.Columns.ClaimType} = @{nameof(claimType)} AND
+                        c.{UserClaimSchema.Columns.ClaimValue} = @{nameof(claimValue)}
                 ",
                 param: new { claimType, claimValue }
             );
@@ -115,8 +115,8 @@ namespace Store.Repositories.Identity
         {
             Execute(
                 sql: $@"
-                    DELETE FROM UserClaim
-                    WHERE {nameof(UserClaimEntity.Id)} = @{nameof(key)}",
+                    DELETE FROM {UserClaimSchema.Table}
+                    WHERE {UserClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -127,12 +127,12 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    UPDATE UserClaim SET 
-                        {nameof(UserClaimEntity.ClaimType)} = @{nameof(entity.ClaimType)},
-                        {nameof(UserClaimEntity.ClaimValue)} = @{nameof(entity.ClaimValue)}, 
-                        {nameof(UserClaimEntity.UserId)} = @{nameof(entity.UserId)},
-                        {nameof(UserClaimEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
-                    WHERE {nameof(UserClaimEntity.Id)} = @{nameof(entity.Id)}",
+                    UPDATE {UserClaimSchema.Table} SET 
+                        {UserClaimSchema.Columns.ClaimType} = @{nameof(entity.ClaimType)},
+                        {UserClaimSchema.Columns.ClaimValue} = @{nameof(entity.ClaimValue)}, 
+                        {UserClaimSchema.Columns.UserId} = @{nameof(entity.UserId)},
+                        {UserClaimSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
+                    WHERE {UserClaimSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity
             );
         }

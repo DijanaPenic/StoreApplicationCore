@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -22,15 +22,15 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    INSERT INTO UserRole(
-                        {nameof(UserRoleEntity.UserId)}, 
-                        {nameof(UserRoleEntity.RoleId)},
-                        {nameof(UserRoleEntity.DateCreatedUtc)})
+                    INSERT INTO {UserRoleSchema.Table}(
+                        {UserRoleSchema.Columns.UserId}, 
+                        {UserRoleSchema.Columns.RoleId},
+                        {UserRoleSchema.Columns.DateCreatedUtc})
                     SELECT TOP 1 
                         @{nameof(userId)}, 
-                        {nameof(RoleEntity.Id)},
+                        {RoleSchema.Columns.Id},
                         @{nameof(dateCreated)}
-                    FROM Role WHERE {nameof(RoleEntity.NormalizedName)} = @{nameof(roleName)}",
+                    FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}",
                 param: new { userId, roleName, dateCreated }
             );
         }
@@ -39,10 +39,10 @@ namespace Store.Repositories.Identity
         {
             return Query<string>(
                 sql: $@"
-                    SELECT r.[{nameof(RoleEntity.Name)}]
-                    FROM UserRole ur 
-                        INNER JOIN Role r ON ur.{nameof(UserRoleEntity.RoleId)} = r.{nameof(RoleEntity.Id)}
-                    WHERE ur.{nameof(UserRoleEntity.UserId)} = @{nameof(userId)}
+                    SELECT r.[{RoleSchema.Columns.Name}]
+                    FROM {UserRoleSchema.Table} ur 
+                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
+                    WHERE ur.{UserRoleSchema.Columns.UserId} = @{nameof(userId)}
                 ",
                 param: new { userId }
             );
@@ -52,10 +52,10 @@ namespace Store.Repositories.Identity
         {
             return Query<User>(
                 sql: $@"
-                    SELECT u.* FROM UserRole ur 
-                        INNER JOIN Role r ON ur.{nameof(UserRoleEntity.RoleId)} = r.{nameof(RoleEntity.Id)} 
-                        INNER JOIN User u ON ur.{nameof(UserRoleEntity.UserId)} = u.{nameof(UserEntity.Id)}
-                    WHERE r.{nameof(RoleEntity.NormalizedName)} = @{nameof(roleName)}
+                    SELECT u.* FROM {UserRoleSchema.Table} ur 
+                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
+                        INNER JOIN {UserSchema.Table} u ON ur.{UserRoleSchema.Columns.UserId} = u.{UserSchema.Columns.Id}
+                    WHERE r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
                 ",
                 param: new { roleName });
         }
@@ -64,11 +64,11 @@ namespace Store.Repositories.Identity
         {
             Execute(
                 sql: $@"
-                    DELETE FROM UserRole ur 
-                        INNER JOIN Role r ON ur.{nameof(UserRoleEntity.RoleId)} = r.{nameof(RoleEntity.Id)}
+                    DELETE FROM {UserRoleSchema.Table} ur 
+                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
                     WHERE 
-                        r.{nameof(RoleEntity.NormalizedName)} = @{nameof(roleName)} AND 
-                        ur.{nameof(UserRoleEntity.UserId)} = @{nameof(userId)}
+                        r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)} AND 
+                        ur.{UserRoleSchema.Columns.UserId} = @{nameof(userId)}
                 ",
                 param: new { userId, roleName }
             );

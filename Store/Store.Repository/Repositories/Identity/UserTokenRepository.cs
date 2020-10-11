@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -23,13 +23,13 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    INSERT INTO UserToken(
-                        {nameof(UserTokenEntity.UserId)}, 
-                        {nameof(UserTokenEntity.LoginProvider)}, 
-                        [{nameof(UserTokenEntity.Name)}], 
-                        {nameof(UserTokenEntity.Value)},
-                        {nameof(UserTokenEntity.DateCreatedUtc)},
-                        {nameof(UserTokenEntity.DateUpdatedUtc)})
+                    INSERT INTO {UserTokenSchema.Table}(
+                        {UserTokenSchema.Columns.UserId}, 
+                        {UserTokenSchema.Columns.LoginProvider}, 
+                        [{UserTokenSchema.Columns.Name}], 
+                        {UserTokenSchema.Columns.Value},
+                        {UserTokenSchema.Columns.DateCreatedUtc},
+                        {UserTokenSchema.Columns.DateUpdatedUtc})
                     VALUES(
                         @{nameof(entity.UserId)}, 
                         @{nameof(entity.LoginProvider)}, 
@@ -44,7 +44,7 @@ namespace Store.Repositories.Identity
         public IEnumerable<IUserToken> Get()
         {
             return Query<UserToken>(
-                sql: $"SELECT * FROM UserToken"
+                sql: $"SELECT * FROM {UserTokenSchema.Table}"
             );
         }
 
@@ -52,11 +52,11 @@ namespace Store.Repositories.Identity
         {
             return QuerySingleOrDefault<UserToken>(
                 sql: $@"
-                    SELECT * FROM UserToken
+                    SELECT * FROM {UserTokenSchema.Table}
                     WHERE 
-                        {nameof(UserTokenEntity.UserId)} = @{nameof(key.UserId)} AND 
-                        {nameof(UserTokenEntity.LoginProvider)} = @{nameof(key.LoginProvider)} AND 
-                        [{nameof(UserTokenEntity.Name)}] = @{nameof(key.Name)}",
+                        {UserTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND 
+                        {UserTokenSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
+                        [{UserTokenSchema.Columns.Name}] = @{nameof(key.Name)}",
                 param: key
             );
         }
@@ -65,11 +65,11 @@ namespace Store.Repositories.Identity
         {
             Execute(
                 sql: $@"
-                    DELETE FROM UserToken
+                    DELETE FROM {UserTokenSchema.Table}
                     WHERE 
-                        {nameof(UserTokenEntity.UserId)} = @{nameof(key.UserId)} AND 
-                        {nameof(UserTokenEntity.LoginProvider)} = @{nameof(key.LoginProvider)} AND 
-                        [{nameof(UserTokenEntity.Name)}] = @{nameof(key.Name)}",
+                        {UserTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND 
+                        {UserTokenSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
+                        [{UserTokenSchema.Columns.Name}] = @{nameof(key.Name)}",
                 param: key
             );
         }
@@ -80,13 +80,13 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    UPDATE UserToken SET 
-                        {nameof(UserTokenEntity.Value)} = @{nameof(entity.Value)},
-                        {nameof(UserTokenEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
+                    UPDATE {UserTokenSchema.Table} SET 
+                        {UserTokenSchema.Columns.Value} = @{nameof(entity.Value)},
+                        {UserTokenSchema.Columns.DateUpdatedUtc} = {nameof(entity.DateUpdatedUtc)}
                     WHERE 
-                        {nameof(UserTokenEntity.UserId)} = @{nameof(entity.UserId)} AND 
-                        {nameof(UserTokenEntity.LoginProvider)} = @{nameof(entity.LoginProvider)} AND 
-                        [{nameof(UserTokenEntity.Name)}] = @{nameof(entity.Name)}",
+                        {UserTokenSchema.Columns.UserId} = @{nameof(entity.UserId)} AND 
+                        {UserTokenSchema.Columns.LoginProvider} = @{nameof(entity.LoginProvider)} AND 
+                        [{UserTokenSchema.Columns.Name}] = @{nameof(entity.Name)}",
                 param: entity
             );
         }

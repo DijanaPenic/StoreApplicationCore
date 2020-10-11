@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -23,13 +23,13 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    INSERT INTO UserLogin(
-                        {nameof(UserLoginEntity.LoginProvider)}, 
-                        {nameof(UserLoginEntity.ProviderKey)},
-                        {nameof(UserLoginEntity.ProviderDisplayName)}, 
-                        {nameof(UserLoginEntity.UserId)},
-                        {nameof(UserLoginEntity.DateCreatedUtc)},
-                        {nameof(UserLoginEntity.DateUpdatedUtc)})
+                    INSERT INTO {UserLoginSchema.Table}(
+                        {UserLoginSchema.Columns.LoginProvider}, 
+                        {UserLoginSchema.Columns.ProviderKey},
+                        {UserLoginSchema.Columns.ProviderDisplayName}, 
+                        {UserLoginSchema.Columns.UserId},
+                        {UserLoginSchema.Columns.DateCreatedUtc},
+                        {UserLoginSchema.Columns.DateUpdatedUtc})
                     VALUES(
                         @{nameof(entity.LoginProvider)}, 
                         @{nameof(entity.ProviderKey)}, 
@@ -44,7 +44,7 @@ namespace Store.Repositories.Identity
         public IEnumerable<IUserLogin> Get()
         {
             return Query<UserLogin>(
-                sql: $"SELECT * FROM UserLogin"
+                sql: $"SELECT * FROM {UserLoginSchema.Table}"
             );
         }
 
@@ -52,10 +52,10 @@ namespace Store.Repositories.Identity
         {
             return QuerySingleOrDefault<UserLogin>(
                 sql: $@"
-                    SELECT * FROM UserLogin
+                    SELECT * FROM {UserLoginSchema.Table}
                     WHERE 
-                        {nameof(UserLoginEntity.LoginProvider)} = @{nameof(key.LoginProvider)} AND 
-                        {nameof(UserLoginEntity.ProviderKey)} = @{nameof(key.ProviderKey)}",
+                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
+                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)}",
                 param: key
             );
         }
@@ -63,7 +63,7 @@ namespace Store.Repositories.Identity
         public IEnumerable<IUserLogin> FindByUserId(Guid userId)
         {
             return Query<UserLogin>(
-                sql: $"SELECT * FROM UserLogin WHERE {nameof(UserLoginEntity.UserId)} = @{nameof(userId)}",
+                sql: $"SELECT * FROM {UserLoginSchema.Table} WHERE {UserLoginSchema.Columns.UserId} = @{nameof(userId)}",
                 param: new { userId }
             );
         }
@@ -72,10 +72,10 @@ namespace Store.Repositories.Identity
         {
             Execute(
                 sql: $@"
-                    DELETE FROM UserLogin
+                    DELETE FROM {UserLoginSchema.Table}
                     WHERE 
-                        {nameof(UserLoginEntity.LoginProvider)} = @{nameof(key.LoginProvider)} AND 
-                        {nameof(UserLoginEntity.ProviderKey)} = @{nameof(key.ProviderKey)}",
+                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
+                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)}",
                 param: key
             );
         }
@@ -86,13 +86,13 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    UPDATE UserLogin SET 
-                        {nameof(UserLoginEntity.ProviderDisplayName)} = @{nameof(entity.ProviderDisplayName)},
-                        {nameof(UserLoginEntity.UserId)} = @{nameof(entity.UserId)},
-                        {nameof(UserLoginEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
+                    UPDATE {UserLoginSchema.Table} SET 
+                        {UserLoginSchema.Columns.ProviderDisplayName} = @{nameof(entity.ProviderDisplayName)},
+                        {UserLoginSchema.Columns.UserId} = @{nameof(entity.UserId)},
+                        {UserLoginSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
                     WHERE 
-                        {nameof(UserLoginEntity.LoginProvider)} = @{nameof(entity.LoginProvider)} AND 
-                        {nameof(UserLoginEntity.ProviderKey)} = @{nameof(entity.ProviderKey)}",
+                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(entity.LoginProvider)} AND 
+                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(entity.ProviderKey)}",
                 param: entity
             );
         }

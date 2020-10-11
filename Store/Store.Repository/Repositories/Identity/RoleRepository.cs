@@ -2,7 +2,7 @@
 using System.Data;
 using System.Collections.Generic;
 
-using Store.Entities.Identity;
+using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -23,14 +23,14 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    INSERT INTO Role(
-                        {nameof(RoleEntity.Id)}, 
-                        {nameof(RoleEntity.ConcurrencyStamp)}, 
-                        [{nameof(RoleEntity.Name)}], 
-                        {nameof(RoleEntity.NormalizedName)},
-                        {nameof(RoleEntity.Stackable)},
-                        {nameof(RoleEntity.DateCreatedUtc)},
-                        {nameof(RoleEntity.DateUpdatedUtc)})
+                    INSERT INTO {RoleSchema.Table}(
+                        {RoleSchema.Columns.Id}, 
+                        {RoleSchema.Columns.ConcurrencyStamp}, 
+                        [{RoleSchema.Columns.Name}], 
+                        {RoleSchema.Columns.NormalizedName},
+                        {RoleSchema.Columns.Stackable},
+                        {RoleSchema.Columns.DateCreatedUtc},
+                        {RoleSchema.Columns.DateUpdatedUtc})
                     VALUES(
                         @{nameof(entity.Id)}, 
                         @{nameof(entity.ConcurrencyStamp)}, 
@@ -46,14 +46,14 @@ namespace Store.Repositories.Identity
         public IEnumerable<IRole> Get()
         {
             return Query<Role>(
-                sql: "SELECT * FROM Role"
+                sql: "SELECT * FROM {RoleSchema.Table}"
             );
         }
 
         public IRole FindByKey(Guid key)
         {
             return QuerySingleOrDefault<Role>(
-                sql: $"SELECT * FROM Role WHERE {nameof(RoleEntity.Id)} = @{nameof(key)}",
+                sql: $"SELECT * FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -61,7 +61,7 @@ namespace Store.Repositories.Identity
         public IRole FindByName(string roleName)
         {
             return QuerySingleOrDefault<Role>(
-                sql: $"SELECT * FROM Role WHERE [{nameof(RoleEntity.Name)}] = @{nameof(roleName)}",
+                sql: $"SELECT * FROM {RoleSchema.Table} WHERE [{RoleSchema.Columns.Name}] = @{nameof(roleName)}",
                 param: new { roleName }
             );
         }
@@ -70,7 +70,7 @@ namespace Store.Repositories.Identity
         public void DeleteByKey(Guid key)
         {
             Execute(
-                sql: $"DELETE FROM Role WHERE {nameof(RoleEntity.Id)} = @{nameof(key)}",
+                sql: $"DELETE FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
@@ -81,13 +81,13 @@ namespace Store.Repositories.Identity
 
             Execute(
                 sql: $@"
-                    UPDATE Role SET 
-                        {nameof(RoleEntity.ConcurrencyStamp)} = @{nameof(entity.ConcurrencyStamp)}, 
-                        [{nameof(RoleEntity.Name)}] = @{nameof(entity.Name)}, 
-                        {nameof(RoleEntity.NormalizedName)} = @{nameof(entity.NormalizedName)},
-                        {nameof(RoleEntity.Stackable)} = @{nameof(entity.Stackable)},
-                        {nameof(RoleEntity.DateUpdatedUtc)} = {nameof(entity.DateUpdatedUtc)}
-                    WHERE Id = @Id",
+                    UPDATE {RoleSchema.Table} SET 
+                        {RoleSchema.Columns.ConcurrencyStamp} = @{nameof(entity.ConcurrencyStamp)}, 
+                        [{RoleSchema.Columns.Name}] = @{nameof(entity.Name)}, 
+                        {RoleSchema.Columns.NormalizedName} = @{nameof(entity.NormalizedName)},
+                        {RoleSchema.Columns.Stackable} = @{nameof(entity.Stackable)},
+                        {RoleSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
+                    WHERE {RoleSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity
             );
         }
