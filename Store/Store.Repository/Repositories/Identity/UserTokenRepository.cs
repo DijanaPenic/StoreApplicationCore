@@ -26,7 +26,7 @@ namespace Store.Repositories.Identity
                     INSERT INTO {UserTokenSchema.Table}(
                         {UserTokenSchema.Columns.UserId}, 
                         {UserTokenSchema.Columns.LoginProvider}, 
-                        [{UserTokenSchema.Columns.Name}], 
+                        {UserTokenSchema.Columns.Name}, 
                         {UserTokenSchema.Columns.Value},
                         {UserTokenSchema.Columns.DateCreatedUtc},
                         {UserTokenSchema.Columns.DateUpdatedUtc})
@@ -56,7 +56,7 @@ namespace Store.Repositories.Identity
                     WHERE 
                         {UserTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND 
                         {UserTokenSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        [{UserTokenSchema.Columns.Name}] = @{nameof(key.Name)}",
+                        {UserTokenSchema.Columns.Name} = @{nameof(key.Name)}",
                 param: key
             );
         }
@@ -69,7 +69,7 @@ namespace Store.Repositories.Identity
                     WHERE 
                         {UserTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND 
                         {UserTokenSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        [{UserTokenSchema.Columns.Name}] = @{nameof(key.Name)}",
+                        {UserTokenSchema.Columns.Name} = @{nameof(key.Name)}",
                 param: key
             );
         }
@@ -86,7 +86,7 @@ namespace Store.Repositories.Identity
                     WHERE 
                         {UserTokenSchema.Columns.UserId} = @{nameof(entity.UserId)} AND 
                         {UserTokenSchema.Columns.LoginProvider} = @{nameof(entity.LoginProvider)} AND 
-                        [{UserTokenSchema.Columns.Name}] = @{nameof(entity.Name)}",
+                        {UserTokenSchema.Columns.Name} = @{nameof(entity.Name)}",
                 param: entity
             );
         }

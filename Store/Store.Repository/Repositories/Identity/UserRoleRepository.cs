@@ -26,11 +26,12 @@ namespace Store.Repositories.Identity
                         {UserRoleSchema.Columns.UserId}, 
                         {UserRoleSchema.Columns.RoleId},
                         {UserRoleSchema.Columns.DateCreatedUtc})
-                    SELECT TOP 1 
+                    SELECT
                         @{nameof(userId)}, 
                         {RoleSchema.Columns.Id},
                         @{nameof(dateCreated)}
-                    FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}",
+                    FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
+                    LIMIT 1",
                 param: new { userId, roleName, dateCreated }
             );
         }
@@ -39,7 +40,7 @@ namespace Store.Repositories.Identity
         {
             return Query<string>(
                 sql: $@"
-                    SELECT r.[{RoleSchema.Columns.Name}]
+                    SELECT r.{RoleSchema.Columns.Name}
                     FROM {UserRoleSchema.Table} ur 
                         INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
                     WHERE ur.{UserRoleSchema.Columns.UserId} = @{nameof(userId)}

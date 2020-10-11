@@ -3,6 +3,7 @@ using System.Data;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
+using Store.Common.Helpers;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -20,8 +21,9 @@ namespace Store.Repositories.Identity
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
+            entity.Id = GuidHelper.NewSequentialGuid();
 
-            entity.Id = ExecuteScalar<Guid>(
+            Execute(
                 sql: $@"
                     INSERT INTO {RoleClaimSchema.Table}(
                         {RoleClaimSchema.Columns.ClaimType}, 
@@ -34,8 +36,7 @@ namespace Store.Repositories.Identity
                         @{nameof(entity.ClaimValue)}, 
                         @{nameof(entity.RoleId)},
                         @{nameof(entity.DateCreatedUtc)},
-                        @{nameof(entity.DateUpdatedUtc)});
-                    RETURNING {RoleClaimSchema.Columns.Id};",
+                        @{nameof(entity.DateUpdatedUtc)});",
                 param: entity
             );
         }

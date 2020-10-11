@@ -3,6 +3,7 @@ using System.Data;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
+using Store.Common.Helpers;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
@@ -20,6 +21,7 @@ namespace Store.Repositories.Identity
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
+            entity.Id = GuidHelper.NewSequentialGuid();
 
             Execute(
                 sql: $@"
@@ -135,7 +137,7 @@ namespace Store.Repositories.Identity
                         {UserSchema.Columns.IsApproved} = @{nameof(entity.IsApproved)},
                         {UserSchema.Columns.IsDeleted} = @{nameof(entity.IsDeleted)},
 	                    {UserSchema.Columns.UserName} = @{nameof(entity.UserName)},
-                        {UserSchema.Columns.DateUpdatedUtc}  = {nameof(entity.DateUpdatedUtc)}
+                        {UserSchema.Columns.DateUpdatedUtc}  = @{nameof(entity.DateUpdatedUtc)}
 
                     WHERE {UserSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity);
