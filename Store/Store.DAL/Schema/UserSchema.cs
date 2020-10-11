@@ -5,7 +5,8 @@ namespace Store.DAL.Schema
 {
     public static class UserSchema
     {
-        public static string Table { get; } = "user";
+        // TODO - need to investigate - for some reason, only the User table reuqires quotes
+        public static string Table { get; } = "\"user\""; 
 
         public static class Columns
         {
@@ -29,7 +30,7 @@ namespace Store.DAL.Schema
             public static string SecurityStamp { get; } = nameof(UserEntity.SecurityStamp).ToSnakeCase();
             public static string LockoutEndDateUtc { get; } = nameof(UserEntity.LockoutEndDateUtc).ToSnakeCase();
             public static string DateCreatedUtc { get; } = nameof(UserEntity.DateCreatedUtc).ToSnakeCase();
-            public static string DateUpdatedUtc { get; } = nameof(UserEntity.Id).ToSnakeCase();
+            public static string DateUpdatedUtc { get; } = nameof(UserEntity.DateUpdatedUtc).ToSnakeCase();
         }   
     }
 }
