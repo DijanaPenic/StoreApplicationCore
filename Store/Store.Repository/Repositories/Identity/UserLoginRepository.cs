@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -16,12 +17,12 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        public void Add(IUserLogin entity)
+        public Task AddAsync(IUserLogin entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {UserLoginSchema.Table}(
                         {UserLoginSchema.Columns.LoginProvider}, 
@@ -41,16 +42,16 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserLogin> Get()
+        public async Task<IEnumerable<IUserLogin>> GetAsync()
         {
-            return Query<UserLogin>(
+            return await QueryAsync<UserLogin>(
                 sql: $"SELECT * FROM {UserLoginSchema.Table}"
             );
         }
 
-        public IUserLogin FindByKey(IUserLoginKey key)
+        public async Task<IUserLogin> FindByKeyAsync(IUserLoginKey key)
         {
-            return QuerySingleOrDefault<UserLogin>(
+            return await QuerySingleOrDefaultAsync<UserLogin>(
                 sql: $@"
                     SELECT * FROM {UserLoginSchema.Table}
                     WHERE 
@@ -60,17 +61,17 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserLogin> FindByUserId(Guid userId)
+        public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId)
         {
-            return Query<UserLogin>(
+            return await QueryAsync<UserLogin>(
                 sql: $"SELECT * FROM {UserLoginSchema.Table} WHERE {UserLoginSchema.Columns.UserId} = @{nameof(userId)}",
                 param: new { userId }
             );
         }
 
-        public void DeleteByKey(IUserLoginKey key)
+        public Task DeleteByKeyAsync(IUserLoginKey key)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     DELETE FROM {UserLoginSchema.Table}
                     WHERE 
@@ -80,11 +81,11 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public void Update(IUserLogin entity)
+        public Task UpdateAsync(IUserLogin entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     UPDATE {UserLoginSchema.Table} SET 
                         {UserLoginSchema.Columns.ProviderDisplayName} = @{nameof(entity.ProviderDisplayName)},

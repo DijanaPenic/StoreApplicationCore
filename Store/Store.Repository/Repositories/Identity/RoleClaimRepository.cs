@@ -8,6 +8,7 @@ using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
+using System.Threading.Tasks;
 
 namespace Store.Repositories.Identity
 {
@@ -17,13 +18,13 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        public void Add(IRoleClaim entity)
+        public Task AddAsync(IRoleClaim entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {RoleClaimSchema.Table}(
                         {RoleClaimSchema.Columns.ClaimType}, 
@@ -41,42 +42,42 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IRoleClaim FindByKey(Guid key)
+        public async Task<IRoleClaim> FindByKeyAsync(Guid key)
         {
-            return QuerySingleOrDefault<RoleClaim>(
+            return await QuerySingleOrDefaultAsync<RoleClaim>(
                 sql: $"SELECT * FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
 
-        public IEnumerable<IRoleClaim> FindByRoleId(Guid roleId)
+        public async Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId)
         {
-            return Query<RoleClaim>(
+            return await QueryAsync<RoleClaim>(
                 sql: $"SELECT * FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)}",
                 param: new { roleId }
             );
         }
 
-        public IEnumerable<IRoleClaim> Get()
+        public async Task<IEnumerable<IRoleClaim>> GetAsync()
         {
-            return Query<RoleClaim>(
+            return await QueryAsync<RoleClaim>(
                 sql: $"SELECT * FROM {RoleClaimSchema.Table}"
             );
         }
 
-        public void DeleteByKey(Guid key)
+        public Task DeleteByKeyAsync(Guid key)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $"DELETE FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
 
-        public void Update(IRoleClaim entity)
+        public Task UpdateAsync(IRoleClaim entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     UPDATE {RoleClaimSchema.Table} SET 
                         {RoleClaimSchema.Columns.ClaimType} = @{nameof(entity.ClaimType)}, 

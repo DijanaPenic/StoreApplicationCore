@@ -1,18 +1,18 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Store.Repository.Common.Core.Dapper
 {
     public interface IDapperGenericRepository<TEntity, TKey> where TEntity : class
     {
-        IEnumerable<TEntity> Get();
+        Task<IEnumerable<TEntity>> GetAsync();
 
-        TEntity FindByKey(TKey key);
+        Task<TEntity> FindByKeyAsync(TKey key);
 
-        void Add(TEntity entity);
+        Task AddAsync(TEntity entity);
 
-        void Update(TEntity entity);
+        Task UpdateAsync(TEntity entity);
 
-        void DeleteByKey(TKey key);
+        Task DeleteByKeyAsync(TKey key);
     }
 }

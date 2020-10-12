@@ -25,7 +25,7 @@ namespace Store.Services.Identity
 
         #region IRoleStore<IRole> Members
 
-        public Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
         {
             try
             {
@@ -35,18 +35,18 @@ namespace Store.Services.Identity
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
 
-                _unitOfWork.RoleRepository.Add(role);
+                await _unitOfWork.RoleRepository.AddAsync(role);
                 _unitOfWork.Commit();
 
-                return Task.FromResult(IdentityResult.Success);
+                return IdentityResult.Success;
             }
             catch (Exception ex)
             {
-                return Task.FromResult(IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message }));
+                return IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message });
             }
         }
 
-        public Task<IdentityResult> DeleteAsync(IRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(IRole role, CancellationToken cancellationToken)
         {
             try
             {
@@ -56,18 +56,18 @@ namespace Store.Services.Identity
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
 
-                _unitOfWork.RoleRepository.DeleteByKey(role.Id);
+                await _unitOfWork.RoleRepository.DeleteByKeyAsync(role.Id);
                 _unitOfWork.Commit();
 
-                return Task.FromResult(IdentityResult.Success);
+                return IdentityResult.Success;
             }
             catch (Exception ex)
             {
-                return Task.FromResult(IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message }));
+                return IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message });
             }
         }
 
-        public Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -78,12 +78,12 @@ namespace Store.Services.Identity
             if (!Guid.TryParse(roleId, out Guid id))
                 throw new ArgumentOutOfRangeException(nameof(roleId), $"{nameof(roleId)} is not a valid GUID");
 
-            IRole role = _unitOfWork.RoleRepository.FindByKey(id);
+            IRole role = await _unitOfWork.RoleRepository.FindByKeyAsync(id);
 
-            return Task.FromResult(role);
+            return role;
         }
 
-        public Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -91,9 +91,9 @@ namespace Store.Services.Identity
             if (string.IsNullOrWhiteSpace(normalizedRoleName))
                 throw new ArgumentNullException(nameof(normalizedRoleName));
 
-            IRole role = _unitOfWork.RoleRepository.FindByName(normalizedRoleName);
+            IRole role = await _unitOfWork.RoleRepository.FindByNameAsync(normalizedRoleName);
 
-            return Task.FromResult(role);
+            return role;
         }
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
@@ -155,7 +155,7 @@ namespace Store.Services.Identity
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> UpdateAsync(IRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(IRole role, CancellationToken cancellationToken)
         {
             try
             {
@@ -165,14 +165,14 @@ namespace Store.Services.Identity
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
 
-                _unitOfWork.RoleRepository.Update(role);
+                await _unitOfWork.RoleRepository.UpdateAsync(role);
                 _unitOfWork.Commit();
 
-                return Task.FromResult(IdentityResult.Success);
+                return IdentityResult.Success;
             }
             catch (Exception ex)
             {
-                return Task.FromResult(IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message }));
+                return IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message });
             }
         }
 
@@ -185,7 +185,7 @@ namespace Store.Services.Identity
 
         #region IRoleClaimStore<IRole> Members
 
-        public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
+        public async Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -193,12 +193,12 @@ namespace Store.Services.Identity
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
 
-            IList<Claim> result = _unitOfWork.RoleClaimRepository.FindByRoleId(role.Id).Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
+            IList<Claim> result = (await _unitOfWork.RoleClaimRepository.FindByRoleIdAsync(role.Id)).Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
+        public async Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -216,13 +216,11 @@ namespace Store.Services.Identity
                 RoleId = role.Id
             };
 
-            _unitOfWork.RoleClaimRepository.Add(roleClaim);
+            await _unitOfWork.RoleClaimRepository.AddAsync(roleClaim);
             _unitOfWork.Commit();
-
-            return Task.CompletedTask;
         }
 
-        public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
+        public async Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -233,15 +231,13 @@ namespace Store.Services.Identity
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
 
-            IRoleClaim roleClaim = _unitOfWork.RoleClaimRepository.FindByRoleId(role.Id).SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            IRoleClaim roleClaim = (await _unitOfWork.RoleClaimRepository.FindByRoleIdAsync(role.Id)).SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 
             if (roleClaim != null)
             {
-                _unitOfWork.RoleClaimRepository.DeleteByKey(roleClaim.Id);
+                await _unitOfWork.RoleClaimRepository.DeleteByKeyAsync(roleClaim.Id);
                 _unitOfWork.Commit();
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion

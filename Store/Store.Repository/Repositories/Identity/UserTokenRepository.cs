@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -16,12 +17,12 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        public void Add(IUserToken entity)
+        public Task AddAsync(IUserToken entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {UserTokenSchema.Table}(
                         {UserTokenSchema.Columns.UserId}, 
@@ -41,16 +42,16 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserToken> Get()
+        public async Task<IEnumerable<IUserToken>> GetAsync()
         {
-            return Query<UserToken>(
+            return await QueryAsync<UserToken>(
                 sql: $"SELECT * FROM {UserTokenSchema.Table}"
             );
         }
 
-        public IUserToken FindByKey(IUserTokenKey key)
+        public async Task<IUserToken> FindByKeyAsync(IUserTokenKey key)
         {
-            return QuerySingleOrDefault<UserToken>(
+            return await QuerySingleOrDefaultAsync<UserToken>(
                 sql: $@"
                     SELECT * FROM {UserTokenSchema.Table}
                     WHERE 
@@ -61,9 +62,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public void DeleteByKey(IUserTokenKey key)
+        public Task DeleteByKeyAsync(IUserTokenKey key)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     DELETE FROM {UserTokenSchema.Table}
                     WHERE 
@@ -74,11 +75,11 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public void Update(IUserToken entity)
+        public Task UpdateAsync(IUserToken entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     UPDATE {UserTokenSchema.Table} SET 
                         {UserTokenSchema.Columns.Value} = @{nameof(entity.Value)},

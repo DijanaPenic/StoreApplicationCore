@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.Model.Common.Models.Identity;
@@ -8,8 +9,8 @@ namespace Store.Repository.Common.Repositories.Identity
 {
     public interface IUserClaimRepository : IDapperGenericRepository<IUserClaim, Guid>
     {
-        IEnumerable<IUserClaim> GetByUserId(Guid userId);
+        Task<IEnumerable<IUserClaim>> GetByUserIdAsync(Guid userId);
 
-        IEnumerable<IUser> GetUsersForClaim(string claimType, string claimValue);
+        Task<IEnumerable<IUser>> GetUsersForClaimAsync(string claimType, string claimValue);
     }
 }

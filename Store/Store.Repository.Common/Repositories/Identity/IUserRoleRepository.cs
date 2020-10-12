@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.Model.Common.Models.Identity;
@@ -7,12 +8,12 @@ namespace Store.Repository.Common.Repositories.Identity
 {
     public interface IUserRoleRepository
     {
-        void Add(Guid UserId, string roleName);
+        Task AddAsync(Guid UserId, string roleName);
 
-        void Delete(Guid userId, string roleName);
+        Task DeleteAsync(Guid userId, string roleName);
 
-        IEnumerable<string> GetRoleNamesByUserId(Guid userId);
+        Task<IEnumerable<string>> GetRoleNamesByUserIdAsync(Guid userId);
 
-        IEnumerable<IUser> GetUsersByRoleName(string roleName);
+        Task<IEnumerable<IUser>> GetUsersByRoleNameAsync(string roleName);
     }
 }

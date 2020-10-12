@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.Model.Common.Models.Identity;
@@ -8,6 +9,6 @@ namespace Store.Repository.Common.Repositories.Identity
 {
     public interface IRoleClaimRepository : IDapperGenericRepository<IRoleClaim, Guid>
     {
-        IEnumerable<IRoleClaim> FindByRoleId(Guid roleId);
+        Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId);
     }
 }

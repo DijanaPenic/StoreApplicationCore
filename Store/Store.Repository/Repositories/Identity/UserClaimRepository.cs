@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -17,13 +18,13 @@ namespace Store.Repositories.Identity
         {
         }
 
-        public void Add(IUserClaim entity)
+        public Task AddAsync(IUserClaim entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {UserClaimSchema.Table}(
                         {UserClaimSchema.Columns.ClaimType}, 
@@ -41,9 +42,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserClaim> Get()
+        public async Task<IEnumerable<IUserClaim>> GetAsync()
         {
-            return Query<UserClaim>(
+            return await QueryAsync<UserClaim>(
                 sql: $@"
                     SELECT 
                         {UserClaimSchema.Columns.Id}, 
@@ -54,9 +55,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IUserClaim FindByKey(Guid key)
+        public async Task<IUserClaim> FindByKeyAsync(Guid key)
         {
-            return QuerySingleOrDefault<UserClaim>(
+            return await QuerySingleOrDefaultAsync<UserClaim>(
                 sql: $@"
                     SELECT 
                         {UserClaimSchema.Columns.Id}, 
@@ -68,9 +69,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUserClaim> GetByUserId(Guid userId)
+        public async Task<IEnumerable<IUserClaim>> GetByUserIdAsync(Guid userId)
         {
-            return Query<UserClaim>(
+            return await QueryAsync<UserClaim>(
                 sql: $@"
                     SELECT 
                         {UserClaimSchema.Columns.Id}, 
@@ -82,9 +83,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUser> GetUsersForClaim(string claimType, string claimValue)
+        public async Task<IEnumerable<IUser>> GetUsersForClaimAsync(string claimType, string claimValue)
         {
-            return Query<User>(
+            return await QueryAsync<User>(
                 sql: $@"
                     SELECT
 	                    u.{UserSchema.Columns.Id}, 
@@ -112,9 +113,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public void DeleteByKey(Guid key)
+        public Task DeleteByKeyAsync(Guid key)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     DELETE FROM {UserClaimSchema.Table}
                     WHERE {UserClaimSchema.Columns.Id} = @{nameof(key)}",
@@ -122,11 +123,11 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public void Update(IUserClaim entity)
+        public Task UpdateAsync(IUserClaim entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     UPDATE {UserClaimSchema.Table} SET 
                         {UserClaimSchema.Columns.ClaimType} = @{nameof(entity.ClaimType)},

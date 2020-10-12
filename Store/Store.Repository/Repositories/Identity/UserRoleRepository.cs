@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -16,11 +17,11 @@ namespace Store.Repositories.Identity
         {
         }
 
-        public void Add(Guid userId, string roleName)
+        public Task AddAsync(Guid userId, string roleName)
         {
             DateTime dateCreated = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {UserRoleSchema.Table}(
                         {UserRoleSchema.Columns.UserId}, 
@@ -36,9 +37,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<string> GetRoleNamesByUserId(Guid userId)
+        public async Task<IEnumerable<string>> GetRoleNamesByUserIdAsync(Guid userId)
         {
-            return Query<string>(
+            return await QueryAsync<string>(
                 sql: $@"
                     SELECT r.{RoleSchema.Columns.Name}
                     FROM {UserRoleSchema.Table} ur 
@@ -49,9 +50,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUser> GetUsersByRoleName(string roleName)
+        public async Task<IEnumerable<IUser>> GetUsersByRoleNameAsync(string roleName)
         {
-            return Query<User>(
+            return await QueryAsync<User>(
                 sql: $@"
                     SELECT u.* FROM {UserRoleSchema.Table} ur 
                         INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
@@ -61,9 +62,9 @@ namespace Store.Repositories.Identity
                 param: new { roleName });
         }
 
-        public void Delete(Guid userId, string roleName)
+        public Task DeleteAsync(Guid userId, string roleName)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     DELETE FROM {UserRoleSchema.Table} ur 
                         INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}

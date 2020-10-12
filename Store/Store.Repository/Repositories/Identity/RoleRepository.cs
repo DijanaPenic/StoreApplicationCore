@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -17,13 +18,13 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        public void Add(IRole entity)
+        public Task AddAsync(IRole entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {RoleSchema.Table}(
                         {RoleSchema.Columns.Id}, 
@@ -45,42 +46,42 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IRole> Get()
+        public async Task<IEnumerable<IRole>> GetAsync()
         {
-            return Query<Role>(
+            return await QueryAsync<Role>(
                 sql: $"SELECT * FROM {RoleSchema.Table}"
             );
         }
 
-        public IRole FindByKey(Guid key)
+        public async Task<IRole> FindByKeyAsync(Guid key)
         {
-            return QuerySingleOrDefault<Role>(
+            return await QuerySingleOrDefaultAsync<Role>(
                 sql: $"SELECT * FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
 
-        public IRole FindByName(string roleName)
+        public async Task<IRole> FindByNameAsync(string roleName)
         {
-            return QuerySingleOrDefault<Role>(
+            return await QuerySingleOrDefaultAsync<Role>(
                 sql: $"SELECT * FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.Name} = @{nameof(roleName)}",
                 param: new { roleName }
             );
         }
 
-        public void DeleteByKey(Guid key)
+        public Task DeleteByKeyAsync(Guid key)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $"DELETE FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
 
-        public void Update(IRole entity)
+        public Task UpdateAsync(IRole entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     UPDATE {RoleSchema.Table} SET 
                         {RoleSchema.Columns.ConcurrencyStamp} = @{nameof(entity.ConcurrencyStamp)}, 

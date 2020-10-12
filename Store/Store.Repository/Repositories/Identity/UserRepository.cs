@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -21,13 +22,13 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        public void Add(IUser entity)
+        public Task AddAsync(IUser entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {UserSchema.Table}(
                         {UserSchema.Columns.Id}, 
@@ -77,22 +78,22 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public IEnumerable<IUser> Get()
+        public async Task<IEnumerable<IUser>> GetAsync()
         {
-            return Query<User>(
+            return await QueryAsync<User>(
                 sql: $"SELECT * FROM {UserSchema.Table}"
             );
         }
 
-        public IUser FindByKey(Guid key)
+        public async Task<IUser> FindByKeyAsync(Guid key)
         {
-            return QuerySingleOrDefault<User>(
+            return await QuerySingleOrDefaultAsync<User>(
                 sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
 
-        public IUser FindByKey(Guid key, params string[] includeProperties)
+        public async Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties)
         {
             StringBuilder sql = new StringBuilder($"SELECT * FROM {UserSchema.Table} u WHERE {UserSchema.Columns.Id} = @{nameof(key)};");
 
@@ -104,7 +105,7 @@ namespace Store.Repositories.Identity
             }
             // TODO - add other navigation properties
 
-            using GridReader reader = QueryMultiple(sql.ToString(), param: new { key });
+            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
 
             IUser user = reader.Read<User>().FirstOrDefault();
 
@@ -117,35 +118,35 @@ namespace Store.Repositories.Identity
             return user;
         }
 
-        public IUser FindByNormalizedEmail(string normalizedEmail)
+        public async Task<IUser> FindByNormalizedEmailAsync(string normalizedEmail)
         {
-            return QuerySingleOrDefault<User>(
+            return await QuerySingleOrDefaultAsync<User>(
                 sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.NormalizedEmail} = @{nameof(normalizedEmail)}",
                 param: new { normalizedEmail }
             );
         }
 
-        public IUser FindByNormalizedUserName(string normalizedUserName)
+        public async Task<IUser> FindByNormalizedUserNameAsync(string normalizedUserName)
         {
-            return QuerySingleOrDefault<User>(
+            return await QuerySingleOrDefaultAsync<User>(
                 sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.NormalizedUserName} = @{nameof(normalizedUserName)}",
                 param: new { normalizedUserName }
             );
         }
 
-        public void DeleteByKey(Guid key)
+        public Task DeleteByKeyAsync(Guid key)
         {
-            Execute(
+            return ExecuteAsync(
                 sql: $"DELETE FROM {UserSchema.Table} WHERE {UserSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
         }
 
-        public void Update(IUser entity)
+        public Task UpdateAsync(IUser entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Execute(
+            return ExecuteAsync(
                 sql: $@"
                     UPDATE {UserSchema.Table} SET 
                         {UserSchema.Columns.FirstName} = @{nameof(entity.FirstName)},

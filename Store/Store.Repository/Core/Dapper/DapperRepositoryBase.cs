@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using static Dapper.SqlMapper;
@@ -17,29 +18,29 @@ namespace Store.Repository.Core.Dapper
             _transaction = transaction;
         }
 
-        protected T ExecuteScalar<T>(string sql, object param)
+        protected Task<T> ExecuteScalarAsync<T>(string sql, object param)
         {
-            return Connection.ExecuteScalar<T>(sql, param, _transaction);
+            return Connection.ExecuteScalarAsync<T>(sql, param, _transaction);
         }
 
-        protected T QuerySingleOrDefault<T>(string sql, object param)
+        protected Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param)
         {
-            return Connection.QuerySingleOrDefault<T>(sql, param, _transaction);
+            return Connection.QuerySingleOrDefaultAsync<T>(sql, param, _transaction);
         }
 
-        protected IEnumerable<T> Query<T>(string sql, object param = null)
+        protected Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null)
         {
-            return Connection.Query<T>(sql, param, _transaction);
+            return Connection.QueryAsync<T>(sql, param, _transaction);
         }
 
-        protected void Execute(string sql, object param)
+        protected Task<int> ExecuteAsync(string sql, object param)
         {
-            Connection.Execute(sql, param, _transaction);
+            return Connection.ExecuteAsync(sql, param, _transaction);
         }
 
-        protected GridReader QueryMultiple(string sql, object param = null)
+        protected Task<GridReader> QueryMultipleAsync(string sql, object param = null)
         {
-            return Connection.QueryMultiple(sql, param);
+            return Connection.QueryMultipleAsync(sql, param);
         }
     }
 }
