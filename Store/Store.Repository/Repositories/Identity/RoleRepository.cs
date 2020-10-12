@@ -48,7 +48,7 @@ namespace Store.Repositories.Identity
         public IEnumerable<IRole> Get()
         {
             return Query<Role>(
-                sql: "SELECT * FROM {RoleSchema.Table}"
+                sql: $"SELECT * FROM {RoleSchema.Table}"
             );
         }
 
@@ -67,7 +67,6 @@ namespace Store.Repositories.Identity
                 param: new { roleName }
             );
         }
-
 
         public void DeleteByKey(Guid key)
         {
