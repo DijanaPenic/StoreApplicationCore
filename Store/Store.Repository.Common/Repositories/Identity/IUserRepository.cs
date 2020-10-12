@@ -10,5 +10,7 @@ namespace Store.Repository.Common.Repositories.Identity
         IUser FindByNormalizedUserName(string normalizedUserName);
 
         IUser FindByNormalizedEmail(string normalizedEmail);
+
+        IUser FindByKey(Guid key, params string[] includeProperties);
     }
 }

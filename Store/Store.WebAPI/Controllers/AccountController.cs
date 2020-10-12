@@ -2,16 +2,21 @@
 using System.Threading.Tasks;
 using System.Security.Claims;
 using AutoMapper;
+using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
-using Store.Web.Controllers;
+using Store.Models.Api;
 using Store.Models.Api.Identity;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
+using Store.WebAPI.Identity;
+using Store.WebAPI.Constants;
+using Store.Web.Controllers;
+using Store.Common.Helpers;
 
 namespace Store.WebAPI.Controllers
 {
@@ -20,7 +25,7 @@ namespace Store.WebAPI.Controllers
     public class AccountController : ExtendedControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly UserManager<IUser> _userManager;
+        private readonly ApplicationUserManager _userManager;
         private readonly SignInManager<IUser> _signInManager;
         // TODO - resolve email sender
         //private readonly IEmailSender _emailSender;
@@ -29,7 +34,7 @@ namespace Store.WebAPI.Controllers
         private readonly ILogger _logger;
 
         public AccountController(
-            UserManager<IUser> userManager,
+            ApplicationUserManager userManager,
             SignInManager<IUser> signInManager,
             //IEmailSender emailSender,
             ILogger<AccountController> logger,
@@ -47,8 +52,8 @@ namespace Store.WebAPI.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [Route("users/register")]
-        public async Task<IActionResult> Register(RegisterApiModel model)
+        [Route("users/create")]
+        public async Task<IActionResult> Create(RegisterApiModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -67,14 +72,46 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("User assigned to roles.");
 
-            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-            //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            _logger.LogInformation("User has been signed in.");
-
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("users")]
+        public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
+                                                       int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(UserGetApiModel.UserName))
+        {
+            //IPagedList<IUser> users = await _userManager.FindUsersAsync
+            //(
+            //    searchString,
+            //    showInactive,
+            //    isDescendingSortOrder,
+            //    ModelMapperHelper.GetPropertyMapping<UserGetApiModel, IUser>(_mapper, sortOrderProperty),
+            //    pageNumber,
+            //    pageSize,
+            //    ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)
+            //);
+
+            //if (users != null)
+            //{
+            //    return Ok(_mapper.Map<PaginationEntity<UserGetApiModel>>(users));
+            //}
+
+            return NoContent();
+        }
+
+        [HttpGet]
+        [Route("users/{id:guid}")]
+        public async Task<IActionResult> GetUserAsync([FromRoute] Guid id, [FromQuery] string[] includeProperties)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            IUser user = await _userManager.FindUserByIdAsync(id, ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties));
+
+            if (user != null)
+                return Ok(_mapper.Map<UserGetApiModel>(user));
+
+            return NotFound();
         }
 
         //[HttpGet]
@@ -242,13 +279,6 @@ namespace Store.WebAPI.Controllers
         //    }
         //}
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult Lockout()
-        //{
-        //    return View();
-        //}
-
         //[HttpPost]
         //public async Task<IActionResult> Logout()
         //{
@@ -364,13 +394,6 @@ namespace Store.WebAPI.Controllers
         //    return View(result.Succeeded ? "ConfirmEmail" : "Error");
         //}
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ForgotPassword()
-        //{
-        //    return View();
-        //}
-
         //[HttpPost]
         //[AllowAnonymous]
         //public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -396,13 +419,6 @@ namespace Store.WebAPI.Controllers
 
         //    // If we got this far, something failed, redisplay form
         //    return View(model);
-        //}
-
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ForgotPasswordConfirmation()
-        //{
-        //    return View();
         //}
 
         //[HttpGet]
@@ -441,20 +457,6 @@ namespace Store.WebAPI.Controllers
         //    }
         //    AddErrors(result);
 
-        //    return View();
-        //}
-
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ResetPasswordConfirmation()
-        //{
-        //    return View();
-        //}
-
-
-        //[HttpGet]
-        //public IActionResult AccessDenied()
-        //{
         //    return View();
         //}
 

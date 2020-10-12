@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -8,6 +10,8 @@ using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
+
+using static Dapper.SqlMapper;
 
 namespace Store.Repositories.Identity
 {
@@ -86,6 +90,31 @@ namespace Store.Repositories.Identity
                 sql: $"SELECT * FROM {UserSchema.Table} WHERE {UserSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
+        }
+
+        public IUser FindByKey(Guid key, params string[] includeProperties)
+        {
+            StringBuilder sql = new StringBuilder($"SELECT * FROM {UserSchema.Table} u WHERE {UserSchema.Columns.Id} = @{nameof(key)};");
+
+            if(includeProperties.Contains(nameof(IUser.Roles)))
+            {
+                sql.Append($@"SELECT r.* FROM {RoleSchema.Table} r
+                          INNER JOIN {UserRoleSchema.Table} ur ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
+                          WHERE ur.{UserRoleSchema.Columns.UserId} = @{nameof(key)};");
+            }
+            // TODO - add other navigation properties
+
+            using GridReader reader = QueryMultiple(sql.ToString(), param: new { key });
+
+            IUser user = reader.Read<User>().FirstOrDefault();
+
+            // Populate navigation properties
+            if (user != null && includeProperties?.Count() > 0)
+            {
+                if (includeProperties.Contains(nameof(IUser.Roles))) user.Roles = reader.Read<Role>().ToList<IRole>();
+            }
+
+            return user;
         }
 
         public IUser FindByNormalizedEmail(string normalizedEmail)

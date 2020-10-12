@@ -2,6 +2,8 @@
 using System.Data;
 using System.Collections.Generic;
 
+using static Dapper.SqlMapper;
+
 namespace Store.Repository.Core.Dapper
 {
     internal abstract class DapperRepositoryBase
@@ -33,6 +35,11 @@ namespace Store.Repository.Core.Dapper
         protected void Execute(string sql, object param)
         {
             Connection.Execute(sql, param, _transaction);
+        }
+
+        protected GridReader QueryMultiple(string sql, object param = null)
+        {
+            return Connection.QueryMultiple(sql, param);
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Store.WebAPI.Mapper;
+using Store.WebAPI.Identity;
 using Store.Repository.Mapper;
 using Store.Repository.DependencyInjection;
 using Store.Cache.DependencyInjection;
@@ -51,7 +52,7 @@ namespace Store.WebAPI
             services.ConfigureCacheComponents(Configuration.GetConnectionString("RedisConnection"));
 
             // Identity configuration
-            services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
+            services.AddIdentity<IUser, IRole>().AddUserManager<ApplicationUserManager>().AddDefaultTokenProviders();
 
             // TODO - resolve registration of other services 
             //// register access token format

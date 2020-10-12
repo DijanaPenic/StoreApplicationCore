@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Store.Model.Common.Models.Core;
 
@@ -41,5 +42,7 @@ namespace Store.Model.Common.Models.Identity
         string SecurityStamp { get; set; }
 
         DateTime? LockoutEndDateUtc { get; set; }
+
+        ICollection<IRole> Roles { get; set; }
     }
 }

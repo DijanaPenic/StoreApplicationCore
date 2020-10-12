@@ -4,15 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
+using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
+using Store.Service.Common.Services.Identity;
 
 namespace Store.Services.Identity
 {
-    public class CustomUserStore :
+    public class ApplicationUserStore :
             IUserStore<IUser>,
             IUserPasswordStore<IUser>,
             IUserEmailStore<IUser>,
@@ -24,11 +26,12 @@ namespace Store.Services.Identity
             IUserTwoFactorStore<IUser>,
             IUserPhoneNumberStore<IUser>,
             IUserLockoutStore<IUser>,
-            IQueryableUserStore<IUser>
+            IQueryableUserStore<IUser>,
+            IUserFilterStore<IUser>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
-        public CustomUserStore(IDapperUnitOfWork unitOfWork)
+        public ApplicationUserStore(IDapperUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -881,6 +884,20 @@ namespace Store.Services.Identity
             user.LockoutEnabled = enabled;
 
             return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region IUserFilterStore<IdentityUser, Guid> Members
+
+        //public Task<IPagedList<IUser>> FindUsersAsync(string searchString, bool showInactive, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
+        //{
+        //    return _unitOfWork.UserRepository.FindAsync(searchString, showInactive, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
+        //}
+
+        public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
+        {
+            return Task.FromResult(_unitOfWork.UserRepository.FindByKey(id, includeProperties)); // TODO - fix async
         }
 
         #endregion

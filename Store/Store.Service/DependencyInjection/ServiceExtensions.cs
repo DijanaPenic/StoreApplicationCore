@@ -16,8 +16,8 @@ namespace Store.Service.DependencyInjection
             services.AddTransient<IBookService, BookService>();
             services.AddTransient<IGlobalSearchService, GlobalSearchService>();
 
-            services.AddTransient<IUserStore<IUser>, CustomUserStore>();
-            services.AddTransient<IRoleStore<IRole>, CustomRoleStore>();
+            services.AddTransient<IUserStore<IUser>, ApplicationUserStore>();
+            services.AddTransient<IRoleStore<IRole>, ApplicationRoleStore>();
         }
     }
 }

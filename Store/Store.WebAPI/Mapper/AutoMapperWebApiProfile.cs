@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Linq;
 using X.PagedList;
 
 using Store.Models.Api;
@@ -46,8 +47,8 @@ namespace Store.WebAPI.Mapper
             //// Create maps for identity
             //CreateMap<UserPatchApiModel, IIdentityUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
 
-            //CreateMap<UserGetApiModel, IIdentityUser>();
-            //CreateMap<IIdentityUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
+            CreateMap<UserGetApiModel, IUser>();
+            CreateMap<IUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
 
             CreateMap<RegisterApiModel, IUser>().ConstructUsing(src => new User()).ReverseMap();
 

@@ -12,13 +12,13 @@ using Store.Repository.Common.Core.Dapper;
 
 namespace Store.Services.Identity
 {
-    public class CustomRoleStore :
+    public class ApplicationRoleStore :
             IRoleStore<IRole>,
             IRoleClaimStore<IRole>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
-        public CustomRoleStore(IDapperUnitOfWork unitOfWork)
+        public ApplicationRoleStore(IDapperUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
