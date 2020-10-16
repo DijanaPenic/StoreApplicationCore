@@ -50,5 +50,11 @@ namespace Store.Model.Models.Identity
         public DateTime DateUpdatedUtc { get; set; }
 
         public ICollection<IRole> Roles { get; set; }
+
+        public ICollection<IUserClaim> Claims { get; set; }
+
+        public ICollection<IUserLogin> Logins { get; set; }
+
+        public ICollection<IUserToken> Tokens { get; set; }
     }
 }

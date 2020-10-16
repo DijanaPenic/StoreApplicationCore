@@ -13,5 +13,7 @@ namespace Store.Repository.Common.Repositories.Identity
         Task<IUser> FindByNormalizedEmailAsync(string normalizedEmail);
 
         Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties);
+
+        Task<IUser> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
     }
 }

@@ -4,8 +4,6 @@ namespace Store.Models.Api
 {
     public class PaginationMetaData
     {
-        public int FirstItemOnPage { get; set; }
-
         public bool HasNextPage { get; set; }
 
         public bool HasPreviousPage { get; set; }
@@ -13,8 +11,6 @@ namespace Store.Models.Api
         public bool IsFirstPage { get; set; }
 
         public bool IsLastPage { get; set; }
-
-        public int LastItemOnPage { get; set; }
 
         public int PageCount { get; set; }
 

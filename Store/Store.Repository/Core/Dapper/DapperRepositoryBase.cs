@@ -18,12 +18,12 @@ namespace Store.Repository.Core.Dapper
             _transaction = transaction;
         }
 
-        protected Task<T> ExecuteScalarAsync<T>(string sql, object param)
+        protected Task<T> ExecuteScalarAsync<T>(string sql, object param = null)
         {
             return Connection.ExecuteScalarAsync<T>(sql, param, _transaction);
         }
 
-        protected Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param)
+        protected Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param = null)
         {
             return Connection.QuerySingleOrDefaultAsync<T>(sql, param, _transaction);
         }
@@ -33,7 +33,7 @@ namespace Store.Repository.Core.Dapper
             return Connection.QueryAsync<T>(sql, param, _transaction);
         }
 
-        protected Task<int> ExecuteAsync(string sql, object param)
+        protected Task<int> ExecuteAsync(string sql, object param = null)
         {
             return Connection.ExecuteAsync(sql, param, _transaction);
         }

@@ -44,5 +44,11 @@ namespace Store.Model.Common.Models.Identity
         DateTime? LockoutEndDateUtc { get; set; }
 
         ICollection<IRole> Roles { get; set; }
+
+        ICollection<IUserClaim> Claims { get; set; }
+
+        ICollection<IUserLogin> Logins { get; set; }
+
+        ICollection<IUserToken> Tokens { get; set; }
     }
 }

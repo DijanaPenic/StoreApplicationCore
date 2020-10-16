@@ -7,12 +7,14 @@ using System.Collections.Generic;
 
 using Store.DAL.Schema;
 using Store.Common.Helpers;
+using Store.Common.Extensions;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
+using Store.Models.Api;
 
 namespace Store.Repositories.Identity
 {
@@ -20,6 +22,14 @@ namespace Store.Repositories.Identity
     {
         public UserRepository(IDbTransaction transaction) : base(transaction)
         { 
+        }
+
+        class UserInclude
+        {
+            public bool Roles { get; set; }
+            public bool Claims { get; set; }
+            public bool Logins { get; set; }
+            public bool Tokens { get; set; }
         }
 
         public Task AddAsync(IUser entity)
@@ -93,27 +103,74 @@ namespace Store.Repositories.Identity
             );
         }
 
+        public async Task<IUser> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        {
+            // Prepare query parameters
+            int offset = (pageNumber - 1) * pageSize;
+            sortOrderProperty = sortOrderProperty.ToSnakeCase();
+            searchString = searchString.ToLowerInvariant();
+
+            // Set query base
+            StringBuilder sql = new StringBuilder(@$"SELECT u.*, r.*, uc.*, ul.*, ut.* FROM {UserSchema.Table} u");
+            sql.Append(Environment.NewLine);
+
+            // Set prefetch
+            sql.Append(Include(out UserInclude include,  includeProperties));
+
+            // Set filter and paging
+            sql.Append($@"WHERE (LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)})
+                          ORDER by u.{sortOrderProperty} {((isDescendingSortOrder) ? "DESC" : "ASC")}
+                          OFFSET @{nameof(offset)} ROWS
+                          FETCH NEXT @{nameof(pageSize)} ROWS ONLY;");
+            sql.Append(Environment.NewLine);
+
+            // Check total count
+            sql.Append(@$"SELECT COUNT(*) FROM {UserSchema.Table} u 
+                          WHERE (LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)})");
+
+            // Get results from the database and prepare response model
+            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });
+            
+            PaginationEntity<IUser> result = new PaginationEntity<IUser>
+            {
+                Items = ReadUsers(reader, include)
+            };
+
+            int totalItemCount = reader.ReadFirst<int>();
+            int pageCount = (int)Math.Ceiling(decimal.Divide(totalItemCount, pageSize));
+
+            result.MetaData = new PaginationMetaData
+            {
+                HasNextPage = pageNumber < pageCount,
+                HasPreviousPage = pageNumber > 1,
+                IsFirstPage = 1 == pageNumber,
+                IsLastPage = pageCount == pageNumber,
+                PageCount = pageCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalItemCount = totalItemCount
+            };
+
+            // TODO - need domain model for pagination results
+
+            return default;
+        }
+
         public async Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties)
         {
-            StringBuilder sql = new StringBuilder($"SELECT * FROM {UserSchema.Table} u WHERE {UserSchema.Columns.Id} = @{nameof(key)};");
+            // Set query base
+            StringBuilder sql = new StringBuilder(@$"SELECT u.*, r.*, uc.*, ul.*, ut.* FROM {UserSchema.Table} u");
+            sql.Append(Environment.NewLine);
 
-            if(includeProperties.Contains(nameof(IUser.Roles)))
-            {
-                sql.Append($@"SELECT r.* FROM {RoleSchema.Table} r
-                          INNER JOIN {UserRoleSchema.Table} ur ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
-                          WHERE ur.{UserRoleSchema.Columns.UserId} = @{nameof(key)};");
-            }
-            // TODO - add other navigation properties
+            // Set prefetch
+            sql.Append(Include(out UserInclude include, includeProperties));
 
+            // Set filter
+            sql.Append($@"WHERE u.{UserSchema.Columns.Id} = @{nameof(key)};");
+
+            // Execute query and read user
             using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
-
-            IUser user = reader.Read<User>().FirstOrDefault();
-
-            // Populate navigation properties
-            if (user != null && includeProperties?.Count() > 0)
-            {
-                if (includeProperties.Contains(nameof(IUser.Roles))) user.Roles = reader.Read<Role>().ToList<IRole>();
-            }
+            IUser user = ReadUsers(reader, include).FirstOrDefault();
 
             return user;
         }
@@ -171,6 +228,64 @@ namespace Store.Repositories.Identity
 
                     WHERE {UserSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity);
+        }
+
+        private string Include(out UserInclude include, params string[] includeProperties)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            include = new UserInclude
+            {
+                Roles = (includeProperties.Contains(nameof(IUser.Roles))),
+                Claims = (includeProperties.Contains(nameof(IUser.Claims))),
+                Logins = (includeProperties.Contains(nameof(IUser.Logins))),
+                Tokens = (includeProperties.Contains(nameof(IUser.Tokens)))
+            };
+
+            if (include.Roles)
+            {
+                sql.Append($@"INNER JOIN {UserRoleSchema.Table} ur on ur.{UserRoleSchema.Columns.UserId} = u.{UserSchema.Columns.Id} 
+                              INNER JOIN {RoleSchema.Table} r on r.{RoleSchema.Columns.Id} = ur.{UserRoleSchema.Columns.RoleId}");
+            }
+            else
+            {
+                sql.Append($@"LEFT JOIN {RoleSchema.Table} r on FALSE");
+            }
+            sql.Append(Environment.NewLine);
+
+            sql.Append($@"LEFT JOIN {UserClaimSchema.Table} uc on {(include.Claims ? $"uc.{UserClaimSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
+                          LEFT JOIN {UserLoginSchema.Table} ul on {(include.Logins ? $"ul.{UserLoginSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
+                          LEFT JOIN {UserTokenSchema.Table} ut on {(include.Tokens ? $"ut.{UserTokenSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}");
+            sql.Append(Environment.NewLine);
+
+            return sql.ToString();
+        }
+
+        private IEnumerable<IUser> ReadUsers(GridReader reader, UserInclude include)
+        {
+            IEnumerable<IUser> users = reader.Read<User, Role, UserClaim, UserLogin, UserToken, User>((user, role, userClaim, userLogin, userToken) =>
+            {
+                if (role != null) user.Roles = new List<IRole>() { role };
+                if (userClaim != null) user.Claims = new List<IUserClaim>() { userClaim };
+                if (userLogin != null) user.Logins = new List<IUserLogin>() { userLogin };
+                if (userToken != null) user.Tokens = new List<IUserToken>() { userToken };
+
+                return user;
+            }, splitOn: $"{RoleSchema.Columns.Id}, {UserClaimSchema.Columns.Id}, {UserLoginSchema.Columns.LoginProvider}, {UserTokenSchema.Columns.UserId}");
+
+            IEnumerable<IUser> mergedUsers = users.GroupBy(p => p.Id).Select(gu =>
+            {
+                IUser user = gu.First();
+
+                if (include.Roles) user.Roles = gu.Select(u => u.Roles.Single()).ToList();
+                if (include.Claims) user.Claims = gu.Select(u => u.Claims.Single()).ToList();
+                if (include.Logins) user.Logins = gu.Select(u => u.Logins.Single()).ToList();
+                if (include.Tokens) user.Tokens = gu.Select(u => u.Tokens.Single()).ToList();
+
+                return user;
+            });
+
+            return mergedUsers;
         }
     }
 }
