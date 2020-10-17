@@ -139,6 +139,26 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("users/{id:guid}/unlock")]
+        public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            IUser user = await _userManager.FindUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(-1));
+
+            if (!result.Succeeded) return GetErrorResult(result);
+
+            return Ok();
+        }
+
         [HttpGet]
         [Route("users")]
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
