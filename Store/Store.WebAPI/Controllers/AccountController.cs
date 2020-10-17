@@ -159,6 +159,28 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
+        [Route("users/{id:guid}/change-password")]
+        public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordApiModel model)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            IUser user = await _userManager.FindUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            IdentityResult result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
         [HttpGet]
         [Route("users")]
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
