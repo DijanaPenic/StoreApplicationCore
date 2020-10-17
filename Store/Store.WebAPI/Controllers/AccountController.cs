@@ -57,6 +57,14 @@ namespace Store.WebAPI.Controllers
         [TempData]
         public string ErrorMessage { get; set; }
 
+        [Route("roles")]
+        public async Task<IActionResult> GetRolesAsync()
+        {
+            IEnumerable<IRole> roles = await GetRolesFromCache();
+
+            return Ok(_mapper.Map<IEnumerable<RoleApiModel>>(roles));
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [Route("users/create")]

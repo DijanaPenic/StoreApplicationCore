@@ -52,9 +52,7 @@ namespace Store.WebAPI.Mapper
 
             CreateMap<RegisterApiModel, IUser>().ConstructUsing(src => new User()).ReverseMap();
 
-            //CreateMap<RoleApiModel, IIdentityRole>()
-            //    .ConstructUsing(src => new Role())
-            //    .ReverseMap();
+            CreateMap<RoleApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();
