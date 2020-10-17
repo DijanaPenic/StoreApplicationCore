@@ -52,7 +52,10 @@ namespace Store.WebAPI
             services.ConfigureCacheComponents(Configuration.GetConnectionString("RedisConnection"));
 
             // Identity configuration
-            services.AddIdentity<IUser, IRole>().AddUserManager<ApplicationUserManager>().AddDefaultTokenProviders();
+            services.AddIdentity<IUser, IRole>()
+                    .AddUserManager<ApplicationUserManager>()
+                    .AddRoleManager<ApplicationRoleManager>()
+                    .AddDefaultTokenProviders();
 
             // TODO - resolve registration of other services 
             //// register access token format

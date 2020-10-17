@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Identity;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
+using Store.Service.Common.Services.Identity;
 
 namespace Store.Services.Identity
 {
     public class ApplicationRoleStore :
             IRoleStore<IRole>,
-            IRoleClaimStore<IRole>
+            IRoleClaimStore<IRole>,
+            IRoleFilterStore<IRole>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
@@ -238,6 +240,15 @@ namespace Store.Services.Identity
                 await _unitOfWork.RoleClaimRepository.DeleteByKeyAsync(roleClaim.Id);
                 _unitOfWork.Commit();
             }
+        }
+
+        #endregion
+
+        #region IRoleFilterStore<IdentityRole, Guid> Members
+
+        public Task<IEnumerable<IRole>> GetRolesAsync()
+        {
+            return _unitOfWork.RoleRepository.GetAsync();
         }
 
         #endregion

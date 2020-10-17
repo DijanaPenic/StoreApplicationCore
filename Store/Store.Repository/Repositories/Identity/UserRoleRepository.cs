@@ -41,7 +41,7 @@ namespace Store.Repositories.Identity
         {
             return await QueryAsync<string>(
                 sql: $@"
-                    SELECT r.{RoleSchema.Columns.Name}
+                    SELECT r.{RoleSchema.Columns.NormalizedName}
                     FROM {UserRoleSchema.Table} ur 
                         INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
                     WHERE ur.{UserRoleSchema.Columns.UserId} = @{nameof(userId)}
@@ -67,8 +67,9 @@ namespace Store.Repositories.Identity
             return ExecuteAsync(
                 sql: $@"
                     DELETE FROM {UserRoleSchema.Table} ur 
-                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
+                        USING {RoleSchema.Table} r
                     WHERE 
+                        ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} AND
                         r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)} AND 
                         ur.{UserRoleSchema.Columns.UserId} = @{nameof(userId)}
                 ",

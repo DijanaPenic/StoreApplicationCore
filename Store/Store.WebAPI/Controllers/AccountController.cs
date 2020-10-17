@@ -1,19 +1,19 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Claims;
+using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
 using Store.Models.Api;
 using Store.Models.Api.Identity;
-using Store.Model.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Cache.Common;
 using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
 using Store.Web.Controllers;
@@ -26,7 +26,9 @@ namespace Store.WebAPI.Controllers
     public class AccountController : ExtendedControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly ICacheProvider _cacheProvider;
         private readonly ApplicationUserManager _userManager;
+        private readonly ApplicationRoleManager _roleManager;
         private readonly SignInManager<IUser> _signInManager;
         // TODO - resolve email sender
         //private readonly IEmailSender _emailSender;
@@ -36,13 +38,17 @@ namespace Store.WebAPI.Controllers
 
         public AccountController(
             ApplicationUserManager userManager,
+            ApplicationRoleManager roleManager,
             SignInManager<IUser> signInManager,
+            ICacheManager cacheManager,
             //IEmailSender emailSender,
             ILogger<AccountController> logger,
             IMapper mapper)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
+            _cacheProvider = cacheManager.CacheProvider;
             //_emailSender = emailSender;
             _logger = logger;
             _mapper = mapper;
@@ -113,6 +119,47 @@ namespace Store.WebAPI.Controllers
                 return Ok(_mapper.Map<UserGetApiModel>(user));
 
             return NotFound();
+        }
+
+        [Route("users/{id:guid}/roles")]
+        [HttpPut]
+        public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid id, string[] rolesToAssign)
+        {
+            if (rolesToAssign == null || rolesToAssign.Length == 0 || id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            // Find the user we want to assign roles to
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Check if provided role selection is valid
+            bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(rolesToAssign);
+            if (!isRoleSelectionValid)
+            {
+                return BadRequest("Invalid role selection.");
+            }
+
+            // Remove user from current roles, if any
+            IList<string> currentRoles = await _userManager.GetRolesAsync(user);
+            IdentityResult removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeResult.Succeeded)
+            {
+                BadRequest("Failed to remove user roles.");
+            }
+
+            // Assign user to the new roles
+            IdentityResult addResult = await _userManager.AddToRolesAsync(user, rolesToAssign);
+            if (addResult.Succeeded)
+            { 
+                return Ok(new { userId = id, roles = rolesToAssign });
+            }
+
+            return BadRequest("Failed to add user roles.");
         }
 
         //[HttpGet]
@@ -462,6 +509,17 @@ namespace Store.WebAPI.Controllers
         //}
 
         #region Helpers
+
+        private Task<IEnumerable<IRole>> GetRolesFromCache()
+        {
+            return _cacheProvider.GetOrAddAsync
+            (
+                CacheParameters.Keys.AllRoles,
+                _roleManager.GetRolesAsync,
+                DateTimeOffset.MaxValue,
+                CacheParameters.Groups.Identity
+            );
+        }
 
         private void AddErrors(IdentityResult result)
         {
