@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 
@@ -14,6 +15,6 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties);
 
-        Task<IUser> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+        Task<IPagedEnumerable<IUser>> FindAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
     }
 }

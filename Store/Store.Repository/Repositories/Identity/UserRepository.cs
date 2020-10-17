@@ -14,7 +14,9 @@ using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
-using Store.Models.Api;
+
+using Store.Model.Models;
+using Store.Model.Common.Models;
 
 namespace Store.Repositories.Identity
 {
@@ -103,22 +105,32 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IUser> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public async Task<IPagedEnumerable<IUser>> FindAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
             // Prepare query parameters
             int offset = (pageNumber - 1) * pageSize;
             sortOrderProperty = sortOrderProperty.ToSnakeCase();
-            searchString = searchString.ToLowerInvariant();
+            searchString = searchString?.ToLowerInvariant();
+
+            // Set search filter
+            string searchFilter = @$"WHERE 
+                                    u.{UserSchema.Columns.IsDeleted} = FALSE
+                                    {(showInactive 
+                                        ? string.Empty 
+                                        : $"AND u.{UserSchema.Columns.IsApproved} = TRUE")}
+                                    {((searchString == null) 
+                                        ? string.Empty 
+                                        : $"AND ((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)}))")}";
 
             // Set query base
             StringBuilder sql = new StringBuilder(@$"SELECT u.*, r.*, uc.*, ul.*, ut.* FROM {UserSchema.Table} u");
             sql.Append(Environment.NewLine);
 
             // Set prefetch
-            sql.Append(Include(out UserInclude include,  includeProperties));
+            sql.Append(Include(out UserInclude include, includeProperties));
 
             // Set filter and paging
-            sql.Append($@"WHERE (LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)})
+            sql.Append($@"{searchFilter}
                           ORDER by u.{sortOrderProperty} {((isDescendingSortOrder) ? "DESC" : "ASC")}
                           OFFSET @{nameof(offset)} ROWS
                           FETCH NEXT @{nameof(pageSize)} ROWS ONLY;");
@@ -126,34 +138,17 @@ namespace Store.Repositories.Identity
 
             // Check total count
             sql.Append(@$"SELECT COUNT(*) FROM {UserSchema.Table} u 
-                          WHERE (LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)})");
+                          {searchFilter}");
 
             // Get results from the database and prepare response model
             using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });
-            
-            PaginationEntity<IUser> result = new PaginationEntity<IUser>
-            {
-                Items = ReadUsers(reader, include)
-            };
+           
+            IEnumerable<IUser> users = ReadUsers(reader, include);
+            int totalCount = reader.ReadFirst<int>();
 
-            int totalItemCount = reader.ReadFirst<int>();
-            int pageCount = (int)Math.Ceiling(decimal.Divide(totalItemCount, pageSize));
+            IPagedEnumerable<IUser> result = new PagedEnumerable<IUser>(users, totalCount, pageSize, pageNumber);
 
-            result.MetaData = new PaginationMetaData
-            {
-                HasNextPage = pageNumber < pageCount,
-                HasPreviousPage = pageNumber > 1,
-                IsFirstPage = 1 == pageNumber,
-                IsLastPage = pageCount == pageNumber,
-                PageCount = pageCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalItemCount = totalItemCount
-            };
-
-            // TODO - need domain model for pagination results
-
-            return default;
+            return result;
         }
 
         public async Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties)

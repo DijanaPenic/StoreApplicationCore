@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Store.Models.Api;
 using Store.Models.Api.Identity;
 using Store.Model.Models.Identity;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
@@ -80,21 +81,21 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
                                                        int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(UserGetApiModel.UserName))
         {
-            //IPagedList<IUser> users = await _userManager.FindUsersAsync
-            //(
-            //    searchString,
-            //    showInactive,
-            //    isDescendingSortOrder,
-            //    ModelMapperHelper.GetPropertyMapping<UserGetApiModel, IUser>(_mapper, sortOrderProperty),
-            //    pageNumber,
-            //    pageSize,
-            //    ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)
-            //);
+            IPagedEnumerable<IUser> users = await _userManager.FindUsersAsync
+            (
+                searchString,
+                showInactive,
+                ModelMapperHelper.GetPropertyMapping<UserGetApiModel, IUser>(_mapper, sortOrderProperty),
+                isDescendingSortOrder,
+                pageNumber,
+                pageSize,
+                ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)
+            );
 
-            //if (users != null)
-            //{
-            //    return Ok(_mapper.Map<PaginationEntity<UserGetApiModel>>(users));
-            //}
+            if (users != null)
+            {
+                return Ok(_mapper.Map<PagedResponse<UserGetApiModel>>(users)); 
+            }
 
             return NoContent();
         }

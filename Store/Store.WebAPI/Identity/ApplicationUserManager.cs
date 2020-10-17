@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Service.Common.Services.Identity;
 
@@ -29,19 +30,14 @@ namespace Store.WebAPI.Identity
             _userFilterStore = (IUserFilterStore<IUser>)userStore;
         }
 
-        //public Task<IPagedList<IUser>> FindUsersAsync(string searchString, bool showInactive, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
-        //{
-        //    return _userFilterStore.FindUsersAsync(searchString, showInactive, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
-        //}
+        public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        {
+            return _userFilterStore.FindUsersAsync(searchString, showInactive, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+        }
 
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
             return _userFilterStore.FindUserByIdAsync(id, includeProperties);
         }
-
-        //public Task<IUser> FindUserByUserNameAsync(string userName, params string[] includeProperties)
-        //{
-        //    return _userFilterStore.FindUserByUserNameAsync(userName, includeProperties);
-        //}
     }
 }

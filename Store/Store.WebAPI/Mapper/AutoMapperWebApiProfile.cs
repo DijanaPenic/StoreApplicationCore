@@ -57,8 +57,10 @@ namespace Store.WebAPI.Mapper
             //    .ReverseMap();
 
             // Create maps for paging
-            CreateMap<IPagedList, PaginationMetaData>();
-            CreateMap(typeof(IPagedList<>), typeof(PaginationEntity<>)).ConvertUsing(typeof(PaginationEntityTypeConverter<,>));
+            CreateMap<IPagedList, PagedResponseMetaData>();
+            CreateMap(typeof(IPagedList<>), typeof(PagedResponse<>)).ConvertUsing(typeof(PagedListConverter<,>));
+
+            CreateMap(typeof(IPagedEnumerable<>), typeof(PagedResponse<>)).ConvertUsing(typeof(PagedEnumerableConverter<,>));
         }
     }
 }

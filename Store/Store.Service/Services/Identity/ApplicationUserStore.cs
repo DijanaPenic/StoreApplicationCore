@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
-using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Model.Models.Identity;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Model.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 using Store.Service.Common.Services.Identity;
 
@@ -862,10 +862,10 @@ namespace Store.Services.Identity
 
         #region IUserFilterStore<IdentityUser, Guid> Members
 
-        //public Task<IPagedList<IUser>> FindUsersAsync(string searchString, bool showInactive, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
-        //{
-        //    return _unitOfWork.UserRepository.FindAsync(searchString, showInactive, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
-        //}
+        public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        {
+            return _unitOfWork.UserRepository.FindAsync(searchString, showInactive,  sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+        }
 
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
