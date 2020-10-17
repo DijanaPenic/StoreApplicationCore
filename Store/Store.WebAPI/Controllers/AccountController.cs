@@ -76,16 +76,65 @@ namespace Store.WebAPI.Controllers
             }
 
             IUser user = _mapper.Map<IUser>(model);
-
             IdentityResult userResult = await _userManager.CreateAsync(user, model.Password);
+
             if (!userResult.Succeeded) return GetErrorResult(userResult);
 
             _logger.LogInformation("User created a new account with password.");
 
             IdentityResult roleResult = await _userManager.AddToRolesAsync(user, model.Roles);
+
             if (!roleResult.Succeeded) return GetErrorResult(roleResult);
 
             _logger.LogInformation("User assigned to roles.");
+
+            return Ok();
+        }
+
+        [HttpPatch]
+        [Route("users/{id:guid}")]
+        public async Task<IActionResult> PatchUserAsync([FromRoute] Guid id, [FromBody] UserPatchApiModel model)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(model.Roles);
+            if (!isRoleSelectionValid)
+            {
+                return BadRequest("Invalid role selection.");
+            }
+
+            // Find the user we want to update
+            IUser user = await _userManager.FindUserByIdAsync(id, nameof(IUser.Roles));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(model, user);
+            IdentityResult userResult = await _userManager.UpdateAsync(user);
+
+            if (!userResult.Succeeded) return GetErrorResult(userResult);
+
+            // Remove user from roles that are not listed in model.roles
+            IEnumerable<string> rolesToRemove = user.Roles.Where(r => !model.Roles.Contains(r.Name)).Select(r => r.Name);
+            IdentityResult removeRolesResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+
+            if (!removeRolesResult.Succeeded) return GetErrorResult(removeRolesResult);
+
+            // Assign user to roles
+            if (model.Roles != null)
+            {
+                IEnumerable<string> rolesToAdd = model.Roles.Except(user.Roles.Select(r => r.Name));
+                IdentityResult addRolesResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
+
+                if (!addRolesResult.Succeeded) return GetErrorResult(addRolesResult);
+            }
 
             return Ok();
         }
@@ -555,8 +604,6 @@ namespace Store.WebAPI.Controllers
             {
                 return InternalServerError();
             }
-
-            if (result.Succeeded) return null;
 
             return BadRequest(result.Errors);
         }

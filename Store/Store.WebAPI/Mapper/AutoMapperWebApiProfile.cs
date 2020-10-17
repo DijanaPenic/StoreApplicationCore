@@ -45,7 +45,7 @@ namespace Store.WebAPI.Mapper
             CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
 
             //// Create maps for identity
-            //CreateMap<UserPatchApiModel, IIdentityUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
+            CreateMap<UserPatchApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
 
             CreateMap<UserGetApiModel, IUser>();
             CreateMap<IUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
