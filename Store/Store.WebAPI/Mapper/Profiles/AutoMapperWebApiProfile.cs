@@ -12,7 +12,7 @@ using Store.Model.Common.Models.Identity;
 using Store.Model.Models.Identity;
 using Store.WebAPI.Mapper.Converters;
 
-namespace Store.WebAPI.Mapper
+namespace Store.WebAPI.Mapper.Profiles
 {
     // TODO - resolve other mappings
     public class AutoMapperWebApiProfile : Profile
@@ -41,10 +41,10 @@ namespace Store.WebAPI.Mapper
             //    .ForMember(dst => dst.DateUpdatedUtc, opt => opt.MapFrom(src => src.DateUpdated))
             //    .ReverseMap();
 
-            //// Create maps for global search
+            // Create maps for global search
             CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
 
-            //// Create maps for identity
+            // Create maps for identity
             CreateMap<UserPatchApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
 
             CreateMap<UserGetApiModel, IUser>();

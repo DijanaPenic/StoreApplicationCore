@@ -13,7 +13,7 @@ namespace Store.Repository.DependencyInjection
 {
     public static class RepositoryExtensions
     {
-        public static void ConfigureRepositoryComponents(this IServiceCollection services, string connectionString)
+        public static void AddRepositoryComponents(this IServiceCollection services, string connectionString)
         {
             services.AddTransient<IBookstoreRepository, BookstoreRepository>();
             services.AddTransient<IBookRepository, BookRepository>();

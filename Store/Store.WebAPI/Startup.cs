@@ -1,5 +1,4 @@
 using AutoMapper;
-using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -7,13 +6,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.WebAPI.Mapper;
 using Store.WebAPI.Identity;
-using Store.Repository.Mapper;
-using Store.Repository.DependencyInjection;
+using Store.WebAPI.Application.Startup;
 using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 using Store.Model.Common.Models.Identity;
+using Store.Repository.DependencyInjection;
 
 namespace Store.WebAPI
 {
@@ -29,27 +27,17 @@ namespace Store.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO - use class to initialize mapper
             // Auto Mapper configuration
-            MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<AutoMapperWebApiProfile>();
-                cfg.AddProfile<AutoMapperRepositoryProfile>();
-
-                cfg.AddExpressionMapping();
-            });
-
-            IMapper mapper = mapperConfiguration.CreateMapper();
-            services.AddSingleton(mapper);
+            services.AddAutoMapper();
 
             // Repository configuration
-            services.ConfigureRepositoryComponents(Configuration.GetConnectionString("DatabaseConnection"));
+            services.AddRepositoryComponents(Configuration.GetConnectionString("DatabaseConnection"));
 
             // Service configuration
-            services.ConfigureServiceComponents();
+            services.AddServiceComponents();
             
             // Cache configuration
-            services.ConfigureCacheComponents(Configuration.GetConnectionString("RedisConnection"));
+            services.AddCacheComponents(Configuration.GetConnectionString("RedisConnection"));
 
             // Identity configuration
             services.AddIdentity<IUser, IRole>()
@@ -57,19 +45,10 @@ namespace Store.WebAPI
                     .AddRoleManager<ApplicationRoleManager>()
                     .AddDefaultTokenProviders();
 
-            // TODO - resolve registration of other services 
-            //// register access token format
-            //builder.RegisterType<TicketDataFormat>().As<ISecureDataFormat<AuthenticationTicket>>();
-            //builder.RegisterType<TicketSerializer>().As<IDataSerializer<AuthenticationTicket>>();
-            //builder.Register(c => new DpapiDataProtectionProvider().Create("ASP.NET Identity")).As<IDataProtector>();
+            // JWT authentication configuration
+            services.AddAuthentication(Configuration.GetSection("JwtTokenConfig"));
 
-            //// register identity instances
-            //builder.RegisterType<ApplicationUserManager>();
-            //builder.RegisterType<ApplicationRoleManager>();
-            //builder.RegisterType<ApplicationSignInManager>();
-            //builder.Register(c => HttpContext.Current.GetOwinContext().Authentication); // IAuthenticationManager instance
-            //builder.RegisterType<AuthorizationServerProvider>().SingleInstance();
-
+            // Controller configuration
             services.AddControllers();
         }
 
@@ -84,6 +63,8 @@ namespace Store.WebAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
