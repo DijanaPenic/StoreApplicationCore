@@ -15,8 +15,8 @@ using Store.Models.Api.Book;
 using Store.Model.Common.Models;
 using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.WebAPI.Mapper;
 using Store.WebAPI.Controllers;
+using Store.WebAPI.Mapper.Profiles;
 using Store.Service.Common.Services;
 
 namespace Store.WebAPI.Tests.Controllers
@@ -96,7 +96,7 @@ namespace Store.WebAPI.Tests.Controllers
         public async Task BookGetFilteredSuccessAsync()
         {
             ObjectResult response = await _bookController.GetAsync(null) as ObjectResult;
-            PaginationEntity<BookGetApiModel> responseBooks = response.Value as PaginationEntity<BookGetApiModel>;
+            PagedResponse<BookGetApiModel> responseBooks = response.Value as PagedResponse<BookGetApiModel>;
 
             Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
 

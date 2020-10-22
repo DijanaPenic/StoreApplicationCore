@@ -10,11 +10,11 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<UserTokenEntity> builder)
         {
             // Composite primary key consisting of the UserId, LoginProvider and Name
-            builder.HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
+            builder.HasKey(ut => new { ut.UserId, ut.LoginProvider, ut.Name });
 
             // Limit the size of the composite key columns due to common DB restrictions
-            builder.Property(t => t.LoginProvider).IsRequired().HasMaxLength(128);
-            builder.Property(t => t.Name).IsRequired().HasMaxLength(128);
+            builder.Property(ut => ut.LoginProvider).IsRequired().HasMaxLength(128);
+            builder.Property(ut => ut.Name).IsRequired().HasMaxLength(128);
 
             // Maps to the UserToken table
             builder.ToTable("user_token");
