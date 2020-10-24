@@ -1,6 +1,5 @@
 ﻿using System;
 
-using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Common.Core.Dapper
@@ -20,6 +19,10 @@ namespace Store.Repository.Common.Core.Dapper
         IUserTokenRepository UserTokenRepository { get; }
 
         IUserRoleRepository UserRoleRepository { get; }
+
+        IUserRefreshTokenRepository UserRefreshTokenRepository { get; }
+
+        IClientRepository ClientRepository { get; }
 
         void Commit();
     }

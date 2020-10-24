@@ -33,6 +33,8 @@ namespace Store.Repository.Core.Dapper
 
         private IUserRefreshTokenRepository _userRefreshTokenRepository;
 
+        private IClientRepository _clientRepository;
+
         private bool _disposed;
 
         #endregion
@@ -109,6 +111,14 @@ namespace Store.Repository.Core.Dapper
             get
             {
                 return _userRefreshTokenRepository ??= new UserRefreshTokenRepository(_transaction);
+            }
+        }
+
+        public IClientRepository ClientRepository
+        {
+            get
+            {
+                return _clientRepository ??= new ClientRepository(_transaction);
             }
         }
 

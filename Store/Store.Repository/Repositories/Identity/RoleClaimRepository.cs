@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.DAL.Schema;
@@ -8,7 +9,6 @@ using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
-using System.Threading.Tasks;
 
 namespace Store.Repositories.Identity
 {
