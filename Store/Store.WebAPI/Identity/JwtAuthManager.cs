@@ -45,23 +45,23 @@ namespace Store.WebAPI.Identity
                 DateExpiresUtc = DateTime.UtcNow.AddMinutes(_jwtTokenConfig.RefreshTokenExpiration)
             };
 
-            // Find user by username
-            IUser user = await _userManager.FindByNameAsync(userName);
+            //// Find user by username
+            //IUser user = await _userManager.FindByNameAsync(userName);
 
-            // Delete the existing refresh token from the database (if found)
-            IdentityResult removeResult = await RemoveRefreshTokenAsync(user);
-            if (!removeResult.Succeeded) return null;
+            //// Delete the existing refresh token from the database (if found)
+            //IdentityResult removeResult = await RemoveRefreshTokenAsync(user);
+            //if (!removeResult.Succeeded) return null;
 
-            // Save refresh token in the database
-            IdentityResult createResult = await _userManager.SetAuthenticationTokenAsync
-            (
-                user, 
-                ApplicationUserManager.ApplicationAuthenticationTokenProvider, 
-                ApplicationUserManager.RefreshTokenPurpose, 
-                refreshToken.Value, 
-                refreshToken.DateExpiresUtc
-            );
-            if (!createResult.Succeeded) return null;
+            //// Save refresh token in the database
+            //IdentityResult createResult = await _userManager.SetAuthenticationTokenAsync
+            //(
+            //    user, 
+            //    ApplicationUserManager.ApplicationAuthenticationTokenProvider, 
+            //    ApplicationUserManager.RefreshTokenPurpose, 
+            //    refreshToken.Value, 
+            //    refreshToken.DateExpiresUtc
+            //);
+            //if (!createResult.Succeeded) return null;
 
             return new JwtAuthResult
             {
@@ -70,24 +70,24 @@ namespace Store.WebAPI.Identity
             };
         }
 
-        public Task<IdentityResult> RemoveRefreshTokenAsync(IUser user)
-        {
-            return _userManager.RemoveAuthenticationTokenAsync
-            (
-                user, 
-                ApplicationUserManager.ApplicationAuthenticationTokenProvider,
-                ApplicationUserManager.RefreshTokenPurpose
-            );
-        }
+        //public Task<IdentityResult> RemoveRefreshTokenAsync(IUser user)
+        //{
+        //    return _userManager.RemoveAuthenticationTokenAsync
+        //    (
+        //        user, 
+        //        ApplicationUserManager.ApplicationAuthenticationTokenProvider,
+        //        ApplicationUserManager.RefreshTokenPurpose
+        //    );
+        //}
 
-        public Task RemoveExpiredRefreshTokensAsync()
-        {
-            return _userManager.RemoveExpiredAuthenticationTokensAsync
-            (
-                ApplicationUserManager.ApplicationAuthenticationTokenProvider, 
-                ApplicationUserManager.RefreshTokenPurpose
-            );
-        }
+        //public Task RemoveExpiredRefreshTokensAsync()
+        //{
+        //    return _userManager.RemoveExpiredAuthenticationTokensAsync
+        //    (
+        //        ApplicationUserManager.ApplicationAuthenticationTokenProvider, 
+        //        ApplicationUserManager.RefreshTokenPurpose
+        //    );
+        //}
 
         private string GenerateRefreshTokenValue()
         {
@@ -101,11 +101,11 @@ namespace Store.WebAPI.Identity
 
     public interface IJwtAuthManager
     {
-        Task<JwtAuthResult> GenerateTokensAsync(string userName, Claim[] claims);
+        //Task<JwtAuthResult> GenerateTokensAsync(string userName, Claim[] claims);
 
-        Task<IdentityResult> RemoveRefreshTokenAsync(IUser user);
+        //Task<IdentityResult> RemoveRefreshTokenAsync(IUser user);
 
-        Task RemoveExpiredRefreshTokensAsync();
+        //Task RemoveExpiredRefreshTokensAsync();
 
         //JwtAuthResult Refresh(string refreshToken, string accessToken, DateTime now);
 

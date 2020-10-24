@@ -9,11 +9,11 @@ namespace Store.DAL.Configuration.Identity
     {
         public void Configure(EntityTypeBuilder<RoleClaimEntity> builder)
         {
-            // Primary key
-            builder.HasKey(rc => rc.Id);
-
             // Maps to the RoleClaim table
             builder.ToTable("role_claim");
+
+            // Primary key
+            builder.HasKey(rc => rc.Id);
         }
     }
 }

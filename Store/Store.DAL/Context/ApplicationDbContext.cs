@@ -31,6 +31,10 @@ namespace Store.DAL.Context
 
         public DbSet<UserTokenEntity> UserTokens { get; set; }
 
+        public DbSet<UserRefreshTokenEntity> UserRefreshTokens { get; set; }
+
+        public DbSet<ClientEntity> Clients { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Identity configurations
@@ -41,6 +45,8 @@ namespace Store.DAL.Context
             builder.ApplyConfiguration(new UserLoginConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new UserTokenConfiguration());
+            builder.ApplyConfiguration(new UserRefreshTokenConfiguration());
+            builder.ApplyConfiguration(new ClientConfiguration());
 
             // Other configurations
             builder.ApplyConfiguration(new BookstoreConfiguration());

@@ -9,15 +9,15 @@ namespace Store.DAL.Configuration.Identity
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
+            // Maps to the User table
+            builder.ToTable("user");
+
             // Primary key
             builder.HasKey(u => u.Id);
 
             // Indexes for "normalized" username and email, to allow efficient lookups
             builder.HasIndex(u => u.NormalizedUserName).HasName("UserNameIndex").IsUnique();
             builder.HasIndex(u => u.NormalizedEmail).HasName("EmailIndex");
-
-            // Maps to the User table
-            builder.ToTable("user");
 
             // A concurrency token for use with the optimistic concurrency checking
             builder.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();

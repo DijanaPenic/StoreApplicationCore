@@ -10,14 +10,14 @@ namespace Store.DAL.Configuration.Identity
     {
         public void Configure(EntityTypeBuilder<RoleEntity> builder)
         {
+            // Maps to the Role table
+            builder.ToTable("role");
+
             // Primary key
             builder.HasKey(r => r.Id);
 
             // Index for "normalized" role name to allow efficient lookups
             builder.HasIndex(r => r.NormalizedName).HasName("RoleNameIndex").IsUnique();
-
-            // Maps to the Role table
-            builder.ToTable("role");
 
             // A concurrency token for use with the optimistic concurrency checking
             builder.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();

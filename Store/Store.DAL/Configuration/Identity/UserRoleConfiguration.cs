@@ -9,11 +9,11 @@ namespace Store.DAL.Configuration.Identity
     {
         public void Configure(EntityTypeBuilder<UserRoleEntity> builder)
         {
-            // Primary key
-            builder.HasKey(r => new { r.UserId, r.RoleId });
-
             // Maps to the UserRole table
             builder.ToTable("user_role");
+
+            // Primary key
+            builder.HasKey(r => new { r.UserId, r.RoleId });
         }
     }
 }
