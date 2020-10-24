@@ -63,6 +63,16 @@ namespace Store.Repositories.Identity
             );
         }
 
+        public async Task<IUserRefreshToken> FindByValueAsync(string value)
+        {
+            return await QuerySingleOrDefaultAsync<UserRefreshToken>(
+                sql: $@"
+                    SELECT * FROM {UserRefreshTokenSchema.Table}
+                    WHERE {UserRefreshTokenSchema.Columns.Value} = @{nameof(value)}",
+                param: value
+            );
+        }
+
         public Task DeleteByKeyAsync(Guid key)
         {
             return ExecuteAsync(

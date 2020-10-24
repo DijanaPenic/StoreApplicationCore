@@ -9,5 +9,7 @@ namespace Store.Repository.Common.Repositories.Identity
     public interface IUserRefreshTokenRepository : IDapperGenericRepository<IUserRefreshToken, Guid>
     {
         Task DeleteExpiredAsync();
+
+        Task<IUserRefreshToken> FindByValueAsync(string value);
     }
 }
