@@ -7,9 +7,9 @@ using Store.Models.Api.Book;
 using Store.Models.Api.Identity;
 using Store.Models.Api.Bookstore;
 using Store.Models.Api.GlobalSearch;
+using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.Model.Models.Identity;
 using Store.WebAPI.Mapper.Converters;
 
 namespace Store.WebAPI.Mapper.Profiles

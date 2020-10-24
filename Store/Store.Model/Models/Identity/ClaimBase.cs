@@ -2,7 +2,7 @@
 
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Model.Models.Identity
+namespace Store.Models.Identity
 {
     public abstract class ClaimBase : IClaimBase
     {

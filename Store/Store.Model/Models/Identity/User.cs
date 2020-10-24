@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Model.Models.Identity
+namespace Store.Models.Identity
 {
     public class User : IUser
     {

@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Model.Models.Identity;
+using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 using Store.Service.Common.Services.Identity;

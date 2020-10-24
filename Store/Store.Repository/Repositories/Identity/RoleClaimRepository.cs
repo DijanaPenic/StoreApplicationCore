@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Store.DAL.Schema;
 using Store.Common.Helpers;
-using Store.Model.Models.Identity;
+using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;

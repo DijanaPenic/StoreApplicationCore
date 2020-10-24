@@ -2,7 +2,7 @@
 
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Model.Models.Identity
+namespace Store.Models.Identity
 {
     public class UserToken : UserTokenKey, IUserToken
     {
