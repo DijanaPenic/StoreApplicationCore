@@ -7,11 +7,11 @@ using Store.DAL.Schema;
 using Store.Model.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core.Dapper;
-using Store.Repository.Common.Core.Dapper;
+using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
 {
-    internal class UserTokenRepository : DapperRepositoryBase, IDapperGenericRepository<IUserToken, IUserTokenKey>
+    internal class UserTokenRepository : DapperRepositoryBase, IUserTokenRepository
     {
         public UserTokenRepository(IDbTransaction transaction) : base(transaction)
         { 

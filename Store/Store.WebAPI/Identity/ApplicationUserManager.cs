@@ -13,7 +13,7 @@ namespace Store.WebAPI.Identity
 {
     public sealed class ApplicationUserManager : UserManager<IUser>
     {
-        private readonly IUserFilterStore<IUser> _userFilterStore;
+        private readonly IApplicationUserStore<IUser> _userStore;
 
         public ApplicationUserManager(
             IUserStore<IUser> userStore, 
@@ -27,17 +27,27 @@ namespace Store.WebAPI.Identity
             ILogger<UserManager<IUser>> logger) 
             : base(userStore, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
-            _userFilterStore = (IUserFilterStore<IUser>)userStore;
+            _userStore = (IApplicationUserStore<IUser>)userStore;
         }
 
         public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            return _userFilterStore.FindUsersAsync(searchString, showInactive, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            if (sortOrderProperty == null)
+            {
+                throw new ArgumentNullException(nameof(sortOrderProperty)); 
+            }
+
+            return _userStore.FindUsersAsync(searchString, showInactive, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
-            return _userFilterStore.FindUserByIdAsync(id, includeProperties);
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return _userStore.FindUserByIdAsync(id, includeProperties);
         }
     }
 }

@@ -54,8 +54,19 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
-        [TempData]
-        public string ErrorMessage { get; set; }
+        //[AllowAnonymous]
+        //[HttpPost("authenticate")]
+        //public IActionResult Authenticate([FromBody] AuthenticateRequest model)
+        //{
+        //    var response = _userService.Authenticate(model, IpAddress());
+
+        //    if (response == null)
+        //        return BadRequest(new { message = "Username or password is incorrect." });
+
+        //    SetTokenCookie(response.RefreshToken);
+
+        //    return Ok(response);
+        //}
 
         [Route("roles")]
         public async Task<IActionResult> GetRolesAsync()

@@ -15,18 +15,17 @@ using Store.Service.Common.Services.Identity;
 namespace Store.Services.Identity
 {
     public class ApplicationUserStore :
-            IUserStore<IUser>,
             IUserPasswordStore<IUser>,
             IUserEmailStore<IUser>,
             IUserLoginStore<IUser>,
             IUserRoleStore<IUser>,
             IUserSecurityStampStore<IUser>,
             IUserClaimStore<IUser>,
-            IUserAuthenticationTokenStore<IUser>,
             IUserTwoFactorStore<IUser>,
             IUserPhoneNumberStore<IUser>,
             IUserLockoutStore<IUser>,
-            IUserFilterStore<IUser>
+            IUserAuthenticationTokenStore<IUser>,
+            IApplicationUserStore<IUser>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
@@ -860,7 +859,7 @@ namespace Store.Services.Identity
 
         #endregion
 
-        #region IUserFilterStore<IdentityUser, Guid> Members
+        #region IApplicationUserStore<IUser, Guid> Members
 
         public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {

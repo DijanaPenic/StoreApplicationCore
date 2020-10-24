@@ -28,7 +28,7 @@ namespace Store.Repository.Core.Dapper
 
         private IUserLoginRepository _userLoginRepository;
 
-        private IDapperGenericRepository<IUserToken, IUserTokenKey> _userTokenRepository;
+        private IUserTokenRepository _userTokenRepository;
 
         private IUserRoleRepository _userRoleRepository;
 
@@ -87,7 +87,7 @@ namespace Store.Repository.Core.Dapper
             }
         }
 
-        public IDapperGenericRepository<IUserToken, IUserTokenKey> UserTokenRepository
+        public IUserTokenRepository UserTokenRepository
         {
             get
             {

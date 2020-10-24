@@ -17,7 +17,7 @@ namespace Store.Repository.Common.Core.Dapper
 
         IUserLoginRepository UserLoginRepository { get; }
 
-        IDapperGenericRepository<IUserToken, IUserTokenKey> UserTokenRepository { get; }
+        IUserTokenRepository UserTokenRepository { get; }
 
         IUserRoleRepository UserRoleRepository { get; }
 

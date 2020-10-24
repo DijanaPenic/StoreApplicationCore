@@ -11,7 +11,7 @@ namespace Store.WebAPI.Identity
 {
     public sealed class ApplicationRoleManager : RoleManager<IRole>
     {
-        private readonly IRoleFilterStore<IRole> _roleFilterStore;
+        private readonly IApplicationRoleStore<IRole> _roleStore;
 
         public ApplicationRoleManager(
             IRoleStore<IRole> roleStore,
@@ -21,7 +21,7 @@ namespace Store.WebAPI.Identity
             ILogger<RoleManager<IRole>> logger) 
             : base(roleStore, roleValidators, keyNormalizer, errors, logger)
         {
-            _roleFilterStore = (IRoleFilterStore<IRole>)roleStore;
+            _roleStore = (IApplicationRoleStore<IRole>)roleStore;
         }
 
         public async Task<bool> IsValidRoleSelectionAsync(string[] roles)
@@ -39,7 +39,7 @@ namespace Store.WebAPI.Identity
 
         public Task<IEnumerable<IRole>> GetRolesAsync()
         {
-            return _roleFilterStore.GetRolesAsync();
+            return _roleStore.GetRolesAsync();
         }
     }
 }

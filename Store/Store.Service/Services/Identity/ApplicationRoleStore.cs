@@ -14,9 +14,8 @@ using Store.Service.Common.Services.Identity;
 namespace Store.Services.Identity
 {
     public class ApplicationRoleStore :
-            IRoleStore<IRole>,
             IRoleClaimStore<IRole>,
-            IRoleFilterStore<IRole>
+            IApplicationRoleStore<IRole>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
@@ -244,7 +243,7 @@ namespace Store.Services.Identity
 
         #endregion
 
-        #region IRoleFilterStore<IdentityRole, Guid> Members
+        #region IApplicationRoleStore<IRole> Members
 
         public Task<IEnumerable<IRole>> GetRolesAsync()
         {

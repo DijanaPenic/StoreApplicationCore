@@ -12,8 +12,7 @@ namespace Store.WebAPI.Application.Startup
     public static class AuthenticationExtensions
     {
         public static void AddAuthentication(this IServiceCollection services, IConfigurationSection authConfiguration)
-        {
-            // TODO - need to store JWT secret in secure place
+        {       
             JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
 
@@ -27,12 +26,10 @@ namespace Store.WebAPI.Application.Startup
                 jwtOptions.SaveToken = true;
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtTokenConfig.Issuer,
+                    ValidateIssuer = false,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
-                    ValidAudience = jwtTokenConfig.Audience,
-                    ValidateAudience = true,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
