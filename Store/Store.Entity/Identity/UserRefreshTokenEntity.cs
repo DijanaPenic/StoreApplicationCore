@@ -16,6 +16,6 @@ namespace Store.Entities.Identity
 
         public DateTime DateUpdatedUtc { get; set; }
 
-        public DateTime ExpiresUtc { get; set; }
+        public DateTime DateExpiresUtc { get; set; }
     }
 }

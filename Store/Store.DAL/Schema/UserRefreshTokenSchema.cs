@@ -15,7 +15,7 @@ namespace Store.DAL.Schema
             public static string ClientId { get; } = nameof(UserRefreshTokenEntity.ClientId).ToSnakeCase();
             public static string DateCreatedUtc { get; } = nameof(UserRefreshTokenEntity.DateCreatedUtc).ToSnakeCase();
             public static string DateUpdatedUtc { get; } = nameof(UserRefreshTokenEntity.DateUpdatedUtc).ToSnakeCase();
-            public static string ExpiresUtc { get; } = nameof(UserRefreshTokenEntity.ExpiresUtc).ToSnakeCase();
+            public static string DateExpiresUtc { get; } = nameof(UserRefreshTokenEntity.DateExpiresUtc).ToSnakeCase();
         }
     }
 }

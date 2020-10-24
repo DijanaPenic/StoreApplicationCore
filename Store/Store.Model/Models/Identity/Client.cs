@@ -5,7 +5,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
 {
-    class Client : IClient
+    public class Client : IClient
     {
         public Guid Id { get; set; }
 

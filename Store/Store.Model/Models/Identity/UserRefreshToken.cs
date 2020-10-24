@@ -4,7 +4,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
 {
-    public class RefreshToken : IRefreshToken
+    public class UserRefreshToken : IUserRefreshToken
     {
         public Guid Id { get; set; }
 
@@ -12,15 +12,9 @@ namespace Store.Models.Identity
 
         public Guid UserId { get; set; }
 
-        public IUser User { get; set; }
-
         public Guid ClientId { get; set; }
 
-        public IClient Client { get; set; }
-
-        public string ProtectedTicket { get; set; }
-
-        public DateTime ExpiresUTC { get; set; }
+        public DateTime DateExpiresUtc { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
 

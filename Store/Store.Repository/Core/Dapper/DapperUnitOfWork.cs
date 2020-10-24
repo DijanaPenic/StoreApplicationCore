@@ -6,7 +6,6 @@ using System.Data;
 using Store.Repositories.Identity;
 using Store.Repository.Common.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
-using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Core.Dapper
 {
@@ -31,6 +30,8 @@ namespace Store.Repository.Core.Dapper
         private IUserTokenRepository _userTokenRepository;
 
         private IUserRoleRepository _userRoleRepository;
+
+        private IUserRefreshTokenRepository _userRefreshTokenRepository;
 
         private bool _disposed;
 
@@ -100,6 +101,14 @@ namespace Store.Repository.Core.Dapper
             get
             {
                 return _userRoleRepository ??= new UserRoleRepository(_transaction);
+            }
+        }
+
+        public IUserRefreshTokenRepository UserRefreshTokenRepository
+        {
+            get
+            {
+                return _userRefreshTokenRepository ??= new UserRefreshTokenRepository(_transaction);
             }
         }
 
