@@ -1,18 +1,30 @@
 ﻿using System;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using Store.WebAPI.Models;
+using Store.WebAPI.Identity;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Application.Startup
 {
     public static class AuthenticationExtensions
     {
         public static void AddAuthentication(this IServiceCollection services, IConfigurationSection authConfiguration)
-        {       
+        {
+            // Identity configuration
+            services.AddIdentity<IUser, IRole>()
+                    .AddUserManager<ApplicationUserManager>()
+                    .AddRoleManager<ApplicationRoleManager>()
+                    .AddDefaultTokenProviders();
+
+            // JWT cnfiguration
+            services.AddTransient<ApplicationJwtAuthManager>();
+
             JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
 

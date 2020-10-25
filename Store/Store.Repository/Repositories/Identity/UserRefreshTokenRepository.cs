@@ -83,6 +83,18 @@ namespace Store.Repositories.Identity
             );
         }
 
+        public Task DeleteAsync(Guid userId, Guid clientId)
+        {
+            return ExecuteAsync(
+                sql: $@"
+                    DELETE FROM {UserRefreshTokenSchema.Table}
+                    WHERE 
+                        {UserRefreshTokenSchema.Columns.UserId} = @{nameof(userId)} AND
+                        {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(clientId)}",
+                param: new { userId, clientId }
+            );
+        }
+
         public Task DeleteExpiredAsync()
         {
             DateTime now = DateTime.UtcNow;

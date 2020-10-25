@@ -11,6 +11,10 @@ namespace Store.Service.Common.Services.Identity
 
         Task RemoveRefreshTokenAsync(Guid refreshTokenId);
 
+        Task RemoveRefreshTokenAsync(Guid userId, Guid clientId);
+
+        Task RemoveExpiredRefreshTokensAsync();
+
         Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId);
 
         Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue);

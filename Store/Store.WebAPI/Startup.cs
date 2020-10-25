@@ -1,16 +1,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.WebAPI.Identity;
-using Store.WebAPI.Application.Startup;
 using Store.Cache.DependencyInjection;
+using Store.WebAPI.Application.Startup;
 using Store.Service.DependencyInjection;
-using Store.Model.Common.Models.Identity;
 using Store.Repository.DependencyInjection;
 
 namespace Store.WebAPI
@@ -39,13 +36,7 @@ namespace Store.WebAPI
             // Cache configuration
             services.AddCacheComponents(Configuration.GetConnectionString("RedisConnection"));
 
-            // Identity configuration
-            services.AddIdentity<IUser, IRole>()
-                    .AddUserManager<ApplicationUserManager>()
-                    .AddRoleManager<ApplicationRoleManager>()
-                    .AddDefaultTokenProviders();
-
-            // JWT authentication configuration
+            // Authentication configuration
             services.AddAuthentication(Configuration.GetSection("JwtTokenConfig"));
 
             // Controller configuration

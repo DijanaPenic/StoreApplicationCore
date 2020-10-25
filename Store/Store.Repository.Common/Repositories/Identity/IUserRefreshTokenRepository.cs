@@ -11,5 +11,7 @@ namespace Store.Repository.Common.Repositories.Identity
         Task DeleteExpiredAsync();
 
         Task<IUserRefreshToken> FindByValueAsync(string value);
+
+        Task DeleteAsync(Guid userId, Guid clientId);
     }
 }

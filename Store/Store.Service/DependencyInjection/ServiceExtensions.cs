@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Store.Services;
 using Store.Services.Identity;
 using Store.Service.Common.Services;
+using Store.Service.Common.Services.Identity;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.Service.DependencyInjection
@@ -18,6 +19,7 @@ namespace Store.Service.DependencyInjection
 
             services.AddTransient<IUserStore<IUser>, ApplicationUserStore>();
             services.AddTransient<IRoleStore<IRole>, ApplicationRoleStore>();
+            services.AddTransient<IApplicationAuthStore, ApplicationAuthStore>();
         }
     }
 }

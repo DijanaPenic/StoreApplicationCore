@@ -39,6 +39,24 @@ namespace Store.Services.Identity
             _unitOfWork.Commit();
         }
 
+        public async Task RemoveRefreshTokenAsync(Guid userId, Guid clientId)
+        {
+            if (GuidHelper.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
+
+            if (GuidHelper.IsNullOrEmpty(clientId))
+                throw new ArgumentNullException(nameof(clientId));
+
+            await _unitOfWork.UserRefreshTokenRepository.DeleteAsync(userId, clientId);
+
+            _unitOfWork.Commit();
+        }
+
+        public Task RemoveExpiredRefreshTokensAsync()
+        {
+            return _unitOfWork.UserRefreshTokenRepository.DeleteExpiredAsync();
+        }
+
         public Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId)
         {
             if (GuidHelper.IsNullOrEmpty(refreshTokenId))
@@ -61,11 +79,17 @@ namespace Store.Services.Identity
 
         public Task<IClient> FindClientByIdAsync(Guid clientId)
         {
+            if (GuidHelper.IsNullOrEmpty(clientId))
+                throw new ArgumentNullException(nameof(clientId));
+
             return _unitOfWork.ClientRepository.FindByKeyAsync(clientId);
         }
 
         public Task<IClient> FindClientByNameAsync(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
             return _unitOfWork.ClientRepository.FindByNameAsync(name);
         }
 
