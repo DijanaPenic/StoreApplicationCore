@@ -17,7 +17,7 @@ namespace Store.WebAPI.Application.Startup
         public static void AddAuthentication(this IServiceCollection services, IConfigurationSection authConfiguration)
         {
             // Identity configuration
-            services.AddIdentityCore<IUser>(identityOptions =>
+            services.AddIdentity<IUser, IRole>(identityOptions =>
             {
                 identityOptions.Password.RequiredLength = 8;
                 identityOptions.Password.RequireDigit = true;
@@ -28,8 +28,6 @@ namespace Store.WebAPI.Application.Startup
                 identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
                 identityOptions.Lockout.MaxFailedAccessAttempts = 3;
             })
-            .AddRoles<IRole>()
-            .AddSignInManager<SignInManager<IUser>>()
             .AddUserManager<ApplicationUserManager>()
             .AddRoleManager<ApplicationRoleManager>()
             .AddDefaultTokenProviders();
