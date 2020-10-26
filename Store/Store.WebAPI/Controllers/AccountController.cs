@@ -83,7 +83,18 @@ namespace Store.WebAPI.Controllers
                 return Unauthorized(clientAuthResult.ErrorMessage);
             }
 
-            // Attempt to sig in the specificied username and password
+            // Check user's status
+            IUser user = await _userManager.FindByNameAsync(model.UserName);
+            if(user == null)
+            {
+                return Unauthorized($"Failed to log in - invalid username and/or password.");
+            }
+            if (user.IsDeleted)
+            {
+                return Unauthorized($"User [{model.UserName}] has been deleted.");
+            }
+
+            // Attempt to sign in the specificied username and password
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, isPersistent: true, lockoutOnFailure: true);
 
             if (!signInResult.Succeeded)
