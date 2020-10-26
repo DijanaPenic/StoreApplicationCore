@@ -160,6 +160,8 @@ namespace Store.Repository.Core.Dapper
             _userLoginRepository = null;
             _userTokenRepository = null;
             _userRoleRepository = null;
+            _userRefreshTokenRepository = null;
+            _clientRepository = null;
         }
 
         private void Dispose(bool disposing)
