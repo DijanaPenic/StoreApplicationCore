@@ -37,7 +37,7 @@ namespace Store.DAL.Configuration.Identity
                     Active = true,
                     AccessTokenLifeTime = 20,
                     RefreshTokenLifeTime = 60,
-                    Secret = "28IOjCR2kNUeT3dIoFLJpn7oAtLrpzofaSzlXi+dxG9cyFul0tiBJc3BWPWTDVkzoAkSkXsFZ8u7ON05wQ276w==",
+                    Secret = "PX23zsV/7nm6+ZI9LmrKXSBf2O47cYtiJGk2WJ/G/PdU2eD7Y929MZeItkGpBY2v6a2tXhGINq8bAQYz1bQC6A==",
                     AllowedOrigin = "*",
                     ApplicationType = ApplicationType.NativeConfidential,
                     DateCreatedUtc = DateTime.Parse("25-Oct-20 4:44:00 PM"),
