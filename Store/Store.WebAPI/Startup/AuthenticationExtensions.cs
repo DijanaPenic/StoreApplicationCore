@@ -17,10 +17,22 @@ namespace Store.WebAPI.Application.Startup
         public static void AddAuthentication(this IServiceCollection services, IConfigurationSection authConfiguration)
         {
             // Identity configuration
-            services.AddIdentity<IUser, IRole>()
-                    .AddUserManager<ApplicationUserManager>()
-                    .AddRoleManager<ApplicationRoleManager>()
-                    .AddDefaultTokenProviders();
+            services.AddIdentityCore<IUser>(identityOptions =>
+            {
+                identityOptions.Password.RequiredLength = 8;
+                identityOptions.Password.RequireDigit = true;
+                identityOptions.Password.RequireUppercase = true;
+                identityOptions.Password.RequireNonAlphanumeric = true;
+
+                identityOptions.Lockout.AllowedForNewUsers = true;
+                identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                identityOptions.Lockout.MaxFailedAccessAttempts = 3;
+            })
+            .AddRoles<IRole>()
+            .AddSignInManager<SignInManager<IUser>>()
+            .AddUserManager<ApplicationUserManager>()
+            .AddRoleManager<ApplicationRoleManager>()
+            .AddDefaultTokenProviders();
 
             services.AddTransient<ApplicationAuthManager>();
 
