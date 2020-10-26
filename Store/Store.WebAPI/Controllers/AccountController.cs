@@ -14,10 +14,14 @@ using Store.Models.Api.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Cache.Common;
+using Store.WebAPI.Models;
 using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
-using Store.Web.Controllers;
 using Store.Common.Helpers;
+using Store.Web.Controllers;
+
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using Store.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {
@@ -29,6 +33,7 @@ namespace Store.WebAPI.Controllers
         private readonly ICacheProvider _cacheProvider;
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
+        private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
         // TODO - resolve email sender
         //private readonly IEmailSender _emailSender;
@@ -39,6 +44,7 @@ namespace Store.WebAPI.Controllers
         public AccountController(
             ApplicationUserManager userManager,
             ApplicationRoleManager roleManager,
+            ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
             ICacheManager cacheManager,
             //IEmailSender emailSender,
@@ -47,6 +53,7 @@ namespace Store.WebAPI.Controllers
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _authManager = authManager;
             _signInManager = signInManager;
             _cacheProvider = cacheManager.CacheProvider;
             //_emailSender = emailSender;
@@ -54,19 +61,63 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
-        //[AllowAnonymous]
-        //[HttpPost("authenticate")]
-        //public IActionResult Authenticate([FromBody] AuthenticateRequest model)
-        //{
-        //    var response = _userService.Authenticate(model, IpAddress());
+        [AllowAnonymous]
+        [HttpPost("users/authenticate")]
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
 
-        //    if (response == null)
-        //        return BadRequest(new { message = "Username or password is incorrect." });
+            // Verify client information
+            if(!Guid.TryParse(model.ClientId, out Guid clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid."); 
+            }
 
-        //    SetTokenCookie(response.RefreshToken);
+            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, model.ClientSecret);
 
-        //    return Ok(response);
-        //}
+            if(!clientAuthResult.Succeeded)
+            {
+                return Unauthorized(clientAuthResult.ErrorMessage);
+            }
+
+            // Attempt to sig in the specificied username and password
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, isPersistent: true, lockoutOnFailure: true);
+
+            if (!signInResult.Succeeded)
+            {
+                if (signInResult.IsLockedOut)
+                {
+                    return Unauthorized($"User [{model.UserName}] has been locked out.");
+                }
+                if (signInResult.IsNotAllowed)
+                {
+                    return Unauthorized($"User [{model.UserName}] is not allowed to log in.");
+                }
+                if (signInResult.RequiresTwoFactor)
+                {
+                    return Unauthorized($"User [{model.UserName}] requires two-factor authentication.");
+                }
+
+                return Unauthorized($"Failed to log in - invalid username and/or password.");
+            }
+
+            _logger.LogInformation($"User [{model.UserName}] has logged in the system.");
+
+            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(model.UserName, clientId);
+
+            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
+            {
+                UserName = model.UserName,
+                Roles = jwtResult.Roles.ToArray(),
+                AccessToken = jwtResult.AccessToken,
+                RefreshToken = jwtResult.RefreshToken.Value
+            };
+
+            return Ok(authenticationResponse);
+        }
 
         [Route("roles")]
         public async Task<IActionResult> GetRolesAsync()

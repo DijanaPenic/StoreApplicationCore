@@ -1,4 +1,6 @@
-﻿using Store.Model.Common.Models.Identity;
+﻿using System.Collections.Generic;
+
+using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Models
 {
@@ -7,5 +9,7 @@ namespace Store.WebAPI.Models
         public string AccessToken { get; set; }
 
         public IUserRefreshToken RefreshToken { get; set; }
+
+        public IList<string> Roles { get; set; }
     }
 }

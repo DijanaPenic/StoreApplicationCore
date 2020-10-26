@@ -22,9 +22,9 @@ namespace Store.WebAPI.Application.Startup
                     .AddRoleManager<ApplicationRoleManager>()
                     .AddDefaultTokenProviders();
 
-            // JWT cnfiguration
-            services.AddTransient<ApplicationJwtAuthManager>();
+            services.AddTransient<ApplicationAuthManager>();
 
+            // JWT cnfiguration
             JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
 
