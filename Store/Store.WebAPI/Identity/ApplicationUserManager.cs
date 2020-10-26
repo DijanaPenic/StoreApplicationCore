@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Helpers;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Service.Common.Services.Identity;
@@ -42,7 +43,7 @@ namespace Store.WebAPI.Identity
 
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
-            if (id == null)
+            if (GuidHelper.IsNullOrEmpty(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
