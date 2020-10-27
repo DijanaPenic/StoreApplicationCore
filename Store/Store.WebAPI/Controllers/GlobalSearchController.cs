@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 using Store.Common.Enums;
+using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models;
 using Store.Models.Api.GlobalSearch;
+using Store.WebAPI.Infrastructure;
 using Store.Service.Common.Services;
 
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("global-search")]
+    [AuthorizationFilter(RoleHelper.All)]
     public class GlobalSearchController : ControllerBase
     {
         private readonly IGlobalSearchService _globalSearchService;
@@ -33,12 +36,11 @@ namespace Store.WebAPI.Controllers
             // Configure search types per roles (Note: all roles can search books)
             IList<ModuleType> searchTypes = new List<ModuleType> { ModuleType.Book, ModuleType.Bookstore };
 
-            // TODO - need to check permissions
             // Admin and Store Manager roles can search bookstores 
-            //if (User.IsInRole(RoleHelper.Admin) || User.IsInRole(RoleHelper.StoreManager))
-            //{
-            //    searchTypes.Add(ModuleType.Bookstore);
-            //}
+            if (User.IsInRole(RoleHelper.Admin) || User.IsInRole(RoleHelper.StoreManager))
+            {
+                searchTypes.Add(ModuleType.Bookstore);
+            }
 
             IEnumerable<ISearchItem> searchResults = await _globalSearchService.FindAsync(searchString, searchTypes);
 

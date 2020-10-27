@@ -10,8 +10,10 @@ using Store.Models.Api.Book;
 using Store.Models.Api.Bookstore;
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Common.Helpers.Identity;
 using Store.Cache.Common;
 using Store.WebAPI.Constants;
+using Store.WebAPI.Infrastructure;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
 
@@ -19,6 +21,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("bookstore")]
+    [AuthorizationFilter(RoleHelper.StoreManager, RoleHelper.Admin)]
     public class BookstoreController : ExtendedControllerBase
     {
         private readonly IBookstoreService _bookstoreService;

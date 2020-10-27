@@ -9,13 +9,16 @@ using Store.Models.Api.Book;
 using Store.Model.Common.Models;
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Common.Helpers.Identity;
 using Store.WebAPI.Constants;
+using Store.WebAPI.Infrastructure;
 using Store.Service.Common.Services;
 
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("book")]
+    [AuthorizationFilter(Roles = RoleHelper.All)]
     public class BookController : ExtendedControllerBase
     {
         private readonly IBookService _bookService;
