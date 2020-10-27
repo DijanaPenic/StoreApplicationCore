@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Identity
 {
-    public class RoleApiModel
+    public class RoleGetApiModel
     {
         public Guid Id { get; set; }
 

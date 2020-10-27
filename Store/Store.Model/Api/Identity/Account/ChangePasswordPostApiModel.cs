@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Identity
 {
-    public class ChangePasswordApiModel
+    public class ChangePasswordPostApiModel
     {
         [Required]
         [DataType(DataType.Password)]

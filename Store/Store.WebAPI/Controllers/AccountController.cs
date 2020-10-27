@@ -135,13 +135,13 @@ namespace Store.WebAPI.Controllers
         {
             IEnumerable<IRole> roles = await GetRolesFromCache();
 
-            return Ok(_mapper.Map<IEnumerable<RoleApiModel>>(roles));
+            return Ok(_mapper.Map<IEnumerable<RoleGetApiModel>>(roles));
         }
 
         [HttpPost]
         [AllowAnonymous]
         [Route("users/create")]
-        public async Task<IActionResult> Create(RegisterApiModel model)
+        public async Task<IActionResult> Create(RegisterPostApiModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -232,8 +232,9 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpPost]
         [Route("users/{id:guid}/change-password")]
-        public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordApiModel model)
+        public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordPostApiModel model)
         {
             if (id == Guid.Empty)
                 return BadRequest();

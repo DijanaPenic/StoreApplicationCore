@@ -50,9 +50,9 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<UserGetApiModel, IUser>();
             CreateMap<IUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
 
-            CreateMap<RegisterApiModel, IUser>().ConstructUsing(src => new User()).ReverseMap();
+            CreateMap<RegisterPostApiModel, IUser>().ConstructUsing(src => new User()).ReverseMap();
 
-            CreateMap<RoleApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();
+            CreateMap<RoleGetApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();
