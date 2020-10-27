@@ -20,7 +20,7 @@ namespace Store.WebAPI.Identity
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IApplicationAuthStore _authStore;
-        private readonly JwtTokenConfig _jwtTokenConfig; // TODO - need to check issuer and audience
+        private readonly JwtTokenConfig _jwtTokenConfig; 
         private readonly byte[] _secret;
 
         public ApplicationAuthManager(ApplicationUserManager userManager, IApplicationAuthStore authStore, JwtTokenConfig jwtTokenConfig)
@@ -58,6 +58,8 @@ namespace Store.WebAPI.Identity
             // Set jwt security token
             JwtSecurityToken jwtToken = new JwtSecurityToken
             (
+                issuer: _jwtTokenConfig.Issuer,
+                audience: _jwtTokenConfig.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(client.AccessTokenLifeTime),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature)

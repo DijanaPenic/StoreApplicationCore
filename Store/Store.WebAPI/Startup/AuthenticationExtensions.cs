@@ -48,10 +48,12 @@ namespace Store.WebAPI.Application.Startup
                 jwtOptions.SaveToken = true;
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtTokenConfig.Issuer,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
-                    ValidateAudience = false,
+                    ValidateAudience = true,
+                    ValidAudience = jwtTokenConfig.Audience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
