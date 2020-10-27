@@ -2,9 +2,9 @@
 {
     public static class RoleHelper
     {
-        public const string Admin = "Admin";
-        public const string Customer = "Customer";
-        public const string StoreManager = "Store Manager";
-        public const string All = "Admin,Customer,Store Manager";
+        public const string Admin = "ADMIN";
+        public const string Customer = "CUSTOMER";
+        public const string StoreManager = "STORE MANAGER";
+        public const string All = "ADMIN,CUSTOMER,STORE MANAGER";
     }
 }
