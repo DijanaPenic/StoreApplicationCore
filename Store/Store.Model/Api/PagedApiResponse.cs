@@ -21,11 +21,11 @@ namespace Store.Models.Api
         public int TotalItemCount { get; set; }
     }
 
-    public class PagedResponse<T>
+    public class PagedApiResponse<T>
     {
-        public PagedResponse()
+        public PagedApiResponse()
         {
-            Items = new List<T>();
+            Items = new List<T>(); // TODO - change intialization
         }
 
         public IEnumerable<T> Items { get; set; }

@@ -141,8 +141,8 @@ namespace Store.Repositories.Identity
                           {searchFilter}");
 
             // Get results from the database and prepare response model
-            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });
-           
+            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });  // TODO - fix "searchString"
+
             IEnumerable<IUser> users = ReadUsers(reader, include);
             int totalCount = reader.ReadFirst<int>();
 

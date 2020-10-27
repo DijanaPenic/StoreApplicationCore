@@ -96,7 +96,7 @@ namespace Store.WebAPI.Tests.Controllers
         public async Task BookGetFilteredSuccessAsync()
         {
             ObjectResult response = await _bookController.GetAsync(null) as ObjectResult;
-            PagedResponse<BookGetApiModel> responseBooks = response.Value as PagedResponse<BookGetApiModel>;
+            PagedApiResponse<BookGetApiModel> responseBooks = response.Value as PagedApiResponse<BookGetApiModel>;
 
             Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
 

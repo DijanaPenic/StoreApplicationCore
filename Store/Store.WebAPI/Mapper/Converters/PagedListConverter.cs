@@ -7,11 +7,11 @@ using Store.Models.Api;
 
 namespace Store.WebAPI.Mapper.Converters
 {
-    public class PagedListConverter<TSource, TDestination> : ITypeConverter<IPagedList<TSource>, PagedResponse<TDestination>>
+    public class PagedListConverter<TSource, TDestination> : ITypeConverter<IPagedList<TSource>, PagedApiResponse<TDestination>>
     {
-        public PagedResponse<TDestination> Convert(IPagedList<TSource> source, PagedResponse<TDestination> destination, ResolutionContext context)
+        public PagedApiResponse<TDestination> Convert(IPagedList<TSource> source, PagedApiResponse<TDestination> destination, ResolutionContext context)
         {
-            return new PagedResponse<TDestination>()
+            return new PagedApiResponse<TDestination>()
             {
                 Items = context.Mapper.Map<IEnumerable<TDestination>>(source.AsEnumerable()),
                 MetaData = context.Mapper.Map<PagedResponseMetaData>(source.GetMetaData())

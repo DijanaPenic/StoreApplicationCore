@@ -7,13 +7,13 @@ namespace Store.Models.Api.Identity
         [JsonPropertyName("username")]
         public string UserName { get; set; }
 
-        [JsonPropertyName("role")]
+        [JsonPropertyName("roles")]
         public string[] Roles { get; set; }
 
-        [JsonPropertyName("accessToken")]
+        [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 
-        [JsonPropertyName("refreshToken")]
+        [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; set; }
     }
 }

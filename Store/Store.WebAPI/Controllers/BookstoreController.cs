@@ -69,7 +69,7 @@ namespace Store.WebAPI.Controllers
 
             if (bookstores != null)
             {
-                return Ok(_mapper.Map<PagedResponse<BookGetApiModel>>(bookstores));
+                return Ok(_mapper.Map<PagedApiResponse<BookGetApiModel>>(bookstores));
             }
 
             return NoContent();
@@ -126,7 +126,7 @@ namespace Store.WebAPI.Controllers
 
             if (bookstores != null)
             {
-                return Ok(_mapper.Map<PagedResponse<BookstoreGetApiModel>>(bookstores));
+                return Ok(_mapper.Map<PagedApiResponse<BookstoreGetApiModel>>(bookstores));
             }
 
             return NoContent();
