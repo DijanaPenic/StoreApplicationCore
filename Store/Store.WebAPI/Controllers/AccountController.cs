@@ -20,8 +20,10 @@ using Store.WebAPI.Constants;
 using Store.Common.Helpers;
 using Store.Web.Controllers;
 
+using Store.WebAPI.Infrastructure;
+using Store.Common.Helpers.Identity;
+
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
-using Store.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {
@@ -61,8 +63,9 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        [HttpPost]
+        [Route("users/authenticate")]
         [AllowAnonymous]
-        [HttpPost("users/authenticate")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel model)
         {
             if (!ModelState.IsValid)
@@ -131,6 +134,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [Route("roles")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> GetRolesAsync()
         {
             IEnumerable<IRole> roles = await GetRolesFromCache();
@@ -139,9 +143,9 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [Route("users/create")]
-        public async Task<IActionResult> Create(RegisterPostApiModel model)
+        [AuthorizationFilter(RoleHelper.Admin)]
+        public async Task<IActionResult> Create(UserPostApiModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -166,6 +170,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpPatch]
         [Route("users/{id:guid}")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> PatchUserAsync([FromRoute] Guid id, [FromBody] UserPatchApiModel model)
         {
             if (id == Guid.Empty)
@@ -214,6 +219,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpPost]
         [Route("users/{id:guid}/unlock")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid id)
         {
             if (id == Guid.Empty)
@@ -234,6 +240,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpPost]
         [Route("users/{id:guid}/change-password")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordPostApiModel model)
         {
             if (id == Guid.Empty)
@@ -257,6 +264,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("users")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
                                                        int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(UserGetApiModel.UserName))
         {
@@ -273,7 +281,7 @@ namespace Store.WebAPI.Controllers
 
             if (users != null)
             {
-                return Ok(_mapper.Map<PagedResponse<UserGetApiModel>>(users)); 
+                return Ok(_mapper.Map<PagedApiResponse<UserGetApiModel>>(users)); 
             }
 
             return NoContent();
@@ -281,6 +289,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("users/{id:guid}")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> GetUserAsync([FromRoute] Guid id, [FromQuery] string[] includeProperties)
         {
             if (id == Guid.Empty)
@@ -294,8 +303,9 @@ namespace Store.WebAPI.Controllers
             return NotFound();
         }
 
-        [Route("users/{id:guid}/roles")]
         [HttpPut]
+        [Route("users/{id:guid}/roles")]
+        [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid id, string[] rolesToAssign)
         {
             if (rolesToAssign == null || rolesToAssign.Length == 0 || id == Guid.Empty)

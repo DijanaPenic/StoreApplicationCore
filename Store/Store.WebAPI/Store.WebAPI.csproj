@@ -33,5 +33,9 @@
     <ProjectReference Include="..\Store.Web\Store.Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
+
 
 </Project>
