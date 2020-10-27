@@ -46,11 +46,12 @@ namespace Store.WebAPI.Identity
             IList<string> roles = await _userManager.GetRolesAsync(user);
 
             // Set user claims
-            Claim[] claims = new[]
+            IList<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.Role, string.Join(',', roles))
+                new Claim(ClaimTypes.Email, user.Email)
             };
+            AddRolesToClaims(claims, roles);
 
             // Find client by name
             IClient client = await _authStore.FindClientByIdAsync(clientId);
@@ -135,6 +136,15 @@ namespace Store.WebAPI.Identity
             }
 
             return new ClientAuthResult();
+        }
+
+        private void AddRolesToClaims(IList<Claim> claims, IEnumerable<string> roles)
+        {
+            foreach (string role in roles)
+            {
+                Claim roleClaim = new Claim(ClaimTypes.Role, role);
+                claims.Add(roleClaim);
+            }
         }
 
         private string GenerateRefreshTokenValue()
