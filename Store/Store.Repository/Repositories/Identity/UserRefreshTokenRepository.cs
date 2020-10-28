@@ -56,21 +56,17 @@ namespace Store.Repositories.Identity
         public async Task<IUserRefreshToken> FindByKeyAsync(Guid key)
         {
             return await QuerySingleOrDefaultAsync<UserRefreshToken>(
-                sql: $@"
-                    SELECT * FROM {UserRefreshTokenSchema.Table}
-                    WHERE {UserRefreshTokenSchema.Columns.Id} = @{nameof(key)}",
-                param: key
-            );
+                            sql: $"SELECT * FROM {UserRefreshTokenSchema.Table} WHERE {UserRefreshTokenSchema.Columns.Id} = @{nameof(key)}",
+                            param: new { key }
+                         );
         }
 
         public async Task<IUserRefreshToken> FindByValueAsync(string value)
         {
             return await QuerySingleOrDefaultAsync<UserRefreshToken>(
-                sql: $@"
-                    SELECT * FROM {UserRefreshTokenSchema.Table}
-                    WHERE {UserRefreshTokenSchema.Columns.Value} = @{nameof(value)}",
-                param: value
-            );
+                            sql: $"SELECT * FROM {UserRefreshTokenSchema.Table} WHERE {UserRefreshTokenSchema.Columns.Value} = @{nameof(value)}",
+                            param: new { value }
+                         );
         }
 
         public Task DeleteByKeyAsync(Guid key)
