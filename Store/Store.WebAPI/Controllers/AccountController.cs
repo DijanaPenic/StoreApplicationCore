@@ -7,7 +7,9 @@ using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 using Store.Models.Api;
 using Store.Models.Api.Identity;
@@ -80,7 +82,6 @@ namespace Store.WebAPI.Controllers
             }
 
             ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, model.ClientSecret);
-
             if(!clientAuthResult.Succeeded)
             {
                 return Unauthorized(clientAuthResult.ErrorMessage);
@@ -99,7 +100,6 @@ namespace Store.WebAPI.Controllers
 
             // Attempt to sign in the specificied username and password
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, isPersistent: true, lockoutOnFailure: true);
-
             if (!signInResult.Succeeded)
             {
                 if (signInResult.IsLockedOut)
@@ -120,17 +120,59 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation($"User [{model.UserName}] has logged in the system.");
 
-            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(model.UserName, clientId);
+            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
 
             AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
             {
                 UserName = model.UserName,
                 Roles = jwtResult.Roles.ToArray(),
                 AccessToken = jwtResult.AccessToken,
-                RefreshToken = jwtResult.RefreshToken.Value
+                RefreshToken = jwtResult.RefreshToken
             };
 
             return Ok(authenticationResponse);
+        }
+
+        [HttpPost]
+        [Route("users/refresh-token")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequestApiModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // Verify client information
+            if (!Guid.TryParse(model.ClientId, out Guid clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, model.ClientSecret);
+            if (!clientAuthResult.Succeeded)
+            {
+                return Unauthorized(clientAuthResult.ErrorMessage);
+            }
+
+            try
+            {
+                // Generate new tokens
+                string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
+                JwtAuthResult jwtResult = await _authManager.RefreshTokensAsync(model.RefreshToken, accessToken, clientId);
+
+                RefreshTokenResponseApiModel authenticationResponse = new RefreshTokenResponseApiModel
+                {
+                    AccessToken = jwtResult.AccessToken,
+                    RefreshToken = jwtResult.RefreshToken
+                };
+
+                return Ok(authenticationResponse);
+            }
+            catch (SecurityTokenException e)
+            {
+                return Unauthorized(e.Message); 
+            }
         }
 
         [Route("roles")]

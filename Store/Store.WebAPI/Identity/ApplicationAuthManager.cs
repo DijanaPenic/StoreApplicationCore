@@ -20,27 +20,33 @@ namespace Store.WebAPI.Identity
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IApplicationAuthStore _authStore;
-        private readonly JwtTokenConfig _jwtTokenConfig; 
+        private readonly JwtTokenConfig _jwtTokenConfig;
+        private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly byte[] _secret;
 
-        public ApplicationAuthManager(ApplicationUserManager userManager, IApplicationAuthStore authStore, JwtTokenConfig jwtTokenConfig)
+        public ApplicationAuthManager(
+            ApplicationUserManager userManager, 
+            IApplicationAuthStore authStore, 
+            JwtTokenConfig jwtTokenConfig, 
+            TokenValidationParameters tokenValidationParameters)
         {
             _userManager = userManager;
             _authStore = authStore;
             _jwtTokenConfig = jwtTokenConfig;
+            _tokenValidationParameters = tokenValidationParameters;
             _secret = Encoding.ASCII.GetBytes(jwtTokenConfig.Secret);
         }
 
-        public async Task<JwtAuthResult> GenerateTokensAsync(string userName, Guid clientId)
+        public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId)
         {
-            if (string.IsNullOrWhiteSpace(userName))
-                throw new ArgumentNullException(nameof(userName));
+            if (GuidHelper.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
 
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));
 
-            // Find user by username
-            IUser user = await _userManager.FindByNameAsync(userName);
+            // Find user by id
+            IUser user = await _userManager.FindByIdAsync(userId.ToString());
 
             // Get user roles 
             IList<string> roles = await _userManager.GetRolesAsync(user);
@@ -48,8 +54,8 @@ namespace Store.WebAPI.Identity
             // Set user claims
             IList<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Name, user.NormalizedUserName),
+                new Claim(ClaimTypes.Email, user.NormalizedEmail)
             };
             AddRolesToClaims(claims, roles);
 
@@ -87,9 +93,51 @@ namespace Store.WebAPI.Identity
             return new JwtAuthResult
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                RefreshToken = refreshToken.Value,
                 Roles = roles
             };
+        }
+
+        public async Task<JwtAuthResult> RefreshTokensAsync(string refreshToken, string accessToken, Guid clientId)
+        {
+            (ClaimsPrincipal claimsPrincipal, JwtSecurityToken jwtToken) = await DecodeJwtTokenAsync(accessToken);
+
+            if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
+            {
+                throw new SecurityTokenException("Invalid token.");
+            }
+
+            IUserRefreshToken dbRefreshToken = await _authStore.FindRefreshTokenByValueAsync(refreshToken);
+            if (dbRefreshToken == null)
+            {
+                throw new SecurityTokenException("Invalid token.");
+            }
+            if (dbRefreshToken.ClientId != clientId)
+            {
+                throw new SecurityTokenException("Invalid client.");
+            }
+
+            string userName = claimsPrincipal.Identity.Name;
+            IUser user = await _userManager.FindByIdAsync(dbRefreshToken.UserId.ToString());
+
+            if (user.NormalizedUserName != userName || dbRefreshToken.DateExpiresUtc < DateTime.UtcNow)
+            {
+                throw new SecurityTokenException("Invalid token.");
+            }
+
+            return await GenerateTokensAsync(user.Id, clientId);
+        }
+
+        public Task<(ClaimsPrincipal, JwtSecurityToken)> DecodeJwtTokenAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new SecurityTokenException("Invalid token.");
+            }
+
+            ClaimsPrincipal claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
+
+            return Task.FromResult((claimsPrincipal, validatedToken as JwtSecurityToken));
         }
 
         public Task RemoveRefreshTokenAsync(Guid userId, Guid clientId)

@@ -8,7 +8,7 @@ namespace Store.WebAPI.Models
     {
         public string AccessToken { get; set; }
 
-        public IUserRefreshToken RefreshToken { get; set; }
+        public string RefreshToken { get; set; }
 
         public IList<string> Roles { get; set; }
     }
