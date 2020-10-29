@@ -26,6 +26,11 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>Performs a global search.</summary>
+        /// <param name="searchString">The search string.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Produces("application/json")]
         public async Task<IActionResult> GetAsync(string searchString)

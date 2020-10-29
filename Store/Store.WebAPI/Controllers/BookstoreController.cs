@@ -35,6 +35,12 @@ namespace Store.WebAPI.Controllers
             _cacheProvider = cacheManager.CacheProvider;
         }
 
+        /// <summary>Retrieves the bookstore.</summary>
+        /// <param name="id">The bookstore identifier.</param>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("{id:guid}")]
         [Produces("application/json")]
@@ -51,6 +57,16 @@ namespace Store.WebAPI.Controllers
             return NotFound();
         }
 
+        /// <summary>Retrieves books by specified search criteria.</summary>
+        /// <param name="id">The bookstore identifier.</param>
+        /// <param name="searchString">The search string.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
+        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("{id:guid}/books")]
         [Produces("application/json")]
@@ -78,6 +94,11 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>Retrieves all bookstore from cache or the database.</summary>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("all")]
         [Produces("application/json")]
@@ -112,6 +133,16 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>Retrieves bookstores by specified search criteria.</summary>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <param name="searchString">The search string.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
+        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Produces("application/json")]
         public async Task<IActionResult> GetAsync([FromQuery]string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, int pageSize = DefaultParameters.PageSize,
@@ -136,14 +167,19 @@ namespace Store.WebAPI.Controllers
         }
 
 
+        /// <summary>Creates a bookstore.</summary>
+        /// <param name="bookstoreModel">The bookstore model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Consumes("application/json")]
-        public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreViewModel)
+        public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreViewModel);
+            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
             ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
 
             switch (result)
@@ -156,15 +192,21 @@ namespace Store.WebAPI.Controllers
             }
         }
 
+        /// <summary>Updates the bookstore.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="bookstoreModel">The bookstore model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPatch]
         [Route("{id:guid}")]
         [Consumes("application/json")]
-        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookstorePatchApiModel bookstoreViewModel)
+        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookstorePatchApiModel bookstoreModel)
         {
             if (id == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(id, _mapper.Map<IBookstore>(bookstoreViewModel));
+            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(id, _mapper.Map<IBookstore>(bookstoreModel));
 
             switch (result)
             {
@@ -178,6 +220,11 @@ namespace Store.WebAPI.Controllers
             }
         }
 
+        /// <summary>Deletes the bookstore.</summary>
+        /// <param name="id">The bookstore identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpDelete]
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)

@@ -65,10 +65,15 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>Authenticates the user.</summary>
+        /// <param name="authenticateModel">The authenticate model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Route("users/authenticate")]
         [AllowAnonymous]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel model)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -76,56 +81,56 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify client information
-            if(!Guid.TryParse(model.ClientId, out Guid clientId))
+            if(!Guid.TryParse(authenticateModel.ClientId, out Guid clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid."); 
             }
 
-            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, model.ClientSecret);
+            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, authenticateModel.ClientSecret);
             if(!clientAuthResult.Succeeded)
             {
                 return Unauthorized(clientAuthResult.ErrorMessage);
             }
 
             // Check user's status
-            IUser user = await _userManager.FindByNameAsync(model.UserName);
+            IUser user = await _userManager.FindByNameAsync(authenticateModel.UserName);
             if(user == null)
             {
                 return Unauthorized($"Failed to log in - invalid username and/or password.");
             }
             if (user.IsDeleted)
             {
-                return Unauthorized($"User [{model.UserName}] has been deleted.");
+                return Unauthorized($"User [{authenticateModel.UserName}] has been deleted.");
             }
 
             // Attempt to sign in the specificied username and password
             // isPersistent: false -> WEB API is not using cookie authentication
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, isPersistent: false, lockoutOnFailure: true);
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(authenticateModel.UserName, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true);
             if (!signInResult.Succeeded)
             {
                 if (signInResult.IsLockedOut)
                 {
-                    return Unauthorized($"User [{model.UserName}] has been locked out.");
+                    return Unauthorized($"User [{authenticateModel.UserName}] has been locked out.");
                 }
                 if (signInResult.IsNotAllowed)
                 {
-                    return Unauthorized($"User [{model.UserName}] is not allowed to log in.");
+                    return Unauthorized($"User [{authenticateModel.UserName}] is not allowed to log in.");
                 }
                 if (signInResult.RequiresTwoFactor)
                 {
-                    return Unauthorized($"User [{model.UserName}] requires two-factor authentication.");
+                    return Unauthorized($"User [{authenticateModel.UserName}] requires two-factor authentication.");
                 }
 
                 return Unauthorized($"Failed to log in - invalid username and/or password.");
             }
 
-            _logger.LogInformation($"User [{model.UserName}] has logged in the system.");
+            _logger.LogInformation($"User [{authenticateModel.UserName}] has logged in the system.");
 
             JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
 
             AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
             {
-                UserName = model.UserName,
+                UserName = authenticateModel.UserName,
                 Roles = jwtResult.Roles.ToArray(),
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken
@@ -134,10 +139,15 @@ namespace Store.WebAPI.Controllers
             return Ok(authenticationResponse);
         }
 
+        /// <summary>Refreshes tokens (refresh and access tokens).</summary>
+        /// <param name="refreshTokenModel">The refresh token model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Route("users/refresh-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequestApiModel model)
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequestApiModel refreshTokenModel)
         {
             if (!ModelState.IsValid)
             {
@@ -145,12 +155,12 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify client information
-            if (!Guid.TryParse(model.ClientId, out Guid clientId))
+            if (!Guid.TryParse(refreshTokenModel.ClientId, out Guid clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
-            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, model.ClientSecret);
+            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, refreshTokenModel.ClientSecret);
             if (!clientAuthResult.Succeeded)
             {
                 return Unauthorized(clientAuthResult.ErrorMessage);
@@ -160,7 +170,7 @@ namespace Store.WebAPI.Controllers
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                JwtAuthResult jwtResult = await _authManager.RefreshTokensAsync(model.RefreshToken, accessToken, clientId);
+                JwtAuthResult jwtResult = await _authManager.RefreshTokensAsync(refreshTokenModel.RefreshToken, accessToken, clientId);
 
                 RefreshTokenResponseApiModel authenticationResponse = new RefreshTokenResponseApiModel
                 {
@@ -176,6 +186,10 @@ namespace Store.WebAPI.Controllers
             }
         }
 
+        /// <summary>Gets the roles.</summary>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("roles")]
         [AuthorizationFilter(RoleHelper.Admin)]
@@ -186,24 +200,29 @@ namespace Store.WebAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<RoleGetApiModel>>(roles));
         }
 
+        /// <summary>Creates the specified user.</summary>
+        /// <param name="userModel">The user model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Route("users/create")]
         [AuthorizationFilter(RoleHelper.Admin)]
-        public async Task<IActionResult> Create(UserPostApiModel model)
+        public async Task<IActionResult> Create(UserPostApiModel userModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            IUser user = _mapper.Map<IUser>(model);
-            IdentityResult userResult = await _userManager.CreateAsync(user, model.Password);
+            IUser user = _mapper.Map<IUser>(userModel);
+            IdentityResult userResult = await _userManager.CreateAsync(user, userModel.Password);
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
 
             _logger.LogInformation("User created a new account with password.");
 
-            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, model.Roles);
+            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, userModel.Roles);
 
             if (!roleResult.Succeeded) return GetErrorResult(roleResult);
 
@@ -212,10 +231,16 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>Updates the user.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="userModel">The user model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPatch]
         [Route("users/{id:guid}")]
         [AuthorizationFilter(RoleHelper.Admin)]
-        public async Task<IActionResult> PatchUserAsync([FromRoute] Guid id, [FromBody] UserPatchApiModel model)
+        public async Task<IActionResult> PatchUserAsync([FromRoute] Guid id, [FromBody] UserPatchApiModel userModel)
         {
             if (id == Guid.Empty)
                 return BadRequest();
@@ -225,7 +250,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(model.Roles);
+            bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(userModel.Roles);
             if (!isRoleSelectionValid)
             {
                 return BadRequest("Invalid role selection.");
@@ -238,21 +263,21 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            _mapper.Map(model, user);
+            _mapper.Map(userModel, user);
             IdentityResult userResult = await _userManager.UpdateAsync(user);
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
 
             // Remove user from roles that are not listed in model.roles
-            IEnumerable<string> rolesToRemove = user.Roles.Where(r => !model.Roles.Contains(r.Name)).Select(r => r.Name);
+            IEnumerable<string> rolesToRemove = user.Roles.Where(r => !userModel.Roles.Contains(r.Name)).Select(r => r.Name);
             IdentityResult removeRolesResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
 
             if (!removeRolesResult.Succeeded) return GetErrorResult(removeRolesResult);
 
             // Assign user to roles
-            if (model.Roles != null)
+            if (userModel.Roles != null)
             {
-                IEnumerable<string> rolesToAdd = model.Roles.Except(user.Roles.Select(r => r.Name));
+                IEnumerable<string> rolesToAdd = userModel.Roles.Except(user.Roles.Select(r => r.Name));
                 IdentityResult addRolesResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
 
                 if (!addRolesResult.Succeeded) return GetErrorResult(addRolesResult);
@@ -261,6 +286,11 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>Unlocks the user.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Route("users/{id:guid}/unlock")]
         [AuthorizationFilter(RoleHelper.Admin)]
@@ -282,10 +312,16 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
+        /// <summary>Changes the user's password.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="changePasswordModel">The change password model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Route("users/{id:guid}/change-password")]
         [AuthorizationFilter(RoleHelper.Admin)]
-        public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordPostApiModel model)
+        public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordPostApiModel changePasswordModel)
         {
             if (id == Guid.Empty)
                 return BadRequest();
@@ -301,11 +337,22 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            IdentityResult result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            IdentityResult result = await _userManager.ChangePasswordAsync(user, changePasswordModel.OldPassword, changePasswordModel.NewPassword);
 
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
+        /// <summary>Retrieves users by specified search criteria.</summary>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <param name="showInactive">if set to <c>true</c> [show inactive].</param>
+        /// <param name="searchString">The search string.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
+        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("users")]
         [AuthorizationFilter(RoleHelper.Admin)]
@@ -331,6 +378,12 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>Retrieves the user by identifier.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("users/{id:guid}")]
         [AuthorizationFilter(RoleHelper.Admin)]
@@ -347,6 +400,12 @@ namespace Store.WebAPI.Controllers
             return NotFound();
         }
 
+        /// <summary>Assigns roles to the user.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="rolesToAssign">The roles to assign.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPut]
         [Route("users/{id:guid}/roles")]
         [AuthorizationFilter(RoleHelper.Admin)]
