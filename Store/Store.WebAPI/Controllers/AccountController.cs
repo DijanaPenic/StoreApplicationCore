@@ -99,7 +99,8 @@ namespace Store.WebAPI.Controllers
             }
 
             // Attempt to sign in the specificied username and password
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, isPersistent: true, lockoutOnFailure: true);
+            // isPersistent: false -> WEB API is not using cookie authentication
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, isPersistent: false, lockoutOnFailure: true);
             if (!signInResult.Succeeded)
             {
                 if (signInResult.IsLockedOut)
