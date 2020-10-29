@@ -12,7 +12,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<ClientEntity> builder)
         {
             // Maps to the Client table
-            builder.ToTable("client");
+            builder.ToTable("client", "identity");
 
             // Primary key
             builder.HasKey(c => c.Id);

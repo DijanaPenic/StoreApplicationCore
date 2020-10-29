@@ -5,7 +5,7 @@ namespace Store.DAL.Schema
 {
     public class UserClaimSchema
     {
-        public static string Table { get; } = "user_claim";
+        public static string Table { get; } = "identity.user_claim";
 
         public static class Columns
         {

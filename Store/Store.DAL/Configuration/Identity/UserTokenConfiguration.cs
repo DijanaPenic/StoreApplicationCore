@@ -10,7 +10,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<UserTokenEntity> builder)
         {
             // Maps to the UserToken table
-            builder.ToTable("user_token");
+            builder.ToTable("user_token", "identity");
 
             // Composite primary key consisting of the UserId, LoginProvider and Name
             builder.HasKey(ut => new { ut.UserId, ut.LoginProvider, ut.Name });

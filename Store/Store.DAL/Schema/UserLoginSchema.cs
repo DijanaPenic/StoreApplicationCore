@@ -5,7 +5,7 @@ namespace Store.DAL.Schema
 {
     public class UserLoginSchema
     {
-        public static string Table { get; } = "user_login";
+        public static string Table { get; } = "identity.user_login";
 
         public static class Columns
         {

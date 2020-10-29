@@ -10,7 +10,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<UserRefreshTokenEntity> builder)
         {
             // Maps to the RefreshToken table
-            builder.ToTable("user_refresh_token");
+            builder.ToTable("user_refresh_token", "identity");
 
             // Primary key
             builder.HasKey(rt => rt.Id);

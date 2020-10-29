@@ -10,7 +10,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<UserClaimEntity> builder)
         {
             // Maps to the UserClaim table
-            builder.ToTable("user_claim");
+            builder.ToTable("user_claim", "identity");
 
             // Primary key
             builder.HasKey(uc => uc.Id);

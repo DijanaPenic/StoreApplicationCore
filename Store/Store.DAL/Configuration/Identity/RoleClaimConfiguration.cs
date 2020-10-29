@@ -10,7 +10,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<RoleClaimEntity> builder)
         {
             // Maps to the RoleClaim table
-            builder.ToTable("role_claim");
+            builder.ToTable("role_claim", "identity");
 
             // Primary key
             builder.HasKey(rc => rc.Id);

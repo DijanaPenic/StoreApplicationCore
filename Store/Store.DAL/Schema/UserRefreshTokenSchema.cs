@@ -5,7 +5,7 @@ namespace Store.DAL.Schema
 {
     public class UserRefreshTokenSchema
     {
-        public static string Table { get; } = "user_refresh_token";
+        public static string Table { get; } = "identity.user_refresh_token";
 
         public static class Columns
         {

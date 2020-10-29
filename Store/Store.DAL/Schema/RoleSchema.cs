@@ -5,7 +5,7 @@ namespace Store.DAL.Schema
 {
     public class RoleSchema
     {
-        public static string Table { get; } = "role";
+        public static string Table { get; } = "identity.role";
 
         public static class Columns
         {

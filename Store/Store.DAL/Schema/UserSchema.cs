@@ -5,8 +5,7 @@ namespace Store.DAL.Schema
 {
     public static class UserSchema
     {
-        // TODO - need to investigate - for some reason, only the User table reuqires quotes
-        public static string Table { get; } = "\"user\""; 
+        public static string Table { get; } = "identity.user"; 
 
         public static class Columns
         {

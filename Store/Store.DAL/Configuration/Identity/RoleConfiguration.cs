@@ -11,7 +11,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<RoleEntity> builder)
         {
             // Maps to the Role table
-            builder.ToTable("role");
+            builder.ToTable("role", "identity");
 
             // Primary key
             builder.HasKey(r => r.Id);

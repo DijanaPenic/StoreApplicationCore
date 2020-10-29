@@ -5,7 +5,7 @@ namespace Store.DAL.Schema
 {
     public class ClientSchema
     {
-        public static string Table { get; } = "client";
+        public static string Table { get; } = "identity.client";
 
         public static class Columns
         {

@@ -10,7 +10,7 @@ namespace Store.DAL.Configuration.Identity
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
             // Maps to the User table
-            builder.ToTable("user");
+            builder.ToTable("user", "identity");
 
             // Primary key
             builder.HasKey(u => u.Id);
