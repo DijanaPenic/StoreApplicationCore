@@ -176,6 +176,7 @@ namespace Store.WebAPI.Controllers
             }
         }
 
+        [HttpGet]
         [Route("roles")]
         [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> GetRolesAsync()

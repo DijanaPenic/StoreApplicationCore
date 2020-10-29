@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Store.WebAPI.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ExtendedControllerBase : ControllerBase
     {
         public IActionResult InternalServerError()
