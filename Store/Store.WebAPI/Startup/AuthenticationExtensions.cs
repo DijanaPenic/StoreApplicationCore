@@ -38,13 +38,13 @@ namespace Store.WebAPI.Application.Startup
             JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
 
+            // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens
             TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidIssuer = jwtTokenConfig.Issuer,
+                ValidateIssuer = false,     // Issuer will be checked by the client (web application)
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
-                ValidateAudience = true,
+                ValidateAudience = true,    // Audience is checked by the resource server (in this application: Web API)
                 ValidAudience = jwtTokenConfig.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(1)
