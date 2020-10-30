@@ -50,15 +50,16 @@ namespace Store.WebAPI
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger(c =>
+            app.UseSwagger(swaggerOptions =>
             {
-                c.SerializeAsV2 = true;
+                swaggerOptions.SerializeAsV2 = true;
             });
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(swaggerOptions =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                swaggerOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                swaggerOptions.RoutePrefix = string.Empty;
             });
 
             if (env.IsDevelopment())
