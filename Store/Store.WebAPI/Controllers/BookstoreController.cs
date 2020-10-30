@@ -22,6 +22,7 @@ namespace Store.WebAPI.Controllers
     [ApiController]
     [Route("bookstore")]
     [AuthorizationFilter(RoleHelper.StoreManager, RoleHelper.Admin)]
+    [ApiExplorerSettings(IgnoreApi = false)]
     public class BookstoreController : ExtendedControllerBase
     {
         private readonly IBookstoreService _bookstoreService;

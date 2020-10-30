@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace Store.WebAPI.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
     public class ExtendedControllerBase : ControllerBase
     {
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult InternalServerError()
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Created()
         {
             return StatusCode(StatusCodes.Status201Created);

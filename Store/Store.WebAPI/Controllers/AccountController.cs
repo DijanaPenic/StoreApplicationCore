@@ -19,11 +19,11 @@ using Store.Cache.Common;
 using Store.WebAPI.Models;
 using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
+using Store.WebAPI.Infrastructure;
 using Store.Common.Helpers;
+using Store.Common.Helpers.Identity;
 using Store.Web.Controllers;
 
-using Store.WebAPI.Infrastructure;
-using Store.Common.Helpers.Identity;
 
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -31,6 +31,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("account")]
+    [ApiExplorerSettings(IgnoreApi = false)]
     public class AccountController : ExtendedControllerBase
     {
         private readonly IMapper _mapper;
@@ -186,7 +187,7 @@ namespace Store.WebAPI.Controllers
             }
         }
 
-        /// <summary>Gets the roles.</summary>
+        /// <summary>Retrieves all roles.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
