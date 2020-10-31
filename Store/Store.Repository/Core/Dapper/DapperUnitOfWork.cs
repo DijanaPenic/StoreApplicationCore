@@ -35,8 +35,6 @@ namespace Store.Repository.Core.Dapper
 
         private IClientRepository _clientRepository;
 
-        private bool _disposed;
-
         #endregion
 
         public DapperUnitOfWork(string connectionString)
@@ -134,17 +132,14 @@ namespace Store.Repository.Core.Dapper
             }
             finally
             {
+                // Transaction is closed after a commit. 
                 _transaction.Dispose();
+
+                // Transaction resources have been released so we need to re-create UoW repository classes, as they're using reference to disposed transaction.
                 ResetRepositories();
+
                 _transaction = _connection.BeginTransaction();
             }
-        }
-
-        // TODO - check dispose (I'll use DI)
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         #endregion
@@ -162,32 +157,6 @@ namespace Store.Repository.Core.Dapper
             _userRoleRepository = null;
             _userRefreshTokenRepository = null;
             _clientRepository = null;
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    if (_transaction != null)
-                    {
-                        _transaction.Dispose();
-                        _transaction = null;
-                    }
-                    if (_connection != null)
-                    {
-                        _connection.Dispose();
-                        _connection = null;
-                    }
-                }
-                _disposed = true;
-            }
-        }
-
-        ~DapperUnitOfWork()
-        {
-            Dispose(false);
         }
 
         #endregion

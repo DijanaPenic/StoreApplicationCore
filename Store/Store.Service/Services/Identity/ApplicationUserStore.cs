@@ -184,10 +184,6 @@ namespace Store.Services.Identity
             }
         }
 
-        public void Dispose()
-        {
-            // Lifetimes of dependencies are managed by the IoC container, so disposal here is unnecessary.
-        }
         #endregion
 
         #region IUserPasswordStore<IUser> Members
@@ -869,6 +865,15 @@ namespace Store.Services.Identity
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
             return _unitOfWork.UserRepository.FindByKeyAsync(id, includeProperties); 
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            // Lifetimes of dependencies are managed by the IoC container, so disposal here is unnecessary.
         }
 
         #endregion

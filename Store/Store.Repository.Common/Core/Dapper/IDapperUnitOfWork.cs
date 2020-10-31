@@ -4,7 +4,7 @@ using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Common.Core.Dapper
 {
-    public interface IDapperUnitOfWork : IDisposable
+    public interface IDapperUnitOfWork
     {
         IRoleRepository RoleRepository { get; }
 

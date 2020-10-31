@@ -177,11 +177,6 @@ namespace Store.Services.Identity
             }
         }
 
-        public void Dispose()
-        {
-            // Lifetimes of dependencies are managed by the IoC container, so disposal here is unnecessary.
-        }
-
         #endregion
 
         #region IRoleClaimStore<IRole> Members
@@ -248,6 +243,15 @@ namespace Store.Services.Identity
         public Task<IEnumerable<IRole>> GetRolesAsync()
         {
             return _unitOfWork.RoleRepository.GetAsync();
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            // Lifetimes of dependencies are managed by the IoC container, so disposal here is unnecessary.
         }
 
         #endregion
