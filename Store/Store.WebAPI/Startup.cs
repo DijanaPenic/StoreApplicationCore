@@ -58,7 +58,7 @@ namespace Store.WebAPI
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(swaggerOptions =>
             {
-                swaggerOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                swaggerOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "Store API V1");
                 swaggerOptions.RoutePrefix = string.Empty;
             });
 
