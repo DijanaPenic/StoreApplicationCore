@@ -222,6 +222,38 @@ namespace Store.WebAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<RoleGetApiModel>>(roles));
         }
 
+        /// <summary>Registers a new user.</summary>
+        /// <param name="registerUserModel">The register user model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [Route("users/register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterUserAsync(UserRegisterPostApiModel registerUserModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            IUser user = _mapper.Map<IUser>(registerUserModel);
+            IdentityResult userResult = await _userManager.CreateAsync(user, registerUserModel.Password);
+
+            if (!userResult.Succeeded) return GetErrorResult(userResult);
+
+            // Assign user to Guest role
+            IList<string> roles = new List<string>()
+            {
+                RoleHelper.Guest
+            };
+            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, roles);
+
+           if (!roleResult.Succeeded) return GetErrorResult(roleResult);
+
+            return Ok();
+        }
+
         /// <summary>Creates the specified user.</summary>
         /// <param name="createUserModel">The create user model.</param>
         /// <returns>
