@@ -15,13 +15,13 @@ namespace Store.Repository.Common.Core
 
         Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(params string[] includeProperties);
 
-        Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+        Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties);
 
-        Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+        Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties);
 
-        Task<IEnumerable<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties);
+        Task<IEnumerable<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties);
 
-        Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties);
+        Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties);
 
         Task<TDomain> FindByIdAsync(Guid id, params string[] includeProperties);
 

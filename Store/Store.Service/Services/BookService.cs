@@ -34,7 +34,7 @@ namespace Store.Services
         {
             Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(searchString) ? (Expression<Func<IBook, bool>>)null : b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
 
-            return _unitOfWork.BookRepository.FindAsync(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _unitOfWork.BookRepository.FindAsync(filterExpression, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
         }
 
         public async Task<ResponseStatus> UpdateBookAsync(IBook book)

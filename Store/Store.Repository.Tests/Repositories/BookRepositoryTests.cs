@@ -89,7 +89,7 @@ namespace Store.Repository.Tests
             string searchString = "Name";
             Expression<Func<IBook, bool>> filterExpression = b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
             
-            IPagedList<IBook> result = await _repository.FindAsync(filterExpression, nameof(IBook.Name), true, 1, 3);
+            IPagedList<IBook> result = await _repository.FindAsync(filterExpression, true, nameof(IBook.Name), 1, 3);
 
             Assert.NotNull(result);
             Assert.Equal(1, result.TotalItemCount);
@@ -105,7 +105,7 @@ namespace Store.Repository.Tests
             string searchString = "Name";
             Expression<Func<IBook, bool>> filterExpression = b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
 
-            IEnumerable<IBook> result = await _repository.FindAsync(filterExpression, nameof(IBook.Name), true);
+            IEnumerable<IBook> result = await _repository.FindAsync(filterExpression, true, nameof(IBook.Name));
 
             Assert.NotNull(result);
             Assert.Single(result);

@@ -28,7 +28,7 @@ namespace Store.Repositories
                 filterExpression = filterExpression.And(b => b.Name.Contains(searchString) || b.Author.Contains(searchString));
             }
 
-            return FindAsync(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
+            return FindAsync(filterExpression, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize);
         }
     }
 }

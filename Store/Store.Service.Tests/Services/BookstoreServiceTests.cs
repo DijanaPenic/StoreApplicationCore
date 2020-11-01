@@ -33,7 +33,7 @@ namespace Store.Service.Tests.Services
 
             mockBookstoreRepository.Setup(r => r.FindByIdWithProjectionAsync<BookstoreDto>(It.IsAny<Guid>())).ReturnsAsync(_bookstores.First());
             mockBookstoreRepository.Setup(r => r.GetWithProjectionAsync<BookstoreDto>()).ReturnsAsync(_bookstores.AsEnumerable());
-            mockBookstoreRepository.Setup(r => r.FindWithProjectionAsync<BookstoreDto>(It.IsAny<Expression<Func<IBookstore, bool>>>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(_bookstores.ToPagedList(1, 1));
+            mockBookstoreRepository.Setup(r => r.FindWithProjectionAsync<BookstoreDto>(It.IsAny<Expression<Func<IBookstore, bool>>>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(_bookstores.ToPagedList(1, 1));
 
             mockBookstoreRepository.Setup(r => r.UpdateAsync(It.IsAny<IBookstore>())).ReturnsAsync(ResponseStatus.Success);
             mockBookstoreRepository.Setup(r => r.UpdateAsync(It.IsAny<Guid>(), It.IsAny<IBookstore>())).ReturnsAsync(ResponseStatus.Success);

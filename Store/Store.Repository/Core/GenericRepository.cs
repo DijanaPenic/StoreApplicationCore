@@ -49,30 +49,30 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
 
-        public async Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public async Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            IPagedList<TEntity> entityPagedList = await Find(filterExpression, sortOrderProperty, isDescendingSortOrder, includeProperties).ToPagedListAsync(pageNumber, pageSize);
+            IPagedList<TEntity> entityPagedList = await Find(filterExpression, isDescendingSortOrder, sortOrderProperty, includeProperties).ToPagedListAsync(pageNumber, pageSize);
 
             return entityPagedList.ToPagedList<TEntity, TDomain>(Mapper);
         }
 
-        public async Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public async Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            IPagedList<TDestination> destPagedList = await FindWithProjection<TDestination>(filterExpression, sortOrderProperty, isDescendingSortOrder, includeProperties).ToPagedListAsync(pageNumber, pageSize);
+            IPagedList<TDestination> destPagedList = await FindWithProjection<TDestination>(filterExpression, isDescendingSortOrder, sortOrderProperty, includeProperties).ToPagedListAsync(pageNumber, pageSize);
 
             return destPagedList.ToPagedList<TDestination, TDomain>(Mapper);
         }
 
-        public async Task<IEnumerable<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties) 
+        public async Task<IEnumerable<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties) 
         {
-            IEnumerable<TEntity> entities = await Find(filterExpression, sortOrderProperty, isDescendingSortOrder, includeProperties).ToListAsync();
+            IEnumerable<TEntity> entities = await Find(filterExpression, isDescendingSortOrder, sortOrderProperty, includeProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        public async Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties)
+        public async Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties)
         {
-            IList<TDestination> destItems = await FindWithProjection<TDestination>(filterExpression, sortOrderProperty, isDescendingSortOrder, includeProperties).ToListAsync();
+            IList<TDestination> destItems = await FindWithProjection<TDestination>(filterExpression, isDescendingSortOrder, sortOrderProperty, includeProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
@@ -169,7 +169,7 @@ namespace Store.Repository.Core
             return ResponseStatus.Success;
         }
 
-        private IQueryable<TEntity> Find(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties)
+        private IQueryable<TEntity> Find(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties)
         {
             Expression<Func<TEntity, bool>> entityFilterExpression = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
             string entitySortOrderProperty = ModelMapperHelper.GetPropertyMapping<TDomain, TEntity>(Mapper, sortOrderProperty);
@@ -182,7 +182,7 @@ namespace Store.Repository.Core
             return query;
         }
 
-        private IQueryable<TDestination> FindWithProjection<TDestination>(Expression<Func<TDomain, bool>> filterExpression, string sortOrderProperty, bool isDescendingSortOrder, params string[] includeProperties)
+        private IQueryable<TDestination> FindWithProjection<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties)
         {
             Expression<Func<TEntity, bool>> entityFilterExpression = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
             string entitySortOrderProperty = ModelMapperHelper.GetPropertyMapping<TDomain, TEntity>(Mapper, sortOrderProperty);

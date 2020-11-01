@@ -27,8 +27,8 @@ namespace Store.Services
                 IEnumerable<IBook> books = await _unitOfWork.BookRepository.FindAsync
                 (
                     b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString),
-                    nameof(IBook.Name),
                     true,
+                    nameof(IBook.Name),
                     nameof(IBook.Bookstore)
                 );
 
@@ -50,8 +50,8 @@ namespace Store.Services
                 IEnumerable<IBookstore> bookstores = await _unitOfWork.BookstoreRepository.FindAsync
                 (
                     bs => bs.Name.Contains(searchString) || bs.Location.Contains(searchString),
-                    nameof(IBookstore.Name),
-                    true
+                    true,
+                    nameof(IBookstore.Name)
                 );
 
                 foreach (IBookstore bookstore in bookstores)

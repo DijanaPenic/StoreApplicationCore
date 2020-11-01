@@ -32,7 +32,7 @@ namespace Store.Service.Tests.Services
 
             mockBookRepository.Setup(r => r.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync(_books.First());
             mockBookRepository.Setup(r => r.GetAsync()).ReturnsAsync(_books.AsEnumerable());
-            mockBookRepository.Setup(r => r.FindAsync(It.IsAny<Expression<Func<IBook, bool>>>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(_books.ToPagedList(1, 1));
+            mockBookRepository.Setup(r => r.FindAsync(It.IsAny<Expression<Func<IBook, bool>>>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(_books.ToPagedList(1, 1));
 
             mockBookRepository.Setup(r => r.UpdateAsync(It.IsAny<IBook>())).ReturnsAsync(ResponseStatus.Success);
             mockBookRepository.Setup(r => r.UpdateAsync(It.IsAny<Guid>(), It.IsAny<IBook>())).ReturnsAsync(ResponseStatus.Success);

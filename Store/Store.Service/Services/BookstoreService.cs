@@ -40,7 +40,7 @@ namespace Store.Services
         {
             Expression<Func<IBookstore, bool>> filterExpression = string.IsNullOrEmpty(searchString) ? (Expression<Func<IBookstore, bool>>)null : bs => bs.Name.Contains(searchString) || bs.Location.Contains(searchString);
 
-            return _unitOfWork.BookstoreRepository.FindWithProjectionAsync<BookstoreDto>(filterExpression, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _unitOfWork.BookstoreRepository.FindWithProjectionAsync<BookstoreDto>(filterExpression, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
         }
 
         public async Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)
