@@ -101,6 +101,10 @@ namespace Store.WebAPI.Controllers
             {
                 return Unauthorized($"User [{authenticateModel.UserName}] has been deleted.");
             }
+            if (!user.IsApproved)
+            {
+                return Unauthorized($"User [{authenticateModel.UserName}] is not approved.");
+            }
 
             // Attempt to sign in the specificied username and password
             // isPersistent: false -> WEB API is not using cookie authentication
