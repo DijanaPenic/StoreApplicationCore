@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Npgsql;
-using System;
 using System.Data;
 
 using Store.Repositories.Identity;

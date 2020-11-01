@@ -52,9 +52,11 @@ namespace Store.Services.Identity
             _unitOfWork.Commit();
         }
 
-        public Task RemoveExpiredRefreshTokensAsync()
+        public async Task RemoveExpiredRefreshTokensAsync()
         {
-            return _unitOfWork.UserRefreshTokenRepository.DeleteExpiredAsync();
+            await _unitOfWork.UserRefreshTokenRepository.DeleteExpiredAsync();
+
+            _unitOfWork.Commit();
         }
 
         public Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId)

@@ -99,7 +99,7 @@ namespace Store.Repositories.Identity
                 sql: $@"
                     DELETE FROM {UserRefreshTokenSchema.Table}
                     WHERE {UserRefreshTokenSchema.Columns.DateExpiresUtc} < @{nameof(now)}",
-                param: now
+                param: new { now }  // Datetime must be sent as dynamic object (instead of parameter: "The JIT compiler encountered invalid IL code or an internal limitation"). 
             );
         }
 
