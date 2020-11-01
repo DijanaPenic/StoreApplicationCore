@@ -64,6 +64,15 @@ namespace Store.DAL.Configuration.Identity
                     Stackable = true,
                     DateCreatedUtc = DateTime.Parse("08-Oct-20 6:44:11 PM"),
                     DateUpdatedUtc = DateTime.Parse("08-Oct-20 6:44:11 PM")
+                },
+                new RoleEntity
+                {
+                    Id = Guid.Parse("9621c09c-06b1-45fb-8baf-38e0757e2f59"),
+                    Name = "Guest",
+                    NormalizedName = "GUEST",
+                    Stackable = false,
+                    DateCreatedUtc = DateTime.Parse("30-Oct-20 6:44:11 PM"),
+                    DateUpdatedUtc = DateTime.Parse("30-Oct-20 6:44:11 PM")
                 }
             );
         }

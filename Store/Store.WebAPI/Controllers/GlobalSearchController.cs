@@ -14,7 +14,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("global-search")]
-    [AuthorizationFilter(RoleHelper.All)]
+    [AuthorizationFilter(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class GlobalSearchController : ControllerBase
     {
         private readonly IGlobalSearchService _globalSearchService;
