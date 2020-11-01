@@ -1,14 +1,20 @@
+using Hangfire;
+using Hangfire.PostgreSql;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
-using Store.Cache.DependencyInjection;
+using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Application.Startup;
+using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 using Store.Repository.DependencyInjection;
+using Store.WebAPI.Identity;
 
 namespace Store.WebAPI
 {
@@ -42,6 +48,9 @@ namespace Store.WebAPI
             // Swagger configuration
             services.AddSwagger();
 
+            // Hangfire configuration
+            services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("DatabaseConnection")));
+
             // Controller configuration
             services.AddControllers();
         }
@@ -49,6 +58,23 @@ namespace Store.WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Configure hangfire dashboard and server
+            var tokenValidationParameters = (TokenValidationParameters)app.ApplicationServices.GetService(typeof(TokenValidationParameters));
+            var logger = (ILogger<HangfireDashboardAuthorizationFilter>)app.ApplicationServices.GetService(typeof(ILogger<HangfireDashboardAuthorizationFilter>));
+
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[] { new HangfireDashboardAuthorizationFilter(tokenValidationParameters, logger) }    // allow only admins to access the hangfire content
+            });
+            app.UseHangfireServer();
+
+            // Configure hangfire daily job - recurring job at 9.00 AM Daily       
+            using (IServiceScope scope = app.ApplicationServices.CreateScope()) 
+            {
+                var authManager = (ApplicationAuthManager)scope.ServiceProvider.GetService(typeof(ApplicationAuthManager)); // ApplicationUserManager input parameter is a scoped service
+                RecurringJob.AddOrUpdate(() => authManager.RemoveExpiredRefreshTokensAsync(), "0 9 * * *");
+            }
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger(swaggerOptions =>
             {

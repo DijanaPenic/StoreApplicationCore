@@ -18,21 +18,21 @@ namespace Store.WebAPI.Application.Startup
         {
             // Identity configuration
             services.AddIdentity<IUser, IRole>(identityOptions =>
-            {
-                identityOptions.Password.RequiredLength = 8;
-                identityOptions.Password.RequireDigit = true;
-                identityOptions.Password.RequireUppercase = true;
-                identityOptions.Password.RequireNonAlphanumeric = true;
+                    {
+                        identityOptions.Password.RequiredLength = 8;
+                        identityOptions.Password.RequireDigit = true;
+                        identityOptions.Password.RequireUppercase = true;
+                        identityOptions.Password.RequireNonAlphanumeric = true;
 
-                identityOptions.Lockout.AllowedForNewUsers = true;
-                identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
-                identityOptions.Lockout.MaxFailedAccessAttempts = 3;
-            })
-            .AddUserManager<ApplicationUserManager>()
-            .AddRoleManager<ApplicationRoleManager>()
-            .AddDefaultTokenProviders();
+                        identityOptions.Lockout.AllowedForNewUsers = true;
+                        identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                        identityOptions.Lockout.MaxFailedAccessAttempts = 3;
+                    })
+                    .AddUserManager<ApplicationUserManager>()   // Scoped
+                    .AddRoleManager<ApplicationRoleManager>()   // Scoped
+                    .AddDefaultTokenProviders();                
 
-            services.AddTransient<ApplicationAuthManager>();
+            services.AddTransient<ApplicationAuthManager>();   
 
             // JWT cnfiguration
             JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
@@ -52,15 +52,16 @@ namespace Store.WebAPI.Application.Startup
             services.AddSingleton(tokenValidationParameters);
 
             services.AddAuthentication(authOptions =>
-            {
-                authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(jwtOptions =>
-            {
-                jwtOptions.RequireHttpsMetadata = true;
-                jwtOptions.SaveToken = true;
-                jwtOptions.TokenValidationParameters = tokenValidationParameters;
-            });
+                    {
+                        authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                    .AddJwtBearer(jwtOptions =>
+                    {
+                        jwtOptions.RequireHttpsMetadata = true;
+                        jwtOptions.SaveToken = true;
+                        jwtOptions.TokenValidationParameters = tokenValidationParameters;
+                    });
         }
     }
 }
