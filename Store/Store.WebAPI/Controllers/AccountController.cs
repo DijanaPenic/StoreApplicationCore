@@ -223,28 +223,28 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Creates the specified user.</summary>
-        /// <param name="userModel">The user model.</param>
+        /// <param name="createUserModel">The create user model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
         [Route("users/create")]
         [AuthorizationFilter(RoleHelper.Admin)]
-        public async Task<IActionResult> Create(UserPostApiModel userModel)
+        public async Task<IActionResult> CreateUserAsync(UserCreatePostApiModel createUserModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            IUser user = _mapper.Map<IUser>(userModel);
-            IdentityResult userResult = await _userManager.CreateAsync(user, userModel.Password);
+            IUser user = _mapper.Map<IUser>(createUserModel);
+            IdentityResult userResult = await _userManager.CreateAsync(user, createUserModel.Password);
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
 
             _logger.LogInformation("User created a new account with password.");
 
-            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, userModel.Roles);
+            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, createUserModel.Roles);
 
             if (!roleResult.Succeeded) return GetErrorResult(roleResult);
 
