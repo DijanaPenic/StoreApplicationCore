@@ -42,8 +42,6 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         // TODO - resolve email sender
         //private readonly IEmailSender _emailSender;
-
-
         private readonly ILogger _logger;
 
         public AccountController(
@@ -185,6 +183,29 @@ namespace Store.WebAPI.Controllers
             {
                 return Unauthorized(e.Message); 
             }
+        }
+
+        /// <summary>Deletes the expired refresh tokens.</summary>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpDelete]
+        [Route("users/expired-refresh-tokens")]
+        [AuthorizationFilter(RoleHelper.Admin)]  
+        public async Task<IActionResult> DeleteExpiredRefreshTokensAsync()
+        {
+            try
+            {
+                await _authManager.RemoveExpiredRefreshTokensAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Deletion of the expired refresh tokens has failed.", ex);
+
+                return InternalServerError();
+            }
+
+            return NoContent();
         }
 
         /// <summary>Retrieves all roles.</summary>
