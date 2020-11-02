@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Identity
 {
-    public class UserRegisterResponseApiModel
+    public class TokenResponseApiModel
     {
         [JsonPropertyName("confirmation_token")]
         public string ConfirmationToken { get; set; }
