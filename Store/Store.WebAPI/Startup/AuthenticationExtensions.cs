@@ -16,6 +16,12 @@ namespace Store.WebAPI.Application.Startup
     {
         public static void AddAuthentication(this IServiceCollection services, IConfigurationSection authConfiguration)
         {
+            // Configure token lifespan
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromDays(1); // Sets the expiry to one day
+            });
+
             // Identity configuration
             services.AddIdentity<IUser, IRole>(identityOptions =>
                     {
