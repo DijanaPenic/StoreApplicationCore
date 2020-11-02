@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
@@ -22,8 +23,7 @@ using Store.WebAPI.Constants;
 using Store.WebAPI.Infrastructure;
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
-using Store.Web.Controllers;
-
+using Store.Common.Extensions;
 
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -40,8 +40,6 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationRoleManager _roleManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
-        // TODO - resolve email sender
-        //private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public AccountController(
@@ -50,7 +48,6 @@ namespace Store.WebAPI.Controllers
             ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
             ICacheManager cacheManager,
-            //IEmailSender emailSender,
             ILogger<AccountController> logger,
             IMapper mapper)
         {
@@ -59,7 +56,6 @@ namespace Store.WebAPI.Controllers
             _authManager = authManager;
             _signInManager = signInManager;
             _cacheProvider = cacheManager.CacheProvider;
-            //_emailSender = emailSender;
             _logger = logger;
             _mapper = mapper;
         }
@@ -234,7 +230,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Route("users/register")]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterUserAsync(UserRegisterPostApiModel registerUserModel)
+        public async Task<IActionResult> RegisterUserAsync(UserRegisterRequestApiModel registerUserModel)
         {
             if (!ModelState.IsValid)
             {
@@ -253,7 +249,44 @@ namespace Store.WebAPI.Controllers
             };
             IdentityResult roleResult = await _userManager.AddToRolesAsync(user, roles);
 
-           if (!roleResult.Succeeded) return GetErrorResult(roleResult);
+            if (!roleResult.Succeeded) return GetErrorResult(roleResult);
+
+            // Get email confirmation token
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            UserRegisterResponseApiModel registerResponse = new UserRegisterResponseApiModel
+            {
+                ConfirmationToken = token.Base64ForUrlEncode()
+            };
+
+            return Ok(registerResponse);
+        }
+
+        /// <summary>Confirms the user's email.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("users/{id:guid}/confirm-email")]
+        public async Task<IActionResult> ConfirmEmailAsync([FromRoute] Guid id, [FromQuery]string token)
+        {
+            if (GuidHelper.IsNullOrEmpty(id) || token == null)
+            {
+                return BadRequest();
+            }
+
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                NotFound();
+            }
+
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
+
+            if (!result.Succeeded) return GetErrorResult(result);
 
             return Ok();
         }
@@ -757,26 +790,6 @@ namespace Store.WebAPI.Controllers
         //    return View(nameof(ExternalLogin), model);
         //}
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        //{
-        //    if (userId == null || code == null)
-        //    {
-        //        return RedirectToAction(nameof(HomeController.Index), "Home");
-        //    }
-
-        //    var user = await _userManager.FindByIdAsync(userId);
-        //    if (user == null)
-        //    {
-        //        throw new ApplicationException($"Unable to load user with ID '{userId}'.");
-        //    }
-
-        //    var result = await _userManager.ConfirmEmailAsync(user, code);
-
-        //    return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        //}
-
         //[HttpPost]
         //[AllowAnonymous]
         //public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -854,26 +867,6 @@ namespace Store.WebAPI.Controllers
                 DateTimeOffset.MaxValue,
                 CacheParameters.Groups.Identity
             );
-        }
-
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
         }
 
         private IActionResult GetErrorResult(IdentityResult result)

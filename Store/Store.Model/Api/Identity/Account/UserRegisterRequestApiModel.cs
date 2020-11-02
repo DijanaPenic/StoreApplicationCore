@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Identity
 {
-    public class UserRegisterPostApiModel
+    public class UserRegisterRequestApiModel
     {
         [Required]
         [Display(Name = "UserName")]
