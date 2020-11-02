@@ -27,6 +27,8 @@ namespace Store.WebAPI.Application.Startup
                         identityOptions.Lockout.AllowedForNewUsers = true;
                         identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
                         identityOptions.Lockout.MaxFailedAccessAttempts = 3;
+
+                        identityOptions.User.RequireUniqueEmail = true;
                     })
                     .AddUserManager<ApplicationUserManager>()   // Scoped
                     .AddRoleManager<ApplicationRoleManager>()   // Scoped
