@@ -238,6 +238,7 @@ namespace Store.WebAPI.Controllers
             }
 
             IUser user = _mapper.Map<IUser>(registerUserModel);
+            user.IsApproved = true;
             IdentityResult userResult = await _userManager.CreateAsync(user, registerUserModel.Password);
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
