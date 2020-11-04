@@ -129,9 +129,15 @@ namespace Store.WebAPI.Controllers
                 return Unauthorized($"User [{authenticateModel.UserName}] is not approved.");
             }
 
-            // Attempt to sign in the specificied username and password
-            // isPersistent: false -> WEB API is not using cookie authentication
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(authenticateModel.UserName, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true);
+            // Attempt to sign in
+            SignInResult signInResult = await _signInManager.CheckPasswordSignInAsync(user, authenticateModel.Password, lockoutOnFailure: true);
+
+            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
+            {
+                UserId = user.Id,
+                RequiresTwoFactor = signInResult.RequiresTwoFactor
+            };
+
             if (!signInResult.Succeeded)
             {
                 if (signInResult.IsLockedOut)
@@ -144,7 +150,7 @@ namespace Store.WebAPI.Controllers
                 }
                 if (signInResult.RequiresTwoFactor)
                 {
-                    return Unauthorized($"User [{authenticateModel.UserName}] requires two-factor authentication.");
+                    return Ok(authenticationResponse);
                 }
 
                 return Unauthorized($"Failed to log in - invalid username and/or password.");
@@ -154,13 +160,9 @@ namespace Store.WebAPI.Controllers
 
             JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
 
-            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
-            {
-                UserName = authenticateModel.UserName,
-                Roles = jwtResult.Roles.ToArray(),
-                AccessToken = jwtResult.AccessToken,
-                RefreshToken = jwtResult.RefreshToken
-            };
+            authenticationResponse.Roles = jwtResult.Roles.ToArray();
+            authenticationResponse.AccessToken = jwtResult.AccessToken;
+            authenticationResponse.RefreshToken = jwtResult.RefreshToken;
 
             return Ok(authenticationResponse);
         }
@@ -171,8 +173,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/refresh-token")]
         [AllowAnonymous]
+        [Route("users/refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequestApiModel refreshTokenModel)
         {
             if (!ModelState.IsValid)
@@ -217,8 +219,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpDelete]
-        [Route("users/expired-refresh-tokens")]
         [AuthorizationFilter(RoleHelper.Admin)]  
+        [Route("users/expired-refresh-tokens")]
         public async Task<IActionResult> DeleteExpiredRefreshTokensAsync()
         {
             try
@@ -255,8 +257,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/register")]
         [AllowAnonymous]
+        [Route("users/register")]
         public async Task<IActionResult> RegisterUserAsync(UserRegisterPostApiModel registerUserModel)
         {
             if (!ModelState.IsValid)
@@ -284,6 +286,7 @@ namespace Store.WebAPI.Controllers
 
             TokenResponseApiModel registerResponse = new TokenResponseApiModel
             {
+                UserId = user.Id,
                 ConfirmationToken = token.Base64ForUrlEncode()
             };
 
@@ -330,8 +333,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/create")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/create")]
         public async Task<IActionResult> CreateUserAsync(UserCreatePostApiModel createUserModel)
         {
             if (!ModelState.IsValid)
@@ -362,8 +365,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [Route("users/{id:guid}")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}")]
         public async Task<IActionResult> PatchUserAsync([FromRoute] Guid id, [FromBody] UserPatchApiModel userModel)
         {
             if (id == Guid.Empty)
@@ -416,8 +419,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/{id:guid}/unlock")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/unlock")]
         public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid id)
         {
             if (id == Guid.Empty)
@@ -443,8 +446,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/{id:guid}/change-password")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/change-password")]
         public async Task<IActionResult> ChangePasswordAsync([FromRoute] Guid id, ChangePasswordPostApiModel changePasswordModel)
         {
             if (id == Guid.Empty)
@@ -473,8 +476,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/forgot-password")]
         [AllowAnonymous]
+        [Route("users/forgot-password")]
         public async Task<IActionResult> ForgotPasswordAsync([FromQuery]string email)
         {
             if(string.IsNullOrEmpty(email))
@@ -495,6 +498,7 @@ namespace Store.WebAPI.Controllers
 
             TokenResponseApiModel registerResponse = new TokenResponseApiModel
             {
+                UserId = user.Id,
                 ConfirmationToken = token.Base64ForUrlEncode()
             };
 
@@ -507,9 +511,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/reset-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPasswordAsync(ResetPasswordPostApiModel forgotPasswordModel)
+        [Route("users/{id:guid}/reset-password")]
+        public async Task<IActionResult> ResetPasswordAsync([FromRoute]Guid id, ResetPasswordPostApiModel forgotPasswordModel)
         {
             if (!ModelState.IsValid)
             {
@@ -522,7 +526,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Token is missing.");
             }
 
-            IUser user = await _userManager.FindByEmailAsync(forgotPasswordModel.Email);
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return NotFound();
@@ -545,8 +549,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [Route("users")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users")]
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
                                                        int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(UserGetApiModel.UserName))
         {
@@ -576,8 +580,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [Route("users/{id:guid}")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}")]
         public async Task<IActionResult> GetUserAsync([FromRoute] Guid id, [FromQuery] string[] includeProperties)
         {
             if (id == Guid.Empty)
@@ -598,8 +602,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPut]
-        [Route("users/{id:guid}/roles")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/roles")]
         public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid id, string[] rolesToAssign)
         {
             if (rolesToAssign == null || rolesToAssign.Length == 0 || id == Guid.Empty)
