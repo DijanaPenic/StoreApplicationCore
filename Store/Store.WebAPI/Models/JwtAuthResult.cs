@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using Store.Model.Common.Models.Identity;
-
 namespace Store.WebAPI.Models
 {
     public class JwtAuthResult
