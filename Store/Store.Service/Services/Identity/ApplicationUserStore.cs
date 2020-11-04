@@ -25,9 +25,15 @@ namespace Store.Services.Identity
             IUserPhoneNumberStore<IUser>,
             IUserLockoutStore<IUser>,
             IUserAuthenticationTokenStore<IUser>,
-            IApplicationUserStore<IUser>
+            IApplicationUserStore<IUser>,
+            IUserAuthenticatorKeyStore<IUser>,
+            IUserTwoFactorRecoveryCodeStore<IUser>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
+
+        private const string InternalLoginProvider = "[AspNetUserStore]";
+        private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
+        private const string RecoveryCodeTokenName = "RecoveryCodes";
 
         public ApplicationUserStore(IDapperUnitOfWork unitOfWork)
         {
@@ -674,7 +680,7 @@ namespace Store.Services.Identity
 
             IUserToken userToken = await _unitOfWork.UserTokenRepository.FindByKeyAsync(new UserTokenKey { UserId = user.Id, LoginProvider = loginProvider, Name = name });
 
-            return userToken?.Name;
+            return userToken?.Value;
         }
 
         #endregion
@@ -855,7 +861,7 @@ namespace Store.Services.Identity
 
         #endregion
 
-        #region IApplicationUserStore<IUser, Guid> Members
+        #region IApplicationUserStore<IUser> Members
 
         public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
@@ -865,6 +871,107 @@ namespace Store.Services.Identity
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
             return _unitOfWork.UserRepository.FindByKeyAsync(id, includeProperties); 
+        }
+
+        #endregion
+
+        #region IUserAuthenticatorKeyStore<IUser, Guid> Members
+
+        public async Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (cancellationToken != null)
+                cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            string userToken = await GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
+
+            return userToken;
+        }
+
+        public async Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
+        {
+            if (cancellationToken != null)
+                cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            IUserToken userToken = await _unitOfWork.UserTokenRepository.FindByKeyAsync(new UserTokenKey { UserId = user.Id, LoginProvider = InternalLoginProvider, Name = AuthenticatorKeyTokenName });
+            if (userToken == null)
+            {
+                await SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
+            }
+            else
+            {
+                userToken.Value = key;
+
+                await _unitOfWork.UserTokenRepository.UpdateAsync(userToken);
+                _unitOfWork.Commit();
+            }
+        }
+
+        #endregion
+
+        #region IUserTwoFactorRecoveryCodeStore<IUser> Members
+
+        public virtual async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (cancellationToken != null)
+                cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            string mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? string.Empty;
+            if (mergedCodes.Length > 0)
+            {
+                return mergedCodes.Split(';').Length;
+            }
+
+            return 0;
+        }
+
+        public virtual async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
+        {
+            if (cancellationToken != null)
+                cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (code == null)
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            string mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? string.Empty;
+            string[] splitCodes = mergedCodes.Split(';');
+
+            if (splitCodes.Contains(code))
+            {
+                var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
+                await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
+                
+                return true;
+            }
+
+            return false;
+        }
+
+        public virtual Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        {
+            string mergedCodes = string.Join(";", recoveryCodes);
+
+            return SetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
         }
 
         #endregion
