@@ -60,14 +60,41 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>Gets the user profile.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/profile")]
+        public async Task<UserProfileGetModel> GetUserProfileAsync([FromRoute] Guid id)
+        {
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
+
+            return new UserProfileGetModel
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                EmailConfirmed = user.EmailConfirmed,
+                PhoneNumber = user.PhoneNumber,
+                ExternalLogins = logins.Select(login => login.ProviderDisplayName).ToList(),
+                TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
+                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
+                TwoFactorClientRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
+                RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user)
+            };
+        }
+
         /// <summary>Authenticates the user.</summary>
         /// <param name="authenticateModel">The authenticate model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Route("users/authenticate")]
         [AllowAnonymous]
+        [Route("users/authenticate")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
