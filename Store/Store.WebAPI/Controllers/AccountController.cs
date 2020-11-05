@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Web;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
@@ -68,12 +68,17 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [AuthorizationFilter(RoleHelper.Admin)]
         [Route("users/{id:guid}/profile")]
-        public async Task<UserProfileGetModel> GetUserProfileAsync([FromRoute] Guid id)
+        public async Task<IActionResult> GetUserProfileAsync([FromRoute] Guid id)
         {
+            if (GuidHelper.IsNullOrEmpty(id))
+            {
+                return BadRequest("User Id is missing.");
+            }
+
             IUser user = await _userManager.FindByIdAsync(id.ToString());
             IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
 
-            return new UserProfileGetModel
+            UserProfileGetApiModel userProfileResponse = new UserProfileGetApiModel
             {
                 Username = user.UserName,
                 Email = user.Email,
@@ -81,10 +86,107 @@ namespace Store.WebAPI.Controllers
                 PhoneNumber = user.PhoneNumber,
                 ExternalLogins = logins.Select(login => login.ProviderDisplayName).ToList(),
                 TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
-                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
+                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,           // Might not need this
                 TwoFactorClientRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user)
             };
+
+            return Ok(userProfileResponse);
+        }
+
+        /// <summary>Gets the user's authenticator details.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/authenticator-details")]
+        public async Task<IActionResult> GetUserAuthenticatorDetailsAsync([FromRoute] Guid id)
+        {
+            if (GuidHelper.IsNullOrEmpty(id))
+            {
+                return BadRequest("User Id is missing.");
+            }
+
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+
+            string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            if (string.IsNullOrEmpty(authenticatorKey))
+            {
+                await _userManager.ResetAuthenticatorKeyAsync(user);
+                authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            }
+
+            AuthenticatorDetailsGetApiModel authenticatorDetailsResponse =  new AuthenticatorDetailsGetApiModel
+            {
+                SharedKey = authenticatorKey,
+                AuthenticatorUri = GenerateQrCodeUri(user.Email, authenticatorKey)
+            };
+
+            return Ok(authenticatorDetailsResponse);
+        }
+
+        /// <summary>Verifies the authenticator code for the user.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="code">The authenticator code.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/verify-authenticator-code")]
+        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid id, [FromQuery]string code)
+        {
+            if (GuidHelper.IsNullOrEmpty(id))
+            {
+                return BadRequest("User Id is missing.");
+            }
+            if (string.IsNullOrEmpty(code))
+            {
+                return BadRequest("Verification Code is missing.");
+            }
+
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            bool is2FaTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
+
+            if (is2FaTokenValid)
+            {
+                await _userManager.SetTwoFactorEnabledAsync(user, true);
+            }
+            else
+            {
+                return BadRequest("Verification Code is invalid.");
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>Generates new two factor recovery codes for the user.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/generate-recovery-codes")]
+        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromRoute] Guid id)
+        {
+            if (GuidHelper.IsNullOrEmpty(id))
+            {
+                return BadRequest("User Id is missing.");
+            }
+
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (await _userManager.CountRecoveryCodesAsync(user) != 0)
+            {
+                return BadRequest("Cannot generate new recovery codes as old ones have not been used.");
+            }
+
+            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+
+            return Ok(recoveryCodes);
         }
 
         /// <summary>Authenticates the user.</summary>
@@ -864,6 +966,17 @@ namespace Store.WebAPI.Controllers
             }
 
             return BadRequest(result.Errors);
+        }
+
+        private string GenerateQrCodeUri(string email, string authenticatorKey)
+        {
+            const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+
+            return string.Format(
+                AuthenticatorUriFormat,
+                HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
+                HttpUtility.UrlPathEncode(email),
+                authenticatorKey);
         }
 
         #endregion

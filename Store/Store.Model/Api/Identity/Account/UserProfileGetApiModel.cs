@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Store.Models.Api.Identity
 {
-    public class UserProfileGetModel
+    public class UserProfileGetApiModel
     {
         [JsonPropertyName("username")]
         public string Username { get; set; }
