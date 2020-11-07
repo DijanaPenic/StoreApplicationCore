@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Store.Model.Common\Store.Model.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="API\Identity\Manage\" />
+  </ItemGroup>
+
 </Project>

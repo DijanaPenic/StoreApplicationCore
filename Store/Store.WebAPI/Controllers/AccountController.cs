@@ -86,7 +86,7 @@ namespace Store.WebAPI.Controllers
                 PhoneNumber = user.PhoneNumber,
                 ExternalLogins = logins.Select(login => login.ProviderDisplayName).ToList(),
                 TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
-                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,           // Might not need this
+                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
                 TwoFactorClientRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user)
             };
@@ -94,15 +94,15 @@ namespace Store.WebAPI.Controllers
             return Ok(userProfileResponse);
         }
 
-        /// <summary>Gets the user's authenticator details.</summary>
+        /// <summary>Generates or retrieves authenticator key for the user.</summary>
         /// <param name="id">The user identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("users/{id:guid}/authenticator-details")]
-        public async Task<IActionResult> GetUserAuthenticatorDetailsAsync([FromRoute] Guid id)
+        [Route("users/{id:guid}/authenticator-key")]
+        public async Task<IActionResult> GetUserAuthenticatorKeyAsync([FromRoute] Guid id)
         {
             if (GuidHelper.IsNullOrEmpty(id))
             {
@@ -118,7 +118,7 @@ namespace Store.WebAPI.Controllers
                 authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
             }
 
-            AuthenticatorDetailsGetApiModel authenticatorDetailsResponse =  new AuthenticatorDetailsGetApiModel
+            AuthenticatorKeyGetApiModel authenticatorDetailsResponse =  new AuthenticatorKeyGetApiModel
             {
                 SharedKey = authenticatorKey,
                 AuthenticatorUri = GenerateQrCodeUri(user.Email, authenticatorKey)
@@ -127,11 +127,11 @@ namespace Store.WebAPI.Controllers
             return Ok(authenticatorDetailsResponse);
         }
 
-        /// <summary>Verifies the authenticator code for the user.</summary>
+        /// <summary>Verifies the authenticator code for the user. If successful, 2FA will be enabled.</summary>
         /// <param name="id">The user identifier.</param>
         /// <param name="code">The authenticator code.</param>
         /// <returns>
-        ///   <br />
+        ///   Ten two factor recovery codes.
         /// </returns>
         [HttpPost]
         [AuthorizationFilter(RoleHelper.Admin)]
@@ -148,9 +148,9 @@ namespace Store.WebAPI.Controllers
             }
 
             IUser user = await _userManager.FindByIdAsync(id.ToString());
-            bool is2FaTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
+            bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
 
-            if (is2FaTokenValid)
+            if (isTwoFactorTokenValid)
             {
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
             }
@@ -159,18 +159,33 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Verification Code is invalid.");
             }
 
+            if (await _userManager.CountRecoveryCodesAsync(user) == 0)
+            {
+                IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+
+                TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
+                {
+                    RecoveryCodes = recoveryCodes.ToArray()
+                };
+
+                return Ok(response);
+            }
+
             return NoContent();
         }
 
-        /// <summary>Generates new two factor recovery codes for the user.</summary>
+        /// <summary>
+        /// Generates new two factor recovery codes for the user.
+        /// </summary>
         /// <param name="id">The user identifier.</param>
+        /// <param name="number">The number.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [AuthorizationFilter(RoleHelper.Admin)]
         [Route("users/{id:guid}/generate-recovery-codes")]
-        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromRoute] Guid id)
+        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromRoute] Guid id, [FromQuery]int number)
         {
             if (GuidHelper.IsNullOrEmpty(id))
             {
@@ -184,9 +199,78 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Cannot generate new recovery codes as old ones have not been used.");
             }
 
-            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number);
 
-            return Ok(recoveryCodes);
+            TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
+            {
+                RecoveryCodes = recoveryCodes.ToArray()
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("users/{id:guid}/disable-two-factor")]
+        public async Task<IActionResult> DisableTwoFactorAsync([FromRoute] Guid id)
+        {
+            if (GuidHelper.IsNullOrEmpty(id))
+            {
+                return BadRequest("User Id is missing.");
+            }
+
+            IUser user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (!await _userManager.GetTwoFactorEnabledAsync(user))
+            {
+                return BadRequest("Cannot disable two factor authentication as it's not currently enabled.");
+            }
+
+            IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, false);
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
+        /// <summary>Authenticates the user using the two factor authentication code.</summary>
+        /// <param name="authenticateModel">The authenticate model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [Route("users/two-factor-authenticate")]
+        public async Task<IActionResult> TwoFactorAuthenticateAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Verify client information
+            if (!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            IUser user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if(user == null)
+            {
+                return BadRequest("Two-factor authentication action is not supported for the user.");
+            }
+
+            SignInResult signInResult;
+            if (!authenticateModel.UseRecoveryCode)
+            {
+                //Note: isPersistent, rememberClient: false - no need to store browser cookies in Web API.
+                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, false, false);
+            }
+            else
+            {
+                signInResult = await _signInManager.TwoFactorRecoveryCodeSignInAsync(authenticateModel.Code);
+            }
+
+            IActionResult response = await AuthenticateAsync(signInResult, user, clientId);
+
+            return Ok(response);
         }
 
         /// <summary>Authenticates the user.</summary>
@@ -205,7 +289,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify client information
-            if(!Guid.TryParse(authenticateModel.ClientId, out Guid clientId))
+            if(!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid."); 
             }
@@ -224,49 +308,21 @@ namespace Store.WebAPI.Controllers
             }
             if (user.IsDeleted)
             {
-                return Unauthorized($"User [{authenticateModel.UserName}] has been deleted.");
+                return Unauthorized($"User [{user.UserName}] has been deleted.");
             }
             if (!user.IsApproved)
             {
-                return Unauthorized($"User [{authenticateModel.UserName}] is not approved.");
+                return Unauthorized($"User [{user.UserName}] is not approved.");
             }
 
             // Attempt to sign in
-            SignInResult signInResult = await _signInManager.CheckPasswordSignInAsync(user, authenticateModel.Password, lockoutOnFailure: true);
+            // Note: CheckPasswordSignInAsync - this method doesn't perform 2fa check.
+            // Note: PasswordSignInAsync - this method performs 2fa check, but also generates the ".AspNetCore.Identity.Application" cookie. Cookie creation cannot be disabled (SignInManager is heavily dependant on cookies - by design).
+            // Note: isPersistent: false - no need to store browser cookies in Web API.
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
+            IActionResult response = await AuthenticateAsync(signInResult, user, clientId);
 
-            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
-            {
-                UserId = user.Id,
-                RequiresTwoFactor = signInResult.RequiresTwoFactor
-            };
-
-            if (!signInResult.Succeeded)
-            {
-                if (signInResult.IsLockedOut)
-                {
-                    return Unauthorized($"User [{authenticateModel.UserName}] has been locked out.");
-                }
-                if (signInResult.IsNotAllowed)
-                {
-                    return Unauthorized($"User [{authenticateModel.UserName}] is not allowed to log in.");
-                }
-                if (signInResult.RequiresTwoFactor)
-                {
-                    return Ok(authenticationResponse);
-                }
-
-                return Unauthorized($"Failed to log in - invalid username and/or password.");
-            }
-
-            _logger.LogInformation($"User [{authenticateModel.UserName}] has logged in the system.");
-
-            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
-
-            authenticationResponse.Roles = jwtResult.Roles.ToArray();
-            authenticationResponse.AccessToken = jwtResult.AccessToken;
-            authenticationResponse.RefreshToken = jwtResult.RefreshToken;
-
-            return Ok(authenticationResponse);
+            return response;
         }
 
         /// <summary>Refreshes tokens (refresh and access tokens).</summary>
@@ -285,7 +341,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify client information
-            if (!Guid.TryParse(refreshTokenModel.ClientId, out Guid clientId))
+            if (!Guid.TryParse(refreshTokenModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
@@ -424,9 +480,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
 
-            if (!result.Succeeded) return GetErrorResult(result);
-
-            return Ok();
+            return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
         /// <summary>Creates the specified user.</summary>
@@ -536,9 +590,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(-1));
 
-            if (!result.Succeeded) return GetErrorResult(result);
-
-            return Ok();
+            return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
         /// <summary>Changes the user's password.</summary>
@@ -608,6 +660,7 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Resets the user's password.</summary>
+        /// <param name="id">The user identifier.</param>
         /// <param name="forgotPasswordModel">The forgot password model.</param>
         /// <returns>
         ///   <br />
@@ -730,134 +783,16 @@ namespace Store.WebAPI.Controllers
             // Remove user from current roles, if any
             IList<string> currentRoles = await _userManager.GetRolesAsync(user);
             IdentityResult removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-            if (!removeResult.Succeeded)
-            {
-                BadRequest("Failed to remove user roles.");
-            }
+
+            if (!removeResult.Succeeded) return GetErrorResult(removeResult);
 
             // Assign user to the new roles
             IdentityResult addResult = await _userManager.AddToRolesAsync(user, rolesToAssign);
-            if (addResult.Succeeded)
-            { 
-                return Ok(new { userId = id, roles = rolesToAssign });
-            }
 
-            return BadRequest("Failed to add user roles.");
+            if (!addResult.Succeeded) return GetErrorResult(addResult);
+
+            return Ok(new { userId = id, roles = rolesToAssign });
         }
-
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)
-        //{
-        //    // Ensure the user has gone through the username & password screen first
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-
-        //    if (user == null)
-        //    {
-        //        throw new ApplicationException($"Unable to load two-factor authentication user.");
-        //    }
-
-        //    var model = new LoginWith2faViewModel { RememberMe = rememberMe };
-        //    ViewData["ReturnUrl"] = returnUrl;
-
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> LoginWith2fa(LoginWith2faViewModel model, bool rememberMe, string returnUrl = null)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
-
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-        //    if (user == null)
-        //    {
-        //        throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-        //    }
-
-        //    var authenticatorCode = model.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
-
-        //    var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, model.RememberMachine);
-
-        //    if (result.Succeeded)
-        //    {
-        //        _logger.LogInformation("User with ID {UserId} logged in with 2fa.", user.Id);
-
-        //        return RedirectToLocal(returnUrl);
-        //    }
-        //    else if (result.IsLockedOut)
-        //    {
-        //        _logger.LogWarning("User with ID {UserId} account locked out.", user.Id);
-
-        //        return RedirectToAction(nameof(Lockout));
-        //    }
-        //    else
-        //    {
-        //        _logger.LogWarning("Invalid authenticator code entered for user with ID {UserId}.", user.Id);
-        //        ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
-
-        //        return View();
-        //    }
-        //}
-
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
-        //{
-        //    // Ensure the user has gone through the username & password screen first
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-        //    if (user == null)
-        //    {
-        //        throw new ApplicationException($"Unable to load two-factor authentication user.");
-        //    }
-
-        //    ViewData["ReturnUrl"] = returnUrl;
-
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model, string returnUrl = null)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
-
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-        //    if (user == null)
-        //    {
-        //        throw new ApplicationException($"Unable to load two-factor authentication user.");
-        //    }
-
-        //    var recoveryCode = model.RecoveryCode.Replace(" ", string.Empty);
-
-        //    var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
-
-        //    if (result.Succeeded)
-        //    {
-        //        _logger.LogInformation("User with ID {UserId} logged in with a recovery code.", user.Id);
-
-        //        return RedirectToLocal(returnUrl);
-        //    }
-        //    if (result.IsLockedOut)
-        //    {
-        //        _logger.LogWarning("User with ID {UserId} account locked out.", user.Id);
-
-        //        return RedirectToAction(nameof(Lockout));
-        //    }
-        //    else
-        //    {
-        //        _logger.LogWarning("Invalid recovery code entered for user with ID {UserId}", user.Id);
-        //        ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
-
-        //        return View();
-        //    }
-        //}
 
         //[HttpPost]
         //[AllowAnonymous]
@@ -977,6 +912,50 @@ namespace Store.WebAPI.Controllers
                 HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
                 HttpUtility.UrlPathEncode(email),
                 authenticatorKey);
+        }
+
+        private async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, Guid clientId)
+        {
+            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
+            {
+                UserId = user.Id,
+                RequiresTwoFactor = signInResult.RequiresTwoFactor
+            };
+
+            if (!signInResult.Succeeded)
+            {
+                if (signInResult.IsLockedOut)
+                {
+                    return Unauthorized($"User [{user.UserName}] has been locked out.");
+                }
+                if (signInResult.IsNotAllowed)
+                {
+                    return Unauthorized($"User [{user.UserName}] is not allowed to log in.");
+                }
+                if (signInResult.RequiresTwoFactor)
+                {
+                    return Ok(authenticationResponse);
+                }
+
+                return Unauthorized($"Failed to log in [{user.UserName}].");
+            }
+
+            _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
+
+            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
+
+            authenticationResponse.Roles = jwtResult.Roles.ToArray();
+            authenticationResponse.AccessToken = jwtResult.AccessToken;
+            authenticationResponse.RefreshToken = jwtResult.RefreshToken;
+
+            if (signInResult.Succeeded)
+            {
+                // Need to delete "identity" cookie for the authorized user - created by SignInManager 
+                Response.Cookies.Delete(".AspNetCore.Identity.Application");
+                Response.Headers.Remove("Set-Cookie");
+            }
+
+            return Ok(authenticationResponse);
         }
 
         #endregion
