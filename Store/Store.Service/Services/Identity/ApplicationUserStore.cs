@@ -629,16 +629,27 @@ namespace Store.Services.Identity
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            UserToken userToken = new UserToken
+            IUserToken userToken = await _unitOfWork.UserTokenRepository.FindByKeyAsync(new UserTokenKey { UserId = user.Id, LoginProvider = loginProvider, Name = name });
+            if (userToken == null)
             {
-                LoginProvider = loginProvider,
-                Name = name,
-                Value = value,
-                UserId = user.Id
-            };
+                userToken = new UserToken
+                {
+                    LoginProvider = loginProvider,
+                    Name = name,
+                    Value = value,
+                    UserId = user.Id
+                };
 
-            await _unitOfWork.UserTokenRepository.AddAsync(userToken);
-            _unitOfWork.Commit();
+                await _unitOfWork.UserTokenRepository.AddAsync(userToken);
+                _unitOfWork.Commit();
+            }
+            else
+            {
+                userToken.Value = value;
+
+                await _unitOfWork.UserTokenRepository.UpdateAsync(userToken);
+                _unitOfWork.Commit();
+            }
         }
 
         public async Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken)
@@ -892,28 +903,9 @@ namespace Store.Services.Identity
             return userToken;
         }
 
-        public async Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
+        public Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            IUserToken userToken = await _unitOfWork.UserTokenRepository.FindByKeyAsync(new UserTokenKey { UserId = user.Id, LoginProvider = InternalLoginProvider, Name = AuthenticatorKeyTokenName });
-            if (userToken == null)
-            {
-                await SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
-            }
-            else
-            {
-                userToken.Value = key;
-
-                await _unitOfWork.UserTokenRepository.UpdateAsync(userToken);
-                _unitOfWork.Commit();
-            }
+            return SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
         }
 
         #endregion
