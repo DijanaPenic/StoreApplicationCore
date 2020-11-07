@@ -9,12 +9,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
+using Store.WebAPI.Identity;
 using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Application.Startup;
 using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 using Store.Repository.DependencyInjection;
-using Store.WebAPI.Identity;
 
 namespace Store.WebAPI
 {

@@ -907,11 +907,13 @@ namespace Store.WebAPI.Controllers
         {
             const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
-            return string.Format(
+            return string.Format
+            (
                 AuthenticatorUriFormat,
                 HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
                 HttpUtility.UrlPathEncode(email),
-                authenticatorKey);
+                authenticatorKey
+            );
         }
 
         private async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, Guid clientId)
