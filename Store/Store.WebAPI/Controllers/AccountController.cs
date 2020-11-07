@@ -116,6 +116,12 @@ namespace Store.WebAPI.Controllers
             {
                 await _userManager.ResetAuthenticatorKeyAsync(user);
                 authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+
+                _logger.LogInformation("A new authenticator key is generated.");
+            }
+            else
+            {
+                _logger.LogInformation("The existing authenticator key is retrieved from the database.");
             }
 
             AuthenticatorKeyGetApiModel authenticatorDetailsResponse =  new AuthenticatorKeyGetApiModel
@@ -153,6 +159,8 @@ namespace Store.WebAPI.Controllers
             if (isTwoFactorTokenValid)
             {
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+                _logger.LogInformation("Two factor authentication is enabled for the user.");
             }
             else
             {
@@ -162,6 +170,8 @@ namespace Store.WebAPI.Controllers
             if (await _userManager.CountRecoveryCodesAsync(user) == 0)
             {
                 IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+
+                _logger.LogInformation("Ten two factor recovery codes are generatied for the user.");
 
                 TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
                 {
@@ -209,6 +219,11 @@ namespace Store.WebAPI.Controllers
             return Ok(response);
         }
 
+        /// <summary>Disables the two factor authentication.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [AuthorizationFilter(RoleHelper.Admin)]
         [Route("users/{id:guid}/disable-two-factor")]
@@ -227,6 +242,8 @@ namespace Store.WebAPI.Controllers
             }
 
             IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, false);
+
+            _logger.LogInformation("Two factor authentication is disabled for the user.");
 
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
@@ -358,6 +375,8 @@ namespace Store.WebAPI.Controllers
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
                 JwtAuthResult jwtResult = await _authManager.RefreshTokensAsync(refreshTokenModel.RefreshToken, accessToken, clientId);
 
+                _logger.LogInformation("New access and refresh tokens are generated for the user.");
+
                 RefreshTokenResponseApiModel authenticationResponse = new RefreshTokenResponseApiModel
                 {
                     AccessToken = jwtResult.AccessToken,
@@ -391,6 +410,8 @@ namespace Store.WebAPI.Controllers
 
                 return InternalServerError();
             }
+
+            _logger.LogInformation("Expired refresh tokens have been successfully deleted.");
 
             return NoContent();
         }
@@ -430,6 +451,8 @@ namespace Store.WebAPI.Controllers
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
 
+            _logger.LogInformation($"User [{user.UserName}] has been registered.");
+
             // Assign user to Guest role
             IList<string> roles = new List<string>()
             {
@@ -439,8 +462,12 @@ namespace Store.WebAPI.Controllers
 
             if (!roleResult.Succeeded) return GetErrorResult(roleResult);
 
+            _logger.LogInformation("Guest role has been assigned to the user.");
+
             // Get email confirmation token
             string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            _logger.LogInformation("Email confirmation token has been generated.");
 
             TokenResponseApiModel registerResponse = new TokenResponseApiModel
             {
