@@ -23,7 +23,9 @@ namespace Store.WebAPI.Application.Startup
             });
 
             // Identity configuration
-            services.AddIdentity<IUser, IRole>(identityOptions =>
+            // Note: AddIdentity shouldn't be called if you want fine grain control over auth, calling AddIdentityCore and the other identity builder methods will setup identity without auth, 
+            // then we can call AddAuthentication() and configure things exactly how we want.
+            services.AddIdentityCore<IUser>(identityOptions =>
                     {
                         identityOptions.Password.RequiredLength = 8;
                         identityOptions.Password.RequireDigit = true;
@@ -36,13 +38,23 @@ namespace Store.WebAPI.Application.Startup
 
                         identityOptions.User.RequireUniqueEmail = true;
                     })
+                    .AddRoles<IRole>()
+                    .AddSignInManager<SignInManager<IUser>>()   // Scoped
                     .AddUserManager<ApplicationUserManager>()   // Scoped
                     .AddRoleManager<ApplicationRoleManager>()   // Scoped
                     .AddDefaultTokenProviders();                
 
-            services.AddTransient<ApplicationAuthManager>();   
+            services.AddTransient<ApplicationAuthManager>();
 
-            // JWT cnfiguration
+            // Cookies configuration
+            // Caution: need to enable cookies because of SignInManager: "All the authentication logic is tied to sign in manager which is tied to cookies in general."
+            // Source: https://github.com/openiddict/openiddict-core/issues/578
+            services.AddAuthentication()
+            .AddCookie(IdentityConstants.ApplicationScheme)
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme)
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme);
+
+            // JWT configuration
             JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
 
