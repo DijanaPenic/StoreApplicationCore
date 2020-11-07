@@ -83,7 +83,7 @@ namespace Store.Repositories.Identity
                 sql: $@"
                     UPDATE {UserTokenSchema.Table} SET 
                         {UserTokenSchema.Columns.Value} = @{nameof(entity.Value)},
-                        {UserTokenSchema.Columns.DateUpdatedUtc} = {nameof(entity.DateUpdatedUtc)}
+                        {UserTokenSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
                     WHERE 
                         {UserTokenSchema.Columns.UserId} = @{nameof(entity.UserId)} AND 
                         {UserTokenSchema.Columns.LoginProvider} = @{nameof(entity.LoginProvider)} AND 
