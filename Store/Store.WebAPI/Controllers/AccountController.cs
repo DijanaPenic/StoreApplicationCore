@@ -2,6 +2,7 @@
 using System.Web;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
@@ -60,22 +61,16 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
         }
 
-        /// <summary>Gets the user profile.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <summary>Gets the user profile of the currently logged in user.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("users/{id:guid}/profile")]
-        public async Task<IActionResult> GetUserProfileAsync([FromRoute] Guid id)
+        [Authorize]
+        [Route("users/user-profile")]
+        public async Task<IActionResult> GetUserProfileAsync()
         {
-            if (GuidHelper.IsNullOrEmpty(id))
-            {
-                return BadRequest("User Id is missing.");
-            }
-
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await GetLoggedInUserAsync();
             IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
 
             UserProfileGetApiModel userProfileResponse = new UserProfileGetApiModel
@@ -94,22 +89,16 @@ namespace Store.WebAPI.Controllers
             return Ok(userProfileResponse);
         }
 
-        /// <summary>Generates or retrieves authenticator key for the user.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <summary>Generates or retrieves authenticator key for the currently logged in user.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("users/{id:guid}/authenticator-key")]
-        public async Task<IActionResult> GetUserAuthenticatorKeyAsync([FromRoute] Guid id)
+        [Authorize]
+        [Route("users/authenticator-key")]
+        public async Task<IActionResult> GetUserAuthenticatorKeyAsync()
         {
-            if (GuidHelper.IsNullOrEmpty(id))
-            {
-                return BadRequest("User Id is missing.");
-            }
-
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await GetLoggedInUserAsync();
 
             string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(authenticatorKey))
@@ -133,27 +122,22 @@ namespace Store.WebAPI.Controllers
             return Ok(authenticatorDetailsResponse);
         }
 
-        /// <summary>Verifies the authenticator code for the user. If successful, 2FA will be enabled.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <summary>Verifies the authenticator code for the currently logged in user. If successful, two factor authentication will be enabled.</summary>
         /// <param name="code">The authenticator code.</param>
         /// <returns>
         ///   Ten two factor recovery codes.
         /// </returns>
         [HttpPost]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("users/{id:guid}/verify-authenticator-code")]
-        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid id, [FromQuery]string code)
+        [Authorize]
+        [Route("users/verify-authenticator-code")]
+        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromQuery]string code)
         {
-            if (GuidHelper.IsNullOrEmpty(id))
-            {
-                return BadRequest("User Id is missing.");
-            }
             if (string.IsNullOrEmpty(code))
             {
                 return BadRequest("Verification Code is missing.");
             }
 
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await GetLoggedInUserAsync();
             bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
 
             if (isTwoFactorTokenValid)
@@ -185,24 +169,18 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Generates new two factor recovery codes for the user.
+        /// Generates new two factor recovery codes for the currently logged in user.
         /// </summary>
-        /// <param name="id">The user identifier.</param>
         /// <param name="number">The number.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("users/{id:guid}/generate-recovery-codes")]
-        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromRoute] Guid id, [FromQuery]int number)
+        [Authorize]
+        [Route("users/generate-recovery-codes")]
+        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromQuery]int number)
         {
-            if (GuidHelper.IsNullOrEmpty(id))
-            {
-                return BadRequest("User Id is missing.");
-            }
-
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await GetLoggedInUserAsync();
 
             if (await _userManager.CountRecoveryCodesAsync(user) != 0)
             {
@@ -219,22 +197,16 @@ namespace Store.WebAPI.Controllers
             return Ok(response);
         }
 
-        /// <summary>Disables the two factor authentication.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <summary>Disables the two factor authentication for the currently logged in user.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("users/{id:guid}/disable-two-factor")]
-        public async Task<IActionResult> DisableTwoFactorAsync([FromRoute] Guid id)
+        [Authorize]
+        [Route("users/disable-two-factor")]
+        public async Task<IActionResult> DisableTwoFactorAsync()
         {
-            if (GuidHelper.IsNullOrEmpty(id))
-            {
-                return BadRequest("User Id is missing.");
-            }
-
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await GetLoggedInUserAsync();
 
             if (!await _userManager.GetTwoFactorEnabledAsync(user))
             {
@@ -928,6 +900,14 @@ namespace Store.WebAPI.Controllers
             }
 
             return BadRequest(result.Errors);
+        }
+
+        private async Task<IUser> GetLoggedInUserAsync()
+        {
+            string userName = User.FindFirst(ClaimTypes.Name).Value;
+            IUser user = await _userManager.FindByNameAsync(userName);
+
+            return user;
         }
 
         private string GenerateQrCodeUri(string email, string authenticatorKey)
