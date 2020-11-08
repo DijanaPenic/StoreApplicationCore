@@ -1,0 +1,786 @@
+{
+	"info": {
+		"_postman_id": "b87b14fa-bcb5-4a65-983c-faf9e62c7b92",
+		"name": "Identity",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Two Factor Authentication",
+					"item": [
+						{
+							"name": "Authenticate 2FA",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"668511\",\r\n    \"use_recovery_code\": false,\r\n    \"client_id\": \"5c52160a-4ab4-49c6-ba5f-56df9c5730b6\"\r\n}",
+									"options": {
+										"raw": {}
+									}
+								},
+								"url": {
+									"raw": "https://store.api.local:5001/two-factor-auth/authenticate",
+									"protocol": "https",
+									"host": [
+										"store",
+										"api",
+										"local"
+									],
+									"port": "5001",
+									"path": [
+										"two-factor-auth",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUEVOSUMuTUFSVElOQUBHTUFJTC5DT00iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJQRU5JQy5NQVJUSU5BQEdNQUlMLkNPTSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFETUlOIiwiZXhwIjoxNjA0Nzg4MjI2LCJpc3MiOiJodHRwczovL3N0b3JlLmFwaS5sb2NhbDo1MDAxLyIsImF1ZCI6Imh0dHBzOi8vc3RvcmUuYXBpLmxvY2FsOjUwMDEvIn0.lNl6Kgyajux5t7VCGlkLNxFm3bRiDW9H6HctcgF3Z2s",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://store.api.local:5001/two-factor-auth/user-profile",
+									"protocol": "https",
+									"host": [
+										"store",
+										"api",
+										"local"
+									],
+									"port": "5001",
+									"path": [
+										"two-factor-auth",
+										"user-profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Authenticator Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUEVOSUMuTUFSVElOQUBHTUFJTC5DT00iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJQRU5JQy5NQVJUSU5BQEdNQUlMLkNPTSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFETUlOIiwiZXhwIjoxNjA0Nzg2Nzg1LCJpc3MiOiJodHRwczovL3N0b3JlLmFwaS5sb2NhbDo1MDAxLyIsImF1ZCI6Imh0dHBzOi8vc3RvcmUuYXBpLmxvY2FsOjUwMDEvIn0.1X6mKuXIVaW5e_gAqmn-iCWyJ9zMIsLaM1Ol8fSHzpo"
+									}
+								],
+								"url": {
+									"raw": "https://store.api.local:5001/two-factor-auth/authenticator-key",
+									"protocol": "https",
+									"host": [
+										"store",
+										"api",
+										"local"
+									],
+									"port": "5001",
+									"path": [
+										"two-factor-auth",
+										"authenticator-key"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify User Authenticator Code",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUEVOSUMuTUFSVElOQUBHTUFJTC5DT00iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJQRU5JQy5NQVJUSU5BQEdNQUlMLkNPTSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFETUlOIiwiZXhwIjoxNjA0Nzg2Nzg1LCJpc3MiOiJodHRwczovL3N0b3JlLmFwaS5sb2NhbDo1MDAxLyIsImF1ZCI6Imh0dHBzOi8vc3RvcmUuYXBpLmxvY2FsOjUwMDEvIn0.1X6mKuXIVaW5e_gAqmn-iCWyJ9zMIsLaM1Ol8fSHzpo"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "https://store.api.local:5001/two-factor-auth/verify-authenticator-code?code=671187",
+									"protocol": "https",
+									"host": [
+										"store",
+										"api",
+										"local"
+									],
+									"port": "5001",
+									"path": [
+										"two-factor-auth",
+										"verify-authenticator-code"
+									],
+									"query": [
+										{
+											"key": "code",
+											"value": "671187"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Generate New 2FA Recovery Codes",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUEVOSUMuTUFSVElOQUBHTUFJTC5DT00iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJQRU5JQy5NQVJUSU5BQEdNQUlMLkNPTSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFETUlOIiwiZXhwIjoxNjA0NzAwODkxLCJpc3MiOiJodHRwczovL3N0b3JlLmFwaS5sb2NhbDo1MDAxLyIsImF1ZCI6Imh0dHBzOi8vc3RvcmUuYXBpLmxvY2FsOjUwMDEvIn0.oI3biwaHG-zioaGyarTgg_e1-Cxe4YZSG0-NFWteZmw"
+									}
+								],
+								"url": {
+									"raw": "https://store.api.local:5001/two-factor-auth/generate-recovery-codes?number=10",
+									"protocol": "https",
+									"host": [
+										"store",
+										"api",
+										"local"
+									],
+									"port": "5001",
+									"path": [
+										"two-factor-auth",
+										"generate-recovery-codes"
+									],
+									"query": [
+										{
+											"key": "number",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Disable 2FA",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUEVOSUMuTUFSVElOQUBHTUFJTC5DT00iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJQRU5JQy5NQVJUSU5BQEdNQUlMLkNPTSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFETUlOIiwiZXhwIjoxNjA0NzAwODkxLCJpc3MiOiJodHRwczovL3N0b3JlLmFwaS5sb2NhbDo1MDAxLyIsImF1ZCI6Imh0dHBzOi8vc3RvcmUuYXBpLmxvY2FsOjUwMDEvIn0.oI3biwaHG-zioaGyarTgg_e1-Cxe4YZSG0-NFWteZmw"
+									}
+								],
+								"url": {
+									"raw": "https://store.api.local:5001/two-factor-auth/disable",
+									"protocol": "https",
+									"host": [
+										"store",
+										"api",
+										"local"
+									],
+									"port": "5001",
+									"path": [
+										"two-factor-auth",
+										"disable"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Social Login",
+					"item": [],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Authenticate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"penic.dijana@gmail.com\",\r\n    \"password\": \"aB1234567,\",\r\n    \"client_id\": \"5c52160a-4ab4-49c6-ba5f-56df9c5730b6\",\r\n    \"client_secret\": \"2aa29e5d-5bdc-4a91-9794-748176972dac\"\r\n}"
+						},
+						"url": {
+							"raw": "https://store.api.local:5001/account/users/authenticate",
+							"protocol": "https",
+							"host": [
+								"store",
+								"api",
+								"local"
+							],
+							"port": "5001",
+							"path": [
+								"account",
+								"users",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Tokens",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh_token\": \"Vp9uqe0q9OQXzwLksS5K7JQHU5PA0CQeBC+w475aBUE=\",\r\n    \"client_id\": \"5c52160a-4ab4-49c6-ba5f-56df9c5730b6\",\r\n    \"client_secret\": \"2aa29e5d-5bdc-4a91-9794-748176972dac\"\r\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "https://store.api.local:5001/account/users/refresh-token",
+							"protocol": "https",
+							"host": [
+								"store",
+								"api",
+								"local"
+							],
+							"port": "5001",
+							"path": [
+								"account",
+								"users",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Expired Refresh Tokens",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUEVOSUMuRElKQU5BQEdNQUlMLkNPTSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6IlBFTklDLkRJSkFOQUBHTUFJTC5DT00iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiQ1VTVE9NRVIiLCJTVE9SRSBNQU5BR0VSIl0sImV4cCI6MTYwNDIzMjAyMywiaXNzIjoiaHR0cHM6Ly9zdG9yZS5hcGkubG9jYWw6NTAwMS8iLCJhdWQiOiJodHRwczovL3N0b3JlLmFwaS5sb2NhbDo1MDAxLyJ9.yLCilGRHAH9q4XluOUnltkPIOERFCWdpssPDf1C1rFg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "https://store.api.local:5001/account/users/expired-refresh-tokens",
+							"protocol": "https",
+							"host": [
+								"store",
+								"api",
+								"local"
+							],
+							"port": "5001",
+							"path": [
+								"account",
+								"users",
+								"expired-refresh-tokens"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"UserName\": \"penic.dijana@gmail.com\",\r\n    \"Email\": \"penic.dijana@gmail.com\",\r\n    \"FirstName\": \"Dijana\",\r\n    \"LastName\": \"Penic\",\r\n    \"Password\": \"aB123456,\",\r\n    \"ConfirmPassword\": \"aB123456,\",\r\n    \"IsApproved\": true,\r\n    \"Roles\": [\r\n        \"Admin\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/create",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"UserName\": \"penic.martina@gmail.com\",\r\n    \"Email\": \"penic.martina@gmail.com\",\r\n    \"FirstName\": \"Martina\",\r\n    \"LastName\": \"Penic\",\r\n    \"Password\": \"aB123456,\",\r\n    \"ConfirmPassword\": \"aB123456,\"\r\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/register",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer y-KZ_E8YOC7baY8kBx4Z-Vix4u303A9KEea5HPHRu0tVElMNsAgFlHdd8GyArypOagMShtGEe0-WH_pfKxILThO9ijAKDpQI9bWarbMe_t7wwglsjHcmj7jEgKjdFBV6OLuYNn77GEZ0KV0YYQ6Wu4YEx-czU2FlIhbU0-8dmBQwS7NnMUGtdwck13zCFbZIbBhLM_k5yT16ybkzt1UyPGXePigLBhcjlyY8B4OI8x2LEEdniAc4kiyad5YGFF5PXOqc1jyV3dDA5GgDnYfw8v4wc7Csr0y8qMjcz75SWX4sErZYBmfxdH6RYOakMCZApVhDXapcVuX_wSq6gCPy4vFxk5ZjenxVospWQ6RrijZ1cCkKVYJoCkE7PoG8HVyxwVWg_f8f09crkTN2zV6ipwAvyOpuA2UjVySMgadZ1H1iv6s8cBKcj4_EIvlEN0pQoTefcey9Uz8W3EQZxtt-IpCJdps_vP3CFKyamtW5o_K4bj4YOXz4YhlRYEYnA0Svdw2bnrD4CJLTpiCQn93Qlg",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://store.api.local:5001/account/users",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users"
+					],
+					"query": [
+						{
+							"key": "isDescendingSortOrder",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "sortOrderField",
+							"value": "UserName",
+							"disabled": true
+						},
+						{
+							"key": "searchString",
+							"value": "dijana",
+							"disabled": true
+						},
+						{
+							"key": "pageSize",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "pageNumber",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "includeProperties",
+							"value": "Roles",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User (by id)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer LqtKGWA5snnKjsoJC1OkB2qAGiJOkcRjhS1FvumblGITSLvN0LMqe-2X-YFfrn82Ms7P38HI7EnUuY5ErVihzzCjJJLY5AbnnC-Im5O-u6ji5SSdBCAJtTB_2WPfkw8xKnvtVdNWoAqevwOvT0BfASFqrUj_XMFFJkijI23E54IdtqglBnxWXz9XyPOR-_JU4yeqxriDCDz9WFGQlcWf4k5gmPE8ipLaCTuODcb0qggs7al-NgRynJ5-meDPsJNKS0oU4CByiCov8GrMs7uz2BlKYQy5ClzeBTplAhH12R6NHjftI5nRx-YKkXV-Jls_vugeSSQ2r9zTqEkz_9Hzp21wBzWznT0YomJeEKoHaeJebX9w6ABpUn0CuF5xDjcsszRwGqocz8Dyjx8ZLopTpfh0fC9KHJPgJkxXH_uktBAE-SwjgRhAXkSI1IrN-D36Rj_73bnpF9FvtRSiEmjME1vAN_hVx6p6skcc04FhaXlFruHlDOMHx1uGAuob9xlJ4GIvDJqjEhfH2Bmw87B1SA"
+					}
+				],
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/7d3b728b-ad45-4687-fc70-08d86dfd5bfd?includeProperties=Roles",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"7d3b728b-ad45-4687-fc70-08d86dfd5bfd"
+					],
+					"query": [
+						{
+							"key": "includeProperties",
+							"value": "Roles"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add User to Roles",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer kgy2bC3s7zCTg3HK1rhhY6qTUvxthWqGPFKYyzMOPrdIxOZwISZrHYCkwUI4S-C3zMqFDRRJhz5WVT5LHJ_l62F2U7h4kAT3auhmNLJ3TPkmbb7kKQYHoDZ6R6dVwyndTDOqPzN0Zj5iX0cw2oi9ENW-CDCsyz56J0JYxmReuDphDEUQNiIanXhq_zvoSlqJogmX__IHLvKuFrNmUhY8YxUF63G52_8nvfQBlswrsGT6s_2OSvR4oh9vomn-9q3m9DuyRkt4S_73Tcn9gAtEC33p17HcXBdfYinQI-ucruv8wpCbcYG5PwPbUPuBh7U1H2hpca3A1dlSIFEh8Kl98wCpXfjNLDyTWFQKAx4Z42SmBw6AHIZA1e-MyiaZKJgtFDyv16Km97--p8eiGDPF3QjiV9IZgrmuM_OQxMbNljuFq9_lNpjr3n-_gKXzfbHoxPUkFscfG49Lwf0dnp0Q-Hx9HIyp3Bu848p3TKoWWhg2AN04vzaCFgWQex6XPSF1"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    \"Admin\"\r\n]",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/7d3b728b-ad45-4687-fc70-08d86dfd5bfd/roles",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"7d3b728b-ad45-4687-fc70-08d86dfd5bfd",
+						"roles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Roles",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicGVuaWMuZGlqYW5hQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNVU1RPTUVSLFNUT1JFIE1BTkFHRVIiLCJleHAiOjE2MDM4MzQ1ODEsImlzcyI6Imh0dHBzOi8vc3RvcmUuYXBpLmxvY2FsOjUwMDEvIiwiYXVkIjoiaHR0cHM6Ly9zdG9yZS5hcGkubG9jYWw6NTAwMS8ifQ.xWGcrK-vN409ArNtc-a1DOhj87qHevSezQ3y1r5yqA4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://store.api.local:5001/account/roles",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"roles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer y-KZ_E8YOC7baY8kBx4Z-Vix4u303A9KEea5HPHRu0tVElMNsAgFlHdd8GyArypOagMShtGEe0-WH_pfKxILThO9ijAKDpQI9bWarbMe_t7wwglsjHcmj7jEgKjdFBV6OLuYNn77GEZ0KV0YYQ6Wu4YEx-czU2FlIhbU0-8dmBQwS7NnMUGtdwck13zCFbZIbBhLM_k5yT16ybkzt1UyPGXePigLBhcjlyY8B4OI8x2LEEdniAc4kiyad5YGFF5PXOqc1jyV3dDA5GgDnYfw8v4wc7Csr0y8qMjcz75SWX4sErZYBmfxdH6RYOakMCZApVhDXapcVuX_wSq6gCPy4vFxk5ZjenxVospWQ6RrijZ1cCkKVYJoCkE7PoG8HVyxwVWg_f8f09crkTN2zV6ipwAvyOpuA2UjVySMgadZ1H1iv6s8cBKcj4_EIvlEN0pQoTefcey9Uz8W3EQZxtt-IpCJdps_vP3CFKyamtW5o_K4bj4YOXz4YhlRYEYnA0Svdw2bnrD4CJLTpiCQn93Qlg",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"penic.dijana@gmail.com\",\r\n    \"UserName\": \"penic.dijana@gmail.com\",\r\n    \"FirstName\": \"Dijana Update\",\r\n    \"LastName\": \"Penic Update\",\r\n    \"IsApproved\": true,\r\n    \"Roles\": [\r\n        \"Customer\",\r\n        \"Store Manager\"\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/7d3b728b-ad45-4687-fc70-08d86dfd5bfd",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"7d3b728b-ad45-4687-fc70-08d86dfd5bfd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unlock User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer LqtKGWA5snnKjsoJC1OkB2qAGiJOkcRjhS1FvumblGITSLvN0LMqe-2X-YFfrn82Ms7P38HI7EnUuY5ErVihzzCjJJLY5AbnnC-Im5O-u6ji5SSdBCAJtTB_2WPfkw8xKnvtVdNWoAqevwOvT0BfASFqrUj_XMFFJkijI23E54IdtqglBnxWXz9XyPOR-_JU4yeqxriDCDz9WFGQlcWf4k5gmPE8ipLaCTuODcb0qggs7al-NgRynJ5-meDPsJNKS0oU4CByiCov8GrMs7uz2BlKYQy5ClzeBTplAhH12R6NHjftI5nRx-YKkXV-Jls_vugeSSQ2r9zTqEkz_9Hzp21wBzWznT0YomJeEKoHaeJebX9w6ABpUn0CuF5xDjcsszRwGqocz8Dyjx8ZLopTpfh0fC9KHJPgJkxXH_uktBAE-SwjgRhAXkSI1IrN-D36Rj_73bnpF9FvtRSiEmjME1vAN_hVx6p6skcc04FhaXlFruHlDOMHx1uGAuob9xlJ4GIvDJqjEhfH2Bmw87B1SA",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/7d3b728b-ad45-4687-fc70-08d86dfd5bfd/unlock",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"7d3b728b-ad45-4687-fc70-08d86dfd5bfd",
+						"unlock"
+					],
+					"query": [
+						{
+							"key": "includeProperties",
+							"value": "Roles",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer GHEi6vTlFQJhwArYk2nCI9r79ppo1IVvrIb_phJZejSlu_hMPzCFVgcg8HgTXO8M6MK09dNgeXftHPP1V26LN0X1y1JawkBIvlGA0JjP_tRv87trOJRHn9G8wYEYsZEawsFaoVwEd_rX5x6Ur_dvGcr5BV-xCh3IfqwhpYjuUqZgKR6KdM5BlcVgugs8wTQaluZXH4HStIzy67mkgTFQeV0YfgvjklqJIZA0D8s7mD8EoliFfOSQ2f6MEz5vaJC6xHjeK5omDsTwbnXgJGsMbPcP0DdQUSzZJRb_zk8Pe5liQyYpO7oWkzWO7UEHu-Z40s_yQbMSeWp1b1meemNZh0wH3v0siFV3LBLEMC8_aW0v23TEvfe1qein28NwIKDumIkaxOjnCZv4ObqHK1ystfSnLJVtIZgtdJ6oceONm6hKDQVqh-3RNdhTZwq_jn-afkHMcz_qRvymyWiKtshF2wmvxuW_Oc_MPLcY6sobGDAnmOTcPcDZ4P9gc9_jXpvW1de7RHrVTma1mKszM16_s2n2drs2v_bXyd5rmGX71wY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"OldPassword\": \"aB123456,\",\r\n    \"NewPassword\": \"aB1234567,\",\r\n    \"ConfirmPassword\": \"aB1234567,\"\r\n}"
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/7d3b728b-ad45-4687-fc70-08d86dfd5bfd/change-password",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"7d3b728b-ad45-4687-fc70-08d86dfd5bfd",
+						"change-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm Email",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Token",
+						"value": "Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNKMjhia3UrS0E1cDJKcjJSeXpNUGI4RlZOZVN5REFKT2QzOXp2Ym9Kb3pBZjZuOTlWSDVLY29iT09uZkQrdnFmb0RnMlh3VHJuYzlNSVhEUTJ6VUxocS9YOTJ6NVNxRXVXbEV4VW94dVIvTks2QWRybXRXWU1ZSnlRV0VXQnZGbTYvRHk2Yko3bWdmU0JDSFZZUXh0b0hoVWZDUGgrSnE4ZG10SGorS2xsL0lKbGpWd3FyWVRkVUd5RnMwdEtuWG90dzdZQ0dJOHRkOFl2UjNRYjdXVDJrTnRSbTFZTEg4RWRqMWNWK2pGODllQT09",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/03b4ed7a-b4f2-4ecd-4853-08d87f731a78/confirm-email",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"03b4ed7a-b4f2-4ecd-4853-08d87f731a78",
+						"confirm-email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forgot Password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/forgot-password?email=penic.dijana@gmail.com",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"forgot-password"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "penic.dijana@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Token",
+						"value": "Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNLekRPdkFKT3ZLb3MvY1ZnRWMvRTMvUFBleElKRHFYUkg3NG1JcDFhL1ZtYXA5M2c5TmQySEN3M0d1YlBBT1BxVndqTjl4bVdzNVZyS0tUU2VyaFAzWDJJTzEyV3Y2RSsyQmk3NEYwTy81eVNkQW1LdUhsS2ZyYVI4aWtUQlZRaUFpZUQyUlhBNFFZWHBERWc5bHM1RkxWckRQS3g2OThscS9lTjhHa3VrajVBV0ZldnFtaG9xbFp0am95V1ZMWER5M2g3OGhlQkNuTGJVK1lWQTdaR1hq",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Password\": \"aB123456,\",\r\n    \"ConfirmPassword\": \"aB123456,\"\r\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "https://store.api.local:5001/account/users/03b4ed7a-b4f2-4ecd-4853-08d87f731a78/creset-password",
+					"protocol": "https",
+					"host": [
+						"store",
+						"api",
+						"local"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"users",
+						"03b4ed7a-b4f2-4ecd-4853-08d87f731a78",
+						"creset-password"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
