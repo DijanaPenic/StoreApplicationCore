@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Web;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Claims;
 using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
@@ -32,8 +30,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("account")]
-    [ApiExplorerSettings(IgnoreApi = false)]
-    public class AccountController : ExtendedControllerBase
+    public class AccountController : IdentityControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ICacheProvider _cacheProvider;
@@ -59,208 +56,7 @@ namespace Store.WebAPI.Controllers
             _cacheProvider = cacheManager.CacheProvider;
             _logger = logger;
             _mapper = mapper;
-        }
-
-        /// <summary>Gets the user profile of the currently logged in user.</summary>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Authorize]
-        [Route("users/user-profile")]
-        public async Task<IActionResult> GetUserProfileAsync()
-        {
-            IUser user = await GetLoggedInUserAsync();
-            IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
-
-            UserProfileGetApiModel userProfileResponse = new UserProfileGetApiModel
-            {
-                Username = user.UserName,
-                Email = user.Email,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                ExternalLogins = logins.Select(login => login.ProviderDisplayName).ToList(),
-                TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
-                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
-                TwoFactorClientRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
-                RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user)
-            };
-
-            return Ok(userProfileResponse);
-        }
-
-        /// <summary>Generates or retrieves authenticator key for the currently logged in user.</summary>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Authorize]
-        [Route("users/authenticator-key")]
-        public async Task<IActionResult> GetUserAuthenticatorKeyAsync()
-        {
-            IUser user = await GetLoggedInUserAsync();
-
-            string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
-            if (string.IsNullOrEmpty(authenticatorKey))
-            {
-                await _userManager.ResetAuthenticatorKeyAsync(user);
-                authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
-
-                _logger.LogInformation("A new authenticator key is generated.");
-            }
-            else
-            {
-                _logger.LogInformation("The existing authenticator key is retrieved from the database.");
-            }
-
-            AuthenticatorKeyGetApiModel authenticatorDetailsResponse =  new AuthenticatorKeyGetApiModel
-            {
-                SharedKey = authenticatorKey,
-                AuthenticatorUri = GenerateQrCodeUri(user.Email, authenticatorKey)
-            };
-
-            return Ok(authenticatorDetailsResponse);
-        }
-
-        /// <summary>Verifies the authenticator code for the currently logged in user. If successful, two factor authentication will be enabled.</summary>
-        /// <param name="code">The authenticator code.</param>
-        /// <returns>
-        ///   Ten two factor recovery codes.
-        /// </returns>
-        [HttpPost]
-        [Authorize]
-        [Route("users/verify-authenticator-code")]
-        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromQuery]string code)
-        {
-            if (string.IsNullOrEmpty(code))
-            {
-                return BadRequest("Verification Code is missing.");
-            }
-
-            IUser user = await GetLoggedInUserAsync();
-            bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
-
-            if (isTwoFactorTokenValid)
-            {
-                await _userManager.SetTwoFactorEnabledAsync(user, true);
-
-                _logger.LogInformation("Two factor authentication is enabled for the user.");
-            }
-            else
-            {
-                return BadRequest("Verification Code is invalid.");
-            }
-
-            if (await _userManager.CountRecoveryCodesAsync(user) == 0)
-            {
-                IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-
-                _logger.LogInformation("Ten two factor recovery codes are generatied for the user.");
-
-                TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
-                {
-                    RecoveryCodes = recoveryCodes.ToArray()
-                };
-
-                return Ok(response);
-            }
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Generates new two factor recovery codes for the currently logged in user.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Authorize]
-        [Route("users/generate-recovery-codes")]
-        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromQuery]int number)
-        {
-            IUser user = await GetLoggedInUserAsync();
-
-            if (await _userManager.CountRecoveryCodesAsync(user) != 0)
-            {
-                return BadRequest("Cannot generate new recovery codes as old ones have not been used.");
-            }
-
-            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number);
-
-            TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
-            {
-                RecoveryCodes = recoveryCodes.ToArray()
-            };
-
-            return Ok(response);
-        }
-
-        /// <summary>Disables the two factor authentication for the currently logged in user.</summary>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPost]
-        [Authorize]
-        [Route("users/disable-two-factor")]
-        public async Task<IActionResult> DisableTwoFactorAsync()
-        {
-            IUser user = await GetLoggedInUserAsync();
-
-            if (!await _userManager.GetTwoFactorEnabledAsync(user))
-            {
-                return BadRequest("Cannot disable two factor authentication as it's not currently enabled.");
-            }
-
-            IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, false);
-
-            _logger.LogInformation("Two factor authentication is disabled for the user.");
-
-            return result.Succeeded ? Ok() : GetErrorResult(result);
-        }
-
-        /// <summary>Authenticates the user using the two factor authentication code.</summary>
-        /// <param name="authenticateModel">The authenticate model.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPost]
-        [Route("users/two-factor-authenticate")]
-        public async Task<IActionResult> TwoFactorAuthenticateAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // Verify client information
-            if (!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            IUser user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-            if(user == null)
-            {
-                return BadRequest("Two-factor authentication action is not supported for the user.");
-            }
-
-            SignInResult signInResult;
-            if (!authenticateModel.UseRecoveryCode)
-            {
-                //Note: isPersistent, rememberClient: false - no need to store browser cookies in Web API.
-                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, false, false);
-            }
-            else
-            {
-                signInResult = await _signInManager.TwoFactorRecoveryCodeSignInAsync(authenticateModel.Code);
-            }
-
-            IActionResult response = await AuthenticateAsync(signInResult, user, clientId);
-
-            return Ok(response);
-        }
+        } 
 
         /// <summary>Authenticates the user.</summary>
         /// <param name="authenticateModel">The authenticate model.</param>
@@ -309,7 +105,7 @@ namespace Store.WebAPI.Controllers
             // Note: PasswordSignInAsync - this method performs 2fa check, but also generates the ".AspNetCore.Identity.Application" cookie. Cookie creation cannot be disabled (SignInManager is heavily dependant on cookies - by design).
             // Note: isPersistent: false - no need to store browser cookies in Web API.
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
-            IActionResult response = await AuthenticateAsync(signInResult, user, clientId);
+            IActionResult response = await AuthenticateAsync(_authManager, _logger, signInResult, user, clientId);
 
             return response;
         }
@@ -363,7 +159,7 @@ namespace Store.WebAPI.Controllers
             }
         }
 
-        /// <summary>Deletes the expired refresh tokens.</summary>
+        /// <summary>Deletes refresh tokens that have expired.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
@@ -397,7 +193,13 @@ namespace Store.WebAPI.Controllers
         [AuthorizationFilter(RoleHelper.Admin)]
         public async Task<IActionResult> GetRolesAsync()
         {
-            IEnumerable<IRole> roles = await GetRolesFromCache();
+            IEnumerable<IRole> roles = await _cacheProvider.GetOrAddAsync
+            (
+                CacheParameters.Keys.AllRoles,
+                _roleManager.GetRolesAsync,
+                DateTimeOffset.MaxValue,
+                CacheParameters.Groups.Identity
+            );
 
             return Ok(_mapper.Map<IEnumerable<RoleGetApiModel>>(roles));
         }
@@ -878,95 +680,5 @@ namespace Store.WebAPI.Controllers
 
         //    return View(nameof(ExternalLogin), model);
         //
-
-        #region Helpers
-
-        private Task<IEnumerable<IRole>> GetRolesFromCache()
-        {
-            return _cacheProvider.GetOrAddAsync
-            (
-                CacheParameters.Keys.AllRoles,
-                _roleManager.GetRolesAsync,
-                DateTimeOffset.MaxValue,
-                CacheParameters.Groups.Identity
-            );
-        }
-
-        private IActionResult GetErrorResult(IdentityResult result)
-        {
-            if (result == null)
-            {
-                return InternalServerError();
-            }
-
-            return BadRequest(result.Errors);
-        }
-
-        private async Task<IUser> GetLoggedInUserAsync()
-        {
-            string userName = User.FindFirst(ClaimTypes.Name).Value;
-            IUser user = await _userManager.FindByNameAsync(userName);
-
-            return user;
-        }
-
-        private string GenerateQrCodeUri(string email, string authenticatorKey)
-        {
-            const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
-
-            return string.Format
-            (
-                AuthenticatorUriFormat,
-                HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
-                HttpUtility.UrlPathEncode(email),
-                authenticatorKey
-            );
-        }
-
-        private async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, Guid clientId)
-        {
-            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
-            {
-                UserId = user.Id,
-                RequiresTwoFactor = signInResult.RequiresTwoFactor
-            };
-
-            if (!signInResult.Succeeded)
-            {
-                if (signInResult.IsLockedOut)
-                {
-                    return Unauthorized($"User [{user.UserName}] has been locked out.");
-                }
-                if (signInResult.IsNotAllowed)
-                {
-                    return Unauthorized($"User [{user.UserName}] is not allowed to log in.");
-                }
-                if (signInResult.RequiresTwoFactor)
-                {
-                    return Ok(authenticationResponse);
-                }
-
-                return Unauthorized($"Failed to log in [{user.UserName}].");
-            }
-
-            _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
-
-            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
-
-            authenticationResponse.Roles = jwtResult.Roles.ToArray();
-            authenticationResponse.AccessToken = jwtResult.AccessToken;
-            authenticationResponse.RefreshToken = jwtResult.RefreshToken;
-
-            if (signInResult.Succeeded)
-            {
-                // Need to delete "identity" cookie for the authorized user - created by SignInManager 
-                Response.Cookies.Delete(".AspNetCore.Identity.Application");
-                Response.Headers.Remove("Set-Cookie");
-            }
-
-            return Ok(authenticationResponse);
-        }
-
-        #endregion
     }
 }

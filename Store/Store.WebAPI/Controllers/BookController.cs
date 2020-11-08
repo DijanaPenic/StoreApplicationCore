@@ -18,7 +18,6 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("book")]
-    [ApiExplorerSettings(IgnoreApi = false)]
     [AuthorizationFilter(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class BookController : ExtendedControllerBase
     {
