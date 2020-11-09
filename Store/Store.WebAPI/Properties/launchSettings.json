@@ -19,7 +19,7 @@
     "Store.WebAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://store.api.local:5001;http://store.api.local:5000",
+      "applicationUrl": "https://store.api.local:5001;http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

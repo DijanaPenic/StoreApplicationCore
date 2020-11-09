@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Store.DAL.Context;
@@ -13,8 +14,10 @@ namespace Store.Repository.DependencyInjection
 {
     public static class RepositoryExtensions
     {
-        public static void AddRepositoryComponents(this IServiceCollection services, string connectionString)
+        public static void AddRepositoryComponents(this IServiceCollection services, IConfiguration configuration)
         {
+            string connectionString = configuration.GetConnectionString("DatabaseConnection");
+
             services.AddTransient<IBookstoreRepository, BookstoreRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
 

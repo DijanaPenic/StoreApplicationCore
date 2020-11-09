@@ -39,10 +39,10 @@ namespace Store.WebAPI.Identity
             _configuration = configuration;
 
             // Encryption configuration
-            IConfigurationSection twoFactorAuthenticationConfig = _configuration.GetSection("TwoFactorAuthentication");
+            IConfigurationSection twoFactorAuthConfig = _configuration.GetSection("TwoFactorAuthentication");
 
-            _isEncryptionEnabled = twoFactorAuthenticationConfig.GetValue<bool>("EncryptionEnabled");
-            _encryptionKey = twoFactorAuthenticationConfig.GetValue<string>("EncryptionKey");
+            _isEncryptionEnabled = twoFactorAuthConfig.GetValue<bool>("EncryptionEnabled");
+            _encryptionKey = twoFactorAuthConfig.GetValue<string>("EncryptionKey");
         }
 
         public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)

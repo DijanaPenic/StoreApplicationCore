@@ -14,7 +14,7 @@ namespace Store.WebAPI.Application.Startup
 {
     public static class AuthenticationExtensions
     {
-        public static void AddAuthentication(this IServiceCollection services, IConfigurationSection authConfiguration)
+        public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure token lifespan
             services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -55,7 +55,7 @@ namespace Store.WebAPI.Application.Startup
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme);
 
             // JWT configuration
-            JwtTokenConfig jwtTokenConfig = authConfiguration.Get<JwtTokenConfig>();
+            JwtTokenConfig jwtTokenConfig = configuration.GetValue<JwtTokenConfig>("JwtTokenConfig");
             services.AddSingleton(jwtTokenConfig);
 
             // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens
@@ -82,6 +82,9 @@ namespace Store.WebAPI.Application.Startup
                         jwtOptions.SaveToken = true;
                         jwtOptions.TokenValidationParameters = tokenValidationParameters;
                     });
+
+            // External Login configuration
+            services.ConfigureExternalProviders(configuration);
         }
     }
 }

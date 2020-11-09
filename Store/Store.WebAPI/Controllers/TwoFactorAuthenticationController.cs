@@ -16,6 +16,7 @@ using Store.Model.Common.Models.Identity;
 
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
+// Good blog post about two factor authentication: https://chsakell.com/2019/08/18/asp-net-core-identity-series-two-factor-authentication/
 namespace Store.WebAPI.Controllers
 {
     [ApiController]

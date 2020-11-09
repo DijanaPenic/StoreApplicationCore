@@ -34,16 +34,16 @@ namespace Store.WebAPI
             services.AddAutoMapper();
 
             // Repository configuration
-            services.AddRepositoryComponents(Configuration.GetConnectionString("DatabaseConnection"));
+            services.AddRepositoryComponents(Configuration);
 
             // Service configuration
             services.AddServiceComponents();
             
             // Cache configuration
-            services.AddCacheComponents(Configuration.GetConnectionString("RedisConnection"));
+            services.AddCacheComponents(Configuration);
 
             // Authentication configuration
-            services.AddAuthentication(Configuration.GetSection("JwtTokenConfig"));
+            services.AddAuthentication(Configuration);
 
             // Swagger configuration
             services.AddSwagger();
