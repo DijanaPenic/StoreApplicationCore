@@ -55,7 +55,7 @@ namespace Store.WebAPI.Application.Startup
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme);
 
             // JWT configuration
-            JwtTokenConfig jwtTokenConfig = configuration.GetValue<JwtTokenConfig>("JwtTokenConfig");
+            JwtTokenConfig jwtTokenConfig = configuration.GetSection("JwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
 
             // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens
