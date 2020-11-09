@@ -37,6 +37,8 @@ namespace Store.WebAPI.Application.Startup
                         identityOptions.Lockout.MaxFailedAccessAttempts = 3;
 
                         identityOptions.User.RequireUniqueEmail = true;
+
+                        identityOptions.SignIn.RequireConfirmedEmail = true;
                     })
                     .AddRoles<IRole>()
                     .AddSignInManager<SignInManager<IUser>>()   // Scoped
