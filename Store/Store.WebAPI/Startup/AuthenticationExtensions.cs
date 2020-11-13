@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
@@ -17,34 +19,35 @@ namespace Store.WebAPI.Application.Startup
         public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure token lifespan
+            // Note: Token example - token for password reset
             services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
                 options.TokenLifespan = TimeSpan.FromDays(1); // Sets the expiry to one day
             });
 
             // Identity configuration
-            // Note: AddIdentity shouldn't be called if you want fine grain control over auth, calling AddIdentityCore and the other identity builder methods will setup identity without auth, 
-            // then we can call AddAuthentication() and configure things exactly how we want.
+            // Note: "AddIdentity" shouldn't be used if we want fine grain control over auth. 
+            // Note: "AddIdentityCore" will setup identity without auth, then we can call AddAuthentication() and configure things exactly how we want.
             services.AddIdentityCore<IUser>(identityOptions =>
-                    {
-                        identityOptions.Password.RequiredLength = 8;
-                        identityOptions.Password.RequireDigit = true;
-                        identityOptions.Password.RequireUppercase = true;
-                        identityOptions.Password.RequireNonAlphanumeric = true;
+            {
+                identityOptions.Password.RequiredLength = 8;
+                identityOptions.Password.RequireDigit = true;
+                identityOptions.Password.RequireUppercase = true;
+                identityOptions.Password.RequireNonAlphanumeric = true;
 
-                        identityOptions.Lockout.AllowedForNewUsers = true;
-                        identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
-                        identityOptions.Lockout.MaxFailedAccessAttempts = 3;
+                identityOptions.Lockout.AllowedForNewUsers = true;
+                identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                identityOptions.Lockout.MaxFailedAccessAttempts = 3;
 
-                        identityOptions.User.RequireUniqueEmail = true;
+                identityOptions.User.RequireUniqueEmail = true;
 
-                        identityOptions.SignIn.RequireConfirmedEmail = true;
-                    })
-                    .AddRoles<IRole>()
-                    .AddSignInManager<SignInManager<IUser>>()   // Scoped
-                    .AddUserManager<ApplicationUserManager>()   // Scoped
-                    .AddRoleManager<ApplicationRoleManager>()   // Scoped
-                    .AddDefaultTokenProviders();                
+                identityOptions.SignIn.RequireConfirmedEmail = true;
+            })
+            .AddRoles<IRole>()
+            .AddSignInManager<SignInManager<IUser>>()   // Scoped
+            .AddUserManager<ApplicationUserManager>()   // Scoped
+            .AddRoleManager<ApplicationRoleManager>()   // Scoped
+            .AddDefaultTokenProviders();                
 
             services.AddTransient<ApplicationAuthManager>();
 
@@ -54,7 +57,19 @@ namespace Store.WebAPI.Application.Startup
             services.AddAuthentication()
             .AddCookie(IdentityConstants.ApplicationScheme)
             .AddCookie(IdentityConstants.TwoFactorRememberMeScheme)
-            .AddCookie(IdentityConstants.TwoFactorUserIdScheme);
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme)
+            .AddCookie(IdentityConstants.ExternalScheme);
+
+            // TODO - need to test two-factor authentication
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+
+                // Lax - Indicates the client should send the cookie with "same-site" requests, and with "cross-site" top-level navigations (links).
+                // Note: ExternalLogin requests won't work in Chrome if not set.
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;  
+            });
 
             // JWT configuration
             JwtTokenConfig jwtTokenConfig = configuration.GetSection("JwtTokenConfig").Get<JwtTokenConfig>();
@@ -74,16 +89,16 @@ namespace Store.WebAPI.Application.Startup
             services.AddSingleton(tokenValidationParameters);
 
             services.AddAuthentication(authOptions =>
-                    {
-                        authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    })
-                    .AddJwtBearer(jwtOptions =>
-                    {
-                        jwtOptions.RequireHttpsMetadata = true;
-                        jwtOptions.SaveToken = true;
-                        jwtOptions.TokenValidationParameters = tokenValidationParameters;
-                    });
+            {
+                authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(jwtOptions =>
+            {
+                jwtOptions.RequireHttpsMetadata = true;
+                jwtOptions.SaveToken = true;
+                jwtOptions.TokenValidationParameters = tokenValidationParameters;
+            });
 
             // External Login configuration
             services.ConfigureExternalProviders(configuration);
