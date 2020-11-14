@@ -24,7 +24,6 @@ namespace Store.WebAPI.Controllers
     public class TwoFactorController : IdentityControllerBase
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ILogger _logger;
 
@@ -38,7 +37,6 @@ namespace Store.WebAPI.Controllers
         : base(authManager, logger)
         {
             _userManager = userManager;
-            _authManager = authManager;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -229,14 +227,14 @@ namespace Store.WebAPI.Controllers
             }
 
             SignInResult signInResult;
-            if (!authenticateModel.UseRecoveryCode)
+            if (authenticateModel.UseRecoveryCode)
             {
-                //Note: isPersistent, rememberClient: false - no need to store browser cookies in Web API.
-                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, false, false);
+                signInResult = await _signInManager.TwoFactorRecoveryCodeSignInAsync(authenticateModel.Code);
             }
             else
             {
-                signInResult = await _signInManager.TwoFactorRecoveryCodeSignInAsync(authenticateModel.Code);
+                //Note: isPersistent, rememberClient: false - no need to store browser cookies in Web API.
+                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, false, false);
             }
 
             return await AuthenticateAsync(signInResult, user, clientId);
