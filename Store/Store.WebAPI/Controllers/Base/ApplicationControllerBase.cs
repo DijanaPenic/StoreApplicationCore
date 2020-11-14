@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Store.WebAPI.Controllers
 {
-    abstract public class ExtendedControllerBase : ControllerBase
+    abstract public class ApplicationControllerBase : ControllerBase
     {
         protected IActionResult InternalServerError()
         {

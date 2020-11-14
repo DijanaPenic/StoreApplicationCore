@@ -15,7 +15,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Store.WebAPI.Controllers
 {
-    abstract public class IdentityControllerBase : ExtendedControllerBase
+    abstract public class IdentityControllerBase : ApplicationControllerBase
     {
         private readonly ApplicationAuthManager _authManager;
         private readonly ILogger _logger;
