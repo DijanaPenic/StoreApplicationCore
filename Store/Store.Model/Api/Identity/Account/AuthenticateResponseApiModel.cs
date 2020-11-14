@@ -30,5 +30,6 @@ namespace Store.Models.Api.Identity
         ExistingExternalLoginSuccess = 1,
         NewExternalLoginAddedSuccess = 2,
         PendingEmailConfirmation = 3,
+        ExistingUserAccountNotFound = 4
     }
 }

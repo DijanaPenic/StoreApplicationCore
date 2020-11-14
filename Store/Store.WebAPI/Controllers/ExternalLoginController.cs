@@ -18,6 +18,7 @@ using Store.Model.Common.Models.Identity;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 // Blog post: https://chsakell.com/2019/07/28/asp-net-core-identity-series-external-provider-authentication-registration-strategy/
+// TODO - add information about authentication rules
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
@@ -27,7 +28,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ApplicationAuthManager _authManager;
-        private readonly ILogger _logger;
+        private readonly ILogger _logger;       
 
         public ExternalLoginController
         (
@@ -59,20 +60,34 @@ namespace Store.WebAPI.Controllers
             return Ok(providerNames);
         }
 
+        /// <summary>Initiates the external login authentication process.</summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="clientSecret">The client secret.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [AllowAnonymous]
-        [Route("authentiate")] // TODO - need to use model from body instead of query parameters
+        [Route("authentiate")] // TODO - need to use model from body instead of query parameters + POST
         public IActionResult Authenticate([FromQuery] string provider, [FromQuery] Guid clientId, [FromQuery] string clientSecret = null)
         {
-            string redirectUrl = Url.Action("Callback", "ExternalLogin", new { clientId, clientSecret });        // Url.Action is not working if "CallbackAsync" value is used
+            string redirectUrl = Url.Action("AuthenticateCallback", "ExternalLogin", new { clientId, clientSecret });        // Url.Action is not working if "CallbackAsync" value is used
             AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
             return Challenge(properties, provider);
         }
 
+        /// <summary>Authenticates the user via his external login request.</summary>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="clientSecret">The client secret.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [AllowAnonymous]
         [Route("authentiate-callback")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> AuthenticateCallbackAsync([FromQuery] Guid clientId, [FromQuery] string clientSecret = null)
         {
             if (GuidHelper.IsNullOrEmpty(clientId))
@@ -92,11 +107,14 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("External login information is missing.");
             }
 
-            // Sign in the user with this external login provider if the user already has a login.
+            // Sign in the user with this external login provider if the user already has an external login.
             IUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
             if (user != null)
             {
+                _logger.LogInformation($"Trying to sign in user {user.Email} with the existing external login provider.");
+
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
                 return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.ExistingExternalLoginSuccess);
             }
 
@@ -111,7 +129,9 @@ namespace Store.WebAPI.Controllers
 
             if (user != null)
             {
-                // RULE #5 
+                _logger.LogInformation($"There is already user account registered with {userEmail} email.");
+                _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
+
                 if (!user.EmailConfirmed)
                 {
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -122,14 +142,17 @@ namespace Store.WebAPI.Controllers
                         "ExternalLogin",
                         values: new
                         {
-                            userId = user.Id,
-                            code = token,
+                            id = user.Id,
+                            clientId,
+                            token,
                             loginProvider = info.LoginProvider,
                             providerDisplayName = info.LoginProvider,
                             providerKey = info.ProviderKey
                         },
                         protocol: Request.Scheme)
                     ;
+
+                    _logger.LogInformation($"Sending email confirmation token to confirm association of {info.ProviderDisplayName} external login account.");
 
                     // TODO - missing email implementation
                     //await _emailSender.SendEmailAsync
@@ -139,37 +162,39 @@ namespace Store.WebAPI.Controllers
                     //    $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
                     //);
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.PendingEmailConfirmation } );
+                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.PendingEmailConfirmation });
                 }
 
                 // Add the external provider
                 await _userManager.AddLoginAsync(user, info);
 
+                _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
+
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
                 return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess);
             }
 
-            string registerUrl = Url.Action
-            (
-                "Register",
-                "ExternalLoginAccount",
-                values: new
-                {
-                    associate = userEmail,
-                    loginProvider = info.LoginProvider,
-                    providerDisplayName = info.ProviderDisplayName,
-                    providerKey = info.ProviderKey
-                },
-                protocol: Request.Scheme)
-            ;
+            _logger.LogInformation($"There is no user account registered with {userEmail} email.");
+            _logger.LogInformation($"A new user account must be created or external login must be associated with different email address.");
 
-            return new RedirectResult(registerUrl);
+            return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.ExistingUserAccountNotFound });
         }
 
-        [HttpGet]
+        /// <summary>Confirms the external provider.</summary>
+        /// <param name="id">The user identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="loginProvider">The login provider.</param>
+        /// <param name="providerDisplayName">Display name of the provider.</param>
+        /// <param name="providerKey">The provider key.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet] // Must be GET because it will be called via email link
         [AllowAnonymous]
         [Route("users/{id:guid}/confirm-external-provider")]
-        public async Task<IActionResult> ConfirmExternalProvider([FromRoute] Guid id, Guid clientId, string loginProvider, string providerDisplayName, string providerKey)
+        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid id, [FromQuery]Guid clientId, [FromQuery]string token, 
+        [FromQuery]string loginProvider, [FromQuery]string providerDisplayName, [FromQuery]string providerKey)
         {
             if (GuidHelper.IsNullOrEmpty(id))
             {
@@ -179,23 +204,21 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("Client Id is missing.");
             }
-            if (GuidHelper.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest("Token is required.");
+            }
+            if (string.IsNullOrWhiteSpace(loginProvider))
             {
                 return BadRequest("Login provider is required.");
             }
-            if (GuidHelper.IsNullOrEmpty(providerDisplayName))
+            if (string.IsNullOrWhiteSpace(providerDisplayName))
             {
                 return BadRequest("Provider display name is required.");
             }
-            if (GuidHelper.IsNullOrEmpty(providerKey))
+            if (string.IsNullOrWhiteSpace(providerKey))
             {
                 return BadRequest("Provider key is required.");
-            }
-
-            string token = Request.Headers["Token"].First();
-            if (string.IsNullOrEmpty(token))
-            {
-                return BadRequest("Token is missing.");
             }
 
             IUser user = await _userManager.FindByIdAsync(id.ToString());
@@ -204,13 +227,13 @@ namespace Store.WebAPI.Controllers
                 NotFound();
             }
 
-            // This comes from an external provider so we can confirm the email as well
-            IdentityResult confirmationResult = await _userManager.ConfirmEmailAsync(user, token);
-            if (!confirmationResult.Succeeded)
+            // External provider is authenticated source so we can confirm the email
+            IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!emailConfirmationResult.Succeeded)
                 return InternalServerError();
 
-            IdentityResult newLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, loginProvider, providerKey, providerDisplayName));
-            if (!newLoginResult.Succeeded)
+            IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, loginProvider, providerKey, providerDisplayName));
+            if (!newExternalLoginResult.Succeeded)
                 return InternalServerError();
 
             SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent: false, bypassTwoFactor: true);
