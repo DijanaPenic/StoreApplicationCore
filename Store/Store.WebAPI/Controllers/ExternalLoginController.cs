@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 using Store.Common.Helpers;
 using Store.WebAPI.Identity;
+using Store.Models.Identity;
 using Store.Models.Api.Identity;
 using Store.Model.Common.Models.Identity;
 
@@ -129,7 +130,7 @@ namespace Store.WebAPI.Controllers
 
             if (user != null)
             {
-                _logger.LogInformation($"There is already user account registered with {userEmail} email.");
+                _logger.LogInformation($"There is user account registered with {userEmail} email.");
                 _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
 
                 if (!user.EmailConfirmed)
@@ -146,7 +147,7 @@ namespace Store.WebAPI.Controllers
                             clientId,
                             token,
                             loginProvider = info.LoginProvider,
-                            providerDisplayName = info.LoginProvider,
+                            loginProviderDisplayName = info.LoginProvider,
                             providerKey = info.ProviderKey
                         },
                         protocol: Request.Scheme)
@@ -177,26 +178,26 @@ namespace Store.WebAPI.Controllers
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
             _logger.LogInformation($"A new user account must be created or external login must be associated with different email address.");
 
-            return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.ExistingUserAccountNotFound });
+            return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserAccountNotFound });
         }
 
         /// <summary>Confirms the external provider.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="token">The token.</param>
-        /// <param name="loginProvider">The login provider.</param>
-        /// <param name="providerDisplayName">Display name of the provider.</param>
+        /// <param name="loginProvider">The external login provider.</param>
+        /// <param name="loginProviderDisplayName">Display name of the external login provider.</param>
         /// <param name="providerKey">The provider key.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet] // Must be GET because it will be called via email link
         [AllowAnonymous]
-        [Route("users/{id:guid}/confirm-external-provider")]
-        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid id, [FromQuery]Guid clientId, [FromQuery]string token, 
-        [FromQuery]string loginProvider, [FromQuery]string providerDisplayName, [FromQuery]string providerKey)
+        [Route("users/{userId:guid}/confirm-external-provider")]
+        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery]Guid clientId, [FromQuery]string token, 
+        [FromQuery]string loginProvider, [FromQuery]string loginProviderDisplayName, [FromQuery]string providerKey)
         {
-            if (GuidHelper.IsNullOrEmpty(id))
+            if (GuidHelper.IsNullOrEmpty(userId))
             {
                 return BadRequest("User Id is missing.");
             }
@@ -212,7 +213,7 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("Login provider is required.");
             }
-            if (string.IsNullOrWhiteSpace(providerDisplayName))
+            if (string.IsNullOrWhiteSpace(loginProviderDisplayName))
             {
                 return BadRequest("Provider display name is required.");
             }
@@ -221,7 +222,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Provider key is required.");
             }
 
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 NotFound();
@@ -232,7 +233,7 @@ namespace Store.WebAPI.Controllers
             if (!emailConfirmationResult.Succeeded)
                 return InternalServerError();
 
-            IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, loginProvider, providerKey, providerDisplayName));
+            IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, loginProvider, providerKey, loginProviderDisplayName));
             if (!newExternalLoginResult.Succeeded)
                 return InternalServerError();
 
@@ -241,10 +242,127 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("associate")]
-        // TODO - authentication and implementation
-        public void Associate()
+        [Route("register")]
+        // TODO - authentication 
+        public async Task<IActionResult> RegisterAsync([FromBody] ExternalLoginRegisterRequestApiModel registerModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Verify client information
+            if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            // Create a new account
+            if (!registerModel.AssociateExistingAccount)
+            {
+                if(string.IsNullOrWhiteSpace(registerModel.Username) || string.IsNullOrWhiteSpace(registerModel.ExternalLoginEmail))
+                {
+                    return BadRequest("Both username and external login email are required.");
+                }
+
+                IUser newUser = new User 
+                { 
+                    UserName = registerModel.Username, 
+                    Email = registerModel.ExternalLoginEmail 
+                };
+
+                _logger.LogInformation($"Creating a new user {registerModel.ExternalLoginEmail}.");
+
+                // Create a new user
+                IdentityResult createUserResult = await _userManager.CreateAsync(newUser);
+                if (createUserResult.Succeeded)
+                {
+                    _logger.LogInformation("Adding the 'Trial' claim for the user.");
+
+                    // Add the Trial claim
+                    Claim trialClaim = new Claim("Trial", DateTime.UtcNow.ToString());  // TODO - check why we need Trial claim
+                    await _userManager.AddClaimAsync(newUser, trialClaim);
+
+                    _logger.LogInformation("Adding external login for the user.");
+
+                    // Add external login for the user
+                    IdentityResult createLoginResult = await _userManager.AddLoginAsync
+                    (
+                        newUser, 
+                        new ExternalLoginInfo
+                        (
+                            null,
+                            registerModel.LoginProvider,
+                            registerModel.ProviderKey,
+                            registerModel.ProviderDisplayName
+                        )
+                    );
+                    
+                    if (createLoginResult.Succeeded)
+                    {
+                        _logger.LogInformation($"Updating the newly created user - setting 'EmailConfirmed' to 'true'.");
+
+                        // Email confirmation is not required because we've obtained email from secure source (external provider)
+                        newUser.EmailConfirmed = true;
+                        await _userManager.UpdateAsync(newUser);
+
+                        _logger.LogInformation($"Trying to sign in user {newUser.Email} with new external login provider.");
+
+                        SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(registerModel.LoginProvider, registerModel.ProviderKey, false);
+
+                        return await AuthenticateAsync(signInResult, newUser, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess);
+                    }
+                }
+
+                return GetErrorResult(createUserResult);
+            }
+
+            if(string.IsNullOrWhiteSpace(registerModel.AssociateEmail))
+            {
+                return BadRequest("Associate email is required.");
+            }
+
+            IUser existingUser = await _userManager.FindByEmailAsync(registerModel.AssociateEmail);
+            if (existingUser != null)
+            {
+                _logger.LogInformation($"There is user account registered with {registerModel.AssociateEmail} email.");
+                _logger.LogInformation($"Email {registerModel.AssociateEmail} is {(existingUser.EmailConfirmed ? "confirmed" : "not confirmed")}.");
+
+                if (!existingUser.EmailConfirmed)
+                {
+                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.EmailRequiresConfirmation });
+                }
+
+                string token = await _userManager.GenerateEmailConfirmationTokenAsync(existingUser);
+
+                var callbackUrl = Url.Action
+                (
+                    "ConfirmExternalProvider",
+                    "ExternalLogin",
+                    values: new
+                    {
+                        id = existingUser.Id,
+                        clientId,
+                        token,
+                        loginProvider = registerModel.LoginProvider,
+                        loginProviderDisplayName = registerModel.LoginProvider,
+                        providerKey = registerModel.ProviderKey
+                    },
+                    protocol: Request.Scheme
+                );
+
+                _logger.LogInformation($"Sending email confirmation token to confirm association of {registerModel.ProviderDisplayName} external login account.");
+
+                // TODO - missing email implementation
+                //await _emailSender.SendEmailAsync(existingUser.Email, $"Confirm {registerModel.ProviderDisplayName} external login",
+                //    $"Please confirm association of your {registerModel.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>.");
+
+                return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.PendingEmailConfirmation });
+            }
+
+            _logger.LogInformation($"There is no user account registered with {registerModel.AssociateEmail} email.");
+
+            return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserAccountNotFound });
         }
     }
 }
