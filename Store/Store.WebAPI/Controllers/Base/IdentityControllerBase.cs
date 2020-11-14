@@ -15,6 +15,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Store.WebAPI.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     abstract public class IdentityControllerBase : ApplicationControllerBase
     {
         private readonly ApplicationAuthManager _authManager;
@@ -26,6 +27,7 @@ namespace Store.WebAPI.Controllers
             _logger = logger;
         }
 
+        [NonAction]
         public IActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
@@ -36,6 +38,7 @@ namespace Store.WebAPI.Controllers
             return BadRequest(result.Errors);
         }
 
+        [NonAction]
         public async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, Guid clientId, ExternalLoginStatus externalLoginStatus = ExternalLoginStatus.None)
         {
             if (signInResult == null)
