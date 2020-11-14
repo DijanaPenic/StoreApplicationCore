@@ -40,14 +40,17 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly ILogger _logger;
 
-        public AccountController(
+        public AccountController
+        (
             ApplicationUserManager userManager,
             ApplicationRoleManager roleManager,
             ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
             ICacheManager cacheManager,
             ILogger<AccountController> logger,
-            IMapper mapper)
+            IMapper mapper
+        )
+        : base(authManager, logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -79,10 +82,10 @@ namespace Store.WebAPI.Controllers
                 return BadRequest($"Client '{clientId}' format is invalid."); 
             }
 
-            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, authenticateModel.ClientSecret);
-            if(!clientAuthResult.Succeeded)
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, authenticateModel.ClientSecret);
+            if(!string.IsNullOrEmpty(clientAuthResult))
             {
-                return Unauthorized(clientAuthResult.ErrorMessage);
+                return Unauthorized(clientAuthResult);
             }
 
             // Check user's status
@@ -105,9 +108,7 @@ namespace Store.WebAPI.Controllers
             // Note: PasswordSignInAsync - this method performs 2fa check, but also generates the ".AspNetCore.Identity.Application" cookie. Cookie creation cannot be disabled (SignInManager is heavily dependant on cookies - by design).
             // Note: isPersistent: false - no need to store browser cookies in Web API.
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
-            IActionResult response = await AuthenticateAsync(_authManager, _logger, signInResult, user, clientId);
-
-            return response;
+            return await AuthenticateAsync(signInResult, user, clientId);
         }
 
         /// <summary>Refreshes tokens (refresh and access tokens).</summary>
@@ -131,10 +132,10 @@ namespace Store.WebAPI.Controllers
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
-            ClientAuthResult clientAuthResult = await _authManager.ValidateClientAuthenticationAsync(clientId, refreshTokenModel.ClientSecret);
-            if (!clientAuthResult.Succeeded)
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, refreshTokenModel.ClientSecret);
+            if (!string.IsNullOrEmpty(clientAuthResult))
             {
-                return Unauthorized(clientAuthResult.ErrorMessage);
+                return Unauthorized(clientAuthResult);
             }
 
             try

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Store.WebAPI.Models;
 using Store.WebAPI.Identity;
+using Store.Common.Helpers;
 using Store.Models.Api.Identity;
 using Store.Model.Common.Models.Identity;
 
@@ -16,7 +17,16 @@ namespace Store.WebAPI.Controllers
 {
     abstract public class IdentityControllerBase : ExtendedControllerBase
     {
-        protected IActionResult GetErrorResult(IdentityResult result)
+        private readonly ApplicationAuthManager _authManager;
+        private readonly ILogger _logger;
+
+        public IdentityControllerBase(ApplicationAuthManager authManager, ILogger logger)
+        {
+            _authManager = authManager;
+            _logger = logger;
+        }
+
+        public IActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
             {
@@ -26,12 +36,22 @@ namespace Store.WebAPI.Controllers
             return BadRequest(result.Errors);
         }
 
-        protected async Task<IActionResult> AuthenticateAsync(ApplicationAuthManager authManager, ILogger logger, SignInResult signInResult, IUser user, Guid clientId)
+        public async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, Guid clientId, ExternalLoginStatus externalLoginStatus = ExternalLoginStatus.None)
         {
+            if (signInResult == null)
+                throw new ArgumentNullException(nameof(signInResult));
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (GuidHelper.IsNullOrEmpty(clientId))
+                throw new ArgumentNullException(nameof(clientId));
+
             AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
             {
                 UserId = user.Id,
-                RequiresTwoFactor = signInResult.RequiresTwoFactor
+                RequiresTwoFactor = signInResult.RequiresTwoFactor,
+                ExternalLoginStatus = externalLoginStatus
             };
 
             if (!signInResult.Succeeded)
@@ -52,9 +72,9 @@ namespace Store.WebAPI.Controllers
                 return Unauthorized($"Failed to log in [{user.UserName}].");
             }
 
-            logger.LogInformation($"User [{user.UserName}] has logged in the system.");
+            _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
 
-            JwtAuthResult jwtResult = await authManager.GenerateTokensAsync(user.Id, clientId);
+            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
 
             authenticationResponse.Roles = jwtResult.Roles.ToArray();
             authenticationResponse.AccessToken = jwtResult.AccessToken;

@@ -20,19 +20,22 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("two-factor-auth")]
-    public class TwoFactorAuthenticationController : IdentityControllerBase
+    [Route("two-factor")]
+    public class TwoFactorController : IdentityControllerBase
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ILogger _logger;
 
-        public TwoFactorAuthenticationController(
+        public TwoFactorController
+        (
             ApplicationUserManager userManager,
             ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger
+        )
+        : base(authManager, logger)
         {
             _userManager = userManager;
             _authManager = authManager;
@@ -157,7 +160,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Authorize]
         [Route("generate-recovery-codes")]
-        public async Task<IActionResult> GenerateNewTwoFactorRecoveryCodesAsync([FromQuery] int number)
+        public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromQuery] int number)
         {
             IUser user = await GetLoggedInUserAsync();
 
@@ -183,7 +186,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Authorize]
         [Route("disable")]
-        public async Task<IActionResult> DisableTwoFactorAsync()
+        public async Task<IActionResult> DisableAsync()
         {
             IUser user = await GetLoggedInUserAsync();
 
@@ -206,7 +209,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Route("authenticate")]
-        public async Task<IActionResult> TwoFactorAuthenticateAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -236,9 +239,7 @@ namespace Store.WebAPI.Controllers
                 signInResult = await _signInManager.TwoFactorRecoveryCodeSignInAsync(authenticateModel.Code);
             }
 
-            IActionResult response = await AuthenticateAsync(_authManager, _logger, signInResult, user, clientId);
-
-            return Ok(response);
+            return await AuthenticateAsync(signInResult, user, clientId);
         }
 
         #region Helpers

@@ -158,7 +158,7 @@ namespace Store.WebAPI.Identity
             return _authStore.RemoveExpiredRefreshTokensAsync();
         }
 
-        public async Task<ClientAuthResult> ValidateClientAuthenticationAsync(Guid clientId, string clientSecret)
+        public async Task<string> AuthenticateClientAsync(Guid clientId, string clientSecret)
         {
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));
@@ -167,25 +167,53 @@ namespace Store.WebAPI.Identity
 
             if(client == null)
             {
-                return new ClientAuthResult($"Client '{clientId}' is not registered in the system.");
+                return $"Client '{clientId}' is not registered in the system.";
             }
             if(!client.Active)
             {
-                return new ClientAuthResult($"Client '{clientId}' is not active.");
+                return $"Client '{clientId}' is not active.";
             }
             if (client.ApplicationType == ApplicationType.NativeConfidential)
             {
                 if (string.IsNullOrWhiteSpace(clientSecret))
                 {
-                    return new ClientAuthResult($"Client secret should be provided for '{clientId}'");
+                    return $"Client secret should be provided for '{clientId}'";
                 }
                 else if (client.Secret != HashHelper.GetSHA512Hash(clientSecret))
                 {
-                    return new ClientAuthResult($"Client secret is not valid for '{clientId}'");
+                    return $"Client secret is not valid for '{clientId}'";
                 }
             }
 
-            return new ClientAuthResult();
+            return string.Empty;
+        }
+
+        public async Task<string> ValidateClientUrlAsync(Guid clientId, string url)
+        {
+            if (GuidHelper.IsNullOrEmpty(clientId))
+                throw new ArgumentNullException(nameof(clientId));
+
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentNullException(nameof(url));
+
+            bool validUrl = Uri.TryCreate(url, UriKind.Absolute, out Uri redirectUri);
+            if (!validUrl)
+            {
+                return $"URL '{url}' is not valid.";
+            }
+
+            IClient client = await _authStore.FindClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return $"Client '{clientId}' is not registered in the system.";
+            }
+
+            if (!string.Equals(client.AllowedOrigin, redirectUri.GetLeftPart(UriPartial.Authority), StringComparison.OrdinalIgnoreCase))
+            {
+                return $"The given URL is not allowed by Client '{clientId}' configuration.";
+            }
+
+            return string.Empty;
         }
 
         private void AddRolesToClaims(IList<Claim> claims, IEnumerable<string> roles)
