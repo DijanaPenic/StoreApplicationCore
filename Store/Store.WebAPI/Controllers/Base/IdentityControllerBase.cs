@@ -41,7 +41,14 @@ namespace Store.WebAPI.Controllers
         }
 
         [NonAction]
-        public async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, Guid clientId, ExternalLoginStatus externalLoginStatus = ExternalLoginStatus.None)
+        public async Task<IActionResult> AuthenticateAsync
+        (
+            SignInResult signInResult, 
+            IUser user, 
+            Guid clientId, 
+            ExternalLoginStatus externalLoginStatus = ExternalLoginStatus.None,
+            string provider = null
+        )
         {
             if (signInResult == null)
                 throw new ArgumentNullException(nameof(signInResult));
@@ -79,7 +86,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
 
-            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId);
+            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, provider);
 
             authenticationResponse.Roles = jwtResult.Roles.ToArray();
             authenticationResponse.AccessToken = jwtResult.AccessToken;

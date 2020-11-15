@@ -116,7 +116,7 @@ namespace Store.WebAPI.Controllers
 
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.ExistingExternalLoginSuccess);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.ExistingExternalLoginSuccess, info.LoginProvider);
             }
 
             string userEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
@@ -172,7 +172,7 @@ namespace Store.WebAPI.Controllers
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, info.LoginProvider);
             }
 
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
@@ -238,9 +238,14 @@ namespace Store.WebAPI.Controllers
                 return InternalServerError();
 
             SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent: false, bypassTwoFactor: true);
-            return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess);
+            return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, loginProvider);
         }
 
+        /// <summary>Either creates a new external login account or associates it with the existing account (different email address).</summary>
+        /// <param name="registerModel">The external login register model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost]
         [Route("register")]
         // TODO - authentication 
@@ -310,7 +315,7 @@ namespace Store.WebAPI.Controllers
 
                         SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(registerModel.LoginProvider, registerModel.ProviderKey, false);
 
-                        return await AuthenticateAsync(signInResult, newUser, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess);
+                        return await AuthenticateAsync(signInResult, newUser, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, registerModel.LoginProvider);
                     }
                 }
 

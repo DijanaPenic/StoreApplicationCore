@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Claims;
@@ -37,7 +38,7 @@ namespace Store.WebAPI.Identity
             _secret = Encoding.ASCII.GetBytes(jwtTokenConfig.Secret);
         }
 
-        public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId)
+        public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId, string provider = null)
         {
             if (GuidHelper.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
@@ -55,8 +56,15 @@ namespace Store.WebAPI.Identity
             IList<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.NormalizedUserName),
-                new Claim(ClaimTypes.Email, user.NormalizedEmail)
+                new Claim(ClaimTypes.Email, user.NormalizedEmail),                   
             };
+
+            // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
+            if (string.IsNullOrEmpty(provider))
+            {
+                claims.Add(new Claim(ClaimTypes.AuthenticationMethod, provider));
+            }
+
             AddRolesToClaims(claims, roles);
 
             // Find client by name
@@ -127,7 +135,11 @@ namespace Store.WebAPI.Identity
                 throw new SecurityTokenException("Invalid token.");
             }
 
-            return await GenerateTokensAsync(user.Id, clientId);
+            // Retrieve provider information
+            Claim authMethodClaim = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationMethod).First();
+            string provider = authMethodClaim?.Value;
+
+            return await GenerateTokensAsync(user.Id, clientId, provider);
         }
 
         public Task<(ClaimsPrincipal, JwtSecurityToken)> DecodeJwtTokenAsync(string token)
