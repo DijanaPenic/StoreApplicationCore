@@ -375,7 +375,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(user));
 
             IList<UserLoginInfo> result = (await _unitOfWork.UserLoginRepository.FindByUserIdAsync(user.Id))
-                .Select(x => new UserLoginInfo(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName))
+                .Select(ul => new UserLoginInfo(ul.LoginProvider, ul.ProviderKey, ul.ProviderDisplayName))
                 .ToList();
 
             return result;
@@ -459,7 +459,7 @@ namespace Store.Services.Identity
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            bool result = (await _unitOfWork.UserRoleRepository.GetRoleNamesByUserIdAsync(user.Id)).Any(x => x == roleName);
+            bool result = (await _unitOfWork.UserRoleRepository.GetRoleNamesByUserIdAsync(user.Id)).Any(r => r == roleName);
 
             return result;
         }
@@ -516,7 +516,7 @@ namespace Store.Services.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            IList<Claim> result = (await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id)).Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
+            IList<Claim> result = (await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id)).Select(uc => new Claim(uc.ClaimType, uc.ClaimValue)).ToList();
 
             return result;
         }
@@ -532,7 +532,7 @@ namespace Store.Services.Identity
             if (claims == null)
                 throw new ArgumentNullException(nameof(claims));
 
-            IEnumerable<UserClaim> userClaims = claims.Select(x => GetUserClaimEntity(x, user.Id));
+            IEnumerable<UserClaim> userClaims = claims.Select(c => GetUserClaimEntity(c, user.Id));
 
             if (userClaims.Count() > 0)
             {
@@ -561,7 +561,7 @@ namespace Store.Services.Identity
             if (newClaim == null)
                 throw new ArgumentNullException(nameof(newClaim));
 
-            IUserClaim claimEntity = (await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id)).SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            IUserClaim claimEntity = (await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id)).SingleOrDefault(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value);
 
             if (claimEntity != null)
             {
@@ -590,7 +590,7 @@ namespace Store.Services.Identity
             {
                 claims.ToList().ForEach(async userClaim =>
                 {
-                    IUserClaim userClaimEntity = userClaims.SingleOrDefault(x => x.ClaimType == userClaim.Type && x.ClaimValue == userClaim.Value);
+                    IUserClaim userClaimEntity = userClaims.SingleOrDefault(uc => uc.ClaimType == userClaim.Type && uc.ClaimValue == userClaim.Value);
                     await _unitOfWork.UserClaimRepository.DeleteByKeyAsync(userClaimEntity.Id);
                 });
 
