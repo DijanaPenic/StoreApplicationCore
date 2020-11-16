@@ -222,6 +222,7 @@ namespace Store.WebAPI.Controllers
 
             IUser user = _mapper.Map<IUser>(registerUserModel);
             user.IsApproved = true;
+
             IdentityResult userResult = await _userManager.CreateAsync(user, registerUserModel.Password);
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
@@ -229,11 +230,7 @@ namespace Store.WebAPI.Controllers
             _logger.LogInformation($"User [{user.UserName}] has been registered.");
 
             // Assign user to Guest role
-            IList<string> roles = new List<string>()
-            {
-                RoleHelper.Guest
-            };
-            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, roles);
+            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, new List<string>() { RoleHelper.Guest });
 
             if (!roleResult.Succeeded) return GetErrorResult(roleResult);
 
