@@ -2,13 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Helpers;
@@ -69,12 +67,13 @@ namespace Store.WebAPI.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]
+        [HttpGet]   // TODO - need to use model from body instead of query parameters + POST
         [AllowAnonymous]
-        [Route("authentiate")] // TODO - need to use model from body instead of query parameters + POST
-        public IActionResult Authenticate([FromQuery] string provider, [FromQuery] Guid clientId, [FromQuery] string clientSecret = null)
+        [Route("authentiate")] 
+        public IActionResult Authenticate([FromQuery] string provider, [FromQuery] Guid clientId, [FromQuery] string clientSecret = null, [FromQuery] string returnUrl = null)
         {
-            string redirectUrl = Url.Action("AuthenticateCallback", "ExternalLogin", new { clientId, clientSecret });        // Url.Action is not working if "CallbackAsync" value is used
+            //string redirectUrl = returnUrl;   // TODO - need to use returnUrl and remove client auth parameters
+            string redirectUrl = Url.Action("AuthenticateCallback", "ExternalLogin", new { clientId, clientSecret });        // Web API Url.Action is not working if "CallbackAsync" value is used 
             AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
             return Challenge(properties, provider);
@@ -86,8 +85,7 @@ namespace Store.WebAPI.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]
-        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]   // TODO - need to use model from body instead of query parameters + POST
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("authentiate-callback")]
         public async Task<IActionResult> AuthenticateCallbackAsync([FromQuery] Guid clientId, [FromQuery] string clientSecret = null)
