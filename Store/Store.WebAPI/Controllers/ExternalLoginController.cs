@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Helpers;
@@ -86,9 +87,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [AllowAnonymous]
-        [Route("authentiate-callback")]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [Authorize(AuthenticationSchemes = "Identity.External")]
+        [Route("authentiate-callback")]
         public async Task<IActionResult> AuthenticateCallbackAsync([FromQuery] Guid clientId, [FromQuery] string clientSecret = null)
         {
             if (GuidHelper.IsNullOrEmpty(clientId))
@@ -247,8 +248,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("register")]
-        // TODO - authentication 
         public async Task<IActionResult> RegisterAsync([FromBody] ExternalLoginRegisterRequestApiModel registerModel)
         {
             if (!ModelState.IsValid)
