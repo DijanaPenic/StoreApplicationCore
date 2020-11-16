@@ -10,17 +10,15 @@ namespace Store.WebAPI.Application.Startup
     {
         public static void ConfigureExternalProviders(this IServiceCollection services, IConfiguration configuration)
         {
-            // Google configuration
-            ExternalLoginConfig googleConfig = configuration.GetSection("ExternalLoginAuthentication:Google").Get<ExternalLoginConfig>();
-            if (googleConfig?.ClientId != null)
+            services.AddAuthentication()
+            .AddGoogle(options =>
             {
-                services.AddAuthentication().AddGoogle(options =>
-                {
-                    options.ClientId = googleConfig.ClientId;
-                    options.ClientSecret = googleConfig.ClientSecret;
-                    options.SignInScheme = IdentityConstants.ExternalScheme; 
-                });
-            }
+                ExternalLoginConfig googleConfig = configuration.GetSection("ExternalLoginAuthentication:Google").Get<ExternalLoginConfig>();
+
+                options.ClientId = googleConfig.ClientId;
+                options.ClientSecret = googleConfig.ClientSecret;
+                options.SignInScheme = IdentityConstants.ExternalScheme; 
+            });
         }
     }
 }

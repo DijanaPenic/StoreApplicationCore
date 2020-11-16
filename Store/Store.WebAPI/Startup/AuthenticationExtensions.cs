@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
@@ -59,7 +59,7 @@ namespace Store.WebAPI.Application.Startup
             .AddCookie(IdentityConstants.TwoFactorRememberMeScheme)
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme)
             .AddCookie(IdentityConstants.ExternalScheme);
-
+           
             // TODO - need to test two-factor authentication
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -93,11 +93,11 @@ namespace Store.WebAPI.Application.Startup
                 authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(jwtOptions =>
+            .AddJwtBearer(options =>
             {
-                jwtOptions.RequireHttpsMetadata = true;
-                jwtOptions.SaveToken = true;
-                jwtOptions.TokenValidationParameters = tokenValidationParameters;
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = tokenValidationParameters;
             });
 
             // External Login configuration
