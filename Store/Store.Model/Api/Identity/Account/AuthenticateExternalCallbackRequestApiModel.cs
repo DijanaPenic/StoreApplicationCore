@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Store.Models.Api.Identity
 {
-    public class AuthenticateExternalLoginRequestApiModel
+    public class AuthenticateExternalCallbackRequestApiModel
     {
         [Required]
         [JsonPropertyName("client_id")]
@@ -11,9 +11,5 @@ namespace Store.Models.Api.Identity
 
         [JsonPropertyName("client_secret")]
         public string ClientSecret { get; set; }
-
-        [Required]
-        [JsonPropertyName("provider")]
-        public string Provider { get; set; }
     }
 }

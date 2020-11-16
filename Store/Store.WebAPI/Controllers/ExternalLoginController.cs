@@ -62,41 +62,55 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Initiates the external login authentication process.</summary>
-        /// <param name="provider">The provider.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="clientSecret">The client secret.</param>
+        /// <param name="authenticateModel">The authenticate external model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]   // TODO - need to use model from body instead of query parameters + POST
+        [HttpPost] 
         [AllowAnonymous]
         [Route("authentiate")] 
-        public IActionResult Authenticate([FromQuery] string provider, [FromQuery] Guid clientId, [FromQuery] string clientSecret = null, [FromQuery] string returnUrl = null)
+        public async Task<IActionResult> AuthenticateAsync(AuthenticateExternalRequestApiModel authenticateModel)
         {
-            //string redirectUrl = returnUrl;   // TODO - need to use returnUrl and remove client auth parameters
-            string redirectUrl = Url.Action("AuthenticateCallback", "ExternalLogin", new { clientId, clientSecret });        // Web API Url.Action is not working if "CallbackAsync" value is used 
-            AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Challenge(properties, provider);
+            IEnumerable<AuthenticationScheme> schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            AuthenticationScheme provider = schemes.Where(el => el.Name.ToUpper().Equals(authenticateModel.Provider.ToUpper())).FirstOrDefault();
+
+            if(provider == null)
+            {
+                return BadRequest("Not supported external login provider.");
+            }
+
+            AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider.Name, authenticateModel.ReturnUrl);
+
+            return Challenge(properties, provider.Name);
         }
 
         /// <summary>Authenticates the user via his external login request.</summary>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="clientSecret">The client secret.</param>
+        /// <param name="authenticateModel">The authenticate external model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]   // TODO - need to use model from body instead of query parameters + POST
+        [HttpPost]   
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("authentiate-callback")]
-        public async Task<IActionResult> AuthenticateCallbackAsync([FromQuery] Guid clientId, [FromQuery] string clientSecret = null)
+        public async Task<IActionResult> AuthenticateCallbackAsync(AuthenticateExternalCallbackRequestApiModel authenticateModel)
         {
-            if (GuidHelper.IsNullOrEmpty(clientId))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Client Id is required.");
+                return BadRequest(ModelState);
             }
 
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, clientSecret);
+            // Verify client information
+            if (!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, authenticateModel.ClientSecret);
             if (!string.IsNullOrEmpty(clientAuthResult))
             {
                 return Unauthorized(clientAuthResult);
@@ -249,7 +263,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] ExternalLoginRegisterRequestApiModel registerModel)
+        public async Task<IActionResult> RegisterAsync([FromBody] ExternalRegisterRequestApiModel registerModel)
         {
             if (!ModelState.IsValid)
             {
