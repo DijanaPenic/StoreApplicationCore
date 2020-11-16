@@ -27,12 +27,14 @@ namespace Store.Repositories.Identity
             return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {UserClaimSchema.Table}(
+                        {UserClaimSchema.Columns.Id},
                         {UserClaimSchema.Columns.ClaimType}, 
                         {UserClaimSchema.Columns.ClaimValue}, 
                         {UserClaimSchema.Columns.UserId},
                         {UserClaimSchema.Columns.DateCreatedUtc},
                         {UserClaimSchema.Columns.DateUpdatedUtc})
                     VALUES(
+                        @{nameof(entity.Id)},
                         @{nameof(entity.ClaimType)}, 
                         @{nameof(entity.ClaimValue)}, 
                         @{nameof(entity.UserId)},

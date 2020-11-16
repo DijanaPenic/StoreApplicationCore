@@ -27,12 +27,14 @@ namespace Store.Repositories.Identity
             return ExecuteAsync(
                 sql: $@"
                     INSERT INTO {RoleClaimSchema.Table}(
+                        {RoleClaimSchema.Columns.Id},
                         {RoleClaimSchema.Columns.ClaimType}, 
                         {RoleClaimSchema.Columns.ClaimValue}, 
                         {RoleClaimSchema.Columns.RoleId},
                         {RoleClaimSchema.Columns.DateCreatedUtc},
                         {RoleClaimSchema.Columns.DateUpdatedUtc})
                     VALUES(
+                        @{nameof(entity.Id)},
                         @{nameof(entity.ClaimType)}, 
                         @{nameof(entity.ClaimValue)}, 
                         @{nameof(entity.RoleId)},
