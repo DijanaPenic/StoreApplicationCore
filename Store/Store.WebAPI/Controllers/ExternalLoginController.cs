@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Helpers;
+using Store.Common.Helpers.Identity;
 using Store.WebAPI.Identity;
 using Store.Models.Identity;
 using Store.Models.Api.Identity;
@@ -261,6 +262,12 @@ namespace Store.WebAPI.Controllers
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
+            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return BadRequest("External login information is missing.");
+            }
+
             // Create a new account
             if (!registerModel.AssociateExistingAccount)
             {
@@ -269,10 +276,16 @@ namespace Store.WebAPI.Controllers
                     return BadRequest("Both username and external login email are required.");
                 }
 
+                string firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                string lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+
                 IUser newUser = new User 
                 { 
                     UserName = registerModel.Username, 
-                    Email = registerModel.ExternalLoginEmail 
+                    Email = registerModel.ExternalLoginEmail,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    IsApproved = true
                 };
 
                 _logger.LogInformation($"Creating a new user {registerModel.ExternalLoginEmail}.");
@@ -281,11 +294,9 @@ namespace Store.WebAPI.Controllers
                 IdentityResult createUserResult = await _userManager.CreateAsync(newUser);
                 if (createUserResult.Succeeded)
                 {
-                    _logger.LogInformation("Adding the 'Trial' claim for the user.");
+                    _logger.LogInformation("Adding Guest role to the user.");
 
-                    // Add the Trial claim
-                    Claim trialClaim = new Claim("Trial", DateTime.UtcNow.ToString());  // TODO - check why we need Trial claim
-                    await _userManager.AddClaimAsync(newUser, trialClaim);
+                    await _userManager.AddToRolesAsync(newUser, new List<string>() { RoleHelper.Guest });
 
                     _logger.LogInformation("Adding external login for the user.");
 
@@ -296,9 +307,9 @@ namespace Store.WebAPI.Controllers
                         new ExternalLoginInfo
                         (
                             null,
-                            registerModel.LoginProvider,
-                            registerModel.ProviderKey,
-                            registerModel.ProviderDisplayName
+                            info.LoginProvider,
+                            info.ProviderKey,
+                            info.ProviderDisplayName
                         )
                     );
                     
@@ -312,9 +323,9 @@ namespace Store.WebAPI.Controllers
 
                         _logger.LogInformation($"Trying to sign in user {newUser.Email} with new external login provider.");
 
-                        SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(registerModel.LoginProvider, registerModel.ProviderKey, false);
+                        SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
 
-                        return await AuthenticateAsync(signInResult, newUser, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, registerModel.LoginProvider);
+                        return await AuthenticateAsync(signInResult, newUser, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, info.LoginProvider);
                     }
                 }
 
@@ -345,17 +356,17 @@ namespace Store.WebAPI.Controllers
                     "ExternalLogin",
                     values: new
                     {
-                        id = existingUser.Id,
+                        userId = existingUser.Id,
                         clientId,
                         token,
-                        loginProvider = registerModel.LoginProvider,
-                        loginProviderDisplayName = registerModel.LoginProvider,
-                        providerKey = registerModel.ProviderKey
+                        loginProvider = info.LoginProvider,
+                        loginProviderDisplayName = info.ProviderDisplayName,
+                        providerKey = info.ProviderKey
                     },
                     protocol: Request.Scheme
                 );
 
-                _logger.LogInformation($"Sending email confirmation token to confirm association of {registerModel.ProviderDisplayName} external login account.");
+                _logger.LogInformation($"Sending email confirmation token to confirm association of {info.ProviderDisplayName} external login account.");
 
                 // TODO - missing email implementation
                 //await _emailSender.SendEmailAsync(existingUser.Email, $"Confirm {registerModel.ProviderDisplayName} external login",
