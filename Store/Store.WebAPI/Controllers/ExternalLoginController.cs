@@ -46,7 +46,7 @@ namespace Store.WebAPI.Controllers
             _logger = logger;
         } 
 
-        /// <summary>Retrieves names of the supported external login providers.</summary>
+        /// <summary>Retrieves the names of the supported external login providers.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
@@ -68,8 +68,8 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost] 
         [AllowAnonymous]
-        [Route("authentiate")] 
-        public async Task<IActionResult> AuthenticateAsync(AuthenticateExternalRequestApiModel authenticateModel)
+        [Route("initiate-authentication")] 
+        public async Task<IActionResult> InitiateAuthentictionAsync(AuthenticateExternalRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -89,15 +89,15 @@ namespace Store.WebAPI.Controllers
             return Challenge(properties, provider.Name);
         }
 
-        /// <summary>Authenticates the user via his external login request.</summary>
+        /// <summary>Authenticates the user via the external login request.</summary>
         /// <param name="authenticateModel">The authenticate external model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]   
         [Authorize(AuthenticationSchemes = "Identity.External")]
-        [Route("authentiate-callback")]
-        public async Task<IActionResult> AuthenticateCallbackAsync(AuthenticateExternalCallbackRequestApiModel authenticateModel)
+        [Route("authentiate")]
+        public async Task<IActionResult> AuthenticateAsync(AuthenticateExternalCallbackRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -195,7 +195,7 @@ namespace Store.WebAPI.Controllers
             return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserAccountNotFound });
         }
 
-        /// <summary>Confirms the external provider.</summary>
+        /// <summary>Confirms the external provider association.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="token">The token.</param>
@@ -255,7 +255,7 @@ namespace Store.WebAPI.Controllers
             return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, loginProvider);
         }
 
-        /// <summary>Either creates a new external login account or associates it with the existing account (different email address).</summary>
+        /// <summary>Either creates a new external login account or establishes the external provider association with the existing account (different email address).</summary>
         /// <param name="registerModel">The external login register model.</param>
         /// <returns>
         ///   <br />
