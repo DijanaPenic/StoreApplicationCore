@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Bookstore
 {
-    public class BookstoreApiPostModel
+    public class BookstorePostApiModel
     {
         [Required]
         [StringLength(50)]

@@ -373,7 +373,7 @@ namespace Store.WebAPI.Controllers
             IUser existingUser = await _userManager.FindByEmailAsync(registerModel.AssociateEmail);
             if (existingUser != null)
             {
-                _logger.LogInformation($"There is user account registered with {registerModel.AssociateEmail} email.");
+                _logger.LogInformation($"There is a user account registered with {registerModel.AssociateEmail} email.");
                 _logger.LogInformation($"Email {registerModel.AssociateEmail} is {(existingUser.EmailConfirmed ? "confirmed" : "not confirmed")}.");
 
                 if (!existingUser.EmailConfirmed)

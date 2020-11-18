@@ -174,7 +174,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Consumes("application/json")]
-        public async Task<IActionResult> PostAsync([FromBody]BookstoreApiPostModel bookstoreModel)
+        public async Task<IActionResult> PostAsync([FromBody]BookstorePostApiModel bookstoreModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest();

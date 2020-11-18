@@ -21,7 +21,7 @@ namespace Store.WebAPI.Mapper.Profiles
         {
             // Create maps for bookstore models
             CreateMap<BookstoreGetApiModel, IBookstore>().ReverseMap();
-            CreateMap<BookstoreApiPostModel, IBookstore>().ReverseMap();
+            CreateMap<BookstorePostApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstorePatchApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstoreApiModel, IBookstore>().ReverseMap();
 

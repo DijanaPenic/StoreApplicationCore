@@ -200,7 +200,7 @@ namespace Store.WebAPI.Tests.Controllers
         [Trait("Category", "POST Bookstore")]
         public async Task BookstorePostSuccessAsync()
         {
-            StatusCodeResult response = await _bookstoreController.PostAsync(new BookstoreApiPostModel()) as StatusCodeResult;
+            StatusCodeResult response = await _bookstoreController.PostAsync(new BookstorePostApiModel()) as StatusCodeResult;
 
             Assert.Equal(StatusCodes.Status201Created, response.StatusCode);
         }
