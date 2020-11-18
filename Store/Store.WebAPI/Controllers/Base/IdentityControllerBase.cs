@@ -15,9 +15,8 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Store.WebAPI.Controllers
 {
-    // API Ignore + NoAction on some methods -> Fixed exception on startup - application couldn't resolve IdentityControllerBase authManager and Logger instances 
+    // NoAction on some methods -> Fixed exception on startup - application couldn't resolve IdentityControllerBase authManager and Logger instances 
     // as their types are complex, so needed to ignore some methods.
-    [ApiExplorerSettings(IgnoreApi = true)] 
     abstract public class IdentityControllerBase : ApplicationControllerBase
     {
         private readonly ApplicationAuthManager _authManager;
