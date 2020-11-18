@@ -8,9 +8,6 @@ namespace Store.Models.Api.Identity
         [JsonPropertyName("username")]
         public string Username { get; set; }
 
-        [JsonPropertyName("external_login_email")]
-        public string ExternalLoginEmail { get; set; }
-
         [JsonPropertyName("associate_email")]
         public string AssociateEmail { get; set; }
 

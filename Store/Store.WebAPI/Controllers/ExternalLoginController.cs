@@ -285,24 +285,25 @@ namespace Store.WebAPI.Controllers
             // Create a new account
             if (!registerModel.AssociateExistingAccount)
             {
-                if(string.IsNullOrWhiteSpace(registerModel.Username) || string.IsNullOrWhiteSpace(registerModel.ExternalLoginEmail))
+                if(string.IsNullOrWhiteSpace(registerModel.Username))
                 {
-                    return BadRequest("Both username and external login email are required.");
+                    return BadRequest("Username is required.");
                 }
 
                 string firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
                 string lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+                string email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
                 IUser newUser = new User 
                 { 
                     UserName = registerModel.Username, 
-                    Email = registerModel.ExternalLoginEmail,
+                    Email = email,
                     FirstName = firstName,
                     LastName = lastName,
                     IsApproved = true
                 };
 
-                _logger.LogInformation($"Creating a new user {registerModel.ExternalLoginEmail}.");
+                _logger.LogInformation($"Creating a new user {email}.");
 
                 // Create a new user
                 IdentityResult createUserResult = await _userManager.CreateAsync(newUser);
