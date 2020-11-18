@@ -97,8 +97,6 @@ namespace Store.WebAPI
 
             app.UseRouting();
 
-            app.UseCookiePolicy();  // Needed for external login - the callback call
-
             app.UseAuthentication();
 
             app.UseAuthorization();

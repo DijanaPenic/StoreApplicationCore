@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
@@ -54,22 +56,29 @@ namespace Store.WebAPI.Application.Startup
             // Cookies configuration
             // Caution: need to enable cookies because of SignInManager: "All the authentication logic is tied to sign in manager which is tied to cookies in general."
             // Source: https://github.com/openiddict/openiddict-core/issues/578
-            services.AddAuthentication()
-            .AddCookie(IdentityConstants.ApplicationScheme)
-            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme)
-            .AddCookie(IdentityConstants.TwoFactorUserIdScheme)
-            .AddCookie(IdentityConstants.ExternalScheme);
-           
-            // TODO - need to test two-factor authentication
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
 
-                // Lax - Indicates the client should send the cookie with "same-site" requests, and with "cross-site" top-level navigations (links).
-                // Note: ExternalLogin requests won't work in Chrome if not set.
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;  
-            });
+            // Set cookie authentication options
+            Action<CookieAuthenticationOptions> cookieAuthOptions = options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.SlidingExpiration = true;
+
+                // Use 401 status code instead of Login redirect which is used by default
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+            };
+
+            // Set cookies
+            services.AddAuthentication()
+            .AddCookie(IdentityConstants.ApplicationScheme, cookieAuthOptions)
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, cookieAuthOptions)
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, cookieAuthOptions)
+            .AddCookie(IdentityConstants.ExternalScheme, cookieAuthOptions);
 
             // JWT configuration
             JwtTokenConfig jwtTokenConfig = configuration.GetSection("JwtTokenConfig").Get<JwtTokenConfig>();
