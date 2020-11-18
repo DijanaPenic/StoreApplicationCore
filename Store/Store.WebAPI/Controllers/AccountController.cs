@@ -185,26 +185,6 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
-        /// <summary>Retrieves all roles.</summary>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Route("roles")]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        public async Task<IActionResult> GetRolesAsync()
-        {
-            IEnumerable<IRole> roles = await _cacheProvider.GetOrAddAsync
-            (
-                CacheParameters.Keys.AllRoles,
-                _roleManager.GetRolesAsync,
-                DateTimeOffset.MaxValue,
-                CacheParameters.Groups.Identity
-            );
-
-            return Ok(_mapper.Map<IEnumerable<RoleGetApiModel>>(roles));
-        }
-
         /// <summary>Registers a new user.</summary>
         /// <param name="registerUserModel">The register user model.</param>
         /// <returns>
