@@ -217,6 +217,14 @@ namespace Store.WebAPI.Controllers
             if (existingUser != null)
             {
                 _logger.LogInformation($"There is a user account registered with {registerModel.AssociateEmail} email.");
+
+                if (existingUser.IsDeleted || !existingUser.IsApproved)
+                {
+                    _logger.LogInformation("User is deleted or not approved.");
+
+                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserNotAllowed });
+                }
+
                 _logger.LogInformation($"Email {registerModel.AssociateEmail} is {(existingUser.EmailConfirmed ? "confirmed" : "not confirmed")}.");
 
                 if (!existingUser.EmailConfirmed)
