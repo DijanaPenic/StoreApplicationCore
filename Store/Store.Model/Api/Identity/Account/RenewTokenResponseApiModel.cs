@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Identity
 {
-    public class RefreshTokenResponseApiModel
+    public class RenewTokenResponseApiModel
     {
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }

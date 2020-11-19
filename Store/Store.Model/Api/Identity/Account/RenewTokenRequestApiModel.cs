@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Store.Models.Api.Identity
 {
-    public class RefreshTokenRequestApiModel
+    public class RenewTokenRequestApiModel
     {
         [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; set; }
