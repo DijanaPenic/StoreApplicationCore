@@ -191,29 +191,25 @@ namespace Store.WebAPI.Controllers
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
-        /// <summary>Changes the user's password.</summary>
-        /// <param name="userId">The user identifier.</param>
+        /// <summary>Changes the password for the currently logged in user.</summary>
         /// <param name="changePasswordModel">The change password model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("{userId:guid}/change-password")]
-        public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid userId, ChangePasswordPostApiModel changePasswordModel)
+        [Authorize]
+        [Route("change-password")]
+        public async Task<IActionResult> ChangeUserPasswordAsync(ChangePasswordPostApiModel changePasswordModel)
         {
-            if (userId == Guid.Empty)
-                return BadRequest("User Id is missing.");
-
-            IUser user = await _userManager.FindUserByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
             }
 
             IdentityResult result = await _userManager.ChangePasswordAsync(user, changePasswordModel.OldPassword, changePasswordModel.NewPassword);
@@ -237,6 +233,10 @@ namespace Store.WebAPI.Controllers
             }
 
             IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
+            }
 
             // This will set the password only if it's NULL
             IdentityResult result = await _userManager.AddPasswordAsync(user, setPasswordModel.Password);
