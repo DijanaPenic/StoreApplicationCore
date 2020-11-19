@@ -31,20 +31,20 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Retrieves the book by identifier.</summary>
-        /// <param name="id">The book's identifier.</param>
+        /// <param name="bookId">The book identifier.</param>
         /// <param name="includeProperties">The include properties.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
-        [Route("{id:guid}")]
+        [Route("{bookId:guid}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAsync([FromRoute]Guid id, [FromQuery] string[] includeProperties)
+        public async Task<IActionResult> GetAsync([FromRoute]Guid bookId, [FromQuery] string[] includeProperties)
         {
-            if (id == Guid.Empty)
+            if (bookId == Guid.Empty)
                 return BadRequest();
 
-            IBook book = await _bookService.FindBookByIdAsync(id, ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties));
+            IBook book = await _bookService.FindBookByIdAsync(bookId, ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties));
 
             if (book != null)
                 return Ok(_mapper.Map<BookGetApiModel>(book)); 
@@ -110,20 +110,20 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Updates the book.</summary>
-        /// <param name="id">The identifier.</param>
+        /// <param name="bookId">The book identifier.</param>
         /// <param name="bookModel">The book model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [Route("{id:guid}")]
+        [Route("{bookId:guid}")]
         [Consumes("application/json")]
-        public async Task<IActionResult> PatchAsync([FromRoute]Guid id, [FromBody]BookPatchApiModel bookModel)
+        public async Task<IActionResult> PatchAsync([FromRoute]Guid bookId, [FromBody]BookPatchApiModel bookModel)
         {
-            if (id == Guid.Empty || !ModelState.IsValid)
+            if (bookId == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            ResponseStatus result = await _bookService.UpdateBookAsync(id, _mapper.Map<IBook>(bookModel));
+            ResponseStatus result = await _bookService.UpdateBookAsync(bookId, _mapper.Map<IBook>(bookModel));
 
             switch (result)
             {
@@ -137,18 +137,18 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Deletes the book.</summary>
-        /// <param name="id">The book identifier.</param>
+        /// <param name="bookId">The book identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpDelete]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
+        [Route("{bookId:guid}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute]Guid bookId)
         {
-            if (id == Guid.Empty)
+            if (bookId == Guid.Empty)
                 return BadRequest();
 
-            ResponseStatus result = await _bookService.DeleteBookAsync(id);
+            ResponseStatus result = await _bookService.DeleteBookAsync(bookId);
 
             switch (result)
             {

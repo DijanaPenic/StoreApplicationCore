@@ -110,17 +110,17 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Updates the user.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="userModel">The user model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> PatchUserAsync([FromRoute] Guid id, [FromBody] UserPatchApiModel userModel)
+        [Route("{userId:guid}")]
+        public async Task<IActionResult> PatchUserAsync([FromRoute] Guid userId, [FromBody] UserPatchApiModel userModel)
         {
-            if (id == Guid.Empty)
+            if (userId == Guid.Empty)
                 return BadRequest("User Id is missing.");
 
             if (!ModelState.IsValid)
@@ -135,7 +135,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Find the user we want to update
-            IUser user = await _userManager.FindUserByIdAsync(id, nameof(IUser.Roles));
+            IUser user = await _userManager.FindUserByIdAsync(userId, nameof(IUser.Roles));
             if (user == null)
             {
                 return NotFound();
@@ -165,19 +165,19 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Unlocks the user.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("{id:guid}/unlock")]
-        public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid id)
+        [Route("{userId:guid}/unlock")]
+        public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid userId)
         {
-            if (id == Guid.Empty)
+            if (userId == Guid.Empty)
                 return BadRequest("User Id is missing.");
 
-            IUser user = await _userManager.FindUserByIdAsync(id);
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -189,20 +189,20 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Changes the user's password.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="changePasswordModel">The change password model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("{id:guid}/change-password")]
-        public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid id, ChangePasswordPostApiModel changePasswordModel)
+        [Route("{userId:guid}/change-password")]
+        public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid userIduserId, ChangePasswordPostApiModel changePasswordModel)
         {
-            if (id == Guid.Empty)
+            if (userId == Guid.Empty)
                 return BadRequest("User Id is missing.");
 
-            IUser user = await _userManager.FindUserByIdAsync(id);
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -255,20 +255,20 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Retrieves the user by identifier.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="includeProperties">The include properties.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> GetUserAsync([FromRoute] Guid id, [FromQuery] string[] includeProperties)
+        [Route("{userId:guid}")]
+        public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string[] includeProperties)
         {
-            if (id == Guid.Empty)
+            if (userId == Guid.Empty)
                 return BadRequest();
 
-            IUser user = await _userManager.FindUserByIdAsync(id, ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties));
+            IUser user = await _userManager.FindUserByIdAsync(userId, ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties));
 
             if (user != null)
                 return Ok(_mapper.Map<UserGetApiModel>(user));
@@ -277,23 +277,23 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Assigns roles to the user.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="rolesToAssign">The roles to assign.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [AuthorizationFilter(RoleHelper.Admin)]
-        [Route("{id:guid}/roles")]
-        public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid id, string[] rolesToAssign)
+        [Route("{userId:guid}/roles")]
+        public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, string[] rolesToAssign)
         {
-            if (rolesToAssign == null || rolesToAssign.Length == 0 || id == Guid.Empty)
+            if (rolesToAssign == null || rolesToAssign.Length == 0 || userId == Guid.Empty)
             {
                 return BadRequest();
             }
 
             // Find the user we want to assign roles to
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return NotFound();
@@ -317,7 +317,7 @@ namespace Store.WebAPI.Controllers
 
             if (!addResult.Succeeded) return GetErrorResult(addResult);
 
-            return Ok(new { userId = id, roles = rolesToAssign });
+            return Ok(new { userId = userId, roles = rolesToAssign });
         }
 
         /// <summary>Disables the two factor authentication for the currently logged in user.</summary>

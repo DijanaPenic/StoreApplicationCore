@@ -63,15 +63,15 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Updates the user's password.</summary>
-        /// <param name="id">The user identifier.</param>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="forgotPasswordModel">The forgot password model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [AllowAnonymous]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid id, ResetPasswordPostApiModel forgotPasswordModel) // TODO - potentially move token from header to model
+        [Route("{userId:guid}")]
+        public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid userId, ResetPasswordPostApiModel forgotPasswordModel) // TODO - potentially move token from header to model
         {
             if (!ModelState.IsValid)
             {
@@ -84,7 +84,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Token is missing.");
             }
 
-            IUser user = await _userManager.FindByIdAsync(id.ToString());
+            IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return NotFound();
