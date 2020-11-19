@@ -45,7 +45,27 @@ namespace Store.WebAPI.Controllers
             _authManager = authManager;
             _signInManager = signInManager;
             _logger = logger;
-        } 
+        }
+
+        /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [Authorize]
+        [Route("info")]
+        public async Task<IActionResult> AuthenticateInfoAsync()
+        {
+            AuthenticateInfoGetApiModel authInfoModel = new AuthenticateInfoGetApiModel
+            {
+                IsAuthenticated = User.Identity.IsAuthenticated,
+                Username = User.Identity.IsAuthenticated ? User.Identity.Name : string.Empty,
+                AuthenticationMethod = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
+                DisplaySetPassword = User.Identity.IsAuthenticated && !(await _userManager.HasPasswordAsync((await _userManager.GetUserAsync(User))))
+            };
+
+            return Ok(authInfoModel);
+        }
 
         /// <summary>Authenticates the user.</summary>
         /// <param name="authenticateModel">The authenticate model.</param>
