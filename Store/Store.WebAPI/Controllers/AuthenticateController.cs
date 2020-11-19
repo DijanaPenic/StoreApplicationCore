@@ -98,15 +98,15 @@ namespace Store.WebAPI.Controllers
             return await AuthenticateAsync(signInResult, user, clientId);
         }
 
-        /// <summary>Refreshes tokens (refresh and access tokens).</summary>
-        /// <param name="refreshTokenModel">The refresh token model.</param>
+        /// <summary>Refreshes authentication tokens (refresh and access tokens).</summary>
+        /// <param name="renewTokenModel">The renew token model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("renew-tokens")]
-        public async Task<IActionResult> RenewTokensAsync([FromBody] RefreshTokenRequestApiModel refreshTokenModel)
+        public async Task<IActionResult> RenewTokensAsync([FromBody] RenewTokenRequestApiModel renewTokenModel)
         {
             if (!ModelState.IsValid)
             {
@@ -114,12 +114,12 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify client information
-            if (!Guid.TryParse(refreshTokenModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            if (!Guid.TryParse(renewTokenModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, refreshTokenModel.ClientSecret);
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, renewTokenModel.ClientSecret);
             if (!string.IsNullOrEmpty(clientAuthResult))
             {
                 return Unauthorized(clientAuthResult);
@@ -129,11 +129,11 @@ namespace Store.WebAPI.Controllers
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                JwtAuthResult jwtResult = await _authManager.RefreshTokensAsync(refreshTokenModel.RefreshToken, accessToken, clientId);
+                JwtAuthResult jwtResult = await _authManager.RefreshTokensAsync(renewTokenModel.RefreshToken, accessToken, clientId);
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 
-                RefreshTokenResponseApiModel authenticationResponse = new RefreshTokenResponseApiModel
+                RenewTokenResponseApiModel authenticationResponse = new RenewTokenResponseApiModel
                 {
                     AccessToken = jwtResult.AccessToken,
                     RefreshToken = jwtResult.RefreshToken
@@ -141,9 +141,9 @@ namespace Store.WebAPI.Controllers
 
                 return Ok(authenticationResponse);
             }
-            catch (SecurityTokenException e)
+            catch (SecurityTokenException ex)
             {
-                return Unauthorized(e.Message); 
+                return Unauthorized(ex.Message); 
             }
         }
 
