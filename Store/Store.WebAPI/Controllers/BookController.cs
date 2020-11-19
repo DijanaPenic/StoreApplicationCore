@@ -17,7 +17,7 @@ using Store.Service.Common.Services;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("book")]
+    [Route("books")]
     [AuthorizationFilter(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class BookController : ApplicationControllerBase
     {

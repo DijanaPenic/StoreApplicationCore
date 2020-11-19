@@ -6,11 +6,10 @@ namespace Store.Models.Api.Identity
     public class AuthenticateExternalRequestApiModel
     {
         [Required]
-        [JsonPropertyName("provider")]
-        public string Provider { get; set; }
+        [JsonPropertyName("client_id")]
+        public string ClientId { get; set; }
 
-        [Required]
-        [JsonPropertyName("return_url")]
-        public string ReturnUrl { get; set; }
+        [JsonPropertyName("client_secret")]
+        public string ClientSecret { get; set; }
     }
 }

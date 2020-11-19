@@ -18,9 +18,9 @@ namespace Store.WebAPI.Controllers
     [Route("roles")]
     public class RoleController : ApplicationControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly ICacheProvider _cacheProvider;
         private readonly ApplicationRoleManager _roleManager;
+        private readonly IMapper _mapper;
 
         public RoleController
         (

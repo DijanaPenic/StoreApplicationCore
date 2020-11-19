@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Store.Models.Api.Identity
 {
-    public class ExternalRegisterRequestApiModel
+    public class RegisterExternalRequestApiModel
     {
         [JsonPropertyName("username")]
         public string Username { get; set; }
