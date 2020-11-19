@@ -128,16 +128,21 @@ namespace Store.Repository.Core
             if (model == null)
                 return ResponseStatus.Error;
 
+            // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
+            // Need to search context or the store because AutoMapper creates a new instance of the object during domain->entity mapping and sometimes
+            // the newly created instance cannot be attached to the context (if we're already tracking the original instance)
             TEntity entity = await Set.FindAsync(id);
 
             if (entity == null)
                 return ResponseStatus.NotFound;
 
-            // DateUpdatedUtc and Id properties need to be mapped from entity. Otherwise, they'll be overriden with default values.
+            // DateCreatedUtc and Id properties need to be mapped from entity. Otherwise, they'll be overriden with default values.
             model.DateUpdatedUtc = DateTime.UtcNow;
             model.DateCreatedUtc = entity.DateCreatedUtc;
             model.Id = entity.Id;
 
+            // This works only for scalar property updates. The navigation property mapping is out of the scope for AutoMapper.
+            // Also, the author is highly suggesting against the domain->entity mappings.
             Mapper.Map(model, entity);
             
             DbContext.Entry(entity).State = EntityState.Modified;
@@ -145,28 +150,9 @@ namespace Store.Repository.Core
             return ResponseStatus.Success;
         }
 
-        public async Task<ResponseStatus> UpdateAsync(TDomain model)
+        public Task<ResponseStatus> UpdateAsync(TDomain model)
         {
-            if (model == null)
-                return ResponseStatus.Error;
-
-            // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
-            // Need to search context or the store because AutoMapper creates a new instance of the object during domain->entity mapping and sometimes
-            // the newly created instance cannot be attached to the context (if we're already tracking the original instance)
-            TEntity entity = await Set.FindAsync(model.Id);
-
-            if (entity == null)
-                return ResponseStatus.NotFound;
-
-            // This works only for scalar property updates. The navigation property mapping is out of the scope for AutoMapper.
-            // Also, the author is highly suggesting against the domain->entity mappings.
-            Mapper.Map(model, entity);
-
-            entity.DateUpdatedUtc = DateTime.UtcNow;
-
-            DbContext.Entry(entity).State = EntityState.Modified;
-
-            return ResponseStatus.Success;
+            return UpdateAsync(model.Id, model); // TODO - potentially omit this method
         }
 
         private IQueryable<TEntity> Find(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties)
