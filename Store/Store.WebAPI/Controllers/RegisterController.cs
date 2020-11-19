@@ -35,7 +35,6 @@ namespace Store.WebAPI.Controllers
             ILogger<RegisterController> logger,
             IMapper mapper
         )
-        : base(userManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

@@ -39,7 +39,6 @@ namespace Store.WebAPI.Controllers
             ILogger<UserController> logger,
             IMapper mapper
         )
-        : base(userManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -58,7 +57,11 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> GetUserProfileAsync()
         {
             // Get currently logged in user
-            IUser user = await GetLoggedInUserAsync();
+            IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
+            }
 
             IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
 
@@ -340,7 +343,7 @@ namespace Store.WebAPI.Controllers
 
             if (!addResult.Succeeded) return GetErrorResult(addResult);
 
-            return Ok(new { userId = userId, roles = rolesToAssign });
+            return Ok(new { userId, roles = rolesToAssign });
         }
 
         /// <summary>Disables the two factor authentication for the currently logged in user.</summary>
@@ -353,7 +356,11 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> DisableUserTwoFactorAsync()
         {
             // Get currently logged in user
-            IUser user = await GetLoggedInUserAsync();
+            IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
+            }
 
             if (!await _userManager.GetTwoFactorEnabledAsync(user))
             {

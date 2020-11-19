@@ -22,7 +22,6 @@ namespace Store.WebAPI.Controllers
         (
             ApplicationUserManager userManager
         )
-        : base(userManager)
         {
             _userManager = userManager;
         }

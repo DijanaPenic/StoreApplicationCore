@@ -40,7 +40,6 @@ namespace Store.WebAPI.Controllers
             SignInManager<IUser> signInManager,
             ILogger<AuthenticateController> logger
         )
-        : base(userManager)
         {
             _userManager = userManager;
             _authManager = authManager;
@@ -379,7 +378,12 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor/authenticator")]
         public async Task<IActionResult> GetUserAuthenticatorKeyAsync()
         {
-            IUser user = await GetLoggedInUserAsync();
+            // Get currently logged in user
+            IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
+            }
 
             string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(authenticatorKey))
@@ -418,7 +422,13 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Verification Code is missing.");
             }
 
-            IUser user = await GetLoggedInUserAsync();
+            // Get currently logged in user
+            IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
+            }
+
             bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
 
             if (isTwoFactorTokenValid)
@@ -461,7 +471,12 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor/recovery-codes")]
         public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromQuery] int number)
         {
-            IUser user = await GetLoggedInUserAsync();
+            // Get currently logged in user
+            IUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest("User must be logged in.");
+            }
 
             if (await _userManager.CountRecoveryCodesAsync(user) != 0)
             {

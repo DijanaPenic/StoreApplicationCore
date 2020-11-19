@@ -56,7 +56,8 @@ namespace Store.WebAPI.Identity
             IList<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.NormalizedUserName),
-                new Claim(ClaimTypes.Email, user.NormalizedEmail),                   
+                new Claim(ClaimTypes.Email, user.NormalizedEmail),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
