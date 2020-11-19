@@ -60,7 +60,7 @@ namespace Store.WebAPI.Identity
             };
 
             // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
-            if (string.IsNullOrEmpty(provider))
+            if (!string.IsNullOrEmpty(provider))
             {
                 claims.Add(new Claim(ClaimTypes.AuthenticationMethod, provider));
             }
