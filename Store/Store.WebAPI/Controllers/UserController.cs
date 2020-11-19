@@ -197,7 +197,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [AuthorizationFilter(RoleHelper.Admin)]
         [Route("{userId:guid}/change-password")]
-        public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid userIduserId, ChangePasswordPostApiModel changePasswordModel)
+        public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid userId, ChangePasswordPostApiModel changePasswordModel)
         {
             if (userId == Guid.Empty)
                 return BadRequest("User Id is missing.");
@@ -214,6 +214,29 @@ namespace Store.WebAPI.Controllers
             }
 
             IdentityResult result = await _userManager.ChangePasswordAsync(user, changePasswordModel.OldPassword, changePasswordModel.NewPassword);
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
+        /// <summary>Sets the password for currently logged in user.</summary>
+        /// <param name="setPasswordModel">The set password model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPatch]
+        [Authorize]
+        [Route("set-password")]
+        public async Task<IActionResult> SetPasswordAsync(SetPasswordPostApiModel setPasswordModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            IUser user = await _userManager.GetUserAsync(User);
+
+            // This will set the password only if it's NULL
+            IdentityResult result = await _userManager.AddPasswordAsync(user, setPasswordModel.Password);
 
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
