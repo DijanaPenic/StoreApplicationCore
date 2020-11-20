@@ -6,9 +6,6 @@ namespace Store.Models.Api.Identity
     public class UserPatchApiModel
     {
         [Required]
-        public string UserName { get; set; }
-
-        [Required]
         public string Email { get; set; }
 
         [Required]
