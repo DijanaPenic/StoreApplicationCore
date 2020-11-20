@@ -6,6 +6,7 @@ using Store.WebAPI.Models;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {
+    // TODO - need to move external provider configuration to web application
     public static class ExternalLoginProviderExtensions
     {
         public static void ConfigureExternalProviders(this IServiceCollection services, IConfiguration configuration)

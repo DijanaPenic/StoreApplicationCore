@@ -191,7 +191,8 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
-        /// <summary>Retrieves the names of the supported external login providers.</summary>
+        // TODO - need to move to the web application (USE AuthenticationSchemeProvider)
+        /// <summary>TODO REMOVE - Retrieves the names of the supported external login providers.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
@@ -206,13 +207,14 @@ namespace Store.WebAPI.Controllers
             return Ok(providerNames);
         }
 
-        /// <summary>Initiates the external login authentication process.</summary>
+        // TODO - need to move to the web application (USE AuthenticationSchemeProvider)
+        /// <summary>TODO REMOVE - Initiates the external login authentication process and redirects the user to the provider auth page.</summary>
         /// <param name="provider">Provider name or Id which uniquely identifies social login for which access token should be issued.</param>
         /// <param name="returnUrl">The return url.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         [Route("external/initiate/{provider}")]
         public async Task<IActionResult> InitiateAuthentictionAsync([FromRoute] string provider, [FromQuery] string returnUrl)
