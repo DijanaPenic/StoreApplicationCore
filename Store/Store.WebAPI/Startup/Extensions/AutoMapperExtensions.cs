@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Store.Repository.Mapper;
 using Store.WebAPI.Mapper.Profiles;
 
-namespace Store.WebAPI.Application.Startup
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class AutoMapperExtensions
     {

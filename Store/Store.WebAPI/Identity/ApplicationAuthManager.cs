@@ -190,11 +190,11 @@ namespace Store.WebAPI.Identity
             {
                 if (string.IsNullOrWhiteSpace(clientSecret))
                 {
-                    return $"Client secret should be provided for '{clientId}'";
+                    return $"Client secret should be provided for client '{clientId}'";
                 }
                 else if (client.Secret != HashHelper.GetSHA512Hash(clientSecret))
                 {
-                    return $"Client secret is not valid for '{clientId}'";
+                    return $"Client secret is not valid for client '{clientId}'";
                 }
             }
 

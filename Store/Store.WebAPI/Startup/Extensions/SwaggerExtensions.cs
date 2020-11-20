@@ -4,7 +4,7 @@ using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Store.WebAPI.Application.Startup
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class SwaggerExtensions
     {

@@ -2,7 +2,6 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,7 +13,7 @@ using Store.WebAPI.Models;
 using Store.WebAPI.Identity;
 using Store.Model.Common.Models.Identity;
 
-namespace Store.WebAPI.Application.Startup
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class AuthenticationExtensions
     {
@@ -58,7 +57,7 @@ namespace Store.WebAPI.Application.Startup
             // Source: https://github.com/openiddict/openiddict-core/issues/578
 
             // Set cookie authentication options
-            Action<CookieAuthenticationOptions> cookieAuthOptions = options =>
+            static void cookieAuthOptions(CookieAuthenticationOptions options)
             {
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SameSite = SameSiteMode.Strict;
@@ -71,7 +70,7 @@ namespace Store.WebAPI.Application.Startup
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     return Task.CompletedTask;
                 };
-            };
+            }
 
             // Set cookies
             services.AddAuthentication()

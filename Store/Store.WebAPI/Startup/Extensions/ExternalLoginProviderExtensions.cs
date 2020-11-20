@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Store.WebAPI.Models;
 
-namespace Store.WebAPI.Application.Startup
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class ExternalLoginProviderExtensions
     {

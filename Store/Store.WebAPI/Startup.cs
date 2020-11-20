@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Store.WebAPI.Identity;
 using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Application.Startup;
+using Store.WebAPI.Application.Startup.Extensions;
 using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 using Store.Repository.DependencyInjection;
@@ -52,7 +53,11 @@ namespace Store.WebAPI
             services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("DatabaseConnection")));
 
             // Controller configuration
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
