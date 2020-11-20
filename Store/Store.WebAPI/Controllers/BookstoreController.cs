@@ -20,7 +20,7 @@ using Store.Service.Common.Services;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("bookstores")]
+    [Route("api/bookstores")]
     [AuthorizationFilter(RoleHelper.StoreManager, RoleHelper.Admin)]
     public class BookstoreController : ApplicationControllerBase
     {

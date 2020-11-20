@@ -13,7 +13,7 @@ using Store.Model.Common.Models.Identity;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("recover-password")]
+    [Route("api/recover-password")]
     public class RecoverPasswordController : IdentityControllerBase
     {
         private readonly ApplicationUserManager _userManager;

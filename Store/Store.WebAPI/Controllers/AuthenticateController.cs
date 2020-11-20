@@ -25,7 +25,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("authenticate")]
+    [Route("api/authenticate")]
     public class AuthenticateController : IdentityControllerBase
     {
         private readonly ILogger _logger;

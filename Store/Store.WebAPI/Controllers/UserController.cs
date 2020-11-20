@@ -22,7 +22,7 @@ using Store.Common.Helpers.Identity;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("users")]
+    [Route("api/users")]
     public class UserController : IdentityControllerBase
     {
         private readonly ApplicationUserManager _userManager;

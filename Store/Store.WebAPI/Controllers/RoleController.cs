@@ -15,7 +15,7 @@ using Store.Common.Helpers.Identity;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("roles")]
+    [Route("api/roles")]
     public class RoleController : ApplicationControllerBase
     {
         private readonly ICacheProvider _cacheProvider;

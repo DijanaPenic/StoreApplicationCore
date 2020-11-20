@@ -20,7 +20,7 @@ using Store.Model.Common.Models.Identity;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("register")]
+    [Route("api/register")]
     public class RegisterController : IdentityControllerBase
     {
         private readonly ApplicationUserManager _userManager;

@@ -13,7 +13,7 @@ using Store.Service.Common.Services;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("global-search")]
+    [Route("api/global-search")]
     [AuthorizationFilter(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class GlobalSearchController : ControllerBase
     {
