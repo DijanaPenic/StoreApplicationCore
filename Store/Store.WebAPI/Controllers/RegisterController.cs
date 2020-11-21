@@ -240,7 +240,6 @@ namespace Store.WebAPI.Controllers
                     values: new
                     {
                         userId = existingUser.Id,
-                        clientId,
                         token,
                         loginProvider = info.LoginProvider,
                         loginProviderDisplayName = info.ProviderDisplayName,
@@ -265,7 +264,6 @@ namespace Store.WebAPI.Controllers
 
         /// <summary>Confirms the external provider association by confirming the user's email.</summary>
         /// <param name="userId">The user identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
         /// <param name="token">The token.</param>
         /// <param name="loginProvider">The external login provider.</param>
         /// <param name="loginProviderDisplayName">Display name of the external login provider.</param>
@@ -276,16 +274,12 @@ namespace Store.WebAPI.Controllers
         [HttpGet] // Must be GET because it will be called via email link
         [AllowAnonymous]
         [Route("external/{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] Guid clientId, [FromQuery] string token,
+        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] string token,
         [FromQuery] string loginProvider, [FromQuery] string loginProviderDisplayName, [FromQuery] string providerKey)
         {
             if (GuidHelper.IsNullOrEmpty(userId))
             {
                 return BadRequest("User Id is missing.");
-            }
-            if (GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest("Client Id is missing.");
             }
             if (string.IsNullOrWhiteSpace(token))
             {
