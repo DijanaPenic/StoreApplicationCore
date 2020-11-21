@@ -7,8 +7,8 @@ namespace Store.Cache
 {
     public class CacheManager : ICacheManager
     {
-        private Lazy<ICacheProvider> _cacheProvider;
-        private ICacheProviderFactory _cacheProviderFactory;
+        private readonly Lazy<ICacheProvider> _cacheProvider;
+        private readonly ICacheProviderFactory _cacheProviderFactory;
 
         public ICacheProvider CacheProvider
         {

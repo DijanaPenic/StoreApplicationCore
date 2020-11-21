@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
-using Store.Model.JsonConverters;
+using Store.Models;
+using Store.Models.Identity;
+using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
 using Store.Cache.Common.Providers;
 
 namespace Store.Cache.Providers
@@ -14,7 +16,7 @@ namespace Store.Cache.Providers
     {
         private static readonly object padLock = new object();
         private static readonly object padLockDatabase = new object();
-        private static volatile IDatabase _database = null; // volatile - variable must never be cached
+        private static volatile IDatabase _database = null;         // volatile - variable must never be cached
         private readonly string _configuration; 
 
         public string KeyPrefix { get; set; }
@@ -59,7 +61,9 @@ namespace Store.Cache.Providers
             catch (RedisConnectionException) { }
 
             if (obj.HasValue)
-                return JsonConvert.DeserializeObject<T>(obj.ToString(), GetJsonSerializerSettings());
+            {
+                return JsonSerializer.Deserialize<T>(obj.ToString(), GetJsonSerializerOptions());
+            }
             else
                 return default;
         }
@@ -97,7 +101,8 @@ namespace Store.Cache.Providers
 
                         // Max expiration can be set to 365 days from now.
                         DateTimeOffset maxExpiration = DateTimeOffset.UtcNow.AddDays(365);
-                        string obj = JsonConvert.SerializeObject(value, Formatting.Indented, GetJsonSerializerSettings());
+
+                        string obj = JsonSerializer.Serialize(value, GetJsonSerializerOptions());
 
                         if (absoluteExpiration != null && absoluteExpiration < maxExpiration)
                         {
@@ -152,16 +157,15 @@ namespace Store.Cache.Providers
             return result;
         }
 
-        private JsonSerializerSettings GetJsonSerializerSettings()
+        private JsonSerializerOptions GetJsonSerializerOptions()
         {
-            return new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                Converters = new List<JsonConverter>
+            return new JsonSerializerOptions
+            {                
+                Converters =
                 {
-                    new BookstoreConverter(),
-                    new BookConverter()
-                    //new RoleConverter() - TODO - need to add support for membership
+                    new TypeMappingConverter<IBookstore, Bookstore>(),
+                    new TypeMappingConverter<IBook, Book>(),
+                    new TypeMappingConverter<IRole, Role>()
                 }
             };
         }

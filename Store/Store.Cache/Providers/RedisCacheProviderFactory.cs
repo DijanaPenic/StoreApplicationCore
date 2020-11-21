@@ -5,7 +5,7 @@ namespace Store.Cache.Providers
 {
     class RedisCacheProviderFactory : ICacheProviderFactory
     {
-        IRedisCacheProvider _redisCacheProvider;
+        private readonly IRedisCacheProvider _redisCacheProvider;
 
         public RedisCacheProviderFactory(IRedisCacheProvider redisCacheProvider)
         {

@@ -314,7 +314,6 @@ namespace Store.WebAPI.Controllers
                         values: new
                         {
                             id = user.Id,
-                            clientId,
                             token,
                             loginProvider = info.LoginProvider,
                             loginProviderDisplayName = info.LoginProvider,
