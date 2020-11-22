@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using StackExchange.Redis;
 
 using Store.Models;
-using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Cache.Common.Providers;
@@ -157,7 +156,7 @@ namespace Store.Cache.Providers
             return result;
         }
 
-        private JsonSerializerOptions GetJsonSerializerOptions()
+        private static JsonSerializerOptions GetJsonSerializerOptions()
         {
             return new JsonSerializerOptions
             {                
@@ -165,7 +164,7 @@ namespace Store.Cache.Providers
                 {
                     new TypeMappingConverter<IBookstore, Bookstore>(),
                     new TypeMappingConverter<IBook, Book>(),
-                    new TypeMappingConverter<IRole, Role>()
+                    new TypeMappingConverter<IRole, Models.Identity.Role>()
                 }
             };
         }
