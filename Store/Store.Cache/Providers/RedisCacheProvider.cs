@@ -103,7 +103,7 @@ namespace Store.Cache.Providers
 
                         string obj = JsonSerializer.Serialize(value, GetJsonSerializerOptions());
 
-                        if (absoluteExpiration != null && absoluteExpiration < maxExpiration)
+                        if (absoluteExpiration < maxExpiration)
                         {
                             TimeSpan expiry = absoluteExpiration - DateTime.UtcNow;
                             return Database.StringSet(key, obj, expiry);
