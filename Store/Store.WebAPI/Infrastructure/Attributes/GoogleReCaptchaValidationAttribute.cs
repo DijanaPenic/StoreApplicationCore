@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Store.WebAPI.Infrastructure.Attributes
 {
+    // Blog post: https://dejanstojanovic.net/aspnet/2018/may/using-google-recaptcha-v2-in-aspnet-core-web-application/
+
     public class GoogleReCaptchaValidationAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
