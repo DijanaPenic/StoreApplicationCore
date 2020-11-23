@@ -4,7 +4,7 @@ using Store.Models.Api.Book;
 
 namespace Store.Models.Api.Bookstore
 {
-    public class BookstoreGetApiModel : BaseApiModel
+    public class BookstoreGetApiModel : ApiModelBase
     {
         public string Name { get; set; }
 

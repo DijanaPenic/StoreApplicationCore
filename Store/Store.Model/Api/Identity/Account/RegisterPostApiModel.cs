@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Identity
 {
-    public class UserRegisterPostApiModel
+    public class RegisterPostApiModel : GoogleReCaptchaModelApiBase
     {
         [Required]
         public string UserName { get; set; }

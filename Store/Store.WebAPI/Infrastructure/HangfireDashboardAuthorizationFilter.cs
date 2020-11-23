@@ -69,12 +69,15 @@ namespace Store.WebAPI.Infrastructure
 
             if (setCookie)
             {
-                httpContext.Response.Cookies.Append(HangFireCookieName,
-                access_token,
-                new CookieOptions()
-                {
-                    Expires = DateTime.Now.AddHours(CookieExpirationMinutes)
-                });
+                httpContext.Response.Cookies.Append
+                (
+                    HangFireCookieName,
+                    access_token,
+                    new CookieOptions()
+                    {
+                        Expires = DateTime.Now.AddHours(CookieExpirationMinutes)
+                    }
+                );
             }
 
             return true;

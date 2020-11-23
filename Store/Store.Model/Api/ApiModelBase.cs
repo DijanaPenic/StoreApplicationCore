@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api
 {
-    public class BaseApiModel
+    public class ApiModelBase
     {
         public Guid Id { get; set; }
 

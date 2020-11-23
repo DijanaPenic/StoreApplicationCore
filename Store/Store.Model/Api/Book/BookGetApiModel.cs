@@ -2,7 +2,7 @@
 
 namespace Store.Models.Api.Book
 {
-    public class BookGetApiModel : BaseApiModel
+    public class BookGetApiModel : ApiModelBase
     {
         public string Name { get; set; }
 
