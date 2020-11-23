@@ -31,9 +31,9 @@ namespace Store.WebAPI.Infrastructure.Attributes
             }
 
             string jsonResponse = httpResponse.Content.ReadAsStringAsync().Result;
-            dynamic jsonData = JsonSerializer.Deserialize<dynamic>(jsonResponse);
+            JsonElement jsonData = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
 
-            if (jsonData.success != true.ToString().ToLower())
+            if (jsonData.GetProperty("success").GetBoolean() != true)
             {
                 return errorResult.Value;
             }
