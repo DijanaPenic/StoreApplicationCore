@@ -2,15 +2,15 @@
 using System.Linq;
 using X.PagedList;
 
-using Store.Models.Api;
-using Store.Models.Api.Book;
-using Store.Models.Api.Identity;
-using Store.Models.Api.Bookstore;
-using Store.Models.Api.GlobalSearch;
+using Store.WebAPI.Models;
+using Store.WebAPI.Models.Book;
+using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Models.Bookstore;
+using Store.WebAPI.Models.GlobalSearch;
+using Store.WebAPI.Mapper.Converters;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.WebAPI.Mapper.Converters;
 
 namespace Store.WebAPI.Mapper.Profiles
 {
@@ -51,7 +51,7 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<IUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
 
             CreateMap<UserCreatePostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
-            CreateMap<UserRegisterPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
+            CreateMap<RegisterPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
 
             CreateMap<RoleGetApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();
 

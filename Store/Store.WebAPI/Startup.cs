@@ -10,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 using Store.WebAPI.Identity;
-using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Application.Startup;
 using Store.WebAPI.Application.Startup.Extensions;
+using Store.WebAPI.Infrastructure.Attributes;
 using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 using Store.Repository.DependencyInjection;
@@ -65,11 +65,11 @@ namespace Store.WebAPI
         {
             // Configure hangfire dashboard and server
             var tokenValidationParameters = (TokenValidationParameters)app.ApplicationServices.GetService(typeof(TokenValidationParameters));
-            var logger = (ILogger<HangfireDashboardAuthorizationFilter>)app.ApplicationServices.GetService(typeof(ILogger<HangfireDashboardAuthorizationFilter>));
+            var logger = (ILogger<HangfireDashboardAuthorizationAttribute>)app.ApplicationServices.GetService(typeof(ILogger<HangfireDashboardAuthorizationAttribute>));
 
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-                Authorization = new[] { new HangfireDashboardAuthorizationFilter(tokenValidationParameters, logger) }    // allow only admins to access the hangfire content
+                Authorization = new[] { new HangfireDashboardAuthorizationAttribute(tokenValidationParameters, logger) }    // allow only admins to access the hangfire content
             });
             app.UseHangfireServer();
 

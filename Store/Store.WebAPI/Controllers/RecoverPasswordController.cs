@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 
 using Store.WebAPI.Identity;
+using Store.WebAPI.Models.Identity;
 using Store.Common.Extensions;
-using Store.Models.Api.Identity;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers

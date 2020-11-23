@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
 using Store.Models;
-using Store.Models.Api;
-using Store.Models.Api.Book;
 using Store.Model.Common.Models;
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.WebAPI.Models;
+using Store.WebAPI.Models.Book;
 using Store.WebAPI.Controllers;
 using Store.WebAPI.Mapper.Profiles;
 using Store.Service.Common.Services;

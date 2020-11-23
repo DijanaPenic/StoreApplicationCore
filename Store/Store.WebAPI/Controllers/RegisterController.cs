@@ -13,8 +13,8 @@ using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
 using Store.WebAPI.Identity;
+using Store.WebAPI.Models.Identity;
 using Store.Models.Identity;
-using Store.Models.Api.Identity;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
@@ -50,7 +50,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("")]
-        public async Task<IActionResult> RegisterUserAsync(UserRegisterPostApiModel registerUserModel)
+        public async Task<IActionResult> RegisterUserAsync(RegisterPostApiModel registerUserModel)
         {
             if (!ModelState.IsValid)
             {

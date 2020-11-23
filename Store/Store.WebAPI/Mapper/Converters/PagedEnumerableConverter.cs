@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using Store.Models.Api;
+using Store.WebAPI.Models;
 using Store.Model.Common.Models;
 
 namespace Store.WebAPI.Mapper.Converters

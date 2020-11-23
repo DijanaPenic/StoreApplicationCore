@@ -3,7 +3,7 @@ using X.PagedList;
 using System.Linq;
 using System.Collections.Generic;
 
-using Store.Models.Api;
+using Store.WebAPI.Models;
 
 namespace Store.WebAPI.Mapper.Converters
 {

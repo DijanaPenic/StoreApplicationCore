@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Store.Common.Enums;
 using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models;
-using Store.Models.Api.GlobalSearch;
-using Store.WebAPI.Infrastructure;
 using Store.Service.Common.Services;
+using Store.WebAPI.Models.GlobalSearch;
+using Store.WebAPI.Infrastructure.Attributes;
 
 namespace Store.WebAPI.Controllers
 {

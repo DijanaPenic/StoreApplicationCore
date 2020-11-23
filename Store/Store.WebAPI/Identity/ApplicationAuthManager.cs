@@ -10,9 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.WebAPI.Models;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
+using Store.WebAPI.Infrastructure.Models;
 using Store.Service.Common.Services.Identity;
 
 namespace Store.WebAPI.Identity

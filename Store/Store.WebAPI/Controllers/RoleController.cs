@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Store.Cache.Common;
 using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
-using Store.WebAPI.Infrastructure;
-using Store.Models.Api.Identity;
-using Store.Model.Common.Models.Identity;
+using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure.Attributes;
 using Store.Common.Helpers.Identity;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {

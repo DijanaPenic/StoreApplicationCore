@@ -9,15 +9,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-using Store.Models.Api;
-using Store.Models.Api.Identity;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
-using Store.WebAPI.Identity;
-using Store.WebAPI.Constants;
-using Store.WebAPI.Infrastructure;
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
+using Store.WebAPI.Models;
+using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Identity;
+using Store.WebAPI.Constants;
+using Store.WebAPI.Infrastructure.Attributes;
+using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {

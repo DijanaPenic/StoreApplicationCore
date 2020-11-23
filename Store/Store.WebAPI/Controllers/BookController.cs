@@ -4,14 +4,14 @@ using AutoMapper;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
 
-using Store.Models.Api;
-using Store.Models.Api.Book;
-using Store.Model.Common.Models;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
 using Store.WebAPI.Constants;
-using Store.WebAPI.Infrastructure;
+using Store.WebAPI.Models;
+using Store.WebAPI.Models.Book;
+using Store.WebAPI.Infrastructure.Attributes;
+using Store.Model.Common.Models;
 using Store.Service.Common.Services;
 
 namespace Store.WebAPI.Controllers

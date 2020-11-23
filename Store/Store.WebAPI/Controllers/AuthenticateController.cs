@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-using Store.WebAPI.Models;
 using Store.WebAPI.Identity;
-using Store.WebAPI.Infrastructure;
+using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure.Models;
+using Store.WebAPI.Infrastructure.Attributes;
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
-using Store.Models.Api.Identity;
 using Store.Model.Common.Models.Identity;
 
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;

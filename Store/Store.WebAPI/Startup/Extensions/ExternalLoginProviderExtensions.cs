@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.WebAPI.Models;
+using Store.WebAPI.Infrastructure.Models;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {
