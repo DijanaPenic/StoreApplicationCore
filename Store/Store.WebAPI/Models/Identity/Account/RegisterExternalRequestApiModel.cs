@@ -4,7 +4,7 @@ namespace Store.WebAPI.Models.Identity
 {
     public class RegisterExternalRequestApiModel
     {
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         public string AssociateEmail { get; set; }
 
