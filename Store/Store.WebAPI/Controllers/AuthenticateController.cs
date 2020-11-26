@@ -3,8 +3,10 @@ using System.Web;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using X.PagedList;
+using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +15,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using Store.WebAPI.Identity;
-using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Infrastructure.Models;
 using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Models.Identity;
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
+using Store.Common.Extensions;
 using Store.Model.Common.Models.Identity;
 
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
@@ -32,19 +36,22 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
+        private readonly IEmailSender _emailSender;
 
         public AuthenticateController
         (
             ApplicationUserManager userManager,
             ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
-            ILogger<AuthenticateController> logger
+            ILogger<AuthenticateController> logger,
+            IEmailSender emailSender
         )
         {
             _userManager = userManager;
             _authManager = authManager;
             _signInManager = signInManager;
             _logger = logger;
+            _emailSender = emailSender;
         }
 
         /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
@@ -307,30 +314,24 @@ namespace Store.WebAPI.Controllers
                 {
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    string callbackUrl = Url.Action
-                    (
-                        "ConfirmExternalProvider",
-                        "ExternalLogin",
-                        values: new
-                        {
-                            id = user.Id,
-                            token,
-                            loginProvider = info.LoginProvider,
-                            loginProviderDisplayName = info.LoginProvider,
-                            providerKey = info.ProviderKey
-                        },
-                        protocol: Request.Scheme)
-                    ;
+                    UriTemplate template = new UriTemplate(authenticateModel.ConfirmationUrl);
+                    string callbackUrl = template.Resolve(new Dictionary<string, object>
+                    {
+                        { "userId", user.Id.ToString() },
+                        { "token", token.Base64ForUrlEncode() },
+                        { "loginProvider", info.LoginProvider },
+                        { "loginProviderDisplayName", info.ProviderDisplayName },
+                        { "providerKey", info.ProviderKey }
+                    });
 
                     _logger.LogInformation($"Sending email confirmation token to confirm association of {info.ProviderDisplayName} external login account.");
-
-                    // TODO - missing email implementation
-                    //await _emailSender.SendEmailAsync
-                    //(
-                    //    user.Email, 
-                    //    $"Confirm {info.ProviderDisplayName} external login",
-                    //    $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
-                    //);
+                    
+                    await _emailSender.SendEmailAsync
+                     (
+                         user.Email,
+                         $"Confirm {info.ProviderDisplayName} external login",
+                         $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
+                     );
 
                     return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.PendingEmailConfirmation });
                 }

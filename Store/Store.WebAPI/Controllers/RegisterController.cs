@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using AutoMapper;
+using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +15,7 @@ using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
 using Store.WebAPI.Identity;
+using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Models.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
@@ -27,19 +30,22 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
+        private readonly IEmailSender _emailSender;
 
         public RegisterController
         (
             ApplicationUserManager userManager,
             SignInManager<IUser> signInManager,
             ILogger<RegisterController> logger,
-            IMapper mapper
+            IMapper mapper,
+            IEmailSender emailSender
         )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
+            _emailSender = emailSender;
         } 
 
         /// <summary>Registers a new user account.</summary>
@@ -78,34 +84,43 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Email confirmation token has been generated.");
 
-            TokenResponseApiModel registerResponse = new TokenResponseApiModel
+            UriTemplate template = new UriTemplate(registerUserModel.ActivationUrl);
+            string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
-                UserId = user.Id,
-                ConfirmationToken = token.Base64ForUrlEncode()
-            };
+                { "userId", user.Id.ToString() },
+                { "token", token.Base64ForUrlEncode() }
+            });
 
-            return Ok(registerResponse);
+            _logger.LogInformation("Sending account activation email to activate account.");
+
+            await _emailSender.SendEmailAsync
+            (
+                registerUserModel.Email, 
+                "Welcome to Store! Confirm Your Email",
+                $"You're on your way! Let's confirm your email address.<br> By clicking on the following link, you are confirming your email address.<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm Email Address</a>."
+            );
+
+            return Ok();
         }
 
         /// <summary>Activates user account by confirming the user's email.</summary>
         /// <param name="userId">The user identifier.</param>
+        /// <param name="token">The token.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPatch]
+        [HttpGet]
         [AllowAnonymous]
         [Route("{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId) // TODO - token shouldn't be in header + change email confirmation implementation
+        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] string token)
         {
             if (GuidHelper.IsNullOrEmpty(userId))
             {
                 return BadRequest("User Id is missing.");
             }
-
-            string token = Request.Headers["Token"].First();
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                return BadRequest("Token is missing.");
+                return BadRequest("Token is required.");
             }
 
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
@@ -134,12 +149,6 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Verify client information
-            if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
@@ -149,7 +158,7 @@ namespace Store.WebAPI.Controllers
             // Create a new account
             if (!registerModel.AssociateExistingAccount)
             {
-                if (string.IsNullOrWhiteSpace(registerModel.Username))
+                if (string.IsNullOrWhiteSpace(registerModel.UserName))
                 {
                     return BadRequest("Username is required.");
                 }
@@ -160,7 +169,7 @@ namespace Store.WebAPI.Controllers
 
                 IUser newUser = new User
                 {
-                    UserName = registerModel.Username,
+                    UserName = registerModel.UserName,
                     Email = email,
                     FirstName = firstName,
                     LastName = lastName,
@@ -221,7 +230,7 @@ namespace Store.WebAPI.Controllers
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserNotAllowed });
+                    return Ok(ExternalLoginStatus.UserNotAllowed);
                 }
 
                 _logger.LogInformation($"Email {registerModel.AssociateEmail} is {(existingUser.EmailConfirmed ? "confirmed" : "not confirmed")}.");
@@ -233,26 +242,24 @@ namespace Store.WebAPI.Controllers
 
                 string token = await _userManager.GenerateEmailConfirmationTokenAsync(existingUser);
 
-                string callbackUrl = Url.Action
-                (
-                    "ConfirmExternalProvider",
-                    "ExternalLogin",
-                    values: new
-                    {
-                        userId = existingUser.Id,
-                        token,
-                        loginProvider = info.LoginProvider,
-                        loginProviderDisplayName = info.ProviderDisplayName,
-                        providerKey = info.ProviderKey
-                    },
-                    protocol: Request.Scheme
-                );
+                UriTemplate template = new UriTemplate(registerModel.ConfirmationUrl);
+                string callbackUrl = template.Resolve(new Dictionary<string, object>
+                {
+                    { "userId", existingUser.Id.ToString() },
+                    { "token", token.Base64ForUrlEncode() },
+                    { "loginProvider", info.LoginProvider },
+                    { "loginProviderDisplayName", info.ProviderDisplayName },
+                    { "providerKey", info.ProviderKey }
+                });
 
                 _logger.LogInformation($"Sending email confirmation token to confirm association of {info.ProviderDisplayName} external login account.");
 
-                // TODO - missing email implementation
-                //await _emailSender.SendEmailAsync(existingUser.Email, $"Confirm {registerModel.ProviderDisplayName} external login",
-                //    $"Please confirm association of your {registerModel.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>.");
+                await _emailSender.SendEmailAsync
+                 (
+                     existingUser.Email,
+                     $"Confirm {info.ProviderDisplayName} external login",
+                     $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
+                 );
 
                 return Ok(ExternalLoginStatus.PendingEmailConfirmation);
             }
@@ -274,7 +281,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet] // Must be GET because it will be called via email link
         [AllowAnonymous]
         [Route("external/{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] string token,
+        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token,
         [FromQuery] string loginProvider, [FromQuery] string loginProviderDisplayName, [FromQuery] string providerKey)
         {
             if (GuidHelper.IsNullOrEmpty(userId))
@@ -305,7 +312,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // External provider is authenticated source so we can confirm the email
-            IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token);
+            IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
             if (!emailConfirmationResult.Succeeded)
                 return InternalServerError();
 

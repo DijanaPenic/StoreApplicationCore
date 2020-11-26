@@ -8,5 +8,8 @@ namespace Store.WebAPI.Models.Identity
         public string ClientId { get; set; }
 
         public string ClientSecret { get; set; }
+
+        [Required]
+        public string ConfirmationUrl { get; set; }
     }
 }
