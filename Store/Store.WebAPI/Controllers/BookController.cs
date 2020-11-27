@@ -85,7 +85,7 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
-        /// <summary>Creates a book.</summary>
+        /// <summary>Creates a new book.</summary>
         /// <param name="bookModel">The book model.</param>
         /// <returns>
         ///   <br />

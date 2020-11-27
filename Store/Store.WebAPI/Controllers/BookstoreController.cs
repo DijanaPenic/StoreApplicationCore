@@ -167,7 +167,7 @@ namespace Store.WebAPI.Controllers
         }
 
 
-        /// <summary>Creates a bookstore.</summary>
+        /// <summary>Creates a new bookstore.</summary>
         /// <param name="bookstoreModel">The bookstore model.</param>
         /// <returns>
         ///   <br />
