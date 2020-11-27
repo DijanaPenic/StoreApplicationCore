@@ -2,7 +2,7 @@
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class SetPasswordPostApiModel
+    public class SetPasswordPatchApiModel
     {
         [Required]
         [DataType(DataType.Password)]

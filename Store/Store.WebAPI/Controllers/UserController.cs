@@ -199,7 +199,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [Authorize]
         [Route("change-password")]
-        public async Task<IActionResult> ChangeUserPasswordAsync(ChangePasswordPostApiModel changePasswordModel)
+        public async Task<IActionResult> ChangeUserPasswordAsync(ChangePasswordPatchApiModel changePasswordModel)
         {
             if (!ModelState.IsValid)
             {
@@ -225,7 +225,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [Authorize]
         [Route("set-password")]
-        public async Task<IActionResult> SetPasswordAsync(SetPasswordPostApiModel setPasswordModel)
+        public async Task<IActionResult> SetPasswordAsync(SetPasswordPatchApiModel setPasswordModel)
         {
             if (!ModelState.IsValid)
             {
