@@ -10,11 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 using Store.WebAPI.Identity;
-using Store.WebAPI.Infrastructure;
-using Store.WebAPI.Infrastructure.Models;
-using Store.WebAPI.Infrastructure.Attributes;
 using Store.WebAPI.Application.Startup;
 using Store.WebAPI.Application.Startup.Extensions;
+using Store.WebAPI.Infrastructure.Attributes;
 using Store.Cache.DependencyInjection;
 using Store.Service.DependencyInjection;
 using Store.Repository.DependencyInjection;
@@ -55,10 +53,7 @@ namespace Store.WebAPI
             services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("DatabaseConnection")));
 
             // Email configuration
-            services.AddTransient<IEmailSender, EmailSender>();
-
-            AuthMessageSenderOptions mailConfig = Configuration.GetSection("EmailServer").Get<AuthMessageSenderOptions>();
-            services.AddSingleton(mailConfig);
+            services.AddEmail(Configuration);
 
             // Controller configuration
             services.AddControllers().AddJsonOptions(options =>
