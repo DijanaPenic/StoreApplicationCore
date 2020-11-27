@@ -536,7 +536,7 @@ namespace Store.WebAPI.Controllers
            IUser user,
            Guid clientId,
            ExternalLoginStatus externalLoginStatus = ExternalLoginStatus.None,
-           string provider = null
+           string externalLoginProvider = null
         )
         {
             if (signInResult == null)
@@ -575,7 +575,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
 
-            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, provider);
+            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, externalLoginProvider);
 
             authenticationResponse.Roles = jwtResult.Roles.ToArray();
             authenticationResponse.AccessToken = jwtResult.AccessToken;

@@ -257,7 +257,7 @@ namespace Store.WebAPI.Controllers
                 await _emailSender.SendEmailAsync
                  (
                      existingUser.Email,
-                     $"Confirm {info.ProviderDisplayName} external login",
+                     $"Confirm {info.ProviderDisplayName} external login - Store Application",
                      $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
                  );
 

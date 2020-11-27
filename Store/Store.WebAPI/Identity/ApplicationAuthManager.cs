@@ -38,7 +38,7 @@ namespace Store.WebAPI.Identity
             _secret = Encoding.ASCII.GetBytes(jwtTokenConfig.Secret);
         }
 
-        public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId, string provider = null)
+        public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId, string externalLoginProvider = null)
         {
             if (GuidHelper.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
@@ -61,9 +61,9 @@ namespace Store.WebAPI.Identity
             };
 
             // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
-            if (!string.IsNullOrEmpty(provider))
+            if (!string.IsNullOrEmpty(externalLoginProvider))
             {
-                claims.Add(new Claim(ClaimTypes.AuthenticationMethod, provider));
+                claims.Add(new Claim(ClaimTypes.AuthenticationMethod, externalLoginProvider));
             }
 
             AddRolesToClaims(claims, roles);

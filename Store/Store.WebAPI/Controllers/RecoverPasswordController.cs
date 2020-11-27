@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Text.Encodings.Web;
+using System.Collections.Generic;
 using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -11,8 +13,6 @@ using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Models.Identity;
 using Store.Common.Extensions;
 using Store.Model.Common.Models.Identity;
-using System.Collections.Generic;
-using System.Text.Encodings.Web;
 
 namespace Store.WebAPI.Controllers
 {
