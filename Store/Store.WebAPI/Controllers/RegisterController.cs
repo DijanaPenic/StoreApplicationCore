@@ -260,7 +260,7 @@ namespace Store.WebAPI.Controllers
                  (
                      existingUser.Email,
                      $"Confirm {info.ProviderDisplayName} external login - Store Application",
-                     $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
+                     $"Please confirm association of your {info.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
                  );
 
                 return Ok(ExternalLoginStatus.PendingEmailConfirmation);
@@ -316,11 +316,11 @@ namespace Store.WebAPI.Controllers
             // External provider is authenticated source so we can confirm the email
             IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
             if (!emailConfirmationResult.Succeeded)
-                return InternalServerError();
+                return GetErrorResult(emailConfirmationResult);
 
             IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, loginProvider, providerKey, loginProviderDisplayName));
             if (!newExternalLoginResult.Succeeded)
-                return InternalServerError();
+                return GetErrorResult(newExternalLoginResult);
 
             return Ok();
         }
