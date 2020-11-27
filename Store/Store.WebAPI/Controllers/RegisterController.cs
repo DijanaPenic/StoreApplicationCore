@@ -211,6 +211,8 @@ namespace Store.WebAPI.Controllers
 
                         return Ok(ExternalLoginStatus.NewExternalLoginAddedSuccess);
                     }
+
+                    return GetErrorResult(createLoginResult);
                 }
 
                 return GetErrorResult(createUserResult);
