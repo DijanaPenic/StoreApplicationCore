@@ -45,7 +45,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 identityOptions.SignIn.RequireConfirmedEmail = true;
             })
             .AddRoles<IRole>()
-            .AddSignInManager<SignInManager<IUser>>()   // Scoped
+            .AddSignInManager<SignInManager<IUser>>()   // Scoped - TODO - need to confirm
             .AddUserManager<ApplicationUserManager>()   // Scoped
             .AddRoleManager<ApplicationRoleManager>()   // Scoped
             .AddDefaultTokenProviders();                
