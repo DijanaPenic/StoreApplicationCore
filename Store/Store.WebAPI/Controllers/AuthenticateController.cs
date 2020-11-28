@@ -359,6 +359,8 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor")]
         public async Task<IActionResult> AuthenticateUserAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
         {
+            // TODO - need to remove clientId from model
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -516,7 +518,7 @@ namespace Store.WebAPI.Controllers
 
         #region Helpers
 
-        private string GenerateAuthenticatorUri(string email, string authenticatorKey)
+        private static string GenerateAuthenticatorUri(string email, string authenticatorKey)
         {
             const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
@@ -547,7 +549,7 @@ namespace Store.WebAPI.Controllers
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));
 
-            AuthenticateResponseApiModel authenticationResponse = new AuthenticateResponseApiModel
+            AuthenticateResponseApiModel authResponse = new AuthenticateResponseApiModel
             {
                 UserId = user.Id,
                 RequiresTwoFactor = signInResult.RequiresTwoFactor,
@@ -566,7 +568,7 @@ namespace Store.WebAPI.Controllers
                 }
                 if (signInResult.RequiresTwoFactor)
                 {
-                    return Ok(authenticationResponse);
+                    return Ok(authResponse);
                 }
 
                 return Unauthorized($"Failed to log in [{user.UserName}].");
@@ -576,9 +578,9 @@ namespace Store.WebAPI.Controllers
 
             JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, externalLoginProvider);
 
-            authenticationResponse.Roles = jwtResult.Roles.ToArray();
-            authenticationResponse.AccessToken = jwtResult.AccessToken;
-            authenticationResponse.RefreshToken = jwtResult.RefreshToken;
+            authResponse.Roles = jwtResult.Roles.ToArray();
+            authResponse.AccessToken = jwtResult.AccessToken;
+            authResponse.RefreshToken = jwtResult.RefreshToken;
 
             if (signInResult.Succeeded)
             {
@@ -587,7 +589,7 @@ namespace Store.WebAPI.Controllers
                 Response.Headers.Remove("Set-Cookie");
             }
 
-            return Ok(authenticationResponse);
+            return Ok(authResponse);
         }
 
         #endregion
