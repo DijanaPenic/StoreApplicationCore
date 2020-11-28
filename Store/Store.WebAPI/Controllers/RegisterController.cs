@@ -115,9 +115,11 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/confirm-email")]
         public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] string token)
         {
-            if (GuidHelper.IsNullOrEmpty(userId))
+            // TODO - we shouldn't be sending userId,
+
+            if (userId == Guid.Empty)
             {
-                return BadRequest("User Id is missing.");
+                return BadRequest("User Id cannot be empty.");
             }
             if (string.IsNullOrWhiteSpace(token))
             {

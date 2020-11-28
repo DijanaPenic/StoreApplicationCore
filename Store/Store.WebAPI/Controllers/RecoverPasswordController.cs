@@ -94,6 +94,11 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}")]
         public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid userId, PasswordRecoveryPatchApiModel passwordRecoveryModel)
         {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

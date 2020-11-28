@@ -124,7 +124,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> PatchUserAsync([FromRoute] Guid userId, [FromBody] UserPatchApiModel userModel)
         {
             if (userId == Guid.Empty)
-                return BadRequest("User Id is missing.");
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -178,7 +180,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
-                return BadRequest("User Id is missing.");
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
 
             IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
@@ -292,7 +296,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string[] includeProperties)
         {
             if (userId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
 
             IUser user = await _userManager.FindUserByIdAsync(userId, ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties));
 
