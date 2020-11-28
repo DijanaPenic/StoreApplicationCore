@@ -109,7 +109,7 @@ namespace Store.WebAPI.Identity
             };
         }
 
-        public async Task<JwtAuthResult> RefreshTokensAsync(string refreshToken, string accessToken, Guid clientId)
+        public async Task<JwtAuthResult> RenewTokensAsync(string refreshToken, string accessToken, Guid clientId)
         {
             (ClaimsPrincipal claimsPrincipal, JwtSecurityToken jwtToken) = await DecodeJwtTokenAsync(accessToken);
 
