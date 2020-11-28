@@ -130,7 +130,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         [Route("renew-tokens")]
         public async Task<IActionResult> RenewTokensAsync([FromBody] RenewTokenRequestApiModel renewTokenModel)
         {
