@@ -9,6 +9,7 @@ using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Helpers;
@@ -250,7 +251,6 @@ namespace Store.WebAPI.Controllers
                     { "userId", existingUser.Id.ToString() },
                     { "token", token.Base64ForUrlEncode() },
                     { "loginProvider", info.LoginProvider },
-                    { "loginProviderDisplayName", info.ProviderDisplayName },
                     { "providerKey", info.ProviderKey }
                 });
 
@@ -275,7 +275,6 @@ namespace Store.WebAPI.Controllers
         /// <param name="userId">The user identifier.</param>
         /// <param name="token">The token.</param>
         /// <param name="loginProvider">The external login provider.</param>
-        /// <param name="loginProviderDisplayName">Display name of the external login provider.</param>
         /// <param name="providerKey">The provider key.</param>
         /// <returns>
         ///   <br />
@@ -283,28 +282,33 @@ namespace Store.WebAPI.Controllers
         [HttpGet] // Must be GET because it will be called via email link
         [AllowAnonymous]
         [Route("external/{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token,
-        [FromQuery] string loginProvider, [FromQuery] string loginProviderDisplayName, [FromQuery] string providerKey)
+        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token, [FromQuery] string loginProvider, [FromQuery] string providerKey)
         {
-            if (GuidHelper.IsNullOrEmpty(userId))
+            // TODO - we shouldn't be sending userId, loginProvider and providerKey
+
+            if (userId == Guid.Empty)
             {
-                return BadRequest("User Id is missing.");
+                return BadRequest("User Id cannot be empty.");
             }
             if (string.IsNullOrWhiteSpace(token))
             {
                 return BadRequest("Token is required.");
             }
+            if (string.IsNullOrWhiteSpace(providerKey))
+            {
+                return BadRequest("Provider key is required.");
+            }
             if (string.IsNullOrWhiteSpace(loginProvider))
             {
                 return BadRequest("Login provider is required.");
             }
-            if (string.IsNullOrWhiteSpace(loginProviderDisplayName))
+
+            IEnumerable<AuthenticationScheme> schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            AuthenticationScheme authScheme = schemes.Where(el => el.Name.ToUpper().Equals(loginProvider.ToUpper())).FirstOrDefault();
+
+            if (authScheme == null)
             {
-                return BadRequest("Provider display name is required.");
-            }
-            if (string.IsNullOrWhiteSpace(providerKey))
-            {
-                return BadRequest("Provider key is required.");
+                return BadRequest("Not supported external login provider.");
             }
 
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
@@ -318,7 +322,7 @@ namespace Store.WebAPI.Controllers
             if (!emailConfirmationResult.Succeeded)
                 return GetErrorResult(emailConfirmationResult);
 
-            IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, loginProvider, providerKey, loginProviderDisplayName));
+            IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, authScheme.Name, providerKey, authScheme.DisplayName));
             if (!newExternalLoginResult.Succeeded)
                 return GetErrorResult(newExternalLoginResult);
 

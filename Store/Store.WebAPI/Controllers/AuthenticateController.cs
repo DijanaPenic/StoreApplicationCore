@@ -320,7 +320,6 @@ namespace Store.WebAPI.Controllers
                         { "userId", user.Id.ToString() },
                         { "token", token.Base64ForUrlEncode() },
                         { "loginProvider", info.LoginProvider },
-                        { "loginProviderDisplayName", info.ProviderDisplayName },
                         { "providerKey", info.ProviderKey }
                     });
 
