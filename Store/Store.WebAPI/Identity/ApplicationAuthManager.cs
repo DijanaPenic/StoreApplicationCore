@@ -137,7 +137,7 @@ namespace Store.WebAPI.Identity
             }
 
             // Retrieve provider information
-            Claim authMethodClaim = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationMethod).First();
+            Claim authMethodClaim = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.AuthenticationMethod).FirstOrDefault();
             string provider = authMethodClaim?.Value;
 
             return await GenerateTokensAsync(user.Id, clientId, provider);
