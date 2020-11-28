@@ -5,11 +5,11 @@ namespace Store.WebAPI.Models.Bookstore
     public class BookstorePostApiModel
     {
         [Required]
-        [StringLength(50)]
+        [StringLength(50, ErrorMessage = "Name cannot be longer than 50 characters.")]
         public string Name { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "Location cannot be longer than 50 characters.")]
         public string Location { get; set; }
     }
 }
