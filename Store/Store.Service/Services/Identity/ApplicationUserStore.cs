@@ -46,8 +46,7 @@ namespace Store.Services.Identity
         {
             try
             {
-                if (cancellationToken != null)
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (user == null)
                     throw new ArgumentNullException(nameof(user));
@@ -67,8 +66,7 @@ namespace Store.Services.Identity
         {
             try
             {
-                if (cancellationToken != null)
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (user == null)
                     throw new ArgumentNullException(nameof(user));
@@ -86,8 +84,7 @@ namespace Store.Services.Identity
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentNullException(nameof(userId));
@@ -102,8 +99,7 @@ namespace Store.Services.Identity
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             IUser user = await _unitOfWork.UserRepository.FindByNormalizedUserNameAsync(normalizedUserName);
 
@@ -112,8 +108,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -123,8 +118,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetUserIdAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -134,8 +128,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -145,8 +138,7 @@ namespace Store.Services.Identity
 
         public Task SetNormalizedUserNameAsync(IUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -158,8 +150,7 @@ namespace Store.Services.Identity
 
         public Task SetUserNameAsync(IUser user, string userName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -173,8 +164,7 @@ namespace Store.Services.Identity
         {
             try
             {
-                if (cancellationToken != null)
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (user == null)
                     throw new ArgumentNullException(nameof(user));
@@ -196,8 +186,7 @@ namespace Store.Services.Identity
 
         public Task SetPasswordHashAsync(IUser user, string passwordHash, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -209,8 +198,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -220,8 +208,7 @@ namespace Store.Services.Identity
 
         public Task<bool> HasPasswordAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -235,8 +222,7 @@ namespace Store.Services.Identity
 
         public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -248,8 +234,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetEmailAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -259,8 +244,7 @@ namespace Store.Services.Identity
 
         public Task<bool> GetEmailConfirmedAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -270,8 +254,7 @@ namespace Store.Services.Identity
 
         public Task SetEmailConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -293,8 +276,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -304,8 +286,7 @@ namespace Store.Services.Identity
 
         public Task SetNormalizedEmailAsync(IUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -321,8 +302,7 @@ namespace Store.Services.Identity
 
         public async Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -350,8 +330,7 @@ namespace Store.Services.Identity
 
         public async Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -368,8 +347,7 @@ namespace Store.Services.Identity
 
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -383,8 +361,7 @@ namespace Store.Services.Identity
 
         public async Task<IUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrWhiteSpace(loginProvider))
                 throw new ArgumentNullException(nameof(loginProvider));
@@ -407,8 +384,7 @@ namespace Store.Services.Identity
 
         public async Task AddToRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -422,8 +398,7 @@ namespace Store.Services.Identity
 
         public async Task RemoveFromRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -437,8 +412,7 @@ namespace Store.Services.Identity
 
         public async Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -450,8 +424,7 @@ namespace Store.Services.Identity
 
         public async Task<bool> IsInRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -466,8 +439,7 @@ namespace Store.Services.Identity
 
         public async Task<IList<IUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
@@ -482,8 +454,7 @@ namespace Store.Services.Identity
         #region IUserSecurityStampStore<IUser> Members
         public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -495,8 +466,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetSecurityStampAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -510,8 +480,7 @@ namespace Store.Services.Identity
 
         public async Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -523,8 +492,7 @@ namespace Store.Services.Identity
 
         public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -549,8 +517,7 @@ namespace Store.Services.Identity
 
         public async Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -575,8 +542,7 @@ namespace Store.Services.Identity
 
         public async Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -600,8 +566,7 @@ namespace Store.Services.Identity
 
         public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
@@ -617,8 +582,7 @@ namespace Store.Services.Identity
 
         public async Task SetTokenAsync(IUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -654,8 +618,7 @@ namespace Store.Services.Identity
 
         public async Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -677,8 +640,7 @@ namespace Store.Services.Identity
 
         public async Task<string> GetTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -700,8 +662,7 @@ namespace Store.Services.Identity
 
         public Task SetTwoFactorEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -713,8 +674,7 @@ namespace Store.Services.Identity
 
         public Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -728,8 +688,7 @@ namespace Store.Services.Identity
 
         public Task SetPhoneNumberAsync(IUser user, string phoneNumber, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -741,8 +700,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetPhoneNumberAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -752,8 +710,7 @@ namespace Store.Services.Identity
 
         public Task<bool> GetPhoneNumberConfirmedAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -763,8 +720,7 @@ namespace Store.Services.Identity
 
         public Task SetPhoneNumberConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -780,8 +736,7 @@ namespace Store.Services.Identity
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -800,8 +755,7 @@ namespace Store.Services.Identity
 
         public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -813,8 +767,7 @@ namespace Store.Services.Identity
 
         public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -824,8 +777,7 @@ namespace Store.Services.Identity
 
         public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -837,8 +789,7 @@ namespace Store.Services.Identity
 
         public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -848,8 +799,7 @@ namespace Store.Services.Identity
 
         public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -859,8 +809,7 @@ namespace Store.Services.Identity
 
         public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -890,8 +839,7 @@ namespace Store.Services.Identity
 
         public async Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
             {
@@ -914,8 +862,7 @@ namespace Store.Services.Identity
 
         public virtual async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
             {
@@ -933,8 +880,7 @@ namespace Store.Services.Identity
 
         public virtual async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (user == null)
             {

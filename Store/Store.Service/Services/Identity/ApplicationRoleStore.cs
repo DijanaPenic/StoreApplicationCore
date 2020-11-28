@@ -30,8 +30,7 @@ namespace Store.Services.Identity
         {
             try
             {
-                if (cancellationToken != null)
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
@@ -51,8 +50,7 @@ namespace Store.Services.Identity
         {
             try
             {
-                if (cancellationToken != null)
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
@@ -70,8 +68,7 @@ namespace Store.Services.Identity
 
         public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrWhiteSpace(roleId))
                 throw new ArgumentNullException(nameof(roleId));
@@ -86,8 +83,7 @@ namespace Store.Services.Identity
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrWhiteSpace(normalizedRoleName))
                 throw new ArgumentNullException(nameof(normalizedRoleName));
@@ -99,8 +95,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -110,8 +105,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetRoleIdAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -121,8 +115,7 @@ namespace Store.Services.Identity
 
         public Task<string> GetRoleNameAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -132,8 +125,7 @@ namespace Store.Services.Identity
 
         public Task SetNormalizedRoleNameAsync(IRole role, string normalizedName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -145,8 +137,7 @@ namespace Store.Services.Identity
 
         public Task SetRoleNameAsync(IRole role, string roleName, CancellationToken cancellationToken)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -160,8 +151,7 @@ namespace Store.Services.Identity
         {
             try
             {
-                if (cancellationToken != null)
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
