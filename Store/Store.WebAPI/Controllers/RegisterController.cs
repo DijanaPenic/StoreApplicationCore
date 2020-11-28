@@ -221,6 +221,7 @@ namespace Store.WebAPI.Controllers
                 return GetErrorResult(createUserResult);
             }
 
+            // Associate with the existing account
             if (string.IsNullOrWhiteSpace(registerModel.AssociateEmail))
             {
                 return BadRequest("Associate email is required.");
@@ -240,11 +241,13 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Email {registerModel.AssociateEmail} is {(existingUser.EmailConfirmed ? "confirmed" : "not confirmed")}.");
 
+                // Return an error if email is not confirmed
                 if (!existingUser.EmailConfirmed)
                 {
                     return Ok(ExternalLoginStatus.EmailRequiresConfirmation);
                 }
 
+                // Otherwise, send a token to confirm association
                 string token = await _userManager.GenerateEmailConfirmationTokenAsync(existingUser);
 
                 UriTemplate template = new UriTemplate(registerModel.ConfirmationUrl);
@@ -256,13 +259,13 @@ namespace Store.WebAPI.Controllers
                     { "providerKey", info.ProviderKey }
                 });
 
-                _logger.LogInformation($"Sending email confirmation token to confirm association of {info.ProviderDisplayName} external login account.");
+                _logger.LogInformation($"Sending email confirmation token to confirm association with {info.ProviderDisplayName} external login account.");
 
                 await _emailSender.SendEmailAsync
                  (
                      existingUser.Email,
                      $"Confirm {info.ProviderDisplayName} external login - Store Application",
-                     $"Please confirm association of your {info.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
+                     $"Please confirm association with {info.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
                  );
 
                 return Ok(ExternalLoginStatus.PendingEmailConfirmation);
@@ -319,12 +322,18 @@ namespace Store.WebAPI.Controllers
                 NotFound();
             }
 
-            // External provider is authenticated source so we can confirm the email
-            IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
-            if (!emailConfirmationResult.Succeeded)
-                return GetErrorResult(emailConfirmationResult);
+            if (!user.EmailConfirmed)
+            {
+                // External provider is authenticated source so we can confirm the email
+                IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
 
+                if (!emailConfirmationResult.Succeeded)
+                    return GetErrorResult(emailConfirmationResult);
+            }
+
+            // Create a new external login for the user
             IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, authScheme.Name, providerKey, authScheme.DisplayName));
+
             if (!newExternalLoginResult.Succeeded)
                 return GetErrorResult(newExternalLoginResult);
 
