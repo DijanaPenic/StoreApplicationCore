@@ -12,7 +12,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
     // Redirect URL:
     // * Google - must end with public domain, such as "com", "org". Otherwise, localhost must be used.
-    // * Facebook - must be "https"
+    // * Facebook - must be "https".
     public static class ExternalLoginProviderExtensions
     {
         public static void ConfigureExternalProviders(this IServiceCollection services, IConfiguration configuration)
