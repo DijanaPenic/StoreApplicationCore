@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Service.Common.Services.Identity
+namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IApplicationUserStore<TUser> : IUserStore<TUser>, IDisposable where TUser : class, IUser
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Store.Service.Common.Services.Identity
+namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IApplicationAuthStore : IClientStore, IUserRefreshTokenStore, IDisposable
     {

@@ -10,9 +10,9 @@ using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
-using Store.Service.Common.Services.Identity;
+using Store.Repository.Common.Repositories.Identity.Stores;
 
-namespace Store.Services.Identity
+namespace Store.Repositories.Identity.Stores
 {
     public class ApplicationUserStore :
             IUserPasswordStore<IUser>,

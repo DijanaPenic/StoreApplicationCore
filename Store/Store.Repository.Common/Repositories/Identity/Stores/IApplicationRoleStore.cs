@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Service.Common.Services.Identity
+namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IApplicationRoleStore<TRole> : IRoleStore<TRole>, IDisposable where TRole : class, IRole
     {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Service.Common.Services.Identity
+namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IClientStore
     {

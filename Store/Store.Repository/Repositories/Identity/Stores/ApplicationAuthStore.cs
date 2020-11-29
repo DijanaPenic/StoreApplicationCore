@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Store.Common.Helpers;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
-using Store.Service.Common.Services.Identity;
+using Store.Repository.Common.Repositories.Identity.Stores;
 
-namespace Store.Services.Identity
+namespace Store.Repositories.Identity.Stores
 {
     public class ApplicationAuthStore : IApplicationAuthStore
     {
