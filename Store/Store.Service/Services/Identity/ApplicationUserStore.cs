@@ -25,9 +25,12 @@ namespace Store.Services.Identity
             IUserPhoneNumberStore<IUser>,
             IUserLockoutStore<IUser>,
             IUserAuthenticationTokenStore<IUser>,
-            IApplicationUserStore<IUser>,
             IUserAuthenticatorKeyStore<IUser>,
-            IUserTwoFactorRecoveryCodeStore<IUser>
+            IUserTwoFactorRecoveryCodeStore<IUser>,
+
+            // Custom implementation
+            IApplicationUserStore<IUser>,
+            IApplicationLoginUserStore<IUser>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
@@ -310,18 +313,13 @@ namespace Store.Services.Identity
             if (login == null)
                 throw new ArgumentNullException(nameof(login));
 
-            if (string.IsNullOrWhiteSpace(login.LoginProvider))
-                throw new ArgumentNullException(nameof(login.LoginProvider));
-
-            if (string.IsNullOrWhiteSpace(login.ProviderKey))
-                throw new ArgumentNullException(nameof(login.ProviderKey));
-
             IUserLogin loginEntity = new UserLogin
             {
                 LoginProvider = login.LoginProvider,
                 ProviderDisplayName = login.ProviderDisplayName,
                 ProviderKey = login.ProviderKey,
-                UserId = user.Id
+                UserId = user.Id,
+                IsConfirmed = true      // Token is not issued, so confirmation is not required
             };
 
             await _unitOfWork.UserLoginRepository.AddAsync(loginEntity);
@@ -376,6 +374,104 @@ namespace Store.Services.Identity
             IUser user = await _unitOfWork.UserRepository.FindByKeyAsync(login.UserId);
 
             return user;
+        }
+
+        #endregion
+
+        #region IApplicationUserLoginStore<IUser> Members
+
+        public async Task AddLoginAsync(IUser user, UserLoginInfo login, string token, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (login == null)
+                throw new ArgumentNullException(nameof(login));
+
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ArgumentNullException(nameof(token));
+
+            IUserLogin loginEntity = new UserLogin
+            {
+                LoginProvider = login.LoginProvider,
+                ProviderDisplayName = login.ProviderDisplayName,
+                ProviderKey = login.ProviderKey,
+                UserId = user.Id,
+                Token = token,
+                IsConfirmed = false
+            };
+
+            await _unitOfWork.UserLoginRepository.AddAsync(loginEntity);
+            _unitOfWork.Commit();
+        }
+
+        public async Task UpdateLoginAsync(IUserLogin login, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (login == null)
+                throw new ArgumentNullException(nameof(login));
+
+            await _unitOfWork.UserLoginRepository.UpdateAsync(login);
+            _unitOfWork.Commit();
+        }
+
+        public async Task<IUserLogin> FindLoginAsync(UserLoginInfo login, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (login == null)
+                throw new ArgumentNullException(nameof(login));
+
+            IUserLogin result = await _unitOfWork.UserLoginRepository.FindByKeyAsync(new UserLoginKey { LoginProvider = login.LoginProvider, ProviderKey = login.ProviderKey });
+
+            return result;
+        }
+
+        public async Task<IUserLogin> FindLoginAsync(IUser user, string token, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentNullException(nameof(token));
+
+            IUserLogin result = await _unitOfWork.UserLoginRepository.FindAsync(user.Id, token);
+
+            return result;
+        }
+
+        public async Task<IUser> FindByLoginAsync(UserLoginInfo login, bool loginConfirmed, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (login == null)
+                throw new ArgumentNullException(nameof(login));
+
+            IUserLogin loginEntity = await _unitOfWork.UserLoginRepository.FindAsync(new UserLoginKey { LoginProvider = login.LoginProvider, ProviderKey = login.ProviderKey }, loginConfirmed);
+            if (loginEntity == null)
+                return default;
+
+            IUser result = await _unitOfWork.UserRepository.FindByKeyAsync(loginEntity.UserId);
+
+            return result;
+        }
+
+        public async Task ConfirmLoginAsync(IUserLogin login, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (login == null)
+                throw new ArgumentNullException(nameof(login));
+
+            login.IsConfirmed = true;
+
+            await _unitOfWork.UserLoginRepository.UpdateAsync(login);
+            _unitOfWork.Commit();
         }
 
         #endregion

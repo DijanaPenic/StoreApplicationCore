@@ -137,8 +137,7 @@ namespace Store.Repositories.Identity
             sql.Append(Environment.NewLine);
 
             // Check total count
-            sql.Append(@$"SELECT COUNT(*) FROM {UserSchema.Table} u 
-                          {searchFilter}");
+            sql.Append(@$"SELECT COUNT(*) FROM {UserSchema.Table} u {searchFilter}");
 
             // Get results from the database and prepare response model
             using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });  // TODO - fix "searchString"
@@ -225,7 +224,7 @@ namespace Store.Repositories.Identity
                 param: entity);
         }
 
-        private string Include(out UserInclude include, params string[] includeProperties)
+        private static string Include(out UserInclude include, params string[] includeProperties)
         {
             StringBuilder sql = new StringBuilder();
 
@@ -256,7 +255,7 @@ namespace Store.Repositories.Identity
             return sql.ToString();
         }
 
-        private IEnumerable<IUser> ReadUsers(GridReader reader, UserInclude include)
+        private static IEnumerable<IUser> ReadUsers(GridReader reader, UserInclude include)
         {
             IEnumerable<IUser> users = reader.Read<User, Role, UserClaim, UserLogin, UserToken, User>((user, role, userClaim, userLogin, userToken) =>
             {

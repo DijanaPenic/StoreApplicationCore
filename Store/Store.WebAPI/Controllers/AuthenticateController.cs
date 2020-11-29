@@ -271,28 +271,28 @@ namespace Store.WebAPI.Controllers
                 return Unauthorized(clientAuthResult);
             }
 
-            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            ExternalLoginInfo loginInfo = await _signInManager.GetExternalLoginInfoAsync();     
+            if (loginInfo == null)
             {
                 return BadRequest("External login information is missing.");
             }
 
-            // Sign in the user with this external login provider if the user already has an external login.
-            IUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            // Sign in the user with this external login provider if the user already has a *confirmed* external login.
+            IUser user = await _userManager.FindByLoginAsync(loginInfo, loginConfirmed: true);
             if (user != null)
             {
                 _logger.LogInformation($"Trying to sign in user {user.Email} with the existing external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.ExistingExternalLoginSuccess, info.LoginProvider);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.ExistingExternalLoginSuccess, loginInfo.LoginProvider);
             }
 
-            string userEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
+            string userEmail = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
 
             if (string.IsNullOrEmpty(userEmail))
             {
-                return BadRequest($"Email scope access is required to add {info.ProviderDisplayName} provider.");
+                return BadRequest($"Email scope access is required to add {loginInfo.ProviderDisplayName} provider.");
             }
 
             user = await _userManager.FindByEmailAsync(userEmail);
@@ -310,38 +310,47 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
 
+                IdentityResult createLoginResult;
+
                 if (!user.EmailConfirmed)
                 {
+                    // Generate token for external login confirmation
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
+                    // Add the external provider (confirmed = false)
+                    createLoginResult = await _userManager.AddOrUpdateLoginAsync(user, loginInfo, token);
+
+                    if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
+
+                    // Send email
                     UriTemplate template = new UriTemplate(authenticateModel.ConfirmationUrl);
                     string callbackUrl = template.Resolve(new Dictionary<string, object>
                     {
                         { "userId", user.Id.ToString() },
-                        { "token", token.Base64ForUrlEncode() },
-                        { "loginProvider", info.LoginProvider },
-                        { "providerKey", info.ProviderKey }
+                        { "token", token.Base64ForUrlEncode() }
                     });
 
-                    _logger.LogInformation($"Sending email confirmation token to confirm association of {info.ProviderDisplayName} external login account.");
+                    _logger.LogInformation($"Sending email confirmation token to confirm association of {loginInfo.ProviderDisplayName} external login account.");
                     
                     await _emailSender.SendEmailAsync
                      (
                          user.Email,
-                         $"Confirm {info.ProviderDisplayName} external login",
-                         $"Please confirm association of your {info.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
+                         $"Confirm {loginInfo.ProviderDisplayName} external login",
+                         $"Please confirm association of your {loginInfo.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
                      );
 
                     return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.PendingEmailConfirmation });
                 }
 
-                // Add the external provider
-                await _userManager.AddLoginAsync(user, info);
+                // Add the external provider (confirmed = true)
+                createLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
+
+                if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
 
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, info.LoginProvider);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, loginInfo.LoginProvider);
             }
 
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");

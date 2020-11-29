@@ -115,8 +115,6 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/confirm-email")]
         public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] string token)
         {
-            // TODO - we shouldn't be sending userId,
-
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
@@ -152,8 +150,8 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            ExternalLoginInfo loginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (loginInfo == null)
             {
                 return BadRequest("External login information is missing.");
             }
@@ -166,9 +164,9 @@ namespace Store.WebAPI.Controllers
                     return BadRequest("Username is required.");
                 }
 
-                string firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
-                string lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
-                string email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                string firstName = loginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
+                string lastName = loginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
+                string email = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
 
                 IUser newUser = new User
                 {
@@ -183,42 +181,37 @@ namespace Store.WebAPI.Controllers
 
                 // Create a new user
                 IdentityResult createUserResult = await _userManager.CreateAsync(newUser);
-                if (createUserResult.Succeeded)
-                {
-                    _logger.LogInformation("Adding Guest role to the user.");
 
-                    await _userManager.AddToRolesAsync(newUser, new List<string>() { RoleHelper.Guest });
+                if (!createUserResult.Succeeded) return GetErrorResult(createUserResult);
 
-                    _logger.LogInformation("Adding external login for the user.");
+                _logger.LogInformation("Adding Guest role to the user.");
 
-                    // Add external login for the user
-                    IdentityResult createLoginResult = await _userManager.AddLoginAsync
+                await _userManager.AddToRolesAsync(newUser, new List<string>() { RoleHelper.Guest });               
+
+                _logger.LogInformation("Adding external login for the user.");
+
+                // Add external login for the user
+                IdentityResult createLoginResult = await _userManager.AddLoginAsync
+                (
+                    newUser,
+                    new ExternalLoginInfo
                     (
-                        newUser,
-                        new ExternalLoginInfo
-                        (
-                            null,
-                            info.LoginProvider,
-                            info.ProviderKey,
-                            info.ProviderDisplayName
-                        )
-                    );
+                        null,
+                        loginInfo.LoginProvider,
+                        loginInfo.ProviderKey,
+                        loginInfo.ProviderDisplayName
+                    )
+                );
 
-                    if (createLoginResult.Succeeded)
-                    {
-                        _logger.LogInformation($"Updating the newly created user - setting 'EmailConfirmed' to 'true'.");
+                if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
 
-                        // Email confirmation is not required because we've obtained email from secure source (external provider)
-                        newUser.EmailConfirmed = true;
-                        await _userManager.UpdateAsync(newUser);
+                _logger.LogInformation($"Updating the newly created user - setting 'EmailConfirmed' to 'true'.");
 
-                        return Ok(ExternalLoginStatus.NewExternalLoginAddedSuccess);
-                    }
+                // Email confirmation is not required because we've obtained email from secure source (external provider)
+                newUser.EmailConfirmed = true;
+                await _userManager.UpdateAsync(newUser);
 
-                    return GetErrorResult(createLoginResult);
-                }
-
-                return GetErrorResult(createUserResult);
+                return Ok(ExternalLoginStatus.NewExternalLoginAddedSuccess);
             }
 
             // Associate with the existing account
@@ -250,22 +243,26 @@ namespace Store.WebAPI.Controllers
                 // Otherwise, send a token to confirm association
                 string token = await _userManager.GenerateEmailConfirmationTokenAsync(existingUser);
 
+                // Add the external provider (confirmed = false)
+                IdentityResult createLoginResult = await _userManager.AddOrUpdateLoginAsync(existingUser, loginInfo, token);
+
+                if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
+
+                // Send email
                 UriTemplate template = new UriTemplate(registerModel.ConfirmationUrl);
                 string callbackUrl = template.Resolve(new Dictionary<string, object>
                 {
                     { "userId", existingUser.Id.ToString() },
-                    { "token", token.Base64ForUrlEncode() },
-                    { "loginProvider", info.LoginProvider },
-                    { "providerKey", info.ProviderKey }
+                    { "token", token.Base64ForUrlEncode() }
                 });
 
-                _logger.LogInformation($"Sending email confirmation token to confirm association with {info.ProviderDisplayName} external login account.");
+                _logger.LogInformation($"Sending email confirmation token to confirm association with {loginInfo.ProviderDisplayName} external login account.");
 
                 await _emailSender.SendEmailAsync
                  (
                      existingUser.Email,
-                     $"Confirm {info.ProviderDisplayName} external login - Store Application",
-                     $"Please confirm association with {info.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
+                     $"Confirm {loginInfo.ProviderDisplayName} external login - Store Application",
+                     $"Please confirm association with {loginInfo.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
                  );
 
                 return Ok(ExternalLoginStatus.PendingEmailConfirmation);
@@ -279,18 +276,14 @@ namespace Store.WebAPI.Controllers
         /// <summary>Confirms the external provider association by confirming the user's email.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="token">The token.</param>
-        /// <param name="loginProvider">The external login provider.</param>
-        /// <param name="providerKey">The provider key.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet] // Must be GET because it will be called via email link
         [AllowAnonymous]
         [Route("external/{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token, [FromQuery] string loginProvider, [FromQuery] string providerKey)
+        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token)
         {
-            // TODO - we shouldn't be sending userId, loginProvider and providerKey
-
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
@@ -299,43 +292,28 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("Token is required.");
             }
-            if (string.IsNullOrWhiteSpace(providerKey))
-            {
-                return BadRequest("Provider key is required.");
-            }
-            if (string.IsNullOrWhiteSpace(loginProvider))
-            {
-                return BadRequest("Login provider is required.");
-            }
-
-            IEnumerable<AuthenticationScheme> schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            AuthenticationScheme authScheme = schemes.Where(el => el.Name.ToUpper().Equals(loginProvider.ToUpper())).FirstOrDefault();
-
-            if (authScheme == null)
-            {
-                return BadRequest("Not supported external login provider.");
-            }
 
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                NotFound();
+                return NotFound();
             }
+
+            string decodedToken = token.Base64ForUrlDecode();
 
             if (!user.EmailConfirmed)
             {
                 // External provider is authenticated source so we can confirm the email
-                IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
+                IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
                 if (!emailConfirmationResult.Succeeded)
                     return GetErrorResult(emailConfirmationResult);
             }
 
             // Create a new external login for the user
-            IdentityResult newExternalLoginResult = await _userManager.AddLoginAsync(user, new ExternalLoginInfo(null, authScheme.Name, providerKey, authScheme.DisplayName));
+            IdentityResult confirmLoginResult = await _userManager.ConfirmLoginAsync(user, decodedToken);
 
-            if (!newExternalLoginResult.Succeeded)
-                return GetErrorResult(newExternalLoginResult);
+            if (!confirmLoginResult.Succeeded) return GetErrorResult(confirmLoginResult);
 
             return Ok();
         }

@@ -28,6 +28,8 @@ namespace Store.Repositories.Identity
                         {UserLoginSchema.Columns.LoginProvider}, 
                         {UserLoginSchema.Columns.ProviderKey},
                         {UserLoginSchema.Columns.ProviderDisplayName}, 
+                        {UserLoginSchema.Columns.Token}, 
+                        {UserLoginSchema.Columns.IsConfirmed}, 
                         {UserLoginSchema.Columns.UserId},
                         {UserLoginSchema.Columns.DateCreatedUtc},
                         {UserLoginSchema.Columns.DateUpdatedUtc})
@@ -35,6 +37,8 @@ namespace Store.Repositories.Identity
                         @{nameof(entity.LoginProvider)}, 
                         @{nameof(entity.ProviderKey)}, 
                         @{nameof(entity.ProviderDisplayName)}, 
+                        @{nameof(entity.Token)}, 
+                        @{nameof(entity.IsConfirmed)}, 
                         @{nameof(entity.UserId)},
                         @{nameof(entity.DateCreatedUtc)},
                         @{nameof(entity.DateUpdatedUtc)})",
@@ -58,6 +62,31 @@ namespace Store.Repositories.Identity
                         {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
                         {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)}",
                 param: key
+            );
+        }
+
+        public async Task<IUserLogin> FindAsync(IUserLoginKey key, bool isConfirmed)
+        {
+            return await QuerySingleOrDefaultAsync<UserLogin>(
+                sql: $@"
+                    SELECT * FROM {UserLoginSchema.Table}
+                    WHERE 
+                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
+                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)} AND
+                        {UserLoginSchema.Columns.IsConfirmed} = {(isConfirmed ? "TRUE": "FALSE")}",       
+                param: key // NOTE: key must be sent as raw param; it won't work as dynamic object -> param: new { key }
+            );
+        }
+
+        public async Task<IUserLogin> FindAsync(Guid userId, string token)
+        {
+            return await QuerySingleOrDefaultAsync<UserLogin>(
+                sql: $@"
+                    SELECT * FROM {UserLoginSchema.Table}
+                    WHERE 
+                        {UserLoginSchema.Columns.UserId} = @{nameof(userId)} AND 
+                        {UserLoginSchema.Columns.Token} = @{nameof(token)}",
+                param: new { userId, token }
             );
         }
 
@@ -89,6 +118,8 @@ namespace Store.Repositories.Identity
                 sql: $@"
                     UPDATE {UserLoginSchema.Table} SET 
                         {UserLoginSchema.Columns.ProviderDisplayName} = @{nameof(entity.ProviderDisplayName)},
+                        {UserLoginSchema.Columns.Token} = @{nameof(entity.Token)},
+                        {UserLoginSchema.Columns.IsConfirmed} = @{nameof(entity.IsConfirmed)},
                         {UserLoginSchema.Columns.UserId} = @{nameof(entity.UserId)},
                         {UserLoginSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
                     WHERE 

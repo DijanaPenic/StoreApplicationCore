@@ -15,6 +15,8 @@ namespace Store.Services.Identity
 {
     public class ApplicationRoleStore :
             IRoleClaimStore<IRole>,
+
+            // Custom implementation
             IApplicationRoleStore<IRole>
     {
         private readonly IDapperUnitOfWork _unitOfWork;
@@ -173,8 +175,7 @@ namespace Store.Services.Identity
 
         public async Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -186,8 +187,7 @@ namespace Store.Services.Identity
 
         public async Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
@@ -208,8 +208,7 @@ namespace Store.Services.Identity
 
         public async Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
-            if (cancellationToken != null)
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));

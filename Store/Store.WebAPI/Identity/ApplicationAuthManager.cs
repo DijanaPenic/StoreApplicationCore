@@ -229,7 +229,7 @@ namespace Store.WebAPI.Identity
             return string.Empty;
         }
 
-        private void AddRolesToClaims(IList<Claim> claims, IEnumerable<string> roles)
+        private static void AddRolesToClaims(IList<Claim> claims, IEnumerable<string> roles)
         {
             foreach (string role in roles)
             {
@@ -238,7 +238,7 @@ namespace Store.WebAPI.Identity
             }
         }
 
-        private string GenerateRefreshTokenValue()
+        private static string GenerateRefreshTokenValue()
         {
             byte[] randomNumber = new byte[32];
             using RandomNumberGenerator randomNumberGenerator = RandomNumberGenerator.Create();

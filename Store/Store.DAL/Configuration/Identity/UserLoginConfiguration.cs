@@ -18,6 +18,7 @@ namespace Store.DAL.Configuration.Identity
             // Limit the size of the composite key columns due to common DB restrictions
             builder.Property(l => l.LoginProvider).IsRequired().HasMaxLength(128);
             builder.Property(l => l.ProviderKey).IsRequired().HasMaxLength(128);
+            builder.Property(l => l.Token).IsRequired(false).HasMaxLength(300);
         }
     }
 }

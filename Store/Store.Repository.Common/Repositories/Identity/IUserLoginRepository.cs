@@ -10,5 +10,9 @@ namespace Store.Repository.Common.Repositories.Identity
     public interface IUserLoginRepository : IDapperGenericRepository<IUserLogin, IUserLoginKey>
     {
         Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId);
+
+        Task<IUserLogin> FindAsync(IUserLoginKey key, bool isConfirmed);
+
+        Task<IUserLogin> FindAsync(Guid userId, string token);
     }
 }

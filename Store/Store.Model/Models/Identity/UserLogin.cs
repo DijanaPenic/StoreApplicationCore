@@ -8,6 +8,10 @@ namespace Store.Models.Identity
     {
         public string ProviderDisplayName { get; set; }
 
+        public string Token { get; set; }
+
+        public bool IsConfirmed { get; set; }
+
         public Guid UserId { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
