@@ -5,10 +5,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 using Store.Cache.Common;
-using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Attributes;
+using Store.Services.Identity;
 using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models.Identity;
 

@@ -6,36 +6,36 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Service.Models;
+using Store.Service.Options;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.WebAPI.Infrastructure.Models;
-using Store.Service.Common.Services.Identity;
+using Store.Repository.Common.Repositories.Identity.Stores;
 
-namespace Store.WebAPI.Identity
+namespace Store.Services.Identity
 {
     public class ApplicationAuthManager
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IApplicationAuthStore _authStore;
-        private readonly JwtTokenConfig _jwtTokenConfig;
+        private readonly JwtTokenOptions _jwtTokenConfig;
         private readonly TokenValidationParameters _tokenValidationParameters;
-        private readonly byte[] _secret;
 
         public ApplicationAuthManager(
             ApplicationUserManager userManager, 
-            IApplicationAuthStore authStore, 
-            JwtTokenConfig jwtTokenConfig, 
+            IApplicationAuthStore authStore,
+            IOptions<JwtTokenOptions> jwtTokenOptions,
             TokenValidationParameters tokenValidationParameters)
         {
             _userManager = userManager;
             _authStore = authStore;
-            _jwtTokenConfig = jwtTokenConfig;
+            _jwtTokenConfig = jwtTokenOptions.Value;
             _tokenValidationParameters = tokenValidationParameters;
-            _secret = Encoding.ASCII.GetBytes(jwtTokenConfig.Secret);
         }
 
         public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId, string externalLoginProvider = null)
@@ -74,13 +74,15 @@ namespace Store.WebAPI.Identity
             // Set jwt security token
             // Web API has a role of the authentication server - audience and issuer need to be set in JWT token. 
             // Issuer will be checked by the client (web application), and audience will be checked by the resource server (in this application: Web API). 
+            byte[] secret = Encoding.ASCII.GetBytes(_jwtTokenConfig.Secret);
+
             JwtSecurityToken jwtToken = new JwtSecurityToken
             (
                 issuer: _jwtTokenConfig.Issuer,
                 audience: _jwtTokenConfig.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(client.AccessTokenLifeTime),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature)
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256Signature)
             );
 
             // Set access token

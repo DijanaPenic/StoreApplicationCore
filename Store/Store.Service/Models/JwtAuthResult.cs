@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Store.WebAPI.Infrastructure.Models
+namespace Store.Service.Models
 {
     public class JwtAuthResult
     {

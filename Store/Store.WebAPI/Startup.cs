@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-using Store.WebAPI.Identity;
+using Store.Services.Identity;
 using Store.WebAPI.Application.Startup;
 using Store.WebAPI.Application.Startup.Extensions;
 using Store.WebAPI.Infrastructure.Attributes;

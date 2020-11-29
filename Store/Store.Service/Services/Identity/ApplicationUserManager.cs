@@ -5,23 +5,21 @@ using System.Collections.Generic;
 using NETCore.Encrypt;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Common.Helpers;
+using Store.Service.Options;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.Service.Common.Services.Identity;
+using Store.Repository.Common.Repositories.Identity.Stores;
 
-namespace Store.WebAPI.Identity
+namespace Store.Services.Identity
 {
     public sealed class ApplicationUserManager : UserManager<IUser>
     {
         private readonly IApplicationUserStore<IUser> _userStore;
         private readonly IApplicationLoginUserStore<IUser> _loginStore;
-        private readonly IConfiguration _configuration;
-        private readonly bool _isEncryptionEnabled;
-        private readonly string _encryptionKey;
+        private readonly TwoFactorAuthOptions _twoFactorAuthConfig;
 
         public ApplicationUserManager(
             IUserStore<IUser> userStore, 
@@ -33,18 +31,12 @@ namespace Store.WebAPI.Identity
             IdentityErrorDescriber errors, 
             IServiceProvider services, 
             ILogger<UserManager<IUser>> logger,
-            IConfiguration configuration) 
+            IOptions<TwoFactorAuthOptions> twoFactorAuthOptions) 
             : base(userStore, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
             _userStore = (IApplicationUserStore<IUser>)userStore;
             _loginStore = (IApplicationLoginUserStore<IUser>)userStore;
-            _configuration = configuration;
-
-            // Encryption configuration
-            IConfigurationSection twoFactorAuthConfig = _configuration.GetSection("TwoFactorAuthentication");
-
-            _isEncryptionEnabled = twoFactorAuthConfig.GetValue<bool>("EncryptionEnabled");
-            _encryptionKey = twoFactorAuthConfig.GetValue<string>("EncryptionKey");
+            _twoFactorAuthConfig = twoFactorAuthOptions.Value;
         }
 
         // User can initiate external login request multiple times, so need to support update of the existing login record
@@ -151,7 +143,7 @@ namespace Store.WebAPI.Identity
         {
             string originalAuthenticatorKey = base.GenerateNewAuthenticatorKey();
 
-            string encryptedKey = _isEncryptionEnabled ? EncryptProvider.AESEncrypt(originalAuthenticatorKey, _encryptionKey) : originalAuthenticatorKey;
+            string encryptedKey = _twoFactorAuthConfig.EncryptionEnabled ? EncryptProvider.AESEncrypt(originalAuthenticatorKey, _twoFactorAuthConfig.EncryptionKey) : originalAuthenticatorKey;
 
             return encryptedKey;
         }
@@ -165,7 +157,7 @@ namespace Store.WebAPI.Identity
                 return null;
             }
 
-            string originalAuthenticatorKey = _isEncryptionEnabled ? EncryptProvider.AESDecrypt(databaseKey, _encryptionKey) : databaseKey;
+            string originalAuthenticatorKey = _twoFactorAuthConfig.EncryptionEnabled ? EncryptProvider.AESDecrypt(databaseKey, _twoFactorAuthConfig.EncryptionKey) : databaseKey;
 
             return originalAuthenticatorKey;
         }
@@ -174,7 +166,7 @@ namespace Store.WebAPI.Identity
         {
             string originalRecoveryCode = base.CreateTwoFactorRecoveryCode();
 
-            string encryptedRecoveryCode = _isEncryptionEnabled ? EncryptProvider.AESEncrypt(originalRecoveryCode, _encryptionKey) : originalRecoveryCode;
+            string encryptedRecoveryCode = _twoFactorAuthConfig.EncryptionEnabled ? EncryptProvider.AESEncrypt(originalRecoveryCode, _twoFactorAuthConfig.EncryptionKey) : originalRecoveryCode;
 
             return encryptedRecoveryCode;
         }
@@ -188,16 +180,16 @@ namespace Store.WebAPI.Identity
                 return recoveryCodes;
             }
 
-            recoveryCodes = _isEncryptionEnabled ? recoveryCodes.Select(token => EncryptProvider.AESDecrypt(token, _encryptionKey)) : recoveryCodes;
+            recoveryCodes = _twoFactorAuthConfig.EncryptionEnabled ? recoveryCodes.Select(token => EncryptProvider.AESDecrypt(token, _twoFactorAuthConfig.EncryptionKey)) : recoveryCodes;
 
             return recoveryCodes;
         }
 
         public override Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(IUser user, string code)
         {
-            if (_isEncryptionEnabled && !string.IsNullOrEmpty(code))
+            if (_twoFactorAuthConfig.EncryptionEnabled && !string.IsNullOrEmpty(code))
             {
-                code = EncryptProvider.AESEncrypt(code, _encryptionKey);
+                code = EncryptProvider.AESEncrypt(code, _twoFactorAuthConfig.EncryptionKey);
             }
 
             return base.RedeemTwoFactorRecoveryCodeAsync(user, code);

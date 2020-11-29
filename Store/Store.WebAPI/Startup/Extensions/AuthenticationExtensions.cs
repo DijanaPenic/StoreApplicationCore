@@ -9,8 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.WebAPI.Identity;
-using Store.WebAPI.Infrastructure.Models;
+using Store.Service.Options;
+using Store.Services.Identity;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Application.Startup.Extensions
@@ -79,9 +79,14 @@ namespace Store.WebAPI.Application.Startup.Extensions
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.ExternalScheme, cookieAuthOptions);
 
+            // Two-factor configuration
+            services.Configure<TwoFactorAuthOptions>(configuration.GetSection(TwoFactorAuthOptions.Position));
+
             // JWT configuration
-            JwtTokenConfig jwtTokenConfig = configuration.GetSection("JwtTokenConfig").Get<JwtTokenConfig>();
-            services.AddSingleton(jwtTokenConfig);
+            IConfigurationSection jwtTokenSection = configuration.GetSection(JwtTokenOptions.Position);
+
+            JwtTokenOptions jwtTokenConfig = jwtTokenSection.Get<JwtTokenOptions>();
+            services.Configure<JwtTokenOptions>(jwtTokenSection);
 
             // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens
             TokenValidationParameters tokenValidationParameters = new TokenValidationParameters

@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Model.Common.Models.Identity;
-using Store.Service.Common.Services.Identity;
+using Store.Repository.Common.Repositories.Identity.Stores;
 
-namespace Store.WebAPI.Identity
+namespace Store.Services.Identity
 {
     public sealed class ApplicationRoleManager : RoleManager<IRole>
     {

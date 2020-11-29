@@ -1,7 +1,9 @@
-﻿namespace Store.WebAPI.Infrastructure.Models
+﻿namespace Store.Service.Options
 {
-    public class JwtTokenConfig
+    public class JwtTokenOptions
     {
+        public const string Position = "JwtToken";
+
         public string Secret { get; set; }
 
         public string Issuer { get; set; }

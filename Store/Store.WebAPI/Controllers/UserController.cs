@@ -13,9 +13,9 @@ using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
-using Store.WebAPI.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Infrastructure.Attributes;
+using Store.Services.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 

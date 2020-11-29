@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-using Store.WebAPI.Identity;
+using Store.Common.Extensions;
+using Store.Services.Identity;
 using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Models.Identity;
-using Store.Common.Extensions;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers

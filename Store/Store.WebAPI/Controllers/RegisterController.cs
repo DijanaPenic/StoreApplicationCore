@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Text.Encodings.Web;
@@ -9,17 +8,15 @@ using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
-using Store.Common.Helpers;
-using Store.Common.Helpers.Identity;
-using Store.Common.Extensions;
-using Store.WebAPI.Identity;
-using Store.WebAPI.Infrastructure;
-using Store.WebAPI.Models.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
+using Store.Common.Extensions;
+using Store.Common.Helpers.Identity;
+using Store.Services.Identity;
+using Store.WebAPI.Infrastructure;
+using Store.WebAPI.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {
