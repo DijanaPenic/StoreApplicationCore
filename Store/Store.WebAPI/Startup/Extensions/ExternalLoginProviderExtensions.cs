@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.WebAPI.Infrastructure.Models;
+using Store.WebAPI.Infrastructure.Options;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {
@@ -18,13 +18,13 @@ namespace Store.WebAPI.Application.Startup.Extensions
         public static void ConfigureExternalProviders(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication()
-            .AddGoogle(GetExternalLoginAuthOptions(configuration, "Google"))
-            .AddFacebook(GetExternalLoginAuthOptions(configuration, "Facebook"));
+            .AddGoogle(GetExternalLoginAuthOptions(configuration, ExternalLoginProviders.Google))
+            .AddFacebook(GetExternalLoginAuthOptions(configuration, ExternalLoginProviders.Facebook));
         }
 
         static Action<OAuthOptions> GetExternalLoginAuthOptions(IConfiguration configuration, string providerName)
         {
-            ExternalLoginConfig config = configuration.GetSection($"ExternalLoginAuthentication:{providerName}").Get<ExternalLoginConfig>();
+            ExternalLoginOptions config = configuration.GetSection($"{ExternalLoginOptions.SectionName}:{providerName}").Get<ExternalLoginOptions>();
 
             void externalLoginAuthOptions(OAuthOptions options)
             {
