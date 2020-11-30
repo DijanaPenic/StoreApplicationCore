@@ -1,27 +1,29 @@
 ﻿using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
+using Store.Service.Common.Services;
 using Store.WebAPI.Infrastructure.Models;
 
-namespace Store.WebAPI.Infrastructure
+namespace Store.Services
 {
-    public class EmailSender : IEmailSender
+    public class EmailSenderService : IEmailSenderService
     {
-        private readonly AuthMessageSenderOptions _options; 
+        private readonly AuthMessageSenderOptions _emailConfig; 
         
-        public EmailSender(AuthMessageSenderOptions options)
+        public EmailSenderService(IOptions<AuthMessageSenderOptions> options)
         {
-            _options = options;
+            _emailConfig = options.Value;
         }
 
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            SendGridClient client = new SendGridClient(_options.SendGridKey);
+            SendGridClient client = new SendGridClient(_emailConfig.SendGridKey);
 
             SendGridMessage msg = new SendGridMessage()
             {
-                From = new EmailAddress("penic.dijana@gmail.com", "Store Email Server"), // TODO - can only use verified email domain or email address
+                From = new EmailAddress(_emailConfig.FromEmail, "Store Email Server"), 
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message
@@ -33,10 +35,5 @@ namespace Store.WebAPI.Infrastructure
 
             return client.SendEmailAsync(msg);
         }
-    }
-
-    public interface IEmailSender
-    {
-        Task SendEmailAsync(string email, string subject, string message);
     }
 }

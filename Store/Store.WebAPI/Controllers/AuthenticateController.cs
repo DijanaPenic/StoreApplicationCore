@@ -19,8 +19,8 @@ using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
 using Store.Service.Models;
 using Store.Services.Identity;
+using Store.Service.Common.Services;
 using Store.WebAPI.Models.Identity;
-using Store.WebAPI.Infrastructure;
 using Store.WebAPI.Infrastructure.Attributes;
 using Store.Model.Common.Models.Identity;
 
@@ -36,7 +36,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSenderService _emailSender;
 
         public AuthenticateController
         (
@@ -44,7 +44,7 @@ namespace Store.WebAPI.Controllers
             ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
             ILogger<AuthenticateController> logger,
-            IEmailSender emailSender
+            IEmailSenderService emailSender
         )
         {
             _userManager = userManager;

@@ -15,7 +15,7 @@ using Store.Model.Common.Models.Identity;
 using Store.Common.Extensions;
 using Store.Common.Helpers.Identity;
 using Store.Services.Identity;
-using Store.WebAPI.Infrastructure;
+using Store.Service.Common.Services;
 using Store.WebAPI.Models.Identity;
 
 namespace Store.WebAPI.Controllers
@@ -28,7 +28,7 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSenderService _emailSender;
 
         public RegisterController
         (
@@ -36,7 +36,7 @@ namespace Store.WebAPI.Controllers
             SignInManager<IUser> signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
-            IEmailSender emailSender
+            IEmailSenderService emailSender
         )
         {
             _userManager = userManager;

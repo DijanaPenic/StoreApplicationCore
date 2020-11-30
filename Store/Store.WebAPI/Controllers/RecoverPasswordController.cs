@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using Store.Common.Extensions;
 using Store.Services.Identity;
-using Store.WebAPI.Infrastructure;
+using Store.Service.Common.Services;
 using Store.WebAPI.Models.Identity;
 using Store.Model.Common.Models.Identity;
 
@@ -22,13 +22,13 @@ namespace Store.WebAPI.Controllers
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ILogger _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSenderService _emailSender;
 
         public RecoverPasswordController
         (
             ApplicationUserManager userManager,
             ILogger<RegisterController> logger,
-            IEmailSender emailSender
+            IEmailSenderService emailSender
         )
         {
             _userManager = userManager;
