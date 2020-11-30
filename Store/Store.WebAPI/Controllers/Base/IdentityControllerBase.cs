@@ -10,11 +10,6 @@ namespace Store.WebAPI.Controllers
         [NonAction]
         public IActionResult GetErrorResult(IdentityResult result)
         {
-            if (result == null)
-            {
-                return InternalServerError();
-            }
-
             return BadRequest(result.Errors);
         }       
     }
