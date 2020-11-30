@@ -14,20 +14,22 @@
 						"key": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore/FA588725-0C60-4554-8EB9-20520038EE87",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores/{{bookstore_id}}",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore",
-						"FA588725-0C60-4554-8EB9-20520038EE87"
+						"api",
+						"bookstores",
+						"{{bookstore_id}}"
 					],
 					"query": [
 						{
@@ -44,18 +46,21 @@
 			"name": "GET (All)",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore/all",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores/all",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore",
+						"api",
+						"bookstores",
 						"all"
 					],
 					"query": [
@@ -73,18 +78,21 @@
 			"name": "GET (filter)",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore"
+						"api",
+						"bookstores"
 					],
 					"query": [
 						{
@@ -126,19 +134,22 @@
 			"name": "GET (books with filter)",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore/61c048ca-028d-4466-b7fd-4a05f0dad647/books",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores/{{bookstore_id}}/books",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore",
-						"61c048ca-028d-4466-b7fd-4a05f0dad647",
+						"api",
+						"bookstores",
+						"{{bookstore_id}}",
 						"books"
 					],
 					"query": [
@@ -176,19 +187,22 @@
 			"name": "DELETE",
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore/FA588725-0C60-4554-8EB9-20520038EE87",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores/{{bookstore_id}}",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore",
-						"FA588725-0C60-4554-8EB9-20520038EE87"
+						"api",
+						"bookstores",
+						"{{bookstore_id}}"
 					]
 				}
 			},
@@ -206,10 +220,9 @@
 						"type": "text"
 					},
 					{
-						"key": "X-HTTP-Method-Override",
-						"value": "PATCH",
-						"type": "text",
-						"disabled": true
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -222,17 +235,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore/FA588725-0C60-4554-8EB9-20520038EE87",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores/{{bookstore_id}}",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore",
-						"FA588725-0C60-4554-8EB9-20520038EE87"
+						"api",
+						"bookstores",
+						"{{bookstore_id}}"
 					]
 				}
 			},
@@ -248,11 +258,16 @@
 						"name": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Name\": \"Bookstore Name POST\",\r\n    \"Location\": \"Bookstore Location POST\"\r\n}",
+					"raw": "{\r\n    \"name\": \"Bookstore Name POST\",\r\n    \"location\": \"Bookstore Location POST\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -260,16 +275,13 @@
 					}
 				},
 				"url": {
-					"raw": "https://store.api.local:5001/bookstore/",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/bookstores/",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"bookstore",
+						"api",
+						"bookstores",
 						""
 					]
 				}
@@ -297,6 +309,13 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"id": "6e3e1609-471d-45b7-9571-35c340e3e2b8",
+			"key": "bookstore_id",
+			"value": "06579623-0e80-4dec-2b4b-08d88cc5023c"
 		}
 	],
 	"protocolProfileBehavior": {}

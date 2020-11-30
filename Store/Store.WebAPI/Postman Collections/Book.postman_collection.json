@@ -9,19 +9,22 @@
 			"name": "GET (by ID)",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/book/6ee5782a-575a-476c-2f04-08d8608c84c3",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/books/{{book_id}}",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"book",
-						"6ee5782a-575a-476c-2f04-08d8608c84c3"
+						"api",
+						"books",
+						"{{book_id}}"
 					],
 					"query": [
 						{
@@ -38,18 +41,21 @@
 			"name": "GET (filter)",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/book",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/books",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"book"
+						"api",
+						"books"
 					],
 					"query": [
 						{
@@ -91,19 +97,22 @@
 			"name": "DELETE",
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/book/1BA46C5C-FDF9-449C-83AC-20B8FAA87757",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/books/{{book_id}}",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"book",
-						"1BA46C5C-FDF9-449C-83AC-20B8FAA87757"
+						"api",
+						"books",
+						"{{book_id}}"
 					]
 				}
 			},
@@ -121,15 +130,14 @@
 						"type": "text"
 					},
 					{
-						"key": "X-HTTP-Method-Override",
-						"value": "PATCH",
-						"type": "text",
-						"disabled": true
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Name\": \"Book Name PATCH\",\r\n    \"Author\": \"Book Author PATCH\",\r\n    \"BookstoreId\": \"61C048CA-028D-4466-B7FD-4A05F0DAD647\"\r\n}",
+					"raw": "{\r\n    \"name\": \"Book Name PATCH\",\r\n    \"author\": \"Book Author PATCH\",\r\n    \"bookstore_id\": \"61C048CA-028D-4466-B7FD-4A05F0DAD647\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -137,17 +145,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://store.api.local:5001/book/1eaab6f8-3c50-42ed-0d73-08d8616cf887",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/books/{{book_id}}",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"book",
-						"1eaab6f8-3c50-42ed-0d73-08d8616cf887"
+						"api",
+						"books",
+						"{{book_id}}"
 					]
 				}
 			},
@@ -163,11 +168,16 @@
 						"name": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Name\": \"Book Name POST\",\r\n    \"Author\": \"Book Author POST\",\r\n    \"BookstoreId\": \"61C048CA-028D-4466-B7FD-4A05F0DAD647\"\r\n}",
+					"raw": "{\r\n    \"name\": \"Book Name POST\",\r\n    \"author\": \"Book Author POST\",\r\n    \"bookstore_id\": \"61C048CA-028D-4466-B7FD-4A05F0DAD647\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -175,17 +185,21 @@
 					}
 				},
 				"url": {
-					"raw": "https://store.api.local:5001/book/",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/books/",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
-						"book",
+						"api",
+						"books",
 						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -212,6 +226,13 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"id": "e9a0dc68-5519-451f-a714-73ed3da0441c",
+			"key": "book_id",
+			"value": "1eaab6f8-3c50-42ed-0d73-08d8616cf887"
 		}
 	],
 	"protocolProfileBehavior": {}

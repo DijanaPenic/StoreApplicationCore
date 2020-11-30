@@ -9,19 +9,23 @@
 			"name": "GET (BookstoresDetailedReport)",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "https://store.api.local:5001/report/bookstores-detailed-report",
-					"protocol": "https",
+					"raw": "{{base_url}}/api/report/bookstores/detailed-report",
 					"host": [
-						"store",
-						"api",
-						"local"
+						"{{base_url}}"
 					],
-					"port": "5001",
 					"path": [
+						"api",
 						"report",
-						"bookstores-detailed-report"
+						"bookstores",
+						"detailed-report"
 					]
 				}
 			},
