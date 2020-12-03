@@ -19,6 +19,7 @@ namespace Store.Services.Identity
     {
         private readonly IApplicationUserStore<IUser> _userStore;
         private readonly IApplicationLoginUserStore<IUser> _loginStore;
+        private readonly IUserPasswordStore<IUser> _passwordStore;
         private readonly TwoFactorAuthOptions _twoFactorAuthConfig;
 
         public ApplicationUserManager(
@@ -36,7 +37,26 @@ namespace Store.Services.Identity
         {
             _userStore = (IApplicationUserStore<IUser>)userStore;
             _loginStore = (IApplicationLoginUserStore<IUser>)userStore;
+            _passwordStore = (IUserPasswordStore<IUser>)userStore;
             _twoFactorAuthConfig = twoFactorAuthOptions.Value;
+        }
+
+        public async Task<IdentityResult> ChangePasswordAsync(IUser user, string newPassword)
+        {
+            foreach (IPasswordValidator<IUser> passwordValidator in PasswordValidators)
+            {
+                IdentityResult result = await passwordValidator.ValidateAsync(this, user, newPassword);
+                if (!result.Succeeded)
+                {
+                    return result;
+                }
+            }
+
+            string newPasswordHash = PasswordHasher.HashPassword(user, newPassword);
+
+            await _passwordStore.SetPasswordHashAsync(user, newPasswordHash, CancellationToken);
+
+            return await _userStore.UpdateAsync(user, CancellationToken);
         }
 
         // User can initiate external login request multiple times, so need to support update of the existing login record

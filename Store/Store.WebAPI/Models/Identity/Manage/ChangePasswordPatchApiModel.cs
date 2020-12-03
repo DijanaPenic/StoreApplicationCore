@@ -4,7 +4,6 @@ namespace Store.WebAPI.Models.Identity
 {
     public class ChangePasswordPatchApiModel
     {
-        [Required]
         [DataType(DataType.Password)]
         public string OldPassword { get; set; }
 
@@ -16,5 +15,7 @@ namespace Store.WebAPI.Models.Identity
         [DataType(DataType.Password)]
         [Compare(nameof(NewPassword), ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public bool SendMailNotification { get; set; }
     }
 }

@@ -401,20 +401,31 @@ namespace Store.WebAPI.Controllers
             return await AuthenticateAsync(signInResult, user, clientId);
         }
 
-        /// <summary>Generates or retrieves authenticator key for the currently logged in user.</summary>
+        /// <summary>Generates or retrieves authenticator key for the user.</summary>
+        /// <param name="userId">The user identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Authorize]
-        [Route("two-factor/authenticator")]
-        public async Task<IActionResult> GetUserAuthenticatorKeyAsync()
+        [Route("two-factor/{userId:guid}/authenticator")]
+        public async Task<IActionResult> GetUserAuthenticatorKeyAsync([FromRoute] Guid userId)
         {
-            // Get currently logged in user
-            IUser user = await _userManager.GetUserAsync(User);
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("User must be logged in.");
+                return NotFound();
             }
 
             string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
@@ -439,26 +450,37 @@ namespace Store.WebAPI.Controllers
             return Ok(authenticatorDetailsResponse);
         }
 
-        /// <summary>Verifies the authenticator code for the currently logged in user. If successful, two factor authentication will be enabled.</summary>
+        /// <summary>Verifies the authenticator code for the user. If successful, two factor authentication will be enabled.</summary>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="code">The authenticator code.</param>
         /// <returns>
         ///   Ten two factor recovery codes.
         /// </returns>
         [HttpPost]
         [Authorize]
-        [Route("two-factor/authenticator")]
-        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromQuery] string code)
+        [Route("two-factor/{userId:guid}/authenticator")]
+        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid userId, [FromQuery] string code)
         {
             if (string.IsNullOrEmpty(code))
             {
                 return BadRequest("Verification Code is missing.");
             }
 
-            // Get currently logged in user
-            IUser user = await _userManager.GetUserAsync(User);
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("User must be logged in.");
+                return NotFound();
             }
 
             bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
@@ -492,22 +514,33 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Generates two factor recovery codes for the currently logged in user.
+        /// Generates two factor recovery codes for the user.
         /// </summary>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="number">The number.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Authorize]
-        [Route("two-factor/recovery-codes")]
-        public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromQuery] int number)
+        [Route("two-factor/{userId:guid}/recovery-codes")]
+        public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromRoute] Guid userId, [FromQuery] int number)
         {
-            // Get currently logged in user
-            IUser user = await _userManager.GetUserAsync(User);
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("User must be logged in.");
+                return NotFound();
             }
 
             if (await _userManager.CountRecoveryCodesAsync(user) != 0)

@@ -16,6 +16,7 @@ using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Infrastructure.Attributes;
 using Store.Services.Identity;
+using Store.Service.Common.Services;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
@@ -30,6 +31,7 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
+        private readonly IEmailSenderService _emailSender;
 
         public UserController
         (
@@ -37,7 +39,8 @@ namespace Store.WebAPI.Controllers
             ApplicationRoleManager roleManager,
             SignInManager<IUser> signInManager,
             ILogger<UserController> logger,
-            IMapper mapper
+            IMapper mapper,
+            IEmailSenderService emailSender
         )
         {
             _userManager = userManager;
@@ -45,22 +48,34 @@ namespace Store.WebAPI.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
 
-        /// <summary>Retrieves user profile for the currently logged in user.</summary>
+        /// <summary>Retrieves user profile for the user.</summary>
+        /// <param name="userId">The user identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Authorize]
-        [Route("profile")]
-        public async Task<IActionResult> GetUserProfileAsync()
+        [Route("{userId:guid}/profile")]
+        public async Task<IActionResult> GetUserProfileAsync([FromRoute] Guid userId)
         {
-            // Get currently logged in user
-            IUser user = await _userManager.GetUserAsync(User);
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("User must be logged in.");
+                return NotFound();
             }
 
             IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
@@ -195,19 +210,37 @@ namespace Store.WebAPI.Controllers
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
-        /// <summary>Changes the password for the currently logged in user.</summary>
+        /// <summary>Changes the password for the user.</summary>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="changePasswordModel">The change password model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [Authorize]
-        [Route("change-password")]
-        public async Task<IActionResult> ChangeUserPasswordAsync(ChangePasswordPatchApiModel changePasswordModel)
+        [Route("{userId:guid}/change-password")]
+        public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid userId, ChangePasswordPatchApiModel changePasswordModel)
         {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            bool isCurrentUser = IsCurrentUser(userId);
+            if(isCurrentUser && string.IsNullOrEmpty(changePasswordModel.OldPassword))
+            {
+                return BadRequest("Old Password must be provided.");
+            }
+
+            bool hasPermissions = isCurrentUser || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
             }
 
             IUser user = await _userManager.GetUserAsync(User);
@@ -216,30 +249,63 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User must be logged in.");
             }
 
-            IdentityResult result = await _userManager.ChangePasswordAsync(user, changePasswordModel.OldPassword, changePasswordModel.NewPassword);
+            IdentityResult result;
+
+            if (isCurrentUser)
+            {
+                result = await _userManager.ChangePasswordAsync(user, changePasswordModel.OldPassword, changePasswordModel.NewPassword);
+            }
+            else // Admin doesn't have to provide old password
+            {
+                result = await _userManager.ChangePasswordAsync(user, changePasswordModel.NewPassword);
+            }
+
+            if (result.Succeeded && changePasswordModel.SendMailNotification)
+            {
+                _logger.LogInformation("Sending email with password information.");
+
+                await _emailSender.SendEmailAsync
+                 (
+                     user.Email,
+                     "Password changed - Store Application",
+                     $"Hi {user.UserName},<br>Your password has been changed. Your new password is:<br>{changePasswordModel.NewPassword}"
+                 );
+            }
 
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
-        /// <summary>Sets the password for currently logged in user.</summary>
+        /// <summary>Sets the password for the user.</summary>
+        /// <param name="userId">The user identifier.</param>
         /// <param name="setPasswordModel">The set password model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [Authorize]
-        [Route("set-password")]
-        public async Task<IActionResult> SetPasswordAsync(SetPasswordPatchApiModel setPasswordModel)
+        [Route("{userId:guid}/set-password")]
+        public async Task<IActionResult> SetPasswordAsync([FromRoute] Guid userId, SetPasswordPatchApiModel setPasswordModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            IUser user = await _userManager.GetUserAsync(User);
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("User must be logged in.");
+                return NotFound();
             }
 
             // This will set the password only if it's NULL
@@ -352,20 +418,31 @@ namespace Store.WebAPI.Controllers
             return Ok(new { userId, roles = rolesToAssign });
         }
 
-        /// <summary>Disables the two factor authentication for the currently logged in user.</summary>
+        /// <summary>Disables the two factor authentication for the user.</summary>
+        /// <param name="userId">The user identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPatch]
         [Authorize]
-        [Route("two-factor/disable")]
-        public async Task<IActionResult> DisableUserTwoFactorAsync()
+        [Route("{userId:guid}/two-factor/disable")]
+        public async Task<IActionResult> DisableUserTwoFactorAsync([FromRoute] Guid userId)
         {
-            // Get currently logged in user
-            IUser user = await _userManager.GetUserAsync(User);
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("User must be logged in.");
+                return NotFound();
             }
 
             if (!await _userManager.GetTwoFactorEnabledAsync(user))

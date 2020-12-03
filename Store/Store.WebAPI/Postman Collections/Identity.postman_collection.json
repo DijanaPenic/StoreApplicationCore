@@ -159,16 +159,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"old_password\": \"aB123456,\",\r\n    \"new_password\": \"aB1234567,\",\r\n    \"confirm_password\": \"aB1234567,\"\r\n}"
+							"raw": "{\r\n    \"old_password\": \"aB1234567,\",\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"send_mail_notification\": false\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/users/change-password",
+							"raw": "{{base_url}}/api/users/{{user_id}}/change-password",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
+								"{{user_id}}",
 								"change-password"
 							]
 						}
@@ -196,13 +197,14 @@
 							"raw": "{\r\n    \"password\": \"aB123456,\"\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/users/set-password",
+							"raw": "{{base_url}}/api/users/{{user_id}}/set-password",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
+								"{{user_id}}",
 								"set-password"
 							]
 						}
@@ -346,14 +348,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users/disable-two-factor",
+							"raw": "{{base_url}}/api/users/{{user_id}}/two-factor/disable",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
-								"disable-two-factor"
+								"{{user_id}}",
+								"two-factor",
+								"disable"
 							]
 						}
 					},
@@ -371,13 +375,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users/profile",
+							"raw": "{{base_url}}/api/users/{{user_id}}/profile",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
+								"{{user_id}}",
 								"profile"
 							]
 						}
@@ -958,7 +963,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor/authenticator",
+							"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/authenticator",
 							"host": [
 								"{{base_url}}"
 							],
@@ -966,6 +971,7 @@
 								"api",
 								"authenticate",
 								"two-factor",
+								"{{user_id}}",
 								"authenticator"
 							]
 						}
@@ -990,7 +996,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor/authenticator?code=837280",
+							"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/authenticator?code=837280",
 							"host": [
 								"{{base_url}}"
 							],
@@ -998,6 +1004,7 @@
 								"api",
 								"authenticate",
 								"two-factor",
+								"{{user_id}}",
 								"authenticator"
 							],
 							"query": [
@@ -1022,7 +1029,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor/recovery-codes?number=10",
+							"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/recovery-codes?number=10",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1030,6 +1037,7 @@
 								"api",
 								"authenticate",
 								"two-factor",
+								"{{user_id}}",
 								"recovery-codes"
 							],
 							"query": [
@@ -1046,11 +1054,33 @@
 			"protocolProfileBehavior": {}
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "dfd79c5a-dac8-4244-a742-250f36f17b7f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5a9336b5-eefb-4816-8fec-061657eb16a6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"id": "6365e1fe-953d-48ab-9031-a9a5d7462fed",
+			"id": "a8729b81-fc88-4f55-9f56-074ea48045c1",
 			"key": "user_id",
-			"value": "dfb7de05-9a62-4022-7239-08d892551c1b"
+			"value": "b49db700-abe1-48fd-9180-08d893a29855"
 		}
 	],
 	"protocolProfileBehavior": {}
