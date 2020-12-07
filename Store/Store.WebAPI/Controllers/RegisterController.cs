@@ -90,26 +90,43 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Guest role has been assigned to the user.");
 
-            // Get email confirmation token
-            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await SendEmailAsync(user, registerUserModel.ActivationUrl);
 
-            _logger.LogInformation("Email confirmation token has been generated.");
+            return Ok();
+        }
 
-            UriTemplate template = new UriTemplate(registerUserModel.ActivationUrl);
-            string callbackUrl = template.Resolve(new Dictionary<string, object>
+        /// <summary>Generates and sends the email confirmation token.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("{userId:guid}/verify/email")]
+        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromQuery] string returnUrl)
+        {
+            if (userId == Guid.Empty)
             {
-                { "userId", user.Id.ToString() },
-                { "token", token.Base64ForUrlEncode() }
-            });
+                return BadRequest("User Id cannot be empty.");
+            }
 
-            _logger.LogInformation("Sending account activation email to activate account.");
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                return BadRequest("Return URL cannot be empty.");
+            }
 
-            await _emailSender.SendEmailAsync
-            (
-                registerUserModel.Email, 
-                "Welcome to Store! Confirm Your Email",
-                $"You're on your way! Let's confirm your email address.<br> By clicking on the following link, you are confirming your email address.<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm Email Address</a>."
-            );
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            if (user.EmailConfirmed)
+            {
+                return BadRequest("Email is already confirmed.");
+            }
+
+            await SendEmailAsync(user, returnUrl);
 
             return Ok();
         }
@@ -420,6 +437,36 @@ namespace Store.WebAPI.Controllers
             IdentityResult result = await _userManager.ChangePhoneNumberAsync(user, phoneNumber.GetDigits(), token);
 
             return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
+        private async Task SendEmailAsync(IUser user, string activationUrl)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(activationUrl))
+                throw new ArgumentNullException(nameof(activationUrl));
+
+            // Get email confirmation token
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            _logger.LogInformation("Email confirmation token has been generated.");
+
+            UriTemplate template = new UriTemplate(activationUrl);
+            string callbackUrl = template.Resolve(new Dictionary<string, object>
+            {
+                { "userId", user.Id.ToString() },
+                { "token", token.Base64ForUrlEncode() }
+            });
+
+            _logger.LogInformation("Sending account activation email to activate account.");
+
+            await _emailSender.SendEmailAsync
+            (
+                user.Email,
+                "Welcome to Store! Confirm Your Email",
+                $"You're on your way! Let's confirm your email address.<br> By clicking on the following link, you are confirming your email address.<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm Email Address</a>."
+            );
         }
     }
 }
