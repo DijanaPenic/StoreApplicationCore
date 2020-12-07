@@ -6,7 +6,7 @@
 
         public string Username { get; set; }
 
-        public string AuthenticationMethod { get; set; }
+        public string ExternalLoginProvider { get; set; }
 
         public bool DisplaySetPassword { get; set; }
     }

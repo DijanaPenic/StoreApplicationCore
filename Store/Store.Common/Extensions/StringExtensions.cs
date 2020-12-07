@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -6,6 +7,11 @@ namespace Store.Common.Extensions
 {
     public static class StringExtensions
     {
+        public static string GetDigits(this string input)
+        {
+            return new string(input.Where(c => char.IsDigit(c)).ToArray());
+        }
+
         public static string ToSnakeCase(this string input)
         {
             if (string.IsNullOrEmpty(input)) { return input; }

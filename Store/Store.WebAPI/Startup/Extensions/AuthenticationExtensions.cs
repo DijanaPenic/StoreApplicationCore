@@ -43,6 +43,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 identityOptions.User.RequireUniqueEmail = true;
 
                 identityOptions.SignIn.RequireConfirmedEmail = true;
+                identityOptions.SignIn.RequireConfirmedPhoneNumber = true;
             })
             .AddRoles<IRole>()
             .AddSignInManager<SignInManager<IUser>>()   // Scoped - TODO - need to confirm

@@ -12,7 +12,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
         public static void AddEmail(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IEmailSenderService, EmailSenderService>();
-            services.Configure<AuthMessageSenderOptions>(configuration.GetSection(AuthMessageSenderOptions.Position));
+            services.Configure<EmailSenderAuthOptions>(configuration.GetSection(EmailSenderAuthOptions.Position));
         }
     }
 }

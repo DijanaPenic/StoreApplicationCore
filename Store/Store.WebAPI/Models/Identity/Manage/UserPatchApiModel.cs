@@ -8,6 +8,9 @@ namespace Store.WebAPI.Models.Identity
         [Required]
         public string Email { get; set; }
 
+        [Phone]
+        public string PhoneNumber { get; set; }
+
         [Required]
         [StringLength(50, ErrorMessage = "First Name cannot be longer than 50 characters.")]
         public string FirstName { get; set; }

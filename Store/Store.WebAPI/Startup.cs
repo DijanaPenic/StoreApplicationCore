@@ -55,6 +55,9 @@ namespace Store.WebAPI
             // Email configuration
             services.AddEmail(Configuration);
 
+            // SMS configuration
+            services.AddSms(Configuration);
+
             // Controller configuration
             services.AddControllers().AddJsonOptions(options =>
             {

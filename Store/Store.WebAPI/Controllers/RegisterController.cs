@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Text.Encodings.Web;
@@ -10,13 +11,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
+using Store.Cache.Common;
 using Store.Models.Identity;
-using Store.Model.Common.Models.Identity;
 using Store.Common.Extensions;
 using Store.Common.Helpers.Identity;
+using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
+using Store.WebAPI.Constants;
+using Store.WebAPI.Models.Identity;
 using Store.Services.Identity;
 using Store.Service.Common.Services;
-using Store.WebAPI.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {
@@ -29,6 +33,9 @@ namespace Store.WebAPI.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailSender;
+        private readonly ISmsSenderService _smsSender;
+        private readonly ICountriesService _countriesService;
+        private readonly ICacheProvider _cacheProvider;
 
         public RegisterController
         (
@@ -36,7 +43,10 @@ namespace Store.WebAPI.Controllers
             SignInManager<IUser> signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
-            IEmailSenderService emailSender
+            IEmailSenderService emailSender,
+            ISmsSenderService smsSender,
+            ICountriesService countriesService,
+            ICacheManager cacheManager
         )
         {
             _userManager = userManager;
@@ -44,6 +54,9 @@ namespace Store.WebAPI.Controllers
             _logger = logger;
             _mapper = mapper;
             _emailSender = emailSender;
+            _smsSender = smsSender;
+            _countriesService = countriesService;
+            _cacheProvider = cacheManager.CacheProvider;
         } 
 
         /// <summary>Registers a new user account.</summary>
@@ -101,16 +114,16 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
-        /// <summary>Activates user account by confirming the user's email.</summary>
+        /// <summary>Confirms the user's email.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="token">The token.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]
+        [HttpPost]
         [AllowAnonymous]
-        [Route("{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromQuery] string token)
+        [Route("{userId:guid}/verify/email/token/{token}")]
+        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromRoute] string token)
         {
             if (userId == Guid.Empty)
             {
@@ -276,10 +289,10 @@ namespace Store.WebAPI.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet] // Must be GET because it will be called via email link
+        [HttpPost] 
         [AllowAnonymous]
-        [Route("external/{userId:guid}/confirm-email")]
-        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token)
+        [Route("external/{userId:guid}/verify/email/token/{token}")]
+        public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromRoute] string token)
         {
             if (userId == Guid.Empty)
             {
@@ -313,6 +326,100 @@ namespace Store.WebAPI.Controllers
             if (!confirmLoginResult.Succeeded) return GetErrorResult(confirmLoginResult);
 
             return Ok();
+        }
+
+        /// <summary>Generates the phone number confirmation token and sends it via SMS to the phone number.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="phoneNumberVerifyModel">The phone number verify model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("{userId:guid}/verify/sms")]
+        public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Retrieve countries lookup from cache or the database
+            IList<ICountry> countries = await _cacheProvider.GetOrAddAsync
+            (
+                CacheParameters.Keys.AllCountries,
+                () => _countriesService.GetCountriesAsync(),
+                DateTimeOffset.MaxValue,
+                CacheParameters.Groups.Settings
+            );
+
+            if(countries == null)
+            {
+                return InternalServerError();
+            }
+
+            ICountry country = countries.Where
+            (c => 
+                c.AlphaThreeCode == phoneNumberVerifyModel.IsoCountryCode && 
+                c.CallingCodes.Contains(phoneNumberVerifyModel.CountryCodeNumber.Trim('+'))
+            ).SingleOrDefault();
+
+            if (country == null)
+            {
+                return NotFound("Country not found.");
+            }
+
+            _logger.LogInformation("Generating phone number confirmation token.");
+
+            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber.GetDigits());
+
+            // Get sms confirmation token
+            string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
+
+            _logger.LogInformation("Sending SMS confirmation token to activate the account.");
+
+            await _smsSender.SendSmsAsync(phoneNumber, $"Your Store verification code is: {token}.");
+
+            return Ok();
+        }
+
+        /// <summary>Confirms the phone number by checking the provided confirmation token.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="phoneNumber">The phone number.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("{userId:guid}/verify/sms/token/{token}")]
+        public async Task<IActionResult> ConfirmPhoneNumberAsync([FromRoute] Guid userId, [FromRoute] string token, [FromQuery] string phoneNumber)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userManager.ChangePhoneNumberAsync(user, phoneNumber.GetDigits(), token);
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
         }
     }
 }

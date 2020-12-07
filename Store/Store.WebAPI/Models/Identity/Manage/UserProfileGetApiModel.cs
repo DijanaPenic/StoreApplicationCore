@@ -12,6 +12,8 @@ namespace Store.WebAPI.Models.Identity
 
         public string PhoneNumber { get; set; }
 
+        public bool PhoneNumberConfirmed { get; set; }
+
         public IList<string> ExternalLogins { get; set; }
 
         public bool TwoFactorEnabled { get; set; }

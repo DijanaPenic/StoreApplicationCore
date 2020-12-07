@@ -86,6 +86,7 @@ namespace Store.WebAPI.Controllers
                 Email = user.Email,
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumber = user.PhoneNumber,
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 ExternalLogins = logins.Select(login => login.ProviderDisplayName).ToList(),
                 TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
                 HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,

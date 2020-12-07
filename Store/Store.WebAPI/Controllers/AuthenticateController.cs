@@ -67,7 +67,7 @@ namespace Store.WebAPI.Controllers
             {
                 IsAuthenticated = User.Identity.IsAuthenticated,
                 Username = User.Identity.IsAuthenticated ? User.Identity.Name : string.Empty,
-                AuthenticationMethod = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
+                ExternalLoginProvider = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
                 DisplaySetPassword = User.Identity.IsAuthenticated && !(await _userManager.HasPasswordAsync((await _userManager.GetUserAsync(User))))
             };
 
@@ -121,6 +121,7 @@ namespace Store.WebAPI.Controllers
             // Note: PasswordSignInAsync - this method performs 2fa check, but also generates the ".AspNetCore.Identity.Application" cookie. Cookie creation cannot be disabled (SignInManager is heavily dependant on cookies - by design).
             // Note: isPersistent: false - no need to store browser cookies in Web API.
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
+            
             return await AuthenticateAsync(signInResult, user, clientId);
         }
 
@@ -606,7 +607,7 @@ namespace Store.WebAPI.Controllers
                 }
                 if (signInResult.IsNotAllowed)
                 {
-                    return Unauthorized($"User [{user.UserName}] is not allowed to log in.");
+                    return Unauthorized($"User [{user.UserName}] is not allowed to log in."); // TODO - potential redirect to step for email verification. The user needs to have an option to re-send a token for account creation.
                 }
                 if (signInResult.RequiresTwoFactor)
                 {

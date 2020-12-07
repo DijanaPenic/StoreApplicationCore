@@ -10,16 +10,16 @@ namespace Store.Services
 {
     public class EmailSenderService : IEmailSenderService
     {
-        private readonly AuthMessageSenderOptions _emailConfig; 
+        private readonly EmailSenderAuthOptions _emailConfig; 
         
-        public EmailSenderService(IOptions<AuthMessageSenderOptions> options)
+        public EmailSenderService(IOptions<EmailSenderAuthOptions> options)
         {
             _emailConfig = options.Value;
         }
 
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            SendGridClient client = new SendGridClient(_emailConfig.SendGridKey);
+            SendGridClient client = new SendGridClient(_emailConfig.Key);
 
             SendGridMessage msg = new SendGridMessage()
             {
