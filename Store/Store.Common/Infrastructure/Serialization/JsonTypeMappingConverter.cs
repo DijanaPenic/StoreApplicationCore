@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Store.Common.Infrastructure.Serialization
 {
-    public class TypeMappingConverter<TType, TImplementation> : JsonConverter<TType> where TImplementation : TType
+    public class JsonTypeMappingConverter<TType, TImplementation> : JsonConverter<TType> where TImplementation : TType
     {
         public override TType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) 
             => JsonSerializer.Deserialize<TImplementation>(ref reader, options);
