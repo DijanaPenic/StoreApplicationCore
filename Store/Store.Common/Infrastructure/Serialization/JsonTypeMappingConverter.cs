@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Store.Cache
+namespace Store.Common.Infrastructure.Serialization
 {
     public class TypeMappingConverter<TType, TImplementation> : JsonConverter<TType> where TImplementation : TType
     {

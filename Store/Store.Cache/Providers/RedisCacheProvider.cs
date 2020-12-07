@@ -4,9 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using StackExchange.Redis;
 
-using Store.Models;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
+using Store.Cache.Serialization;
 using Store.Cache.Common.Providers;
 
 namespace Store.Cache.Providers
@@ -61,7 +59,7 @@ namespace Store.Cache.Providers
 
             if (obj.HasValue)
             {
-                return JsonSerializer.Deserialize<T>(obj.ToString(), GetJsonSerializerOptions());
+                return JsonSerializer.Deserialize<T>(obj.ToString(), JsonSerializerInit.GetJsonSerializerOptions());
             }
             else
                 return default;
@@ -101,7 +99,7 @@ namespace Store.Cache.Providers
                         // Max expiration can be set to 365 days from now.
                         DateTimeOffset maxExpiration = DateTimeOffset.UtcNow.AddDays(365);
 
-                        string obj = JsonSerializer.Serialize(value, GetJsonSerializerOptions());
+                        string obj = JsonSerializer.Serialize(value, JsonSerializerInit.GetJsonSerializerOptions());
 
                         if (absoluteExpiration < maxExpiration)
                         {
@@ -154,19 +152,6 @@ namespace Store.Cache.Providers
             }
 
             return result;
-        }
-
-        private static JsonSerializerOptions GetJsonSerializerOptions()
-        {
-            return new JsonSerializerOptions
-            {                
-                Converters =
-                {
-                    new TypeMappingConverter<IBookstore, Bookstore>(),
-                    new TypeMappingConverter<IBook, Book>(),
-                    new TypeMappingConverter<IRole, Models.Identity.Role>()
-                }
-            };
         }
 
         private string BuildKey(string key, string group = null)
