@@ -382,10 +382,10 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Generating phone number confirmation token.");
 
-            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber.GetDigits());
+            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber);
 
             // Get sms confirmation token
-            string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
+            string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber.GetDigits());
 
             _logger.LogInformation("Sending SMS confirmation token to activate the account.");
 
