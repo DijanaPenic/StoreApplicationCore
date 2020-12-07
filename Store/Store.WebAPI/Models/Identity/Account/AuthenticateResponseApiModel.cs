@@ -14,17 +14,27 @@ namespace Store.WebAPI.Models.Identity
 
         public bool RequiresTwoFactor { get; set; }
 
-        public ExternalLoginStatus ExternalLoginStatus { get; set; }
+        public ExternalLoginStep ExternalLoginStep { get; set; }
+
+        public VerificationStep VerificationStep { get; set; }
     }
 
-    public enum ExternalLoginStatus
+    public enum ExternalLoginStep
     {
         None = 0,
         ExistingExternalLoginSuccess = 1,
         NewExternalLoginAddedSuccess = 2,
         PendingEmailConfirmation = 3,
         UserAccountNotFound = 4,
-        UserNotAllowed = 5,
-        EmailRequiresConfirmation = 6
+        UserNotAllowed = 5,                 
+        EmailRequiresConfirmation = 6           // TODO - need to check the flow
+    }
+
+    public enum VerificationStep
+    {
+        None = 0,
+        TwoFactor = 1,
+        Email = 2,
+        MobilePhone = 3,
     }
 }

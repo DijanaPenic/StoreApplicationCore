@@ -286,7 +286,7 @@ namespace Store.WebAPI.Controllers
 
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.ExistingExternalLoginSuccess, loginInfo.LoginProvider);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStep.ExistingExternalLoginSuccess, loginInfo.LoginProvider);
             }
 
             string userEmail = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
@@ -306,7 +306,7 @@ namespace Store.WebAPI.Controllers
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserNotAllowed });
+                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStep = ExternalLoginStep.UserNotAllowed });
                 }
 
                 _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
@@ -340,7 +340,7 @@ namespace Store.WebAPI.Controllers
                          $"Please confirm association of your {loginInfo.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
                      );
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.PendingEmailConfirmation });
+                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStep = ExternalLoginStep.PendingEmailConfirmation });
                 }
 
                 // Add the external provider (confirmed = true)
@@ -351,13 +351,13 @@ namespace Store.WebAPI.Controllers
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStatus.NewExternalLoginAddedSuccess, loginInfo.LoginProvider);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStep.NewExternalLoginAddedSuccess, loginInfo.LoginProvider);
             }
 
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
             _logger.LogInformation($"A new user account must be created or external login must be associated with different email address.");
 
-            return Ok(new AuthenticateResponseApiModel { ExternalLoginStatus = ExternalLoginStatus.UserAccountNotFound });
+            return Ok(new AuthenticateResponseApiModel { ExternalLoginStep = ExternalLoginStep.UserAccountNotFound });
         }
 
         /// <summary>Authenticates the user using the two factor authentication code.</summary>
@@ -579,7 +579,7 @@ namespace Store.WebAPI.Controllers
            SignInResult signInResult,
            IUser user,
            Guid clientId,
-           ExternalLoginStatus externalLoginStatus = ExternalLoginStatus.None,
+           ExternalLoginStep externalLoginStep = ExternalLoginStep.None,
            string externalLoginProvider = null
         )
         {
@@ -595,8 +595,8 @@ namespace Store.WebAPI.Controllers
             AuthenticateResponseApiModel authResponse = new AuthenticateResponseApiModel
             {
                 UserId = user.Id,
-                RequiresTwoFactor = signInResult.RequiresTwoFactor,
-                ExternalLoginStatus = externalLoginStatus
+                VerificationStep = VerificationStep.None,
+                ExternalLoginStep = externalLoginStep
             };
 
             if (!signInResult.Succeeded)
@@ -607,10 +607,16 @@ namespace Store.WebAPI.Controllers
                 }
                 if (signInResult.IsNotAllowed)
                 {
-                    return Unauthorized($"User [{user.UserName}] is not allowed to log in."); // TODO - potential redirect to step for email verification. The user needs to have an option to re-send a token for account creation.
+                    if (!user.EmailConfirmed) authResponse.VerificationStep = VerificationStep.Email;
+                    else if (!user.PhoneNumberConfirmed) authResponse.VerificationStep = VerificationStep.MobilePhone;
+                    else throw new Exception("Invalid use case.");
+
+                    return Ok(authResponse);
                 }
                 if (signInResult.RequiresTwoFactor)
                 {
+                    authResponse.VerificationStep = VerificationStep.TwoFactor;
+
                     return Ok(authResponse);
                 }
 

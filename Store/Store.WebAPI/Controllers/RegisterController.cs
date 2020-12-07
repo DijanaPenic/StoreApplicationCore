@@ -221,7 +221,7 @@ namespace Store.WebAPI.Controllers
                 newUser.EmailConfirmed = true;
                 await _userManager.UpdateAsync(newUser);
 
-                return Ok(ExternalLoginStatus.NewExternalLoginAddedSuccess);
+                return Ok(ExternalLoginStep.NewExternalLoginAddedSuccess);
             }
 
             // Associate with the existing account
@@ -239,7 +239,7 @@ namespace Store.WebAPI.Controllers
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 
-                    return Ok(ExternalLoginStatus.UserNotAllowed);
+                    return Ok(ExternalLoginStep.UserNotAllowed);
                 }
 
                 _logger.LogInformation($"Email {registerModel.AssociateEmail} is {(existingUser.EmailConfirmed ? "confirmed" : "not confirmed")}.");
@@ -247,7 +247,7 @@ namespace Store.WebAPI.Controllers
                 // Return an error if email is not confirmed
                 if (!existingUser.EmailConfirmed)
                 {
-                    return Ok(ExternalLoginStatus.EmailRequiresConfirmation);
+                    return Ok(ExternalLoginStep.EmailRequiresConfirmation);
                 }
 
                 // Otherwise, send a token to confirm association
@@ -275,12 +275,12 @@ namespace Store.WebAPI.Controllers
                      $"Please confirm association with {loginInfo.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
                  );
 
-                return Ok(ExternalLoginStatus.PendingEmailConfirmation);
+                return Ok(ExternalLoginStep.PendingEmailConfirmation);
             }
 
             _logger.LogInformation($"There is no user account registered with {registerModel.AssociateEmail} email.");
 
-            return Ok(ExternalLoginStatus.UserAccountNotFound);
+            return Ok(ExternalLoginStep.UserAccountNotFound);
         }
 
         /// <summary>Confirms the external provider association by confirming the user's email.</summary>
