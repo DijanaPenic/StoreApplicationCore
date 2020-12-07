@@ -371,6 +371,10 @@ namespace Store.WebAPI.Controllers
             {
                 return NotFound("User not found.");
             }
+            if(user.PhoneNumberConfirmed)
+            {
+                return BadRequest("Phone number is already confirmed.");
+            }
 
             // Retrieve countries lookup from cache or the database
             IList<ICountry> countries = await _cacheProvider.GetOrAddAsync
