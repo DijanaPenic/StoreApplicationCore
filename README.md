@@ -1,5 +1,10 @@
 # Store Application 
 
+## Authenticate Requirements
+
+* confirmed email address
+* confirmed phone number
+
 ## External Login
 
 Blog post: https://chsakell.com/2019/07/28/asp-net-core-identity-series-external-provider-authentication-registration-strategy/
