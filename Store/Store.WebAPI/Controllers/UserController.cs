@@ -113,6 +113,11 @@ namespace Store.WebAPI.Controllers
             }
 
             IUser user = _mapper.Map<IUser>(createUserModel);
+
+            // Confirm user email and (optionally) phone number
+            user.EmailConfirmed = true;
+            if (!string.IsNullOrEmpty(user.PhoneNumber)) user.PhoneNumberConfirmed = true;
+
             IdentityResult userResult = await _userManager.CreateAsync(user, createUserModel.Password);
 
             if (!userResult.Succeeded) return GetErrorResult(userResult);
