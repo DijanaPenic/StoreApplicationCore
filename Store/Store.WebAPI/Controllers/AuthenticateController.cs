@@ -286,7 +286,7 @@ namespace Store.WebAPI.Controllers
 
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStep.ExistingExternalLoginSuccess, loginInfo.LoginProvider);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.FoundExistingExternalLogin, loginInfo.LoginProvider);
             }
 
             string userEmail = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
@@ -306,7 +306,7 @@ namespace Store.WebAPI.Controllers
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStep = ExternalLoginStep.UserNotAllowed });
+                    return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.UserNotAllowed });
                 }
 
                 _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
@@ -340,7 +340,7 @@ namespace Store.WebAPI.Controllers
                          $"Please confirm association of your {loginInfo.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
                      );
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalLoginStep = ExternalLoginStep.PendingEmailConfirmation });
+                    return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
                 }
 
                 // Add the external provider (confirmed = true)
@@ -351,13 +351,13 @@ namespace Store.WebAPI.Controllers
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
                 SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalLoginStep.NewExternalLoginAddedSuccess, loginInfo.LoginProvider);
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.AddedNewExternalLogin, loginInfo.LoginProvider);
             }
 
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
             _logger.LogInformation($"A new user account must be created or external login must be associated with different email address.");
 
-            return Ok(new AuthenticateResponseApiModel { ExternalLoginStep = ExternalLoginStep.UserAccountNotFound });
+            return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.UserNotFound });
         }
 
         /// <summary>Authenticates the user using the two factor authentication code.</summary>
@@ -579,7 +579,7 @@ namespace Store.WebAPI.Controllers
            SignInResult signInResult,
            IUser user,
            Guid clientId,
-           ExternalLoginStep externalLoginStep = ExternalLoginStep.None,
+           ExternalAuthStep externalLoginStep = ExternalAuthStep.None,
            string externalLoginProvider = null
         )
         {
@@ -596,7 +596,7 @@ namespace Store.WebAPI.Controllers
             {
                 UserId = user.Id,
                 VerificationStep = VerificationStep.None,
-                ExternalLoginStep = externalLoginStep
+                ExternalAuthStep = externalLoginStep
             };
 
             if (!signInResult.Succeeded)

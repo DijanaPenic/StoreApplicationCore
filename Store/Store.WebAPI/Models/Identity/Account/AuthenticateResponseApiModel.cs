@@ -12,22 +12,20 @@ namespace Store.WebAPI.Models.Identity
 
         public string RefreshToken { get; set; }
 
-        public bool RequiresTwoFactor { get; set; }
-
-        public ExternalLoginStep ExternalLoginStep { get; set; }
+        public ExternalAuthStep ExternalAuthStep { get; set; }
 
         public VerificationStep VerificationStep { get; set; }
     }
 
-    public enum ExternalLoginStep
+    public enum ExternalAuthStep
     {
         None = 0,
-        ExistingExternalLoginSuccess = 1,
-        NewExternalLoginAddedSuccess = 2,
-        PendingEmailConfirmation = 3,
-        UserAccountNotFound = 4,
+        FoundExistingExternalLogin = 1,
+        AddedNewExternalLogin = 2,
+        PendingExternalLoginCreation = 3,
+        UserNotFound = 4,
         UserNotAllowed = 5,                 
-        EmailRequiresConfirmation = 6           // TODO - need to check the flow
+        UserEmailNotConfirmed = 6          
     }
 
     public enum VerificationStep
