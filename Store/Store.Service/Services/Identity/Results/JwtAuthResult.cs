@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Store.Service.Models
+using Store.Service.Common.Services.Identity;
+
+namespace Store.Services.Identity
 {
-    public class JwtAuthResult
+    public class JwtAuthResult : IJwtAuthResult
     {
         public string AccessToken { get; set; }
 

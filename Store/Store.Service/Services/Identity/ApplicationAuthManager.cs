@@ -11,8 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.Service.Models;
 using Store.Service.Options;
+using Store.Service.Common.Services.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -38,7 +38,7 @@ namespace Store.Services.Identity
             _tokenValidationParameters = tokenValidationParameters;
         }
 
-        public async Task<JwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId, string externalLoginProvider = null)
+        public async Task<IJwtAuthResult> GenerateTokensAsync(Guid userId, Guid clientId, string externalLoginProvider = null)
         {
             if (GuidHelper.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
@@ -111,7 +111,7 @@ namespace Store.Services.Identity
             };
         }
 
-        public async Task<JwtAuthResult> RenewTokensAsync(string refreshToken, string accessToken, Guid clientId)
+        public async Task<IJwtAuthResult> RenewTokensAsync(string refreshToken, string accessToken, Guid clientId)
         {
             (ClaimsPrincipal claimsPrincipal, JwtSecurityToken jwtToken) = await DecodeJwtTokenAsync(accessToken);
 

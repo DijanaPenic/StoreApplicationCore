@@ -17,9 +17,9 @@ using Microsoft.IdentityModel.Tokens;
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
-using Store.Service.Models;
 using Store.Services.Identity;
 using Store.Service.Common.Services;
+using Store.Service.Common.Services.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Attributes;
 using Store.Model.Common.Models.Identity;
@@ -156,7 +156,7 @@ namespace Store.WebAPI.Controllers
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                JwtAuthResult jwtResult = await _authManager.RenewTokensAsync(renewTokenModel.RefreshToken, accessToken, clientId);
+                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(renewTokenModel.RefreshToken, accessToken, clientId);
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 
@@ -625,7 +625,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
 
-            JwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, externalLoginProvider);
+            IJwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, externalLoginProvider);
 
             authResponse.Roles = jwtResult.Roles.ToArray();
             authResponse.AccessToken = jwtResult.AccessToken;
