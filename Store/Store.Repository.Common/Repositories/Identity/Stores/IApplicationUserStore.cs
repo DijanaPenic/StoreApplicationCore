@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,5 +13,9 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
         Task<IPagedEnumerable<TUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
 
         Task<TUser> FindUserByIdAsync(Guid id, params string[] includeProperties);
+
+        Task ApproveUserAsync(TUser user, CancellationToken cancellationToken);
+
+        Task DisapproveUserAsync(TUser user, CancellationToken cancellationToken);
     }
 }

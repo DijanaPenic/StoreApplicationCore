@@ -98,6 +98,17 @@ namespace Store.Repositories.Identity
             );
         }
 
+        public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId, bool isConfirmed)
+        {
+            return await QueryAsync<UserLogin>(
+                sql: $@"SELECT * FROM {UserLoginSchema.Table} 
+                        WHERE 
+                            {UserLoginSchema.Columns.UserId} = @{nameof(userId)} AND
+                            {UserLoginSchema.Columns.IsConfirmed} = {(isConfirmed ? "TRUE" : "FALSE")}",
+                param: new { userId }
+            );
+        }
+
         public Task DeleteByKeyAsync(IUserLoginKey key)
         {
             return ExecuteAsync(

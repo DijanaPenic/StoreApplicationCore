@@ -14,5 +14,7 @@ namespace Store.Repository.Common.Repositories.Identity
         Task<IUserLogin> FindAsync(IUserLoginKey key, bool isConfirmed);
 
         Task<IUserLogin> FindAsync(Guid userId, string token);
+
+        Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId, bool isConfirmed);
     }
 }

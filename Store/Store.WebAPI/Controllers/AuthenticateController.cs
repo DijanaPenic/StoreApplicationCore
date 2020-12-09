@@ -279,7 +279,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Sign in the user with this external login provider if the user already has a *confirmed* external login.
-            IUser user = await _userManager.FindByLoginAsync(loginInfo, loginConfirmed: true);
+            IUser user = await _userManager.FindUserByLoginAsync(loginInfo, loginConfirmed: true);
             if (user != null)
             {
                 _logger.LogInformation($"Trying to sign in user {user.Email} with the existing external login provider.");

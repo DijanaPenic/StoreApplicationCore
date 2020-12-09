@@ -78,7 +78,7 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            IList<UserLoginInfo> logins = await _userManager.GetLoginsAsync(user);
+            IList<UserLoginInfo> logins = await _userManager.FindLoginsAsync(user, true);
 
             UserProfileGetApiModel userProfileResponse = new UserProfileGetApiModel
             {
@@ -87,7 +87,7 @@ namespace Store.WebAPI.Controllers
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                ExternalLogins = logins.Select(login => login.ProviderDisplayName).ToList(),
+                ExternalLogins = _mapper.Map<IList<ExternalLoginGetApiModel>>(logins),
                 TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
                 HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
                 TwoFactorClientRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
@@ -95,6 +95,82 @@ namespace Store.WebAPI.Controllers
             };
 
             return Ok(userProfileResponse);
+        }
+
+        /// <summary>Retrieves external login connections for the user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [Authorize]
+        [Route("{userId:guid}/external")]
+        public async Task<IActionResult> GetExternalLoginAsync([FromRoute] Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IList<UserLoginInfo> logins = await _userManager.FindLoginsAsync(user, true);
+
+            return Ok(_mapper.Map<IList<ExternalLoginGetApiModel>>(logins));
+        }
+
+        /// <summary>
+        /// Removes any social external connection between user and provider.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="loginProvider">The login provider.</param>
+        /// <param name="providerKey">The provider key.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpDelete]
+        [Authorize]
+        [Route("{userId:guid}/external")]
+        public async Task<IActionResult> DisconnectExternalLoginAsync([FromRoute] Guid userId, [FromQuery] string loginProvider, [FromQuery] string providerKey)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+            if(string.IsNullOrEmpty(loginProvider))
+            {
+                return BadRequest("Login Provider cannot be empty.");
+            }
+            if(string.IsNullOrEmpty(providerKey))
+            {
+                return BadRequest("Provider Key cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult removeLoginResult = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
+
+            return removeLoginResult.Succeeded ? Ok() : GetErrorResult(removeLoginResult);
         }
 
         /// <summary>Creates the specified user.</summary>
@@ -190,7 +266,33 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
-        /// <summary>Unlocks the user.</summary>
+        /// <summary>Updates user's activity status to "Locked", i.e. prevents the user from accessing the application.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPatch]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("{userId:guid}/lock")]
+        public async Task<IActionResult> LockUserAsync([FromRoute] Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, null);
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
+        /// <summary>Updates user's activity status to "Unlocked", i.e. enables user's application access.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>
         ///   <br />
@@ -212,6 +314,58 @@ namespace Store.WebAPI.Controllers
             }
 
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(-1));
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
+        /// <summary>Updates user's account status to "Approved", i.e. confirms the user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPatch]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("{userId:guid}/approve")]
+        public async Task<IActionResult> ApproveUserAsync([FromRoute] Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userManager.ApproveUserAsync(user);
+
+            return result.Succeeded ? Ok() : GetErrorResult(result);
+        }
+
+        /// <summary>Asynchronously updates user's account status to "Disapproved", i.e. refutes the user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPatch]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("{userId:guid}/disapprove")]
+        public async Task<IActionResult> DisapproveUserAsync([FromRoute] Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userManager.DisapproveUserAsync(user);
 
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }

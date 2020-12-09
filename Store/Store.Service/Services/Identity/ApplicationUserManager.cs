@@ -96,7 +96,7 @@ namespace Store.Services.Identity
             }
         }
 
-        public Task<IUser> FindByLoginAsync(UserLoginInfo login, bool loginConfirmed)
+        public Task<IUser> FindUserByLoginAsync(UserLoginInfo login, bool loginConfirmed)
         {
             if (login == null)
             {
@@ -139,6 +139,16 @@ namespace Store.Services.Identity
             }
         }
 
+        public async Task<IList<UserLoginInfo>> FindLoginsAsync(IUser user, bool loginConfirmed)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            IList<UserLoginInfo> result = await _loginStore.FindLoginsAsync(user, loginConfirmed, CancellationToken);
+
+            return result;
+        }
+
         public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
             if (sortOrderProperty == null)
@@ -157,6 +167,30 @@ namespace Store.Services.Identity
             }
 
             return _userStore.FindUserByIdAsync(id, includeProperties);
+        }
+
+        public async Task<IdentityResult> ApproveUserAsync(IUser user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            await _userStore.ApproveUserAsync(user, CancellationToken);
+
+            return await _userStore.UpdateAsync(user, CancellationToken);
+        }
+
+        public async Task<IdentityResult> DisapproveUserAsync(IUser user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            await _userStore.DisapproveUserAsync(user, CancellationToken);
+
+            return await _userStore.UpdateAsync(user, CancellationToken);
         }
 
         public override string GenerateNewAuthenticatorKey()

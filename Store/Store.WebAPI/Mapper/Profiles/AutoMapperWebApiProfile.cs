@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System.Linq;
 using X.PagedList;
+using Microsoft.AspNetCore.Identity;
 
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
@@ -30,7 +31,7 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<BookPostApiModel, IBook>().ReverseMap();
             CreateMap<BookPatchApiModel, IBook>().ReverseMap();
 
-            //// Create maps for reporting
+            //// Create maps for reporting models
             //CreateMap<BookstoreReportPOCO, IBookstore>()
             //    .ForMember(dst => dst.DateCreatedUtc, opt => opt.MapFrom(src => src.DateCreated))
             //    .ForMember(dst => dst.DateUpdatedUtc, opt => opt.MapFrom(src => src.DateUpdated))
@@ -41,10 +42,10 @@ namespace Store.WebAPI.Mapper.Profiles
             //    .ForMember(dst => dst.DateUpdatedUtc, opt => opt.MapFrom(src => src.DateUpdated))
             //    .ReverseMap();
 
-            // Create maps for global search
+            // Create maps for global search models
             CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
 
-            // Create maps for identity
+            // Create maps for identity models
             CreateMap<UserPatchApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
 
             CreateMap<UserGetApiModel, IUser>();
@@ -54,6 +55,8 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<RegisterPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
 
             CreateMap<RoleGetApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();
+
+            CreateMap<UserLoginInfo, ExternalLoginGetApiModel>();
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();

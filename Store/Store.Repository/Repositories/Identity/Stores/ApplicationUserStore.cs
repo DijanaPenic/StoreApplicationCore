@@ -17,7 +17,6 @@ namespace Store.Repositories.Identity.Stores
     public class ApplicationUserStore :
             IUserPasswordStore<IUser>,
             IUserEmailStore<IUser>,
-            IUserLoginStore<IUser>,
             IUserRoleStore<IUser>,
             IUserSecurityStampStore<IUser>,
             IUserClaimStore<IUser>,
@@ -474,6 +473,20 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
+        public async Task<IList<UserLoginInfo>> FindLoginsAsync(IUser user, bool loginConfirmed, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            IList<UserLoginInfo> result = (await _unitOfWork.UserLoginRepository.FindByUserIdAsync(user.Id, loginConfirmed))
+                .Select(ul => new UserLoginInfo(ul.LoginProvider, ul.ProviderKey, ul.ProviderDisplayName))
+                .ToList();
+
+            return result;
+        }
+
         #endregion
 
         #region IUserRoleStore<IUser> Members
@@ -927,6 +940,30 @@ namespace Store.Repositories.Identity.Stores
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
         {
             return _unitOfWork.UserRepository.FindByKeyAsync(id, includeProperties); 
+        }
+
+        public Task ApproveUserAsync(IUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            user.IsApproved = true;
+
+            return Task.CompletedTask;
+        }
+
+        public Task DisapproveUserAsync(IUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            user.IsApproved = false;
+
+            return Task.CompletedTask;
         }
 
         #endregion
