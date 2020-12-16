@@ -1,0 +1,26 @@
+﻿@using Store.EmailTemplate.Models
+@model ConfirmExternalAccountEmailViewModel
+
+@{
+    ViewData["EmailTitle"] = "Hello!";
+}
+
+<p>
+    Please confirm association with Model.ProviderDisplayName account by clicking the button below.
+</p>
+
+<br />
+
+@await Html.PartialAsync("EmailButton", new EmailButtonViewModel("Confirm External Account", Model.ConfirmUrl))
+
+<br />
+
+<p>
+    If you have any questions, just reply to this email—we're always happy to help out.
+</p>
+
+<br />
+
+<p>
+    The Store Team
+</p>

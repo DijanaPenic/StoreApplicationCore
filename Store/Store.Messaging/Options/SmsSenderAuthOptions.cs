@@ -1,4 +1,4 @@
-﻿namespace Store.WebAPI.Infrastructure.Models
+﻿namespace Store.Messaging.Options
 {
     public class SmsSenderAuthOptions
     {

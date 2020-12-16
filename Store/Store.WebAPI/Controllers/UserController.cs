@@ -16,9 +16,9 @@ using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Infrastructure.Attributes;
 using Store.Services.Identity;
-using Store.Service.Common.Services;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Messaging.Services.Common;
 
 namespace Store.WebAPI.Controllers
 {
@@ -31,7 +31,7 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IEmailSenderService _emailSender;
+        private readonly IEmailSenderService _emailClientSender;
 
         public UserController
         (
@@ -40,7 +40,7 @@ namespace Store.WebAPI.Controllers
             SignInManager<IUser> signInManager,
             ILogger<UserController> logger,
             IMapper mapper,
-            IEmailSenderService emailSender
+            IEmailSenderService emailClientSender
         )
         {
             _userManager = userManager;
@@ -48,7 +48,7 @@ namespace Store.WebAPI.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
-            _emailSender = emailSender;
+            _emailClientSender = emailClientSender;
         }
 
         /// <summary>Retrieves user profile for the user.</summary>
@@ -424,12 +424,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation("Sending email with password information.");
 
-                await _emailSender.SendEmailAsync
-                 (
-                     user.Email,
-                     "Password changed - Store Application",
-                     $"Hi {user.UserName},<br>Your password has been changed. Your new password is:<br>{changePasswordModel.NewPassword}"
-                 );
+                await _emailClientSender.SendChangePasswordEmailAsync(user.Email, user.UserName, changePasswordModel.NewPassword);
             }
 
             return result.Succeeded ? Ok() : GetErrorResult(result);

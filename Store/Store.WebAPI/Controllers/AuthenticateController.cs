@@ -18,10 +18,10 @@ using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
 using Store.Services.Identity;
-using Store.Service.Common.Services;
 using Store.Service.Common.Services.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Attributes;
+using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
 
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
@@ -36,7 +36,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly SignInManager<IUser> _signInManager;
-        private readonly IEmailSenderService _emailSender;
+        private readonly IEmailSenderService _emailClientSender;
 
         public AuthenticateController
         (
@@ -44,14 +44,14 @@ namespace Store.WebAPI.Controllers
             ApplicationAuthManager authManager,
             SignInManager<IUser> signInManager,
             ILogger<AuthenticateController> logger,
-            IEmailSenderService emailSender
+            IEmailSenderService emailClientSender
         )
         {
             _userManager = userManager;
             _authManager = authManager;
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
+            _emailClientSender = emailClientSender;
         }
 
         /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
@@ -332,13 +332,8 @@ namespace Store.WebAPI.Controllers
                     });
 
                     _logger.LogInformation($"Sending email confirmation token to confirm association of {loginInfo.ProviderDisplayName} external login account.");
-                    
-                    await _emailSender.SendEmailAsync
-                     (
-                         user.Email,
-                         $"Confirm {loginInfo.ProviderDisplayName} external login",
-                         $"Please confirm association of your {loginInfo.ProviderDisplayName} account by clicking <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>here</a>."
-                     );
+
+                    await _emailClientSender.SendConfirmExternalAccountEmailAsync(user.Email, callbackUrl, loginInfo.ProviderDisplayName);
 
                     return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
                 }

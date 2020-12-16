@@ -8,12 +8,11 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.8" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.8.0" />
     <PackageReference Include="NETCore.Encrypt" Version="2.0.9" />
-    <PackageReference Include="SendGrid" Version="9.21.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
-    <PackageReference Include="Twilio" Version="5.51.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Store.EmailTemplate\Store.EmailTemplate.csproj" />
     <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
     <ProjectReference Include="..\Store.Repository.Common\Store.Repository.Common.csproj" />
     <ProjectReference Include="..\Store.Service.Common\Store.Service.Common.csproj" />

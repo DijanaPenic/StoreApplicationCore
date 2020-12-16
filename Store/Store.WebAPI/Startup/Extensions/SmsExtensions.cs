@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.Services;
-using Store.Service.Common.Services;
-using Store.WebAPI.Infrastructure.Models;
+using Store.Messaging.Options;
+using Store.Messaging.Services;
+using Store.Messaging.Services.Common;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {

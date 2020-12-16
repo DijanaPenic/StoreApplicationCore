@@ -21,6 +21,7 @@ using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
 using Store.Services.Identity;
 using Store.Service.Common.Services;
+using Store.Messaging.Services.Common;
 
 namespace Store.WebAPI.Controllers
 {
@@ -32,7 +33,7 @@ namespace Store.WebAPI.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        private readonly IEmailSenderService _emailSender;
+        private readonly IEmailSenderService _emailClientSender;
         private readonly ISmsSenderService _smsSender;
         private readonly ICountriesService _countriesService;
         private readonly ICacheProvider _cacheProvider;
@@ -43,7 +44,7 @@ namespace Store.WebAPI.Controllers
             SignInManager<IUser> signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
-            IEmailSenderService emailSender,
+            IEmailSenderService emailClientSender,
             ISmsSenderService smsSender,
             ICountriesService countriesService,
             ICacheManager cacheManager
@@ -53,7 +54,7 @@ namespace Store.WebAPI.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
-            _emailSender = emailSender;
+            _emailClientSender = emailClientSender;
             _smsSender = smsSender;
             _countriesService = countriesService;
             _cacheProvider = cacheManager.CacheProvider;
@@ -285,12 +286,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Sending email confirmation token to confirm association with {loginInfo.ProviderDisplayName} external login account.");
 
-                await _emailSender.SendEmailAsync
-                 (
-                     existingUser.Email,
-                     $"Confirm {loginInfo.ProviderDisplayName} external login - Store Application",
-                     $"Please confirm association with {loginInfo.ProviderDisplayName} account by clicking<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm External Login</a>."
-                 );
+                await _emailClientSender.SendConfirmExternalAccountEmailAsync(existingUser.Email, callbackUrl, loginInfo.ProviderDisplayName);
 
                 return Ok(ExternalAuthStep.PendingExternalLoginCreation);
             }
@@ -465,12 +461,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending account activation email to activate account.");
 
-            await _emailSender.SendEmailAsync
-            (
-                user.Email,
-                "Welcome to Store! Confirm Your Email",
-                $"You're on your way! Let's confirm your email address.<br> By clicking on the following link, you are confirming your email address.<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm Email Address</a>."
-            );
+            await _emailClientSender.SendConfirmAccountEmailAsync(user.Email, callbackUrl);
         }
     }
 }

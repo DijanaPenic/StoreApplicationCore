@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.Services;
-using Store.Service.Common.Services;
-using Store.WebAPI.Infrastructure.Models;
+using Store.Messaging.Options;
+using Store.Messaging.Services;
+using Store.Messaging.Services.Common;
+using Store.EmailTemplate.Services;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {
@@ -13,6 +14,9 @@ namespace Store.WebAPI.Application.Startup.Extensions
         {
             services.AddTransient<IEmailSenderService, EmailSenderService>();
             services.Configure<EmailSenderAuthOptions>(configuration.GetSection(EmailSenderAuthOptions.Position));
+
+            services.AddTransient<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
+            services.AddRazorPages();
         }
     }
 }

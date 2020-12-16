@@ -4,10 +4,10 @@ using Twilio.Rest.Api.V2010.Account;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
-using Store.Service.Common.Services;
-using Store.WebAPI.Infrastructure.Models;
+using Store.Messaging.Options;
+using Store.Messaging.Services.Common;
 
-namespace Store.Services
+namespace Store.Messaging.Services
 {
     public class SmsSenderService : ISmsSenderService
     {

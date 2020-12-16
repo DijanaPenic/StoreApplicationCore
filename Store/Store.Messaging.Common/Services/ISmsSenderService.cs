@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Store.Service.Common.Services
+namespace Store.Messaging.Services.Common
 {
     public interface ISmsSenderService
     {

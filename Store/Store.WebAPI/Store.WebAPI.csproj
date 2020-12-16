@@ -39,6 +39,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Store.Cache\Store.Cache.csproj" />
     <ProjectReference Include="..\Store.DAL\Store.DAL.csproj" />
+    <ProjectReference Include="..\Store.Messaging.Common\Store.Messaging.Common.csproj" />
+    <ProjectReference Include="..\Store.Messaging\Store.Messaging.csproj" />
     <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
     <ProjectReference Include="..\Store.Repository\Store.Repository.csproj" />
     <ProjectReference Include="..\Store.Service.Common\Store.Service.Common.csproj" />

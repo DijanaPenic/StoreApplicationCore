@@ -10,8 +10,8 @@ using Microsoft.Extensions.Logging;
 
 using Store.Common.Extensions;
 using Store.Services.Identity;
-using Store.Service.Common.Services;
 using Store.WebAPI.Models.Identity;
+using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
@@ -22,18 +22,18 @@ namespace Store.WebAPI.Controllers
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ILogger _logger;
-        private readonly IEmailSenderService _emailSender;
+        private readonly IEmailSenderService _emailClientSender;
 
         public RecoverPasswordController
         (
             ApplicationUserManager userManager,
             ILogger<RegisterController> logger,
-            IEmailSenderService emailSender
+            IEmailSenderService emailClientSender
         )
         {
             _userManager = userManager;
             _logger = logger;
-            _emailSender = emailSender;
+            _emailClientSender = emailClientSender;
         }
 
         /// <summary>Initiates a password recovery process for the specified user.</summary>
@@ -73,12 +73,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending password recovery email.");
 
-            await _emailSender.SendEmailAsync
-            (
-                passwordRecoveryModel.Email,
-                "Password Recovery - Store Application",
-                $"Hi {user.UserName},<br>Your password reset request was successful. To set your new password please follow the link below.<br> <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Set new password</a>."
-            );
+            await _emailClientSender.SendResetPasswordEmailAsync(passwordRecoveryModel.Email, callbackUrl, user.UserName);
 
             return Ok();
         }
