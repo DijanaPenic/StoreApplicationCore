@@ -58,6 +58,9 @@ namespace Store.WebAPI
             // SMS configuration
             services.AddSms(Configuration);
 
+            // File provider configuration
+            services.AddFileProvider(Configuration);
+
             // Controller configuration
             services.AddControllers().AddJsonOptions(options =>
             {
