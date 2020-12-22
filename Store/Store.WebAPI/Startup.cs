@@ -50,7 +50,7 @@ namespace Store.WebAPI
             services.AddSwagger();
 
             // Hangfire configuration
-            services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("DatabaseConnection")));
+            services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("Database")));
 
             // Email configuration
             services.AddEmail(Configuration);

@@ -20,7 +20,7 @@ namespace Store.Repository.DependencyInjection
     {
         public static void AddRepositoryComponents(this IServiceCollection services, IConfiguration configuration)
         {
-            string connectionString = configuration.GetConnectionString("DatabaseConnection");
+            string connectionString = configuration.GetConnectionString("Database");
 
             services.AddTransient<IBookstoreRepository, BookstoreRepository>();
             services.AddTransient<IBookRepository, BookRepository>();

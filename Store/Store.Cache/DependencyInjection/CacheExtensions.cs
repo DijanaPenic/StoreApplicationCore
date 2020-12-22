@@ -11,7 +11,7 @@ namespace Store.Cache.DependencyInjection
     {
         public static void AddCacheComponents(this IServiceCollection services, IConfiguration configuration)
         {
-            string connectionString = configuration.GetConnectionString("RedisConnection");
+            string connectionString = configuration.GetConnectionString("Redis");
 
             services.AddTransient<ICacheManager, CacheManager>();
             services.AddTransient<ICacheProviderFactory, RedisCacheProviderFactory>();
