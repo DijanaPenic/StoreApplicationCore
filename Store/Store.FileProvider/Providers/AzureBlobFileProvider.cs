@@ -17,7 +17,7 @@ namespace Store.FileProvider.Providers
             _blobClient = account.CreateCloudBlobClient();
         }
 
-        public Task DeleteFileAsync(string storageName, string filePath)
+        public async Task<bool> DeleteFileAsync(string storageName, string filePath)
         {
             return GetBlockBlob(storageName, filePath).DeleteIfExistsAsync();
         }

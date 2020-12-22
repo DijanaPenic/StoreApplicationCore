@@ -14,7 +14,7 @@ namespace Store.FileProvider.Providers
             _fileRoot = fileRoot;
         }
 
-        public Task DeleteFileAsync(string storageName, string filePath)
+        public Task<bool> DeleteFileAsync(string storageName, string filePath)
         {
             string path = Path.Combine(_fileRoot, storageName, filePath);
 
@@ -23,7 +23,7 @@ namespace Store.FileProvider.Providers
                 File.Delete(path);
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
         public Task<bool> FileExistsAsync(string storageName, string filePath)

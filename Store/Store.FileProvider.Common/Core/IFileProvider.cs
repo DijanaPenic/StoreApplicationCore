@@ -5,7 +5,7 @@ namespace Store.FileProvider.Common.Core
 {
     public interface IFileProvider
     {
-        Task DeleteFileAsync(string storageName, string filePath);
+        Task<bool> DeleteFileAsync(string storageName, string filePath);
 
         Task<bool> FileExistsAsync(string storageName, string filePath);
 
