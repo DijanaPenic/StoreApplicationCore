@@ -10,11 +10,24 @@ namespace Store.WebAPI.Application.Startup.Extensions
     {
         public static void AddFileProvider(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IFileProvider, LocalFileProvider>(client => 
+            bool localStorageEnabled = configuration.GetValue<bool>("LocalStorageEnabled");
+
+            if (localStorageEnabled)
             {
-                string connectionString = configuration.GetConnectionString("Storage");
-                return new LocalFileProvider(connectionString);
-            });
+                services.AddScoped<IFileProvider, LocalFileProvider>(client =>
+                {
+                    string connectionString = configuration.GetConnectionString("LocalStorage");
+                    return new LocalFileProvider(connectionString);
+                });
+            }
+            else
+            {
+                services.AddScoped<IFileProvider, AzureBlobFileProvider>(client =>
+                {
+                    string connectionString = configuration.GetConnectionString("AzureStorage");
+                    return new AzureBlobFileProvider(connectionString);
+                });
+            }
         }
     }
 }
