@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Store.DAL.Context;
@@ -9,9 +10,10 @@ using Store.DAL.Context;
 namespace Store.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201223220005_CreateEmailTemplateTable")]
+    partial class CreateEmailTemplateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,9 +180,6 @@ namespace Store.DAL.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_email_templates");
-
-                    b.HasIndex("ClientId")
-                        .HasName("ix_email_template_client_id");
 
                     b.ToTable("email_template");
                 });
@@ -686,16 +685,6 @@ namespace Store.DAL.Migrations
                         .WithMany("Books")
                         .HasForeignKey("BookstoreId")
                         .HasConstraintName("fk_books_bookstores_bookstore_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Store.Entities.EmailTemplateEntity", b =>
-                {
-                    b.HasOne("Store.Entities.Identity.ClientEntity", null)
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .HasConstraintName("fk_email_template_client_client_entity_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

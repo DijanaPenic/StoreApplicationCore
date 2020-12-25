@@ -17,6 +17,8 @@ namespace Store.Repository.Core
 
         public IBookRepository BookRepository => new BookRepository(_dbContext, _mapper);
         public IBookstoreRepository BookstoreRepository => new BookstoreRepository(_dbContext, _mapper);
+        public IEmailTemplateRepository EmailTemplateRepository => new EmailTemplateRepository(_dbContext, _mapper);
+
 
         public UnitOfWork(ApplicationDbContext dbContext, IMapper mapper)
         {

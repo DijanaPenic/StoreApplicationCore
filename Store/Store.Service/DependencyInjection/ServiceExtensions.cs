@@ -11,6 +11,7 @@ namespace Store.Service.DependencyInjection
         {
             services.AddTransient<IBookstoreService, BookstoreService>();
             services.AddTransient<IBookService, BookService>();
+            services.AddTransient<IEmailTemplateService, EmailTemplateService>();
             services.AddTransient<IGlobalSearchService, GlobalSearchService>();
             services.AddTransient<ICountriesService, CountriesService>();
         }

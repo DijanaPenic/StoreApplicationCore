@@ -17,6 +17,8 @@ namespace Store.DAL.Context
 
         public DbSet<BookstoreEntity> Bookstores { get; set; }
 
+        public DbSet<EmailTemplateEntity> EmailTemplates { get; set; }
+
         public DbSet<UserRoleEntity> UserRoles { get; set; }
 
         public DbSet<RoleEntity> Roles { get; set; }
@@ -51,6 +53,7 @@ namespace Store.DAL.Context
             // Other configurations
             builder.ApplyConfiguration(new BookstoreConfiguration());
             builder.ApplyConfiguration(new BookConfiguration());
+            builder.ApplyConfiguration(new EmailTemplateConfiguration());
         }   
     }
 }

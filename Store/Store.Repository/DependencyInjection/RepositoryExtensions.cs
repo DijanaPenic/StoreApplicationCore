@@ -24,6 +24,7 @@ namespace Store.Repository.DependencyInjection
 
             services.AddTransient<IBookstoreRepository, BookstoreRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<IEmailTemplateRepository, EmailTemplateRepository>();
 
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<,>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();

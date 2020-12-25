@@ -91,6 +91,5 @@ namespace Store.EmailTemplate.Services
 
             return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
         }
-
     }
 }

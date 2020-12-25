@@ -11,6 +11,7 @@ namespace Store.Repository.Common.Core
 
         IBookRepository BookRepository { get; }
         IBookstoreRepository BookstoreRepository { get; }
+        IEmailTemplateRepository EmailTemplateRepository { get; }
 
         #endregion
 
