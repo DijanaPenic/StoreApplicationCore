@@ -13,6 +13,9 @@ namespace Store.DAL.Configuration
             // Maps to the Book table
             builder.ToTable("book");
 
+            // Primary key
+            builder.HasKey(b => b.Id);
+
             // Limit the size of columns to use efficient database types
             builder.Property(b => b.Name).IsRequired().HasMaxLength(50);
             builder.Property(b => b.Author).IsRequired().HasMaxLength(50);
