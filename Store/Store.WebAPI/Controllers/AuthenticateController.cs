@@ -126,37 +126,28 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Refreshes authentication tokens (refresh and access tokens).</summary>
-        /// <param name="renewTokenModel">The renew token model.</param>
+        /// <param name="refreshToken">The refresh token.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
         [Authorize]
-        [Route("renew-tokens")]
-        public async Task<IActionResult> RenewTokensAsync([FromBody] RenewTokenRequestApiModel renewTokenModel)
+        [Route("renew/token/{refreshToken}")]
+        public async Task<IActionResult> RenewTokensAsync([FromRoute]string refreshToken)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Verify client information
-            if (!Guid.TryParse(renewTokenModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, renewTokenModel.ClientSecret);
-            if (!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
-            }
+            // Retrieve client_id for the currently logged in user
+            Guid clientId = GetCurrentUserClientId();
 
             try
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(renewTokenModel.RefreshToken, accessToken, clientId);
+                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken, accessToken, clientId);
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 

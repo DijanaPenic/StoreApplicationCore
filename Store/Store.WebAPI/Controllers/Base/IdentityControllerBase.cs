@@ -27,5 +27,11 @@ namespace Store.WebAPI.Controllers
         {
             return Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
         }
+
+        [NonAction]
+        protected Guid GetCurrentUserClientId()
+        {
+            return Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "ClientId")?.Value);
+        }
     }
 }

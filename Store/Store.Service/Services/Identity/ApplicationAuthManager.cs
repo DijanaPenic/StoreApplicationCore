@@ -57,7 +57,8 @@ namespace Store.Services.Identity
             {
                 new Claim(ClaimTypes.Name, user.NormalizedUserName),
                 new Claim(ClaimTypes.Email, user.NormalizedEmail),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("ClientId", clientId.ToString())
             };
 
             // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
@@ -176,7 +177,9 @@ namespace Store.Services.Identity
         public async Task<string> AuthenticateClientAsync(Guid clientId, string clientSecret)
         {
             if (GuidHelper.IsNullOrEmpty(clientId))
-                throw new ArgumentNullException(nameof(clientId));
+            {
+                return "Client is required.";
+            }
 
             IClient client = await _authStore.FindClientByIdAsync(clientId);
 
