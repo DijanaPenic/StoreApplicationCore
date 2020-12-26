@@ -31,6 +31,10 @@ namespace Store.WebAPI.Controllers
             _cacheProvider = cacheManager.CacheProvider;
         }
 
+        /// <summary>Retrieves the countries lookup.</summary>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet]
         [Route("countries/all")]
         public async Task<IActionResult> GetCountriesAsync()
