@@ -51,7 +51,7 @@ namespace Store.FileProvider.Providers
             return Task.FromResult((string)null);
         }
 
-        public async Task SaveFileAsync(string storageName, string filePath, Stream fileStream)
+        public async Task<string> SaveFileAsync(string storageName, string filePath, Stream fileStream)
         {
             filePath = Path.Combine(_fileRoot, storageName, filePath);
             string dirPath = Path.GetDirectoryName(filePath);
@@ -63,6 +63,8 @@ namespace Store.FileProvider.Providers
 
             using FileStream file = new FileStream(filePath, FileMode.Create);
             await fileStream.CopyToAsync(file).ConfigureAwait(false);
+
+            return filePath;
         }
     }
 }

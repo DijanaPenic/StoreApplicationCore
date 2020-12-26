@@ -55,11 +55,13 @@ namespace Store.FileProvider.Providers
             return url;
         }
 
-        public async Task SaveFileAsync(string storageName, string filePath, Stream fileStream)
+        public async Task<string> SaveFileAsync(string storageName, string filePath, Stream fileStream)
         {
             CloudBlockBlob blob = await GetBlockBlobAsync(storageName, filePath);
 
             await blob.UploadFromStreamAsync(fileStream);
+
+            return blob.Uri.AbsoluteUri;
         }
 
         private async Task<CloudBlockBlob> GetBlockBlobAsync(string storageName, string filePath)

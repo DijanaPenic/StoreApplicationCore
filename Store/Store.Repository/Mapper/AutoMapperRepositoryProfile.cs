@@ -27,6 +27,9 @@ namespace Store.Repository.Mapper
                     .ReverseMap();
 
             // Identity mappings - not needed as Dapper is used for direct mapping to domain models
+
+            // Email Template mappings
+            CreateMap<IEmailTemplate, EmailTemplateEntity>().ReverseMap();
         }
     }
 }

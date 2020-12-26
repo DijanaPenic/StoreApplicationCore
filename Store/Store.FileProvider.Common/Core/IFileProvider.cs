@@ -13,6 +13,6 @@ namespace Store.FileProvider.Common.Core
 
         Task<string> GetFileUrlAsync(string storageName, string filePath);
 
-        Task SaveFileAsync(string storageName, string filePath, Stream fileStream);
+        Task<string> SaveFileAsync(string storageName, string filePath, Stream fileStream);
     }
 }

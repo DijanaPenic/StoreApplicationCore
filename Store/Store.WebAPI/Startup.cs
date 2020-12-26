@@ -10,11 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 using Store.Services.Identity;
+using Store.Service.DependencyInjection;
 using Store.WebAPI.Application.Startup;
 using Store.WebAPI.Application.Startup.Extensions;
 using Store.WebAPI.Infrastructure.Attributes;
 using Store.Cache.DependencyInjection;
-using Store.Service.DependencyInjection;
 using Store.Repository.DependencyInjection;
 
 namespace Store.WebAPI
