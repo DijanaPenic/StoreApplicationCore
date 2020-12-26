@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Store.Messaging.Options;
 using Store.Messaging.Services;
 using Store.Messaging.Services.Common;
-using Store.EmailTemplate.Services;
+using Store.Messaging.Templates.Services.Email;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {

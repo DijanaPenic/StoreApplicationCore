@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 
 using Store.Messaging.Options;
 using Store.Messaging.Services.Common;
-using Store.EmailTemplate.Models;
-using Store.EmailTemplate.Services;
-using Store.EmailTemplate.Views.Emails;
+using Store.Messaging.Templates.Views.Email;
+using Store.Messaging.Templates.Models.Email;
+using Store.Messaging.Templates.Services.Email;
 
 namespace Store.Messaging.Services
 {

@@ -42,6 +42,7 @@
     <ProjectReference Include="..\Store.FileProvider.Common\Store.FileProvider.Common.csproj" />
     <ProjectReference Include="..\Store.FileProvider\Store.FileProvider.csproj" />
     <ProjectReference Include="..\Store.Messaging.Common\Store.Messaging.Common.csproj" />
+    <ProjectReference Include="..\Store.Messaging.Templates\Store.Messaging.Templates.csproj" />
     <ProjectReference Include="..\Store.Messaging\Store.Messaging.csproj" />
     <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
     <ProjectReference Include="..\Store.Repository\Store.Repository.csproj" />

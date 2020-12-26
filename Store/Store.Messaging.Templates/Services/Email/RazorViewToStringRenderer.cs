@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Store.EmailTemplate.Services
+namespace Store.Messaging.Templates.Services.Email
 {
     public class RazorViewToStringRenderer : IRazorViewToStringRenderer
     {

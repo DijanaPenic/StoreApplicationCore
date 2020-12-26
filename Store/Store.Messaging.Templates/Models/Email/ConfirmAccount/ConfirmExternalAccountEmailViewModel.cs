@@ -1,4 +1,4 @@
-﻿namespace Store.EmailTemplate.Models
+﻿namespace Store.Messaging.Templates.Models.Email
 {
     public class ConfirmExternalAccountEmailViewModel
     {

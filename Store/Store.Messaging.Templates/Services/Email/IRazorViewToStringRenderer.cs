@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Store.EmailTemplate.Services
+namespace Store.Messaging.Templates.Services.Email
 {
     public interface IRazorViewToStringRenderer
     {

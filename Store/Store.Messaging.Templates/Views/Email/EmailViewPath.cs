@@ -1,4 +1,4 @@
-﻿namespace Store.EmailTemplate.Views.Emails
+﻿namespace Store.Messaging.Templates.Views.Email
 {
     public class EmailViewPath
     {

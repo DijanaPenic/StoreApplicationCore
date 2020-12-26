@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Store.EmailTemplate\Store.EmailTemplate.csproj" />
     <ProjectReference Include="..\Store.Messaging.Common\Store.Messaging.Common.csproj" />
+    <ProjectReference Include="..\Store.Messaging.Templates\Store.Messaging.Templates.csproj" />
   </ItemGroup>
 
 </Project>
