@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,11 @@ namespace Store.Repositories
             EmailTemplateEntity entity = await Set.FirstOrDefaultAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
 
             return Mapper.Map<IEmailTemplate>(entity);
+        }
+
+        public Task<bool> ExistsAsync(Guid emailTemplateId)
+        {
+           return Set.AnyAsync(et => et.Id == emailTemplateId);
         }
     }
 }

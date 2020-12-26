@@ -64,16 +64,37 @@ namespace Store.WebAPI.Controllers
                 return BadRequest();
             }
 
-            IEmailTemplate emailTemplate = await _emailTemplateService.FindEmailTemplateByIdAsync(emailTemplateId);
-            if (emailTemplate == null)
+            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
+            if (!emailTemplateExists)
             {
                 return NotFound();
             }
 
             using Stream templateStream = file.OpenReadStream();
-            await _emailTemplateService.UpdateEmailTemplateAsync(emailTemplate, templateStream);
+            await _emailTemplateService.UpdateEmailTemplateAsync(emailTemplateId, templateStream);
 
             return Ok();
+        }
+
+        [HttpGet]
+        [AuthorizationFilter(RoleHelper.Admin)]
+        [Route("{emailTemplateId:guid}")]
+        public async Task<IActionResult> GetEmailTemplateAsync([FromRoute] Guid emailTemplateId)
+        {
+            if (emailTemplateId == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
+            if (!emailTemplateExists)
+            {
+                return NotFound();
+            }
+
+            Stream templateStream = await _emailTemplateService.FindEmailTemplateByIdAsync(emailTemplateId);
+
+            return File(templateStream, "application/octet-stream");
         }
 
         [HttpDelete]
@@ -86,8 +107,8 @@ namespace Store.WebAPI.Controllers
                 return BadRequest();
             }
 
-            IEmailTemplate emailTemplate = await _emailTemplateService.FindEmailTemplateByIdAsync(emailTemplateId);
-            if (emailTemplate == null)
+            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
+            if (!emailTemplateExists)
             {
                 return NotFound();
             }

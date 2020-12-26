@@ -10,5 +10,7 @@ namespace Store.Repository.Common.Repositories
     public interface IEmailTemplateRepository : IGenericRepository<IEmailTemplate>
     {
         Task<IEmailTemplate> FindByClientIdAsync(Guid clientId, EmailTemplateType emailTemplateType);
+
+        Task<bool> ExistsAsync(Guid emailTemplateId);
     }
 }

@@ -23,19 +23,25 @@ namespace Store.Services
             _fileProvider = fileProvider;
         }
 
-        public Task<IEmailTemplate> FindEmailTemplateAsync(Guid clientId, EmailTemplateType emailTemplateType)
+        public Task<bool> EmailTemplateExistsAsync(Guid emailTemplateId)
         {
-            return _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId, emailTemplateType);
+            return _unitOfWork.EmailTemplateRepository.ExistsAsync(emailTemplateId);
         }
 
-        public Task<IEmailTemplate> FindEmailTemplateByIdAsync(Guid emailTemplateId)
+        public async Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId)
         {
-            return _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);
+
+            Stream templateStream = await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
+
+            return templateStream;
         }
 
-        public async Task<ResponseStatus> UpdateEmailTemplateAsync(IEmailTemplate emailTemplate, Stream templateStream)
+        public async Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream)
         {
-            await _fileProvider.SaveFileAsync(emailTemplate.ClientId.ToString(), $"templates\\{emailTemplate.Name}", templateStream);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);
+
+            await _fileProvider.SaveFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name), templateStream);
 
             ResponseStatus status = await _unitOfWork.EmailTemplateRepository.UpdateAsync(emailTemplate);
 
@@ -45,7 +51,7 @@ namespace Store.Services
         public async Task<ResponseStatus> AddEmailTemplateAsync(Stream templateStream, Guid clientId, EmailTemplateType templateType)
         {
             string templateName = $"{templateType.ToString().ToSnakeCase()}.html";
-            string filePath = await _fileProvider.SaveFileAsync(clientId.ToString(), $"templates\\{templateName}", templateStream);
+            string filePath = await _fileProvider.SaveFileAsync(clientId.ToString(), GetEmailTemplatePath(templateName), templateStream);
 
             IEmailTemplate emailTemplate = new EmailTemplate
             {
@@ -66,5 +72,7 @@ namespace Store.Services
 
             return await _unitOfWork.SaveChangesAsync(status);
         }
+
+        private static string GetEmailTemplatePath(string fileName) => $"templates\\{fileName}";
     }
 }
