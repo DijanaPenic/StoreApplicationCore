@@ -18,6 +18,7 @@ namespace Store.DAL.Configuration
 
             // Limit the size of columns to use efficient database types
             builder.Property(et => et.Path).IsRequired().HasMaxLength(250);
+            builder.Property(et => et.Name).IsRequired().HasMaxLength(50);
 
             // Each EmailTemplate must have one Client
             builder.HasOne<ClientEntity>().WithMany().HasForeignKey(et => et.ClientId).IsRequired();

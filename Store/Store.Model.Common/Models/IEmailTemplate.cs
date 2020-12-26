@@ -12,5 +12,6 @@ namespace Store.Model.Common.Models
         EmailTemplateType Type { get; set; }
 
         string Path { get; set; }
+        string Name { get; set; }
     }
 }
