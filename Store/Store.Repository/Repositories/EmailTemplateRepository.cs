@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,13 @@ namespace Store.Repositories
             EmailTemplateEntity entity = await Set.FirstOrDefaultAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
 
             return Mapper.Map<IEmailTemplate>(entity);
+        }
+
+        public async Task<IEnumerable<IEmailTemplate>> FindByClientIdAsync(Guid clientId)
+        {
+            IEnumerable<EmailTemplateEntity> entity = await Set.Where(et => et.ClientId == clientId).ToListAsync();
+
+            return Mapper.Map<IEnumerable<IEmailTemplate>>(entity);
         }
 
         public Task<bool> ExistsAsync(Guid emailTemplateId)

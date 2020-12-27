@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
+using Store.WebAPI.Models.Settings;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Models.Bookstore;
 using Store.WebAPI.Models.GlobalSearch;
@@ -30,6 +31,9 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<BookGetApiModel, IBook>().ReverseMap();
             CreateMap<BookPostApiModel, IBook>().ReverseMap();
             CreateMap<BookPatchApiModel, IBook>().ReverseMap();
+
+            // Create maps for setting models
+            CreateMap<EmailTemplateGetApiModel, IEmailTemplate>().ReverseMap();
 
             //// Create maps for reporting models
             //CreateMap<BookstoreReportPOCO, IBookstore>()

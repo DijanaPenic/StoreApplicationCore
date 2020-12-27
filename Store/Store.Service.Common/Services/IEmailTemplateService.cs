@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Store.Common.Enums;
 using Store.Model.Common.Models;
@@ -12,6 +13,8 @@ namespace Store.Service.Common.Services
         Task<bool> EmailTemplateExistsAsync(Guid emailTemplateId);
 
         Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId);
+
+        Task<IEnumerable<IEmailTemplate>> FindEmailTemplatesByClientIdAsync(Guid clientId);
 
         Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream);
 

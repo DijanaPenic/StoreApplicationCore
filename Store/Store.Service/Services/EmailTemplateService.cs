@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Store.Models;
 using Store.Model.Common.Models;
@@ -35,6 +36,11 @@ namespace Store.Services
             Stream templateStream = await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
 
             return templateStream;
+        }
+
+        public Task<IEnumerable<IEmailTemplate>> FindEmailTemplatesByClientIdAsync(Guid clientId)
+        {
+            return _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId);
         }
 
         public async Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream)
