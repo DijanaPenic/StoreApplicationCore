@@ -85,6 +85,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [AuthorizationFilter(RoleHelper.Admin)]
         [Route("{emailTemplateId:guid}")]
+        [Produces("application/octet-stream")]
         public async Task<IActionResult> GetAsync([FromRoute] Guid emailTemplateId)
         {
             if (emailTemplateId == Guid.Empty)
