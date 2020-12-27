@@ -15,7 +15,7 @@ using Store.WebAPI.Infrastructure.Attributes;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/email-template")]
+    [Route("api/email-templates")]
     public class EmailTemplateController : ApplicationControllerBase
     {
         private readonly ILogger _logger;
