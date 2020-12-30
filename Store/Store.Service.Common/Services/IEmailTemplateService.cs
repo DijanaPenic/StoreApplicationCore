@@ -16,9 +16,11 @@ namespace Store.Service.Common.Services
 
         Task<IEnumerable<IEmailTemplate>> FindEmailTemplatesByClientIdAsync(Guid clientId);
 
+        Task<Stream> FindEmailTemplateByClientIdAsync(Guid clientId, EmailTemplateType templateType);
+
         Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream);
 
-        Task<ResponseStatus> AddEmailTemplateAsync(Stream templateStream, Guid clientId, EmailTemplateType templateType);
+        Task<ResponseStatus> AddEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream);
 
         Task<ResponseStatus> DeleteEmailTemplateAsync(Guid emailTemplateId);
     }

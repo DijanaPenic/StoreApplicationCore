@@ -2,6 +2,9 @@
 {
     public enum EmailTemplateType
     {
-        ConfirmAccount = 0
+        ConfirmAccount = 0,
+        ConfirmExternalAccount = 1,
+        ResetPassword = 2,
+        ChangePassword = 3
     }
 }

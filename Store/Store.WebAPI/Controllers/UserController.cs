@@ -424,7 +424,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation("Sending email with password information.");
 
-                await _emailClientSender.SendChangePasswordEmailAsync(user.Email, user.UserName, changePasswordModel.NewPassword);
+                await _emailClientSender.SendChangePasswordEmailAsync(GetCurrentUserClientId(), user.Email, user.UserName, changePasswordModel.NewPassword);
             }
 
             return result.Succeeded ? Ok() : GetErrorResult(result);

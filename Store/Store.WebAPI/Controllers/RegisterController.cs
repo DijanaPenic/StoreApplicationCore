@@ -12,9 +12,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
-using Store.Models.Identity;
+using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Common.Helpers.Identity;
+using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Constants;
@@ -75,6 +76,12 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Verify client information
+            if (!Guid.TryParse(registerUserModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
             IUser user = _mapper.Map<IUser>(registerUserModel);
             user.IsApproved = true;
 
@@ -91,13 +98,14 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Guest role has been assigned to the user.");
 
-            await SendEmailAsync(user, registerUserModel.ActivationUrl);
+            await SendEmailConfirmationTokenAsync(clientId, user, registerUserModel.ActivationUrl);
 
             return Ok();
         }
 
         /// <summary>Generates and sends the email confirmation token.</summary>
         /// <param name="userId">The user identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="returnUrl">The return URL.</param>
         /// <returns>
         ///   <br />
@@ -105,11 +113,16 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("{userId:guid}/verify/email")]
-        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromQuery] string returnUrl)
+        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromQuery] Guid clientId, [FromQuery] string returnUrl)
         {
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
+            }
+
+            if (clientId == Guid.Empty)
+            {
+                return BadRequest("Client Id cannot be empty.");
             }
 
             if (string.IsNullOrWhiteSpace(returnUrl))
@@ -127,7 +140,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Email is already confirmed.");
             }
 
-            await SendEmailAsync(user, returnUrl);
+            await SendEmailConfirmationTokenAsync(clientId, user, returnUrl);
 
             return Ok();
         }
@@ -178,8 +191,14 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            ExternalLoginInfo loginInfo = await _signInManager.GetExternalLoginInfoAsync();
-            if (loginInfo == null)
+            // Verify client information
+            if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
             {
                 return BadRequest("External login information is missing.");
             }
@@ -192,9 +211,9 @@ namespace Store.WebAPI.Controllers
                     return BadRequest("Username is required.");
                 }
 
-                string firstName = loginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
-                string lastName = loginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
-                string email = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+                string firstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
+                string lastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
+                string email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
 
                 IUser newUser = new User
                 {
@@ -225,9 +244,9 @@ namespace Store.WebAPI.Controllers
                     new ExternalLoginInfo
                     (
                         null,
-                        loginInfo.LoginProvider,
-                        loginInfo.ProviderKey,
-                        loginInfo.ProviderDisplayName
+                        externalLoginInfo.LoginProvider,
+                        externalLoginInfo.ProviderKey,
+                        externalLoginInfo.ProviderDisplayName
                     )
                 );
 
@@ -272,7 +291,7 @@ namespace Store.WebAPI.Controllers
                 string token = await _userManager.GenerateEmailConfirmationTokenAsync(existingUser);
 
                 // Add the external provider (confirmed = false)
-                IdentityResult createLoginResult = await _userManager.AddOrUpdateLoginAsync(existingUser, loginInfo, token);
+                IdentityResult createLoginResult = await _userManager.AddOrUpdateLoginAsync(existingUser, externalLoginInfo, token);
 
                 if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
 
@@ -284,9 +303,9 @@ namespace Store.WebAPI.Controllers
                     { "token", token.Base64ForUrlEncode() }
                 });
 
-                _logger.LogInformation($"Sending email confirmation token to confirm association with {loginInfo.ProviderDisplayName} external login account.");
+                _logger.LogInformation($"Sending email confirmation token to confirm association with {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                await _emailClientSender.SendConfirmExternalAccountEmailAsync(existingUser.Email, callbackUrl, loginInfo.ProviderDisplayName);
+                await _emailClientSender.SendConfirmExternalAccountEmailAsync(clientId, existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
                 return Ok(ExternalAuthStep.PendingExternalLoginCreation);
             }
@@ -439,7 +458,7 @@ namespace Store.WebAPI.Controllers
             return result.Succeeded ? Ok() : GetErrorResult(result);
         }
 
-        private async Task SendEmailAsync(IUser user, string activationUrl)
+        private async Task SendEmailConfirmationTokenAsync(Guid clientId, IUser user, string activationUrl)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -461,7 +480,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending account activation email to activate account.");
 
-            await _emailClientSender.SendConfirmAccountEmailAsync(user.Email, callbackUrl);
+            await _emailClientSender.SendConfirmAccountEmailAsync(clientId, user.Email, callbackUrl);
         }
     }
 }

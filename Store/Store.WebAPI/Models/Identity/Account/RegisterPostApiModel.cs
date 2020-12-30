@@ -30,5 +30,8 @@ namespace Store.WebAPI.Models.Identity
 
         [Required]
         public string ActivationUrl { get; set; }
+
+        [Required]
+        public string ClientId { get; set; }
     }
 }

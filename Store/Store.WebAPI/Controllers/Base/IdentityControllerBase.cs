@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Linq;
-using System.Security.Claims;
 
 namespace Store.WebAPI.Controllers
 {
@@ -11,27 +8,6 @@ namespace Store.WebAPI.Controllers
     abstract public class IdentityControllerBase : ApplicationControllerBase
     {
         [NonAction]
-        protected IActionResult GetErrorResult(IdentityResult result)
-        {
-            return BadRequest(result.Errors);
-        }
-
-        [NonAction]
-        protected bool IsCurrentUser(Guid userId)
-        {
-            return (GetCurrentUserId() == userId);
-        }
-
-        [NonAction]
-        protected Guid GetCurrentUserId()
-        {
-            return Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-        }
-
-        [NonAction]
-        protected Guid GetCurrentUserClientId()
-        {
-            return Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "ClientId")?.Value);
-        }
+        protected IActionResult GetErrorResult(IdentityResult result) => BadRequest(result.Errors);
     }
 }

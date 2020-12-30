@@ -47,10 +47,10 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Email template is missing.");
             }
 
-            Guid clientId = GetClientIdForCurrentlyLoggedInUser();
+            Guid clientId = GetCurrentUserClientId();
 
             using Stream templateStream = file.OpenReadStream();
-            await _emailTemplateService.AddEmailTemplateAsync(templateStream, clientId, type);
+            await _emailTemplateService.AddEmailTemplateAsync(clientId, type, templateStream);
 
             return Ok();
         }
@@ -109,7 +109,7 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAsync()
         {
-            Guid clientId = GetClientIdForCurrentlyLoggedInUser();
+            Guid clientId = GetCurrentUserClientId();
 
             IEnumerable<IEmailTemplate> emailTemplates = await _emailTemplateService.FindEmailTemplatesByClientIdAsync(clientId);
 
@@ -141,7 +141,5 @@ namespace Store.WebAPI.Controllers
 
             return Ok();
         }
-
-        private Guid GetClientIdForCurrentlyLoggedInUser() => Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "ClientId")?.Value);
     }
 }

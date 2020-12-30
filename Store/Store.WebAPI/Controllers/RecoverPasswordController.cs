@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
+using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Services.Identity;
 using Store.WebAPI.Models.Identity;
@@ -21,19 +21,19 @@ namespace Store.WebAPI.Controllers
     public class RecoverPasswordController : IdentityControllerBase
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
+        private readonly ILogger _logger;
 
         public RecoverPasswordController
         (
             ApplicationUserManager userManager,
-            ILogger<RegisterController> logger,
-            IEmailSenderService emailClientSender
+            IEmailSenderService emailClientSender,
+            ILogger<RegisterController> logger
         )
         {
             _userManager = userManager;
-            _logger = logger;
             _emailClientSender = emailClientSender;
+            _logger = logger;
         }
 
         /// <summary>Initiates a password recovery process for the specified user.</summary>
@@ -49,6 +49,12 @@ namespace Store.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            // Verify client information
+            if (!Guid.TryParse(passwordRecoveryModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
             IUser user = await _userManager.FindByEmailAsync(passwordRecoveryModel.Email);
@@ -73,7 +79,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending password recovery email.");
 
-            await _emailClientSender.SendResetPasswordEmailAsync(passwordRecoveryModel.Email, callbackUrl, user.UserName);
+            await _emailClientSender.SendResetPasswordEmailAsync(clientId, passwordRecoveryModel.Email, callbackUrl, user.UserName);
 
             return Ok();
         }

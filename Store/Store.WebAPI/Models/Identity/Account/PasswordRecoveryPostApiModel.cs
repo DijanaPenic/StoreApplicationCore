@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Store.WebAPI.Models.Identity
 {
@@ -10,5 +11,8 @@ namespace Store.WebAPI.Models.Identity
 
         [Required]
         public string ConfirmationUrl { get; set; }
+
+        [Required]
+        public string ClientId { get; set; }
     }
 }

@@ -32,15 +32,22 @@ namespace Store.Services
         public async Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId)
         {
             IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);
+            if (emailTemplate == null) return default;
 
-            Stream templateStream = await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
-
-            return templateStream;
+            return await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
         }
 
         public Task<IEnumerable<IEmailTemplate>> FindEmailTemplatesByClientIdAsync(Guid clientId)
         {
             return _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId);
+        }
+
+        public async Task<Stream> FindEmailTemplateByClientIdAsync(Guid clientId, EmailTemplateType templateType)
+        {
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId, templateType);
+            if (emailTemplate == null) return default;
+
+            return await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
         }
 
         public async Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream)
@@ -54,7 +61,7 @@ namespace Store.Services
             return await _unitOfWork.SaveChangesAsync(status);
         }
 
-        public async Task<ResponseStatus> AddEmailTemplateAsync(Stream templateStream, Guid clientId, EmailTemplateType templateType)
+        public async Task<ResponseStatus> AddEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream)
         {
             string templateName = $"{templateType.ToString().ToSnakeCase()}.html";
             string filePath = await _fileProvider.SaveFileAsync(clientId.ToString(), GetEmailTemplatePath(templateName), templateStream);

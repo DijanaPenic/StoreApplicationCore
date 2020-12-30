@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Store.Messaging.Common\Store.Messaging.Common.csproj" />
     <ProjectReference Include="..\Store.Messaging.Templates\Store.Messaging.Templates.csproj" />
+    <ProjectReference Include="..\Store.Service.Common\Store.Service.Common.csproj" />
   </ItemGroup>
 
 </Project>
