@@ -15,5 +15,7 @@ namespace Store.Repository.Common.Repositories
         Task<IEnumerable<IEmailTemplate>> FindByClientIdAsync(Guid clientId);
 
         Task<bool> ExistsAsync(Guid emailTemplateId);
+
+        Task<bool> ExistsAsync(Guid clientId, EmailTemplateType emailTemplateType);
     }
 }

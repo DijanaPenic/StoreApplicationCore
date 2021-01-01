@@ -29,6 +29,11 @@ namespace Store.Services
             return _unitOfWork.EmailTemplateRepository.ExistsAsync(emailTemplateId);
         }
 
+        public Task<bool> EmailTemplateExistsAsync(Guid clientId, EmailTemplateType emailTemplateType)
+        {
+            return _unitOfWork.EmailTemplateRepository.ExistsAsync(clientId, emailTemplateType);
+        }
+
         public async Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId)
         {
             IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);

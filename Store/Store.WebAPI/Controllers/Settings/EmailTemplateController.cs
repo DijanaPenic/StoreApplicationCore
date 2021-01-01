@@ -49,6 +49,12 @@ namespace Store.WebAPI.Controllers
 
             Guid clientId = GetCurrentUserClientId();
 
+            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(clientId, type);
+            if(emailTemplateExists)
+            {
+                return BadRequest("Email template already exists.");
+            }
+
             using Stream templateStream = file.OpenReadStream();
             await _emailTemplateService.AddEmailTemplateAsync(clientId, type, templateStream);
 

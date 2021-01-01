@@ -12,6 +12,8 @@ namespace Store.Service.Common.Services
     {
         Task<bool> EmailTemplateExistsAsync(Guid emailTemplateId);
 
+        Task<bool> EmailTemplateExistsAsync(Guid clientId, EmailTemplateType emailTemplateType);
+
         Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId);
 
         Task<IEnumerable<IEmailTemplate>> FindEmailTemplatesByClientIdAsync(Guid clientId);

@@ -38,5 +38,10 @@ namespace Store.Repositories
         {
            return Set.AnyAsync(et => et.Id == emailTemplateId);
         }
+
+        public Task<bool> ExistsAsync(Guid clientId, EmailTemplateType emailTemplateType)
+        {
+            return Set.AnyAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
+        }
     }
 }
