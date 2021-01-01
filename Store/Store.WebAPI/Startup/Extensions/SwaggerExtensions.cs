@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Store.WebAPI.Application.Startup.Extensions
@@ -23,6 +24,21 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swaggerOptions.IncludeXmlComments(xmlPath);
+            });
+        }
+
+        public static void AddSwagger(this IApplicationBuilder app)
+        {
+            app.UseSwagger(swaggerOptions =>
+            {
+                swaggerOptions.SerializeAsV2 = true;
+            });
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(swaggerOptions =>
+            {
+                swaggerOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "Store API V1");
+                swaggerOptions.RoutePrefix = string.Empty;
             });
         }
     }
