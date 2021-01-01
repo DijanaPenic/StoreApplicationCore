@@ -97,7 +97,7 @@ namespace Store.Messaging.Services
             // Get default mail template (razor views)
             else
             {
-                return await _razorViewToStringRenderer.RenderViewToStringAsync(EmailViewPath.GetPathByEmailTemplateType(emailTemplate), emailModel);
+                return await _razorViewToStringRenderer.RenderViewToStringAsync(EmailViewPath.GetViewPath(emailTemplate), emailModel);
             }
         }
 
