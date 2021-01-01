@@ -24,7 +24,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UserController : IdentityControllerBase
+    public class UserController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
@@ -170,7 +170,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult removeLoginResult = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
 
-            return removeLoginResult.Succeeded ? Ok() : GetErrorResult(removeLoginResult);
+            return removeLoginResult.Succeeded ? Ok() : BadRequest(removeLoginResult.Errors);
         }
 
         /// <summary>Creates the specified user.</summary>
@@ -196,13 +196,13 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult userResult = await _userManager.CreateAsync(user, createUserModel.Password);
 
-            if (!userResult.Succeeded) return GetErrorResult(userResult);
+            if (!userResult.Succeeded) return BadRequest(userResult.Errors);
 
             _logger.LogInformation("User created a new account with password.");
 
             IdentityResult roleResult = await _userManager.AddToRolesAsync(user, createUserModel.Roles);
 
-            if (!roleResult.Succeeded) return GetErrorResult(roleResult);
+            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
             _logger.LogInformation("User assigned to roles.");
 
@@ -246,13 +246,13 @@ namespace Store.WebAPI.Controllers
             _mapper.Map(userModel, user);
             IdentityResult userResult = await _userManager.UpdateAsync(user);
 
-            if (!userResult.Succeeded) return GetErrorResult(userResult);
+            if (!userResult.Succeeded) return BadRequest(userResult.Errors);
 
             // Remove user from roles that are not listed in model.roles
             IEnumerable<string> rolesToRemove = user.Roles.Where(r => !userModel.Roles.Contains(r.Name)).Select(r => r.Name);
             IdentityResult removeRolesResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
 
-            if (!removeRolesResult.Succeeded) return GetErrorResult(removeRolesResult);
+            if (!removeRolesResult.Succeeded) return BadRequest(removeRolesResult.Errors);
 
             // Assign user to roles
             if (userModel.Roles != null)
@@ -260,7 +260,7 @@ namespace Store.WebAPI.Controllers
                 IEnumerable<string> rolesToAdd = userModel.Roles.Except(user.Roles.Select(r => r.Name));
                 IdentityResult addRolesResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
 
-                if (!addRolesResult.Succeeded) return GetErrorResult(addRolesResult);
+                if (!addRolesResult.Succeeded) return BadRequest(addRolesResult.Errors);
             }
 
             return Ok();
@@ -289,7 +289,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, null);
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates user's activity status to "Unlocked", i.e. enables user's application access.</summary>
@@ -315,7 +315,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(-1));
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates user's account status to "Approved", i.e. confirms the user.</summary>
@@ -341,7 +341,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ApproveUserAsync(user);
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Asynchronously updates user's account status to "Disapproved", i.e. refutes the user.</summary>
@@ -367,7 +367,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.DisapproveUserAsync(user);
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Changes the password for the user.</summary>
@@ -427,7 +427,7 @@ namespace Store.WebAPI.Controllers
                 await _emailClientSender.SendChangePasswordEmailAsync(GetCurrentUserClientId(), user.Email, user.UserName, changePasswordModel.NewPassword);
             }
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Sets the password for the user.</summary>
@@ -466,7 +466,7 @@ namespace Store.WebAPI.Controllers
             // This will set the password only if it's NULL
             IdentityResult result = await _userManager.AddPasswordAsync(user, setPasswordModel.Password);
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Retrieves users by specified search criteria.</summary>
@@ -563,12 +563,12 @@ namespace Store.WebAPI.Controllers
             IList<string> currentRoles = await _userManager.GetRolesAsync(user);
             IdentityResult removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
-            if (!removeResult.Succeeded) return GetErrorResult(removeResult);
+            if (!removeResult.Succeeded) return BadRequest(removeResult.Errors);
 
             // Assign user to the new roles
             IdentityResult addResult = await _userManager.AddToRolesAsync(user, rolesToAssign);
 
-            if (!addResult.Succeeded) return GetErrorResult(addResult);
+            if (!addResult.Succeeded) return BadRequest(addResult.Errors);
 
             return Ok(new { userId, roles = rolesToAssign });
         }
@@ -609,7 +609,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Two factor authentication is disabled for the user.");
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/authenticate")]
-    public class AuthenticateController : IdentityControllerBase
+    public class AuthenticateController : ApplicationControllerBase
     {
         private readonly ILogger _logger;
         private readonly ApplicationUserManager _userManager;
@@ -312,7 +312,7 @@ namespace Store.WebAPI.Controllers
                     // Add the external provider (confirmed = false)
                     createLoginResult = await _userManager.AddOrUpdateLoginAsync(user, loginInfo, token);
 
-                    if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
+                    if (!createLoginResult.Succeeded) return BadRequest(createLoginResult.Errors);
 
                     // Send email
                     UriTemplate template = new UriTemplate(authenticateModel.ConfirmationUrl);
@@ -332,7 +332,7 @@ namespace Store.WebAPI.Controllers
                 // Add the external provider (confirmed = true)
                 createLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
 
-                if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
+                if (!createLoginResult.Succeeded) return BadRequest(createLoginResult.Errors);
 
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 

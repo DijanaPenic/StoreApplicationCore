@@ -18,7 +18,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/recover-password")]
-    public class RecoverPasswordController : IdentityControllerBase
+    public class RecoverPasswordController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IEmailSenderService _emailClientSender;
@@ -113,7 +113,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ResetPasswordAsync(user, passwordRecoveryModel.PasswordRecoveryToken.Base64ForUrlDecode(), passwordRecoveryModel.NewPassword);
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
     }
 }

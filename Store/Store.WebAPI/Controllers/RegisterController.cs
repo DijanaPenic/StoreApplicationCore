@@ -28,7 +28,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/register")]
-    public class RegisterController : IdentityControllerBase
+    public class RegisterController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
         private readonly SignInManager<IUser> _signInManager;
@@ -87,14 +87,14 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult userResult = await _userManager.CreateAsync(user, registerUserModel.Password);
 
-            if (!userResult.Succeeded) return GetErrorResult(userResult);
+            if (!userResult.Succeeded) return BadRequest(userResult.Errors);
 
             _logger.LogInformation($"User [{user.UserName}] has been registered.");
 
             // Assign user to Guest role
             IdentityResult roleResult = await _userManager.AddToRolesAsync(user, new List<string>() { RoleHelper.Guest });
 
-            if (!roleResult.Succeeded) return GetErrorResult(roleResult);
+            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
             _logger.LogInformation("Guest role has been assigned to the user.");
 
@@ -173,7 +173,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         /// <summary>Either creates a new external login account or establishes the external provider association with the existing account (different email address).</summary>
@@ -229,7 +229,7 @@ namespace Store.WebAPI.Controllers
                 // Create a new user
                 IdentityResult createUserResult = await _userManager.CreateAsync(newUser);
 
-                if (!createUserResult.Succeeded) return GetErrorResult(createUserResult);
+                if (!createUserResult.Succeeded) return BadRequest(createUserResult.Errors);
 
                 _logger.LogInformation("Adding Guest role to the user.");
 
@@ -250,7 +250,7 @@ namespace Store.WebAPI.Controllers
                     )
                 );
 
-                if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
+                if (!createLoginResult.Succeeded) return BadRequest(createLoginResult.Errors);
 
                 _logger.LogInformation($"Updating the newly created user - setting 'EmailConfirmed' to 'true'.");
 
@@ -293,7 +293,7 @@ namespace Store.WebAPI.Controllers
                 // Add the external provider (confirmed = false)
                 IdentityResult createLoginResult = await _userManager.AddOrUpdateLoginAsync(existingUser, externalLoginInfo, token);
 
-                if (!createLoginResult.Succeeded) return GetErrorResult(createLoginResult);
+                if (!createLoginResult.Succeeded) return BadRequest(createLoginResult.Errors);
 
                 // Send email
                 UriTemplate template = new UriTemplate(registerModel.ConfirmationUrl);
@@ -348,14 +348,13 @@ namespace Store.WebAPI.Controllers
                 // External provider is authenticated source so we can confirm the email
                 IdentityResult emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
-                if (!emailConfirmationResult.Succeeded)
-                    return GetErrorResult(emailConfirmationResult);
+                if (!emailConfirmationResult.Succeeded) return BadRequest(emailConfirmationResult.Errors);
             }
 
             // Create a new external login for the user
             IdentityResult confirmLoginResult = await _userManager.ConfirmLoginAsync(user, decodedToken);
 
-            if (!confirmLoginResult.Succeeded) return GetErrorResult(confirmLoginResult);
+            if (!confirmLoginResult.Succeeded) return BadRequest(confirmLoginResult.Errors);
 
             return Ok();
         }
@@ -455,7 +454,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ChangePhoneNumberAsync(user, phoneNumber.GetDigits(), token);
 
-            return result.Succeeded ? Ok() : GetErrorResult(result);
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
         private async Task SendEmailConfirmationTokenAsync(Guid clientId, IUser user, string activationUrl)
