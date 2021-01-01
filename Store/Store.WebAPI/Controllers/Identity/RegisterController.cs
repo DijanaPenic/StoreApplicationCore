@@ -69,6 +69,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("")]
+        [Consumes("application/json")]
         public async Task<IActionResult> RegisterUserAsync(RegisterPostApiModel registerUserModel)
         {
             if (!ModelState.IsValid)
@@ -184,6 +185,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("external")]
+        [Consumes("application/json")]
         public async Task<IActionResult> RegisterUserAsync([FromBody] RegisterExternalRequestApiModel registerModel)
         {
             if (!ModelState.IsValid)
@@ -368,6 +370,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("{userId:guid}/verify/sms")]
+        [Consumes("application/json")]
         public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
         {
             if (userId == Guid.Empty)

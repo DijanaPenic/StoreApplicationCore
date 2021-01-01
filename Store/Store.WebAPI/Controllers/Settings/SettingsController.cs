@@ -37,6 +37,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Route("countries/all")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetCountriesAsync()
         {
             IList<ICountry> countries = await _cacheProvider.GetOrAddAsync

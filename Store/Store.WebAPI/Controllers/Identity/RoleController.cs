@@ -41,6 +41,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("")]
         [AuthorizationFilter(RoleHelper.Admin)]
+        [Produces("application/json")]
         public async Task<IActionResult> GetRolesAsync()
         {
             IEnumerable<IRole> roles = await _cacheProvider.GetOrAddAsync

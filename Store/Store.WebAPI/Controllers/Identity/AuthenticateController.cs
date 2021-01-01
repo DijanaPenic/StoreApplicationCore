@@ -61,6 +61,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Authorize]
         [Route("info")]
+        [Produces("application/json")]
         public async Task<IActionResult> AuthenticateInfoAsync()
         {
             AuthenticateInfoGetApiModel authInfoModel = new AuthenticateInfoGetApiModel
@@ -82,6 +83,8 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
@@ -133,6 +136,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Authorize]
         [Route("renew/token/{refreshToken}")]
+        [Produces("application/json")]
         public async Task<IActionResult> RenewTokensAsync([FromRoute]string refreshToken)
         {
             if (!ModelState.IsValid)
@@ -244,6 +248,8 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("external")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync(AuthenticateExternalRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
@@ -353,6 +359,8 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Route("two-factor")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
         public async Task<IActionResult> AuthenticateUserAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
         {
             // TODO - need to remove clientId from model
@@ -396,6 +404,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Authorize]
         [Route("two-factor/{userId:guid}/authenticator")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetUserAuthenticatorKeyAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
@@ -446,6 +455,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Authorize]
         [Route("two-factor/{userId:guid}/authenticator")]
+        [Produces("application/json")]
         public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid userId, [FromQuery] string code)
         {
             if (string.IsNullOrEmpty(code))
@@ -511,6 +521,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Authorize]
         [Route("two-factor/{userId:guid}/recovery-codes")]
+        [Produces("application/json")]
         public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromRoute] Guid userId, [FromQuery] int number)
         {
             if (userId == Guid.Empty)
