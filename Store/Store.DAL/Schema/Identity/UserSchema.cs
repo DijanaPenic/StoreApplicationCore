@@ -1,7 +1,7 @@
 ﻿using Store.Common.Extensions;
 using Store.Entities.Identity;
 
-namespace Store.DAL.Schema
+namespace Store.DAL.Schema.Identity
 {
     public static class UserSchema
     {
