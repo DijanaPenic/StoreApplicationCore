@@ -210,7 +210,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "db5f91ff-6371-483e-ac7a-53aca671d77b",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -220,7 +219,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "5c52cebf-ba94-472b-94d7-2e142cf668d2",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -230,10 +228,8 @@
 	],
 	"variable": [
 		{
-			"id": "e9a0dc68-5519-451f-a714-73ed3da0441c",
 			"key": "book_id",
 			"value": "1eaab6f8-3c50-42ed-0d73-08d8616cf887"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

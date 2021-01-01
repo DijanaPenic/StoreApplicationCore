@@ -293,7 +293,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "8975732c-965f-4a76-889d-afc27713ec15",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -303,7 +302,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "dccfa0ee-f278-460f-96a1-1a128f4b43f4",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -313,10 +311,8 @@
 	],
 	"variable": [
 		{
-			"id": "6e3e1609-471d-45b7-9571-35c340e3e2b8",
 			"key": "bookstore_id",
 			"value": "06579623-0e80-4dec-2b4b-08d88cc5023c"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

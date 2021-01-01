@@ -28,9 +28,174 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
+		},
+		{
+			"name": "Email Template",
+			"item": [
+				{
+					"name": "Upload Email Template",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/penic/Desktop/Identity.txt"
+								},
+								{
+									"key": "type",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/email-templates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"email-templates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Email Template",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/Temp/5c52160a-4ab4-49c6-ba5f-56df9c5730b6/templates/ResetPassword.html"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/email-templates/88a3e921-48f6-4297-7343-08d8a9efaa0b/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"email-templates",
+								"88a3e921-48f6-4297-7343-08d8a9efaa0b",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Email Template",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{base_url}}/api/email-templates/b5b87550-2210-47f9-b31f-08d8a9e60433/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"email-templates",
+								"b5b87550-2210-47f9-b31f-08d8a9e60433",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Email Templates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/email-templates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"email-templates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Email Template (by id)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{base_url}}/api/email-templates/88a3e921-48f6-4297-7343-08d8a9efaa0b/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"email-templates",
+								"88a3e921-48f6-4297-7343-08d8a9efaa0b",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

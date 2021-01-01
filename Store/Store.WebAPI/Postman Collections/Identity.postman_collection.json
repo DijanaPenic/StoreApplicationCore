@@ -32,8 +32,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Users",
@@ -56,10 +55,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"phone_number\": \"385919440067\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Admin\"\r\n    ]\r\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"phone_number\": \"385919440067\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Admin\"\r\n    ]\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users",
@@ -415,10 +411,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    \"Admin\"\r\n]",
-							"options": {
-								"raw": {}
-							}
+							"raw": "[\r\n    \"Admin\"\r\n]"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users/{{user_id}}}/roles",
@@ -550,8 +543,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Register",
@@ -569,10 +561,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\" : \"{{base_url}}/api/register/{userId}/verify/email/token/{token}\"\r\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/register/{userId}/verify/email/token/{token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register",
@@ -597,7 +586,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/email?returnUrl={{base_url}}/api/register/{userId}/verify/email/token/{token}",
+							"raw": "{{base_url}}/api/register/{{user_id}}/verify/email?returnUrl={{base_url}}/api/register/{userId}/verify/email/token/{token}&clientId={{client_id}}",
 							"host": [
 								"{{base_url}}"
 							],
@@ -612,6 +601,10 @@
 								{
 									"key": "returnUrl",
 									"value": "{{base_url}}/api/register/{userId}/verify/email/token/{token}"
+								},
+								{
+									"key": "clientId",
+									"value": "{{client_id}}"
 								}
 							]
 						}
@@ -707,7 +700,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "a5f1fd39-83c6-4a5e-81c9-5973fce71bea",
 								"exec": [
 									"const jar = pm.cookies.jar();\r",
 									"\r",
@@ -741,7 +733,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    \"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    \"confirmation_url\": \"{{base_url}}/api/register/external/{userId}/verify/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    \"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    \"confirmation_url\": \"{{base_url}}/api/register/external/{userId}/verify/email/token/{token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register/external",
@@ -781,8 +773,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Recover Password",
@@ -800,7 +791,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"confirmation_url\" : \"{?token}\"\r\n}"
+							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"confirmation_url\": \"{?token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/recover-password",
@@ -828,10 +819,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_new_password\": \"aB123456,\",\r\n    \"password_recovery_token\": \"Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNKelVkTjFtdkJ2dmwvNW1VQkZUdjlpZGhlUnAyZktjdFBpSHVuMDRFMk96YWgyRGJqV25JUkpQT0ZNUFMwd2NlRE5ZckVNb2Q5RkxXRjdMcEhRelNTRXJEcXNwVDcvSFNYeGE5KzA2SHF1Q1JrV0dTeGl3SUhqZEhZaHV2amdrVFQwbjRvSVNHWXBZc0pWdFpadVREbjFzZ0xyNVdZTmpLbkhweWhPYkdXSGF2MTZXSkNPNkpSbHAvekJyOE04bG0wV2Y4OVB2aFVlL3owQjQyU2Y5dmVn\"\r\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_new_password\": \"aB123456,\",\r\n    \"password_recovery_token\": \"Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNKelVkTjFtdkJ2dmwvNW1VQkZUdjlpZGhlUnAyZktjdFBpSHVuMDRFMk96YWgyRGJqV25JUkpQT0ZNUFMwd2NlRE5ZckVNb2Q5RkxXRjdMcEhRelNTRXJEcXNwVDcvSFNYeGE5KzA2SHF1Q1JrV0dTeGl3SUhqZEhZaHV2amdrVFQwbjRvSVNHWXBZc0pWdFpadVREbjFzZ0xyNVdZTmpLbkhweWhPYkdXSGF2MTZXSkNPNkpSbHAvekJyOE04bG0wV2Y4OVB2aFVlL3owQjQyU2Y5dmVn\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/recover-password/03b4ed7a-b4f2-4ecd-4853-08d87f731a78",
@@ -847,8 +835,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Authenticate",
@@ -859,7 +846,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "42792b87-3674-4de2-a03a-f3dda69b8fa6",
 								"exec": [
 									"var respcode = pm.response.code;\r",
 									"\r",
@@ -886,10 +872,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"password\": \"aB123456,\",\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\"\r\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"password\": \"aB123456,\",\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authenticate",
@@ -935,7 +918,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9616929f-1f3f-4c15-bcc6-c5f0d90a02b4",
 								"exec": [
 									"var respcode = pm.response.code;\r",
 									"\r",
@@ -965,22 +947,17 @@
 								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"refresh_token\": \"{{refresh_token}}\",\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\"\r\n}",
-							"options": {
-								"raw": {}
-							}
-						},
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/renew-tokens",
+							"raw": "{{base_url}}/api/authenticate/renew/token/{{refresh_token}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"authenticate",
-								"renew-tokens"
+								"renew",
+								"token",
+								"{{refresh_token}}"
 							]
 						}
 					},
@@ -999,10 +976,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authenticate/expired-refresh-tokens",
@@ -1077,7 +1051,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "aae57aa5-31ef-4799-9f67-82043d7a7b97",
 								"exec": [
 									"var respcode = pm.response.code;\r",
 									"\r",
@@ -1095,7 +1068,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "25b93302-e4e4-4f4e-a263-af0b30e61f99",
 								"exec": [
 									"const jar = pm.cookies.jar();\r",
 									"\r",
@@ -1151,7 +1123,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "50ccfa37-265a-496f-b07a-a7fd69cbd4da",
 								"exec": [
 									"var respcode = pm.response.code;\r",
 									"\r",
@@ -1178,10 +1149,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"782573\",\r\n    \"use_recovery_code\": false,\r\n    \"client_id\": \"{{client_id}}\"\r\n}",
-							"options": {
-								"raw": {}
-							}
+							"raw": "{\r\n    \"code\": \"782573\",\r\n    \"use_recovery_code\": false,\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authenticate/two-factor",
@@ -1296,15 +1264,13 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "dfd79c5a-dac8-4244-a742-250f36f17b7f",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1314,7 +1280,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "5a9336b5-eefb-4816-8fec-061657eb16a6",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1324,10 +1289,8 @@
 	],
 	"variable": [
 		{
-			"id": "1d1a5fb5-1573-43d7-8538-270452bb0c48",
 			"key": "user_id",
 			"value": "16d36da4-bbbf-4861-d7c9-08d89aee3eeb"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
