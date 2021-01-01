@@ -82,26 +82,6 @@ namespace Store.Messaging.Services
             );
         }
 
-        private string GetLocalEmailViewPath(EmailTemplateType type)
-        {
-            switch(type)
-            {
-                case EmailTemplateType.ConfirmAccount:
-                    return EmailViewPath.ConfirmAccount;
-
-                case EmailTemplateType.ResetPassword:
-                    return EmailViewPath.ResetPassword;
-
-                case EmailTemplateType.ConfirmExternalAccount:
-                    return EmailViewPath.ConfirmExternalAccount;
-
-                case EmailTemplateType.ChangePassword:
-                    return EmailViewPath.ChangePassword;
-            }
-
-            return string.Empty;
-        }
-
         private async Task<string> GetHtmlEmailContentAsync<T>(Guid clientId, T emailModel, EmailTemplateType emailTemplate)
         {
             Stream templateStream = await _emailTemplateService.FindEmailTemplateByClientIdAsync(clientId, emailTemplate);
@@ -117,7 +97,7 @@ namespace Store.Messaging.Services
             // Get default mail template (razor views)
             else
             {
-                return await _razorViewToStringRenderer.RenderViewToStringAsync(GetLocalEmailViewPath(emailTemplate), emailModel);
+                return await _razorViewToStringRenderer.RenderViewToStringAsync(EmailViewPath.GetPathByEmailTemplateType(emailTemplate), emailModel);
             }
         }
 
