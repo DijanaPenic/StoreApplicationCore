@@ -34,6 +34,7 @@ namespace Store.WebAPI.Mapper.Profiles
 
             // Create maps for setting models
             CreateMap<EmailTemplateGetApiModel, IEmailTemplate>().ReverseMap();
+            CreateMap<CountryGetApiModel, ICountry>().ReverseMap();
 
             //// Create maps for reporting models
             //CreateMap<BookstoreReportPOCO, IBookstore>()
