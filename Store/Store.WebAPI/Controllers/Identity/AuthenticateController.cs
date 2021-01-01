@@ -139,11 +139,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> RenewTokensAsync([FromRoute]string refreshToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             // Retrieve client_id for the currently logged in user
             Guid clientId = GetCurrentUserClientId();
 
