@@ -125,13 +125,6 @@
 								"users",
 								"{{user_id}}",
 								"unlock"
-							],
-							"query": [
-								{
-									"key": "includeProperties",
-									"value": "Roles",
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -158,13 +151,6 @@
 								"users",
 								"{{user_id}}",
 								"lock"
-							],
-							"query": [
-								{
-									"key": "includeProperties",
-									"value": "Roles",
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -191,13 +177,6 @@
 								"users",
 								"{{user_id}}",
 								"approve"
-							],
-							"query": [
-								{
-									"key": "includeProperties",
-									"value": "Roles",
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -224,13 +203,6 @@
 								"users",
 								"{{user_id}}",
 								"disapprove"
-							],
-							"query": [
-								{
-									"key": "includeProperties",
-									"value": "Roles",
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -328,27 +300,27 @@
 							],
 							"query": [
 								{
-									"key": "isDescendingSortOrder",
+									"key": "is_descending_sort_order",
 									"value": "true",
 									"disabled": true
 								},
 								{
-									"key": "sortOrderField",
+									"key": "sort_order_field",
 									"value": "UserName",
 									"disabled": true
 								},
 								{
-									"key": "searchString",
+									"key": "search_string",
 									"value": "dijana",
 									"disabled": true
 								},
 								{
-									"key": "pageSize",
+									"key": "page_size",
 									"value": "2",
 									"disabled": true
 								},
 								{
-									"key": "pageNumber",
+									"key": "page_number",
 									"value": "2",
 									"disabled": true
 								},
@@ -374,7 +346,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}?includeProperties=Roles",
+							"raw": "{{base_url}}/api/users/{{user_id}}",
 							"host": [
 								"{{base_url}}"
 							],
@@ -385,8 +357,9 @@
 							],
 							"query": [
 								{
-									"key": "includeProperties",
-									"value": "Roles"
+									"key": "include_properties",
+									"value": "Roles",
+									"disabled": true
 								}
 							]
 						}
@@ -519,7 +492,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/external?loginProvider=Google&providerKey=109973977642590529535",
+							"raw": "{{base_url}}/api/users/{{user_id}}/external?login_provider=Google&provider_key=109973977642590529535",
 							"host": [
 								"{{base_url}}"
 							],
@@ -531,11 +504,11 @@
 							],
 							"query": [
 								{
-									"key": "loginProvider",
+									"key": "login_provider",
 									"value": "Google"
 								},
 								{
-									"key": "providerKey",
+									"key": "provider_key",
 									"value": "109973977642590529535"
 								}
 							]
@@ -586,7 +559,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/email?returnUrl={{base_url}}/api/register/{userId}/verify/email/token/{token}&clientId={{client_id}}",
+							"raw": "{{base_url}}/api/register/{{user_id}}/verify/email?return_url={{base_url}}/api/register/{userId}/verify/email/token/{token}&client_id={{client_id}}",
 							"host": [
 								"{{base_url}}"
 							],
@@ -599,11 +572,11 @@
 							],
 							"query": [
 								{
-									"key": "returnUrl",
+									"key": "return_url",
 									"value": "{{base_url}}/api/register/{userId}/verify/email/token/{token}"
 								},
 								{
-									"key": "clientId",
+									"key": "client_id",
 									"value": "{{client_id}}"
 								}
 							]
@@ -671,7 +644,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/sms/token/932449?phoneNumber=385919440067",
+							"raw": "{{base_url}}/api/register/{{user_id}}/verify/sms/token/932449?phone_number=385919440067",
 							"host": [
 								"{{base_url}}"
 							],
@@ -686,7 +659,7 @@
 							],
 							"query": [
 								{
-									"key": "phoneNumber",
+									"key": "phone_number",
 									"value": "385919440067"
 								}
 							]
@@ -1024,7 +997,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/external/initiate/Google?returnUrl=insert url",
+							"raw": "{{base_url}}/api/authenticate/external/initiate/Google?return_url=insert url",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1037,7 +1010,7 @@
 							],
 							"query": [
 								{
-									"key": "returnUrl",
+									"key": "return_url",
 									"value": "insert url"
 								}
 							]

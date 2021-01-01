@@ -17,7 +17,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/global-search?searchString=Strand",
+					"raw": "{{base_url}}/api/global-search?search_string=Strand",
 					"host": [
 						"{{base_url}}"
 					],
@@ -27,7 +27,7 @@
 					],
 					"query": [
 						{
-							"key": "searchString",
+							"key": "search_string",
 							"value": "Strand"
 						}
 					]

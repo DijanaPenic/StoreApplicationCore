@@ -11,10 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 
 using Store.Services.Identity;
 using Store.Service.DependencyInjection;
+using Store.Cache.DependencyInjection;
 using Store.WebAPI.Application.Startup;
 using Store.WebAPI.Application.Startup.Extensions;
 using Store.WebAPI.Infrastructure.Attributes;
-using Store.Cache.DependencyInjection;
 using Store.Repository.DependencyInjection;
 
 namespace Store.WebAPI
@@ -62,7 +62,11 @@ namespace Store.WebAPI
             services.AddFileProvider(Configuration);
 
             // Controller configuration
-            services.AddControllers().AddJsonOptions(options =>
+            services.AddControllers(options => 
+            {
+                options.ValueProviderFactories.Add(new SnakeCaseQueryValueProviderFactory());
+            })
+            .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;

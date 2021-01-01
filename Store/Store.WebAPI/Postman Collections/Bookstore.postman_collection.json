@@ -33,7 +33,7 @@
 					],
 					"query": [
 						{
-							"key": "includeProperties",
+							"key": "include_properties",
 							"value": "Books",
 							"disabled": true
 						}
@@ -65,7 +65,7 @@
 					],
 					"query": [
 						{
-							"key": "includeProperties",
+							"key": "include_properties",
 							"value": "Books",
 							"disabled": true
 						}
@@ -96,32 +96,32 @@
 					],
 					"query": [
 						{
-							"key": "isDescendingSortOrder",
+							"key": "is_descending_sort_order",
 							"value": "true",
 							"disabled": true
 						},
 						{
-							"key": "sortOrderField",
+							"key": "sort_order_field",
 							"value": "Name",
 							"disabled": true
 						},
 						{
-							"key": "searchString",
+							"key": "search_string",
 							"value": "City",
 							"disabled": true
 						},
 						{
-							"key": "pageSize",
+							"key": "page_size",
 							"value": "2",
 							"disabled": true
 						},
 						{
-							"key": "pageNumber",
+							"key": "page_number",
 							"value": "2",
 							"disabled": true
 						},
 						{
-							"key": "includeProperties",
+							"key": "include_properties",
 							"value": "Books",
 							"disabled": true
 						}
@@ -154,27 +154,27 @@
 					],
 					"query": [
 						{
-							"key": "isDescendingSortOrder",
+							"key": "is_descending_sort_order",
 							"value": "true",
 							"disabled": true
 						},
 						{
-							"key": "sortOrderField",
+							"key": "sort_order_field",
 							"value": "Name",
 							"disabled": true
 						},
 						{
-							"key": "searchString",
+							"key": "search_string",
 							"value": "",
 							"disabled": true
 						},
 						{
-							"key": "pageSize",
+							"key": "page_size",
 							"value": "2",
 							"disabled": true
 						},
 						{
-							"key": "pageNumber",
+							"key": "page_number",
 							"value": "2",
 							"disabled": true
 						}
