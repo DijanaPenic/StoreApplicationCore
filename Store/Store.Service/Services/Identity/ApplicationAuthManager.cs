@@ -56,7 +56,6 @@ namespace Store.Services.Identity
             IList<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.NormalizedUserName),
-                new Claim(ClaimTypes.Email, user.NormalizedEmail),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim("ClientId", clientId.ToString())
             };
