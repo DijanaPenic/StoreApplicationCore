@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Store.Service.Common\Store.Service.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
 </Project>
