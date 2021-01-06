@@ -31,7 +31,7 @@ namespace Store.WebAPI.Controllers
     public class RegisterController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly SignInManager<IUser> _signInManager;
+        private readonly ApplicationSignInManager _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
@@ -42,7 +42,7 @@ namespace Store.WebAPI.Controllers
         public RegisterController
         (
             ApplicationUserManager userManager,
-            SignInManager<IUser> signInManager,
+            ApplicationSignInManager signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
             IEmailSenderService emailClientSender,

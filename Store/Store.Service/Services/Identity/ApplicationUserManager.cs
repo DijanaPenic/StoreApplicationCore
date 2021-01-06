@@ -31,7 +31,7 @@ namespace Store.Services.Identity
             ILookupNormalizer keyNormalizer, 
             IdentityErrorDescriber errors, 
             IServiceProvider services, 
-            ILogger<UserManager<IUser>> logger,
+            ILogger<ApplicationUserManager> logger,
             IOptions<TwoFactorAuthOptions> twoFactorAuthOptions) 
             : base(userStore, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {

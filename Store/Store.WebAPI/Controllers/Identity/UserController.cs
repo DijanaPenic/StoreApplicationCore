@@ -28,7 +28,7 @@ namespace Store.WebAPI.Controllers
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
-        private readonly SignInManager<IUser> _signInManager;
+        private readonly ApplicationSignInManager _signInManager;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IEmailSenderService _emailClientSender;
@@ -37,7 +37,7 @@ namespace Store.WebAPI.Controllers
         (
             ApplicationUserManager userManager,
             ApplicationRoleManager roleManager,
-            SignInManager<IUser> signInManager,
+            ApplicationSignInManager signInManager,
             ILogger<UserController> logger,
             IMapper mapper,
             IEmailSenderService emailClientSender

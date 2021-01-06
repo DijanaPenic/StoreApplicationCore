@@ -46,10 +46,10 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 identityOptions.SignIn.RequireConfirmedPhoneNumber = true;
             })
             .AddRoles<IRole>()
-            .AddSignInManager<SignInManager<IUser>>()   // Scoped - TODO - need to confirm
-            .AddUserManager<ApplicationUserManager>()   // Scoped
-            .AddRoleManager<ApplicationRoleManager>()   // Scoped
-            .AddDefaultTokenProviders();                
+            .AddSignInManager<ApplicationSignInManager>()   // Scoped - TODO - need to confirm
+            .AddUserManager<ApplicationUserManager>()       // Scoped
+            .AddRoleManager<ApplicationRoleManager>()       // Scoped
+            .AddDefaultTokenProviders();
 
             services.AddTransient<ApplicationAuthManager>();
 

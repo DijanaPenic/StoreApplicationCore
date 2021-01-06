@@ -18,7 +18,7 @@ namespace Store.Services.Identity
             IEnumerable<IRoleValidator<IRole>> roleValidators, 
             ILookupNormalizer keyNormalizer, 
             IdentityErrorDescriber errors, 
-            ILogger<RoleManager<IRole>> logger) 
+            ILogger<ApplicationRoleManager> logger) 
             : base(roleStore, roleValidators, keyNormalizer, errors, logger)
         {
             _roleStore = (IApplicationRoleStore<IRole>)roleStore;

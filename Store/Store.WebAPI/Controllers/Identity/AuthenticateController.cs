@@ -35,14 +35,14 @@ namespace Store.WebAPI.Controllers
         private readonly ILogger _logger;
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
-        private readonly SignInManager<IUser> _signInManager;
+        private readonly ApplicationSignInManager _signInManager;
         private readonly IEmailSenderService _emailClientSender;
 
         public AuthenticateController
         (
             ApplicationUserManager userManager,
             ApplicationAuthManager authManager,
-            SignInManager<IUser> signInManager,
+            ApplicationSignInManager signInManager,
             ILogger<AuthenticateController> logger,
             IEmailSenderService emailClientSender
         )
@@ -120,8 +120,6 @@ namespace Store.WebAPI.Controllers
             }
 
             // Attempt to sign in
-            // Note: CheckPasswordSignInAsync - this method doesn't perform 2fa check.
-            // Note: PasswordSignInAsync - this method performs 2fa check, but also generates the ".AspNetCore.Identity.Application" cookie. Cookie creation cannot be disabled (SignInManager is heavily dependant on cookies - by design).
             // Note: isPersistent: false - no need to store browser cookies in Web API.
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
             
@@ -595,7 +593,7 @@ namespace Store.WebAPI.Controllers
             if (!signInResult.Succeeded)
             {
                 if (signInResult.IsLockedOut)
-                {
+                { 
                     return Unauthorized($"User [{user.UserName}] has been locked out.");
                 }
                 if (signInResult.IsNotAllowed)
@@ -623,13 +621,6 @@ namespace Store.WebAPI.Controllers
             authResponse.Roles = jwtResult.Roles.ToArray();
             authResponse.AccessToken = jwtResult.AccessToken;
             authResponse.RefreshToken = jwtResult.RefreshToken;
-
-            if (signInResult.Succeeded)
-            {
-                // Need to delete the "identity" cookie for the authorized user - created by SignInManager 
-                Response.Cookies.Delete(".AspNetCore.Identity.Application");
-                Response.Headers.Remove("Set-Cookie");
-            }
 
             return Ok(authResponse);
         }
