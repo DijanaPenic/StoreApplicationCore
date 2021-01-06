@@ -34,7 +34,7 @@ namespace Store.Services
 
         public CountriesService(IConfiguration configuration)
         {
-            _countriesURL = configuration.GetValue<string>("RESTCountriesURL");
+            _countriesURL = configuration.GetSection("RESTCountriesURL").Value;
         }
 
         public async Task<IList<ICountry>> GetCountriesAsync()
