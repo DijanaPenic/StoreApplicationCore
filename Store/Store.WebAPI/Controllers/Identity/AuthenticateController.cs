@@ -586,6 +586,8 @@ namespace Store.WebAPI.Controllers
             AuthenticateResponseApiModel authResponse = new AuthenticateResponseApiModel
             {
                 UserId = user.Id,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 VerificationStep = VerificationStep.None,
                 ExternalAuthStep = externalLoginStep
             };
