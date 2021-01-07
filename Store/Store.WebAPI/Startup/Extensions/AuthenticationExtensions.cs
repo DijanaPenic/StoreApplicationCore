@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Store.Service.Options;
+using Store.Service.Constants;
 using Store.Services.Identity;
 using Store.Model.Common.Models.Identity;
 
@@ -75,7 +76,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             // Set cookies
             services.AddAuthentication()
-            .AddCookie(IdentityConstants.ApplicationScheme, cookieAuthOptions)
+            .AddCookie(ApplicationIdentityConstants.VerificationScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.ExternalScheme, cookieAuthOptions);

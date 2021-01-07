@@ -99,6 +99,10 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Guest role has been assigned to the user.");
 
+            // Save the registration cookie - if the cookie is present in the browser, the user can be automaticalled signed in. Otherwise, the user must be redirected to the Login page.
+            await _signInManager.RegisterAsync(user);
+
+            // Send email confirmation token
             await SendEmailConfirmationTokenAsync(clientId, user, registerUserModel.ActivationUrl);
 
             return Ok();

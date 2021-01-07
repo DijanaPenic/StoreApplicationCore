@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
+using Store.Service.Constants;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.Services.Identity
@@ -43,6 +44,23 @@ namespace Store.Services.Identity
                 : attempt;
         }
 
+        protected override async Task<SignInResult> PreSignInCheck(IUser user)
+        {
+            if (!await CanSignInAsync(user))
+            {
+                ClaimsPrincipal principal = StoreVerificationInfo(user.Id.ToString());
+                await Context.SignInAsync(ApplicationIdentityConstants.VerificationScheme, principal);
+
+                return SignInResult.NotAllowed;
+            }
+            if (await IsLockedOut(user))
+            {
+                return await LockedOut(user);
+            }
+
+            return null;
+        }
+
         protected override async Task<SignInResult> SignInOrTwoFactorAsync(IUser user, bool isPersistent, string loginProvider = null, bool bypassTwoFactor = false)
         {
             if (!bypassTwoFactor && await IsTfaEnabled(user))
@@ -71,14 +89,44 @@ namespace Store.Services.Identity
 
         public override async Task<bool> IsTwoFactorClientRememberedAsync(IUser user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             string userId = await UserManager.GetUserIdAsync(user);
             AuthenticateResult result = await Context.AuthenticateAsync(IdentityConstants.TwoFactorRememberMeScheme);
 
             return (result?.Principal != null && result.Principal.FindFirstValue(ClaimTypes.Name) == userId);
         }
 
+        public async Task<SignInResult> RegisterAsync(IUser user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            try
+            {
+                ClaimsPrincipal principal = StoreVerificationInfo(user.Id.ToString());
+                await Context.SignInAsync(ApplicationIdentityConstants.VerificationScheme, principal);
+
+                return SignInResult.Success;
+            }
+            catch
+            {
+                return SignInResult.Failed;
+            }
+        }
+
         public override async Task SignInAsync(IUser user, AuthenticationProperties authenticationProperties, string authenticationMethod = null)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             ClaimsPrincipal userPrincipal = await CreateUserPrincipalAsync(user);
 
             // Review: should we guard against CreateUserPrincipal returning null?
@@ -90,7 +138,23 @@ namespace Store.Services.Identity
             await Context.SignInAsync(IdentityConstants.ApplicationScheme, userPrincipal, authenticationProperties ?? new AuthenticationProperties());
         }
 
+        public override async Task SignOutAsync()
+        {
+            await Context.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await Context.SignOutAsync(IdentityConstants.ExternalScheme);
+            await Context.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
+            await Context.SignOutAsync(ApplicationIdentityConstants.VerificationScheme);
+        }
+
         private async Task<bool> IsTfaEnabled(IUser user) => UserManager.SupportsUserTwoFactor && await UserManager.GetTwoFactorEnabledAsync(user) && (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0;
+
+        private static ClaimsPrincipal StoreVerificationInfo(string userId)
+        {
+            ClaimsIdentity identity = new ClaimsIdentity(ApplicationIdentityConstants.VerificationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.Name, userId));
+
+            return  new ClaimsPrincipal(identity);
+        }
 
         private static ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
         {
