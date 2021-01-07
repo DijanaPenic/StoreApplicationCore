@@ -220,11 +220,13 @@ namespace Store.WebAPI.Controllers
                 string firstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
                 string lastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
                 string email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+                string phoneNumber = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.MobilePhone);
 
                 IUser newUser = new User
                 {
                     UserName = registerModel.UserName,
                     Email = email,
+                    PhoneNumber = phoneNumber,
                     FirstName = firstName,
                     LastName = lastName,
                     IsApproved = true
@@ -262,6 +264,10 @@ namespace Store.WebAPI.Controllers
 
                 // Email confirmation is not required because we've obtained email from secure source (external provider)
                 newUser.EmailConfirmed = true;
+
+                // Phone number confirmation is not required because we've obtained phone number from secure source (external provider)
+                if (!string.IsNullOrEmpty(newUser.PhoneNumber)) newUser.PhoneNumberConfirmed = true;
+
                 await _userManager.UpdateAsync(newUser);
 
                 return Ok(ExternalAuthStep.AddedNewExternalLogin);
