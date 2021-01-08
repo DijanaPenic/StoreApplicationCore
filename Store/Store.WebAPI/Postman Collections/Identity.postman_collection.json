@@ -550,124 +550,6 @@
 					"response": []
 				},
 				{
-					"name": "Send Email Confirmation Token ",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/email?return_url={{base_url}}/api/register/{userId}/verify/email/token/{token}&client_id={{client_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"register",
-								"{{user_id}}",
-								"verify",
-								"email"
-							],
-							"query": [
-								{
-									"key": "return_url",
-									"value": "{{base_url}}/api/register/{userId}/verify/email/token/{token}"
-								},
-								{
-									"key": "client_id",
-									"value": "{{client_id}}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Confirm Email",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/email/token/Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNJR3VFelBGa0hHeDh6RFVCdWR3UTNyTlZuekFOK1IvbWtsYXpGMVpodktQc0Q4N2piSHFJc3AyS3Q4ZU5oZjdLZnZOL0ErU0Q2VVVUU01JQXpUclNPdHIzN0MreU9reWRyZUNUbHN6WnN4RnFrdHlGL3RYMVRKNmlUUU1YSnQxd3JmYUF3eldxZ2xwWHJTMHhXdDBTMmJKYTc3Mit5TU1JZGVNdGJJR0U5emZJYkdaMFFYa25NK3lDZlJaa0VmV0V6Y1BheVR3Uy9zQ3B1WmlyNHd1OWorcWs2REF1Yy9jYWpZMlR1N1o0b0pFZz09",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"register",
-								"{{user_id}}",
-								"verify",
-								"email",
-								"token",
-								"Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNJR3VFelBGa0hHeDh6RFVCdWR3UTNyTlZuekFOK1IvbWtsYXpGMVpodktQc0Q4N2piSHFJc3AyS3Q4ZU5oZjdLZnZOL0ErU0Q2VVVUU01JQXpUclNPdHIzN0MreU9reWRyZUNUbHN6WnN4RnFrdHlGL3RYMVRKNmlUUU1YSnQxd3JmYUF3eldxZ2xwWHJTMHhXdDBTMmJKYTc3Mit5TU1JZGVNdGJJR0U5emZJYkdaMFFYa25NK3lDZlJaa0VmV0V6Y1BheVR3Uy9zQ3B1WmlyNHd1OWorcWs2REF1Yy9jYWpZMlR1N1o0b0pFZz09"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Send Phone Number Confirmation Token",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"iso_country_code\": \"HRV\",\r\n    \"country_code_number\": \"+385\",\r\n    \"phone_number\": \"91-944-0067\"\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/sms",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"register",
-								"{{user_id}}",
-								"verify",
-								"sms"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Confirm Phone Number",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/register/{{user_id}}/verify/sms/token/932449?phone_number=385919440067",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"register",
-								"{{user_id}}",
-								"verify",
-								"sms",
-								"token",
-								"932449"
-							],
-							"query": [
-								{
-									"key": "phone_number",
-									"value": "385919440067"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Register External User",
 					"event": [
 						{
@@ -706,7 +588,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    \"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    \"confirmation_url\": \"{{base_url}}/api/register/external/{userId}/verify/email/token/{token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    \"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId/email/token/{token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register/external",
@@ -717,30 +599,6 @@
 								"api",
 								"register",
 								"external"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Confirm External Email",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/register/external/{{user_id}}/verify/email/token/CfDJ8DquEZb3xxNKpBqWSRZfc3K43jtOzGvPtK9TwwhRG9AP8m%2BrNKxCqqGy2PE5wvbJ%2BAR3EWzFJZGlxiYR20%2BQ7m2%2BrDqb8IoN4iDEIslgjakcFgmJ4px40GCwfrGzNh7uO5kvvL%2BsshEwH3tk9zruaDlLNE9Di%2F%2FrsfPqy82cB7lObSz1ndej5Lmi9zK%2Bx1hS9ddam9n1n8rPD0nxPrf5fI%2F3F2C1fFFfyVcwLB5LvdU3a6PGk13y4aP9SjKw9hOl2w%3D%3D",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"register",
-								"external",
-								"{{user_id}}",
-								"verify",
-								"email",
-								"token",
-								"CfDJ8DquEZb3xxNKpBqWSRZfc3K43jtOzGvPtK9TwwhRG9AP8m%2BrNKxCqqGy2PE5wvbJ%2BAR3EWzFJZGlxiYR20%2BQ7m2%2BrDqb8IoN4iDEIslgjakcFgmJ4px40GCwfrGzNh7uO5kvvL%2BsshEwH3tk9zruaDlLNE9Di%2F%2FrsfPqy82cB7lObSz1ndej5Lmi9zK%2Bx1hS9ddam9n1n8rPD0nxPrf5fI%2F3F2C1fFFfyVcwLB5LvdU3a6PGk13y4aP9SjKw9hOl2w%3D%3D"
 							]
 						}
 					},
@@ -1074,7 +932,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\",\r\n    \"confirmation_url\": \"{{base_url}}/api/register/external/{userId}/verify/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\",\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId}/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authenticate/external",
@@ -1231,6 +1089,148 @@
 								{
 									"key": "number",
 									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Verify",
+			"item": [
+				{
+					"name": "Send Email Confirmation Token ",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account-verify/{{user_id}}/email?return_url={{base_url}}/api/account-verify/{userId}/email/token/{token}&client_id={{client_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"account-verify",
+								"{{user_id}}",
+								"email"
+							],
+							"query": [
+								{
+									"key": "return_url",
+									"value": "{{base_url}}/api/account-verify/{userId}/email/token/{token}"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/account-verify/{{user_id}}/email/token/Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNJR3VFelBGa0hHeDh6RFVCdWR3UTNyTlZuekFOK1IvbWtsYXpGMVpodktQc0Q4N2piSHFJc3AyS3Q4ZU5oZjdLZnZOL0ErU0Q2VVVUU01JQXpUclNPdHIzN0MreU9reWRyZUNUbHN6WnN4RnFrdHlGL3RYMVRKNmlUUU1YSnQxd3JmYUF3eldxZ2xwWHJTMHhXdDBTMmJKYTc3Mit5TU1JZGVNdGJJR0U5emZJYkdaMFFYa25NK3lDZlJaa0VmV0V6Y1BheVR3Uy9zQ3B1WmlyNHd1OWorcWs2REF1Yy9jYWpZMlR1N1o0b0pFZz09",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"account-verify",
+								"{{user_id}}",
+								"email",
+								"token",
+								"Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNJR3VFelBGa0hHeDh6RFVCdWR3UTNyTlZuekFOK1IvbWtsYXpGMVpodktQc0Q4N2piSHFJc3AyS3Q4ZU5oZjdLZnZOL0ErU0Q2VVVUU01JQXpUclNPdHIzN0MreU9reWRyZUNUbHN6WnN4RnFrdHlGL3RYMVRKNmlUUU1YSnQxd3JmYUF3eldxZ2xwWHJTMHhXdDBTMmJKYTc3Mit5TU1JZGVNdGJJR0U5emZJYkdaMFFYa25NK3lDZlJaa0VmV0V6Y1BheVR3Uy9zQ3B1WmlyNHd1OWorcWs2REF1Yy9jYWpZMlR1N1o0b0pFZz09"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm External Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/account-verify/external/{{user_id}}/email/token/CfDJ8DquEZb3xxNKpBqWSRZfc3K43jtOzGvPtK9TwwhRG9AP8m%2BrNKxCqqGy2PE5wvbJ%2BAR3EWzFJZGlxiYR20%2BQ7m2%2BrDqb8IoN4iDEIslgjakcFgmJ4px40GCwfrGzNh7uO5kvvL%2BsshEwH3tk9zruaDlLNE9Di%2F%2FrsfPqy82cB7lObSz1ndej5Lmi9zK%2Bx1hS9ddam9n1n8rPD0nxPrf5fI%2F3F2C1fFFfyVcwLB5LvdU3a6PGk13y4aP9SjKw9hOl2w%3D%3D",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"account-verify",
+								"external",
+								"{{user_id}}",
+								"email",
+								"token",
+								"CfDJ8DquEZb3xxNKpBqWSRZfc3K43jtOzGvPtK9TwwhRG9AP8m%2BrNKxCqqGy2PE5wvbJ%2BAR3EWzFJZGlxiYR20%2BQ7m2%2BrDqb8IoN4iDEIslgjakcFgmJ4px40GCwfrGzNh7uO5kvvL%2BsshEwH3tk9zruaDlLNE9Di%2F%2FrsfPqy82cB7lObSz1ndej5Lmi9zK%2Bx1hS9ddam9n1n8rPD0nxPrf5fI%2F3F2C1fFFfyVcwLB5LvdU3a6PGk13y4aP9SjKw9hOl2w%3D%3D"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Phone Number Confirmation Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"iso_country_code\": \"HRV\",\r\n    \"country_code_number\": \"+385\",\r\n    \"phone_number\": \"91-944-0067\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account-verify/{{user_id}}/sms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"account-verify",
+								"{{user_id}}",
+								"sms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Phone Number",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/account-verify/{{user_id}}/sms/token/700268?phone_number=385919440067",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"account-verify",
+								"{{user_id}}",
+								"sms",
+								"token",
+								"700268"
+							],
+							"query": [
+								{
+									"key": "phone_number",
+									"value": "385919440067"
 								}
 							]
 						}
