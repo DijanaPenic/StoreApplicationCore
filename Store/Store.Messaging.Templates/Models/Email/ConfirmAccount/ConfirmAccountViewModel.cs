@@ -1,8 +1,8 @@
 ﻿namespace Store.Messaging.Templates.Models.Email
 {
-    public class ConfirmAccountEmailViewModel
+    public class ConfirmAccountViewModel
     {
-        public ConfirmAccountEmailViewModel(string confirmUrl)
+        public ConfirmAccountViewModel(string confirmUrl)
         {
             ConfirmUrl = confirmUrl;
         }

@@ -55,7 +55,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"phone_number\": \"385919440067\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Admin\"\r\n    ]\r\n}"
+							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"email_confirmed\": true,\r\n    \"phone_number\": \"385919440067\",\r\n    \"phone_number_confirmed\": true,\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Admin\"\r\n    ]\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users",
@@ -88,7 +88,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana Update\",\r\n    \"last_name\": \"Penic Update\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Customer\",\r\n        \"Store Manager\"\r\n    ]\r\n}"
+							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"email_confirmed\": true,\r\n    \"phone_number\": \"385919440067\",\r\n    \"phone_number_confirmed\": true,\r\n    \"first_name\": \"Dijana Update\",\r\n    \"last_name\": \"Penic Update\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Customer\",\r\n        \"Store Manager\"\r\n    ]\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users/{{user_id}}",
@@ -455,6 +455,41 @@
 					"response": []
 				},
 				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\",\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_id}}",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get External Login Connections",
 					"request": {
 						"method": "GET",
@@ -534,7 +569,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/register/{userId}/verify/email/token/{token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"dpenic-mono\",\r\n    \"email\": \"dijana@mono.hr\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\",\r\n    \"client_id\": \"{{client_id}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register",

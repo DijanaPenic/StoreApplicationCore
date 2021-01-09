@@ -1,8 +1,8 @@
 ﻿namespace Store.Messaging.Templates.Models.Email
 {
-    public class ConfirmExternalAccountEmailViewModel
+    public class ConfirmExternalAccountViewModel
     {
-        public ConfirmExternalAccountEmailViewModel(string confirmUrl, string providerDisplayName)
+        public ConfirmExternalAccountViewModel(string confirmUrl, string providerDisplayName)
         {
             ConfirmUrl = confirmUrl;
             ProviderDisplayName = providerDisplayName;

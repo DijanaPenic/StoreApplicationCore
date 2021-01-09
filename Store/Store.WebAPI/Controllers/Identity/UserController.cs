@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
+using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 using Store.Common.Helpers;
 using Store.Common.Helpers.Identity;
+using Store.Common.Extensions;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
@@ -96,6 +98,69 @@ namespace Store.WebAPI.Controllers
             };
 
             return Ok(userProfileResponse);
+        }
+
+        /// <summary>Updates user profile for the currently logged in user.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="userProfileModel">The user profile model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPatch]
+        [Authorize]
+        [Route("{userId:guid}/profile")]
+        [Produces("application/json")]
+        public async Task<IActionResult> PatchUserProfileAsync([FromRoute] Guid userId, UserProfilePatchApiModel userProfileModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            if (!IsCurrentUser(userId))
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Email != userProfileModel.Email) user.EmailConfirmed = false;
+
+            _mapper.Map(userProfileModel, user);
+            IdentityResult userProfileResult = await _userManager.UpdateAsync(user);
+
+            if (!userProfileResult.Succeeded) return BadRequest(userProfileResult.Errors);
+
+            // Need to send email confirmation if email is not confirmed
+            if (!user.EmailConfirmed)
+            {
+                // Get email confirmation token
+                string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                _logger.LogInformation("Email confirmation token has been generated.");
+
+                UriTemplate template = new UriTemplate(userProfileModel.ConfirmationUrl);
+                string callbackUrl = template.Resolve(new Dictionary<string, object>
+                {
+                    { "userId", user.Id.ToString() },
+                    { "token", token.Base64ForUrlEncode() }
+                });
+
+                _logger.LogInformation("Sending email confirmation email.");
+
+                await _emailClientSender.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
+            }
+
+            return Ok();
         }
 
         /// <summary>Retrieves external login connections for the user.</summary>
@@ -184,7 +249,7 @@ namespace Store.WebAPI.Controllers
         [AuthorizationFilter(RoleHelper.Admin)]
         [Route("")]
         [Consumes("application/json")]
-        public async Task<IActionResult> CreateUserAsync(UserCreatePostApiModel createUserModel)
+        public async Task<IActionResult> CreateUserAsync(UserPostApiModel createUserModel)
         {
             if (!ModelState.IsValid)
             {
@@ -192,10 +257,6 @@ namespace Store.WebAPI.Controllers
             }
 
             IUser user = _mapper.Map<IUser>(createUserModel);
-
-            // Confirm user email and (optionally) phone number
-            user.EmailConfirmed = true;
-            if (!string.IsNullOrEmpty(user.PhoneNumber)) user.PhoneNumberConfirmed = true;
 
             IdentityResult userResult = await _userManager.CreateAsync(user, createUserModel.Password);
 

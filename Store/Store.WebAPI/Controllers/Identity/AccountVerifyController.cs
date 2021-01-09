@@ -102,7 +102,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending email confirmation email.");
 
-            await _emailClientSender.SendConfirmAccountEmailAsync(clientId, user.Email, callbackUrl); 
+            await _emailClientSender.SendConfirmEmailAsync(clientId, user.Email, callbackUrl, user.UserName); 
 
             return Ok();
         }

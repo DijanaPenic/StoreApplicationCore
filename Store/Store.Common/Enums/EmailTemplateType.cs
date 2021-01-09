@@ -4,7 +4,8 @@
     {
         ConfirmAccount = 0,
         ConfirmExternalAccount = 1,
-        ResetPassword = 2,
-        ChangePassword = 3
+        ConfirmEmail = 2,
+        ResetPassword = 3,
+        ChangePassword = 4
     }
 }

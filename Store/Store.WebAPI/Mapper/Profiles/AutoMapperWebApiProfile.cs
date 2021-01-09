@@ -52,11 +52,12 @@ namespace Store.WebAPI.Mapper.Profiles
 
             // Create maps for identity models
             CreateMap<UserPatchApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
+            CreateMap<UserProfilePatchApiModel, IUser>().ReverseMap();
 
             CreateMap<UserGetApiModel, IUser>();
             CreateMap<IUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
 
-            CreateMap<UserCreatePostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
+            CreateMap<UserPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
             CreateMap<RegisterPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
 
             CreateMap<RoleGetApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();

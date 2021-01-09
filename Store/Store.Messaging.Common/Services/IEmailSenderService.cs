@@ -5,11 +5,13 @@ namespace Store.Messaging.Services.Common
 {
     public interface IEmailSenderService
     {
-        Task SendConfirmAccountEmailAsync(Guid clientId, string email, string url);
+        Task SendConfirmAccountAsync(Guid clientId, string email, string url);
 
-        Task SendConfirmExternalAccountEmailAsync(Guid clientId, string email, string url, string provider);
+        Task SendConfirmEmailAsync(Guid clientId, string email, string url, string userName);
 
-        Task SendResetPasswordEmailAsync(Guid clientId, string email, string url, string userName);
+        Task SendConfirmExternalAccountAsync(Guid clientId, string email, string url, string provider);
+
+        Task SendResetPasswordAsync(Guid clientId, string email, string url, string userName);
 
         Task SendChangePasswordEmailAsync(Guid clientId, string email, string userName, string newPassword);
     }

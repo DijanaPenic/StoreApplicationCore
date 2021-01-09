@@ -2,7 +2,7 @@
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class UserCreatePostApiModel
+    public class UserPostApiModel
     {
         [Required]
         public string UserName { get; set; }
@@ -11,8 +11,12 @@ namespace Store.WebAPI.Models.Identity
         [EmailAddress]
         public string Email { get; set; }
 
+        public bool EmailConfirmed { get; set; }
+
         [Phone]
         public string PhoneNumber { get; set; }
+
+        public bool PhoneNumberConfirmed { get; set; }
 
         [Required]
         [StringLength(50, ErrorMessage = "First Name cannot be longer than 50 characters.")]

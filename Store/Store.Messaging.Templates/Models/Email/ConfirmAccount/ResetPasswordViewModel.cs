@@ -1,8 +1,8 @@
 ﻿namespace Store.Messaging.Templates.Models.Email
 {
-    public class ResetPasswordEmailViewModel
+    public class ResetPasswordViewModel
     {
-        public ResetPasswordEmailViewModel(string confirmUrl, string userName)
+        public ResetPasswordViewModel(string confirmUrl, string userName)
         {
             ConfirmUrl = confirmUrl;
             UserName = userName;

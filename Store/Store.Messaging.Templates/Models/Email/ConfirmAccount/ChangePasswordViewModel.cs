@@ -1,8 +1,8 @@
 ﻿namespace Store.Messaging.Templates.Models.Email
 {
-    public class ChangePasswordEmailViewModel
+    public class ChangePasswordViewModel
     {
-        public ChangePasswordEmailViewModel(string userName, string newPassword)
+        public ChangePasswordViewModel(string userName, string newPassword)
         {
             UserName = userName;
             NewPassword = newPassword;

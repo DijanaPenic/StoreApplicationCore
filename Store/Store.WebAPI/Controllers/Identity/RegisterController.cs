@@ -116,7 +116,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending account activation email to activate account.");
 
-            await _emailClientSender.SendConfirmAccountEmailAsync(clientId, user.Email, callbackUrl);
+            await _emailClientSender.SendConfirmAccountAsync(clientId, user.Email, callbackUrl);
 
             return Ok();
         }
@@ -257,7 +257,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Sending email confirmation token to confirm association with {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                await _emailClientSender.SendConfirmExternalAccountEmailAsync(clientId, existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
+                await _emailClientSender.SendConfirmExternalAccountAsync(clientId, existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
                 return Ok(ExternalAuthStep.PendingExternalLoginCreation);
             }

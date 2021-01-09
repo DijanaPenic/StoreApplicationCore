@@ -323,7 +323,7 @@ namespace Store.WebAPI.Controllers
 
                     _logger.LogInformation($"Sending email confirmation token to confirm association of {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                    await _emailClientSender.SendConfirmExternalAccountEmailAsync(clientId, user.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
+                    await _emailClientSender.SendConfirmExternalAccountAsync(clientId, user.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
                     return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
                 }

@@ -30,22 +30,35 @@ namespace Store.Messaging.Services
             _emailTemplateService = emailTemplateService;
         }
 
-        public async Task SendConfirmAccountEmailAsync(Guid clientId, string email, string url)
+        public async Task SendConfirmAccountAsync(Guid clientId, string email, string url)
         {
-            ConfirmAccountEmailViewModel confirmAccountModel = new ConfirmAccountEmailViewModel(url);
+            ConfirmAccountViewModel confirmAccountModel = new ConfirmAccountViewModel(url);
             string template = await GetHtmlEmailContentAsync(clientId, confirmAccountModel, EmailTemplateType.ConfirmAccount);
 
             await SendEmailAsync
             (
                 email,
-                $"Welcome to Store Application! Confirm Your Email",
+                "Welcome to Store Application! Confirm Your Email",
                 template
             );
         }
 
-        public async Task SendConfirmExternalAccountEmailAsync(Guid clientId, string email, string url, string providerDisplayName)
+        public async Task SendConfirmEmailAsync(Guid clientId, string email, string url, string userName)
         {
-            ConfirmExternalAccountEmailViewModel confirmExternalAccountModel = new ConfirmExternalAccountEmailViewModel(url, providerDisplayName);
+            ConfirmEmailViewModel confirmEmailModel = new ConfirmEmailViewModel(userName, url);
+            string template = await GetHtmlEmailContentAsync(clientId, confirmEmailModel, EmailTemplateType.ConfirmEmail);
+
+            await SendEmailAsync
+            (
+                email,
+                "Confirm Your Email - Store Application",
+                template
+            );
+        }
+
+        public async Task SendConfirmExternalAccountAsync(Guid clientId, string email, string url, string providerDisplayName)
+        {
+            ConfirmExternalAccountViewModel confirmExternalAccountModel = new ConfirmExternalAccountViewModel(url, providerDisplayName);
             string template = await GetHtmlEmailContentAsync(clientId, confirmExternalAccountModel, EmailTemplateType.ConfirmExternalAccount);
 
             await SendEmailAsync
@@ -56,28 +69,28 @@ namespace Store.Messaging.Services
             );
         }
 
-        public async Task SendResetPasswordEmailAsync(Guid clientId, string email, string url, string userName)
+        public async Task SendResetPasswordAsync(Guid clientId, string email, string url, string userName)
         {
-            ResetPasswordEmailViewModel resetPasswordModel = new ResetPasswordEmailViewModel(url, userName);
+            ResetPasswordViewModel resetPasswordModel = new ResetPasswordViewModel(url, userName);
             string template = await GetHtmlEmailContentAsync(clientId, resetPasswordModel, EmailTemplateType.ResetPassword);
 
             await SendEmailAsync
             (
                  email,
-                 $"Password Recovery - Store Application",
+                 "Password Recovery - Store Application",
                  template
             );
         }
 
         public async Task SendChangePasswordEmailAsync(Guid clientId, string email, string userName, string newPassword)
         {
-            ChangePasswordEmailViewModel changePasswordModel = new ChangePasswordEmailViewModel(userName, newPassword);
+            ChangePasswordViewModel changePasswordModel = new ChangePasswordViewModel(userName, newPassword);
             string template = await GetHtmlEmailContentAsync(clientId, changePasswordModel, EmailTemplateType.ChangePassword);
 
             await SendEmailAsync
             (
                 email,
-                $"Password Changed - Store Application",
+                "Password Changed - Store Application",
                 template
             );
         }

@@ -80,7 +80,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending password recovery email.");
 
-            await _emailClientSender.SendResetPasswordEmailAsync(clientId, passwordRecoveryModel.Email, callbackUrl, user.UserName);
+            await _emailClientSender.SendResetPasswordAsync(clientId, passwordRecoveryModel.Email, callbackUrl, user.UserName);
 
             return Ok();
         }
