@@ -2,7 +2,7 @@
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class AuthenticateRequestApiModel
+    public class AuthenticatePasswordApiModel
     {
         [Required]
         public string UserName { get; set; }
