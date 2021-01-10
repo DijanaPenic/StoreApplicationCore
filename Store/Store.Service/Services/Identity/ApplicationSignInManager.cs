@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using Store.Service.Constants;
 using Store.Model.Common.Models.Identity;
+using System.Collections.Generic;
 
 namespace Store.Services.Identity
 {
@@ -129,6 +130,23 @@ namespace Store.Services.Identity
             return SignInResult.Success;
         }
 
+        public override Task SignInWithClaimsAsync(IUser user, AuthenticationProperties authenticationProperties, IEnumerable<Claim> additionalClaims)
+        {
+            // Not needed as application is using JWT authentication
+
+            //ClaimsPrincipal userPrincipal = await CreateUserPrincipalAsync(user);
+
+            //foreach (var claim in additionalClaims)
+            //{
+            //    userPrincipal.Identities.First().AddClaim(claim);
+            //}
+            //await Context.SignInAsync(IdentityConstants.ApplicationScheme,
+            //    userPrincipal,
+            //    authenticationProperties ?? new AuthenticationProperties());
+
+            return Task.CompletedTask;
+        }
+
         public async Task<SignInResult> RegisterAsync(IUser user)
         {
             if (user == null)
@@ -151,7 +169,7 @@ namespace Store.Services.Identity
 
         public override async Task SignOutAsync()
         {
-            await Context.SignOutAsync(IdentityConstants.ApplicationScheme);
+            //await Context.SignOutAsync(IdentityConstants.ApplicationScheme);
             await Context.SignOutAsync(IdentityConstants.ExternalScheme);
             await Context.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
             await Context.SignOutAsync(ApplicationIdentityConstants.AccountVerificationScheme);
