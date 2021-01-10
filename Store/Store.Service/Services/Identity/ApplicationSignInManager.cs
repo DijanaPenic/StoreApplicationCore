@@ -13,7 +13,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Services.Identity
 {
-    // SignInManager<IUser> Notes
+    // SignInManager<IUser> Notes:
     // CheckPasswordSignInAsync - this method doesn't perform 2fa check.
     // PasswordSignInAsync - this method performs 2fa check, but also generates the ".AspNetCore.Identity.Application" cookie. Cookie creation cannot be disabled (SignInManager is heavily dependant on cookies - by design).
 
@@ -30,26 +30,61 @@ namespace Store.Services.Identity
             : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
         }
-        public override async Task<SignInResult> PasswordSignInAsync(IUser user, string password,bool isPersistent, bool lockoutOnFailure)
+
+        public async Task<SignInResult> AccountVerificationSignInAsync()
+        {
+            IUser user = await GetAccountVerificationUserAsync();
+            if (user == null)
+            {
+                return SignInResult.Failed;
+            }
+
+            if (!await CanSignInAsync(user))
+            {
+                return SignInResult.NotAllowed;
+            }
+
+            if (await IsLockedOut(user))
+            {
+                return await LockedOut(user);
+            }
+
+            // Cleanup the account verification user id cookie
+            await Context.SignOutAsync(ApplicationIdentityConstants.AccountVerificationScheme);
+
+            return await SignInOrTwoFactorAsync(user);
+        }
+
+        public async Task<IUser> GetAccountVerificationUserAsync()
+        {
+            VerificationInfo verificationInfo = await RetrieveAccountVerificationInfoAsync();
+
+            if (verificationInfo?.UserId != null)
+            {
+                return await UserManager.FindByIdAsync(verificationInfo.UserId);
+            }
+
+            return default;
+        }
+
+        public async Task<SignInResult> PasswordSignInAsync(IUser user, string password, bool lockoutOnFailure)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            SignInResult attempt = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+            SignInResult passwordAttempt = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
 
-            return attempt.Succeeded
-                ? await SignInOrTwoFactorAsync(user, isPersistent)
-                : attempt;
+            return passwordAttempt.Succeeded ? await SignInOrTwoFactorAsync(user) : passwordAttempt;
         }
-
+        
         protected override async Task<SignInResult> PreSignInCheck(IUser user)
         {
             if (!await CanSignInAsync(user))
             {
-                ClaimsPrincipal principal = StoreVerificationInfo(user.Id.ToString());
-                await Context.SignInAsync(ApplicationIdentityConstants.VerificationScheme, principal);
+                string userId = await UserManager.GetUserIdAsync(user);
+                await Context.SignInAsync(ApplicationIdentityConstants.AccountVerificationScheme, StoreAccountVerificationInfo(userId));
 
                 return SignInResult.NotAllowed;
             }
@@ -61,7 +96,7 @@ namespace Store.Services.Identity
             return null;
         }
 
-        protected override async Task<SignInResult> SignInOrTwoFactorAsync(IUser user, bool isPersistent, string loginProvider = null, bool bypassTwoFactor = false)
+        private async Task<SignInResult> SignInOrTwoFactorAsync(IUser user, string loginProvider = null, bool bypassTwoFactor = false)
         {
             if (!bypassTwoFactor && await IsTfaEnabled(user))
             {
@@ -81,23 +116,17 @@ namespace Store.Services.Identity
                 await Context.SignOutAsync(IdentityConstants.ExternalScheme);
             }
 
-            // SignInAsync - creates cookie -> not needed as application is using JWT authentication
-            //await SignInAsync(user, isPersistent, loginProvider);
+            // Not needed as application is using JWT authentication
+            //if (loginProvider == null)
+            //{
+            //    await SignInWithClaimsAsync(user, isPersistent, new Claim[] { new Claim("amr", "pwd") });
+            //}
+            //else
+            //{
+            //    await SignInAsync(user, isPersistent, loginProvider);
+            //}
 
             return SignInResult.Success;
-        }
-
-        public override async Task<bool> IsTwoFactorClientRememberedAsync(IUser user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            string userId = await UserManager.GetUserIdAsync(user);
-            AuthenticateResult result = await Context.AuthenticateAsync(IdentityConstants.TwoFactorRememberMeScheme);
-
-            return (result?.Principal != null && result.Principal.FindFirstValue(ClaimTypes.Name) == userId);
         }
 
         public async Task<SignInResult> RegisterAsync(IUser user)
@@ -109,8 +138,8 @@ namespace Store.Services.Identity
 
             try
             {
-                ClaimsPrincipal principal = StoreVerificationInfo(user.Id.ToString());
-                await Context.SignInAsync(ApplicationIdentityConstants.VerificationScheme, principal);
+                string userId = await UserManager.GetUserIdAsync(user);
+                await Context.SignInAsync(ApplicationIdentityConstants.AccountVerificationScheme, StoreAccountVerificationInfo(userId));
 
                 return SignInResult.Success;
             }
@@ -120,40 +149,37 @@ namespace Store.Services.Identity
             }
         }
 
-        public override async Task SignInAsync(IUser user, AuthenticationProperties authenticationProperties, string authenticationMethod = null)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ClaimsPrincipal userPrincipal = await CreateUserPrincipalAsync(user);
-
-            // Review: should we guard against CreateUserPrincipal returning null?
-            if (authenticationMethod != null)
-            {
-                userPrincipal.Identities.First().AddClaim(new Claim(ClaimTypes.AuthenticationMethod, authenticationMethod));
-            }
-
-            await Context.SignInAsync(IdentityConstants.ApplicationScheme, userPrincipal, authenticationProperties ?? new AuthenticationProperties());
-        }
-
         public override async Task SignOutAsync()
         {
             await Context.SignOutAsync(IdentityConstants.ApplicationScheme);
             await Context.SignOutAsync(IdentityConstants.ExternalScheme);
             await Context.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
-            await Context.SignOutAsync(ApplicationIdentityConstants.VerificationScheme);
+            await Context.SignOutAsync(ApplicationIdentityConstants.AccountVerificationScheme);
         }
 
         private async Task<bool> IsTfaEnabled(IUser user) => UserManager.SupportsUserTwoFactor && await UserManager.GetTwoFactorEnabledAsync(user) && (await UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0;
 
-        private static ClaimsPrincipal StoreVerificationInfo(string userId)
+        private static ClaimsPrincipal StoreAccountVerificationInfo(string userId)
         {
-            ClaimsIdentity identity = new ClaimsIdentity(ApplicationIdentityConstants.VerificationScheme);
+            ClaimsIdentity identity = new ClaimsIdentity(ApplicationIdentityConstants.AccountVerificationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
 
-            return  new ClaimsPrincipal(identity);
+            return new ClaimsPrincipal(identity);
+        }
+
+        private async Task<VerificationInfo> RetrieveAccountVerificationInfoAsync()
+        {
+            AuthenticateResult result = await Context.AuthenticateAsync(ApplicationIdentityConstants.AccountVerificationScheme);
+
+            if (result?.Principal != null)
+            {
+                return new VerificationInfo
+                {
+                    UserId = result.Principal.FindFirstValue(ClaimTypes.Name)
+                };
+            }
+
+            return null;
         }
 
         private static ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
@@ -167,6 +193,11 @@ namespace Store.Services.Identity
             }
 
             return new ClaimsPrincipal(identity);
+        }
+
+        internal class VerificationInfo
+        {
+            public string UserId { get; set; }
         }
     }
 }

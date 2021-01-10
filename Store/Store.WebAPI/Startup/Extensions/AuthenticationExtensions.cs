@@ -76,7 +76,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             // Set cookies
             services.AddAuthentication()
-            .AddCookie(ApplicationIdentityConstants.VerificationScheme, cookieAuthOptions)
+            .AddCookie(ApplicationIdentityConstants.AccountVerificationScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.TwoFactorUserIdScheme, cookieAuthOptions)
             .AddCookie(IdentityConstants.ExternalScheme, cookieAuthOptions);

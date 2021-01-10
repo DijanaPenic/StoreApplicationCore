@@ -75,7 +75,28 @@ namespace Store.WebAPI.Controllers
             return Ok(authInfoModel);
         }
 
-        /// <summary>Authenticates the user.</summary>
+        /// <summary>Attempts to authenticate user at the end of the account verification process.</summary>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("account-verification")]
+        [Produces("application/json")]
+        public async Task<IActionResult> AuthenticateAccountVerificationAsync()
+        {
+            IUser user = await _signInManager.GetAccountVerificationUserAsync(); // Retrieves user information from cookie
+            if(user == null)
+            {
+                return BadRequest("User Id not found.");
+            }
+
+            SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync();
+
+            return await AuthenticateAsync(signInResult, user, Guid.Empty); // TODO - need to use real client id
+        }
+
+        /// <summary>Attempts to authenticate user using the specified username and password combination.</summary>
         /// <param name="authenticateModel">The authenticate model.</param>
         /// <returns>
         ///   <br />
@@ -85,7 +106,7 @@ namespace Store.WebAPI.Controllers
         [Route("")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -121,7 +142,7 @@ namespace Store.WebAPI.Controllers
 
             // Attempt to sign in
             // Note: isPersistent: false - no need to store browser cookies in Web API.
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, lockoutOnFailure: true); 
             
             return await AuthenticateAsync(signInResult, user, clientId);
         }
@@ -352,6 +373,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
+        [AllowAnonymous]
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]

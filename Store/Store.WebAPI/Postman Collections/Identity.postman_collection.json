@@ -472,7 +472,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\",\r\n}"
+							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users/{{user_id}}/profile",
@@ -707,7 +707,7 @@
 			"name": "Authenticate",
 			"item": [
 				{
-					"name": "Authenticate",
+					"name": "Authenticate (by password)",
 					"event": [
 						{
 							"listen": "test",
@@ -738,7 +738,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"password\": \"aB123456,\",\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"dpenic-mono\",\r\n    \"password\": \"aB123456,\",\r\n    \"client_id\": \"{{client_id}}\",\r\n    \"client_secret\": \"{{client_secret}}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authenticate",
@@ -748,6 +748,44 @@
 							"path": [
 								"api",
 								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate (account verification) ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var respcode = pm.response.code;\r",
+									"\r",
+									"if(respcode === 200)\r",
+									"{\r",
+									"    var json = JSON.parse(responseBody);\r",
+									"\r",
+									"    pm.globals.set(\"access_token\", json.access_token);\r",
+									"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/authenticate/account-verification",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authenticate",
+								"account-verification"
 							]
 						}
 					},

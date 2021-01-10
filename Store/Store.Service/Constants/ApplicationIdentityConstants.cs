@@ -2,6 +2,6 @@
 {
     public static class ApplicationIdentityConstants
     {
-        public const string VerificationScheme = ".AspNetCore.Identity.Verification";
+        public const string AccountVerificationScheme = ".AspNetCore.Identity.AccountVerification";
     }
 }
