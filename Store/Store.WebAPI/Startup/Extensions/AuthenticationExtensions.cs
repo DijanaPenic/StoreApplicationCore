@@ -47,11 +47,16 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 identityOptions.SignIn.RequireConfirmedPhoneNumber = true;
             })
             .AddRoles<IRole>()
-            .AddSignInManager<ApplicationSignInManager>()   // Scoped - TODO - need to confirm
-            .AddUserManager<ApplicationUserManager>()       // Scoped
+            //.AddSignInManager<ApplicationSignInManager>()   // ApplicationSignInManager doesn't derive from SignInManager<IUser> so cannot register service using the AddSignInManager method
+            .AddUserManager<ApplicationUserManager>()       // Scoped - TODO - need to confirm
             .AddRoleManager<ApplicationRoleManager>()       // Scoped
             .AddDefaultTokenProviders();
 
+            // ApplicationSignInManager dependencies
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<ApplicationSignInManager>();
+
+            // ApplicationAuthManager dependencies
             services.AddTransient<ApplicationAuthManager>();
 
             // Cookies configuration

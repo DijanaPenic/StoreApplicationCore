@@ -85,6 +85,7 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAccountVerificationAsync()
         {
+            // TODO - check if this is needed
             IUser user = await _signInManager.GetAccountVerificationUserAsync(); // Retrieves user information from cookie
             if(user == null)
             {
@@ -141,8 +142,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Attempt to sign in
-            // Note: isPersistent: false - no need to store browser cookies in Web API.
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, lockoutOnFailure: true); 
             
             return await AuthenticateAsync(signInResult, user, clientId);
         }
@@ -295,7 +295,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation($"Trying to sign in user {user.Email} with the existing external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
 
                 return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.FoundExistingExternalLogin, externalLoginInfo.LoginProvider);
             }
@@ -356,7 +356,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
              
                 return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.AddedNewExternalLogin, externalLoginInfo.LoginProvider);
             }
@@ -405,8 +405,8 @@ namespace Store.WebAPI.Controllers
             }
             else
             {
-                //Note: isPersistent, rememberClient: false - no need to store browser cookies in Web API.
-                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, isPersistent: false, rememberClient: false);
+                //Note: rememberClient: false - don't want to surpress future two-factor auth requests.
+                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, rememberClient: false);
             }
 
             return await AuthenticateAsync(signInResult, user, clientId);
