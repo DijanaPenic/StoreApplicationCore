@@ -53,12 +53,12 @@ namespace Store.Services.Identity
             // Cleanup the account verification user id cookie
             await Context.SignOutAsync(ApplicationIdentityConstants.AccountVerificationScheme);
 
-            return await SignInOrTwoFactorAsync(user);
+            return await SignInOrTwoFactorAsync(user, false);
         }
 
         public async Task<IUser> GetAccountVerificationUserAsync()
         {
-            VerificationInfo verificationInfo = await RetrieveAccountVerificationInfoAsync();
+            AccountVerificationInfo verificationInfo = await RetrieveAccountVerificationInfoAsync();
 
             if (verificationInfo?.UserId != null)
             {
@@ -68,7 +68,7 @@ namespace Store.Services.Identity
             return default;
         }
 
-        public async Task<SignInResult> PasswordSignInAsync(IUser user, string password, bool lockoutOnFailure)
+        public override async Task<SignInResult> PasswordSignInAsync(IUser user, string password, bool isPersistent, bool lockoutOnFailure)
         {
             if (user == null)
             {
@@ -77,7 +77,7 @@ namespace Store.Services.Identity
 
             SignInResult passwordAttempt = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
 
-            return passwordAttempt.Succeeded ? await SignInOrTwoFactorAsync(user) : passwordAttempt;
+            return passwordAttempt.Succeeded ? await SignInOrTwoFactorAsync(user, isPersistent) : passwordAttempt;
         }
         
         protected override async Task<SignInResult> PreSignInCheck(IUser user)
@@ -97,7 +97,8 @@ namespace Store.Services.Identity
             return null;
         }
 
-        private async Task<SignInResult> SignInOrTwoFactorAsync(IUser user, string loginProvider = null, bool bypassTwoFactor = false)
+        // isPersistent - not needed (application is using JWT authentication)
+        protected override async Task<SignInResult> SignInOrTwoFactorAsync(IUser user, bool isPersistent, string loginProvider = null, bool bypassTwoFactor = false)
         {
             if (!bypassTwoFactor && await IsTfaEnabled(user))
             {
@@ -185,13 +186,13 @@ namespace Store.Services.Identity
             return new ClaimsPrincipal(identity);
         }
 
-        private async Task<VerificationInfo> RetrieveAccountVerificationInfoAsync()
+        private async Task<AccountVerificationInfo> RetrieveAccountVerificationInfoAsync()
         {
             AuthenticateResult result = await Context.AuthenticateAsync(ApplicationIdentityConstants.AccountVerificationScheme);
 
             if (result?.Principal != null)
             {
-                return new VerificationInfo
+                return new AccountVerificationInfo
                 {
                     UserId = result.Principal.FindFirstValue(ClaimTypes.Name)
                 };
@@ -213,7 +214,7 @@ namespace Store.Services.Identity
             return new ClaimsPrincipal(identity);
         }
 
-        internal class VerificationInfo
+        internal class AccountVerificationInfo
         {
             public string UserId { get; set; }
         }

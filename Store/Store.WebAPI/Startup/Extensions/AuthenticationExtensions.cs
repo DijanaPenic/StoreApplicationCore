@@ -90,13 +90,14 @@ namespace Store.WebAPI.Application.Startup.Extensions
             JwtTokenOptions jwtTokenConfig = jwtTokenSection.Get<JwtTokenOptions>();
             services.Configure<JwtTokenOptions>(jwtTokenSection);
 
-            // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens
+            // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens.
+            // Note: The following configuration is used to validate incoming access (JWT) tokens.
             TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,     // Issuer will be checked by the client (web application)
-                ValidateIssuerSigningKey = true,
+                ValidateIssuerSigningKey = true,    // TODO - can I disable this?
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
-                ValidateAudience = true,    // Audience is checked by the resource server (in this application: Web API)
+                ValidateAudience = true,    // Audience is checked by the resource server (in this project: Web API)
                 ValidAudience = jwtTokenConfig.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(1)

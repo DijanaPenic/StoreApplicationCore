@@ -142,7 +142,7 @@ namespace Store.WebAPI.Controllers
 
             // Attempt to sign in
             // Note: isPersistent: false - no need to store browser cookies in Web API.
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, lockoutOnFailure: true); 
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, isPersistent: false, lockoutOnFailure: true); 
             
             return await AuthenticateAsync(signInResult, user, clientId);
         }
@@ -406,7 +406,7 @@ namespace Store.WebAPI.Controllers
             else
             {
                 //Note: isPersistent, rememberClient: false - no need to store browser cookies in Web API.
-                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, false, false);
+                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, isPersistent: false, rememberClient: false);
             }
 
             return await AuthenticateAsync(signInResult, user, clientId);

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using AutoMapper;
 using Resta.UriTemplates;
@@ -11,17 +9,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-using Store.Cache.Common;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Common.Helpers.Identity;
 using Store.Models.Identity;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
 using Store.Services.Identity;
-using Store.Service.Common.Services;
 using Store.Messaging.Services.Common;
 
 namespace Store.WebAPI.Controllers
@@ -35,9 +29,6 @@ namespace Store.WebAPI.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
-        private readonly ISmsSenderService _smsSender;
-        private readonly ICountriesService _countriesService;
-        private readonly ICacheProvider _cacheProvider;
 
         public RegisterController
         (
@@ -45,10 +36,7 @@ namespace Store.WebAPI.Controllers
             ApplicationSignInManager signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
-            IEmailSenderService emailClientSender,
-            ISmsSenderService smsSender,
-            ICountriesService countriesService,
-            ICacheManager cacheManager
+            IEmailSenderService emailClientSender
         )
         {
             _userManager = userManager;
@@ -56,9 +44,6 @@ namespace Store.WebAPI.Controllers
             _logger = logger;
             _mapper = mapper;
             _emailClientSender = emailClientSender;
-            _smsSender = smsSender;
-            _countriesService = countriesService;
-            _cacheProvider = cacheManager.CacheProvider;
         } 
 
         /// <summary>Registers a new user account.</summary>
