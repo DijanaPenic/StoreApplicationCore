@@ -10,8 +10,5 @@ namespace Store.WebAPI.Models.Identity
         public string Code { get; set; }
 
         public bool UseRecoveryCode { get; set; }
-
-        [Required]
-        public string ClientId { get; set; }
     }
 }

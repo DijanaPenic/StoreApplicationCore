@@ -3,7 +3,6 @@ using System.Web;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using X.PagedList;
 using Resta.UriTemplates;
@@ -85,16 +84,29 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAccountVerificationAsync()
         {
-            // TODO - check if this is needed
-            IUser user = await _signInManager.GetAccountVerificationUserAsync(); // Retrieves user information from cookie
-            if(user == null)
+            // Retrieve user information from cookie
+            AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync(); 
+            if (accountVerificationInfo == null)
             {
-                return BadRequest("User Id not found.");
+                return BadRequest("Account Verification information not found.");
             }
 
-            SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync();
+            // Verify user information
+            IUser user = await _userManager.FindByIdAsync(accountVerificationInfo.UserId.ToString());
+            if (user == null)
+            {
+                return NotFound("User Id not found.");
+            }
 
-            return await AuthenticateAsync(signInResult, user, Guid.Empty); // TODO - need to use real client id
+            // Verify client information
+            if (!Guid.TryParse(accountVerificationInfo.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            {
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync(clientId);
+
+            return await AuthenticateAsync(signInResult, user, clientId);
         }
 
         /// <summary>Attempts to authenticate user using the specified username and password combination.</summary>
@@ -142,7 +154,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Attempt to sign in
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, authenticateModel.Password, lockoutOnFailure: true); 
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(clientId, user, authenticateModel.Password, lockoutOnFailure: true); 
             
             return await AuthenticateAsync(signInResult, user, clientId);
         }
@@ -295,7 +307,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation($"Trying to sign in user {user.Email} with the existing external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(clientId, externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
 
                 return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.FoundExistingExternalLogin, externalLoginInfo.LoginProvider);
             }
@@ -356,7 +368,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(clientId, externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
              
                 return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.AddedNewExternalLogin, externalLoginInfo.LoginProvider);
             }
@@ -379,15 +391,19 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateUserAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
         {
-            // TODO - need to remove clientId from model
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            TwoFactorAuthenticationInfo twoFactorInfo = await _signInManager.GetTwoFactorInfoAsync();
+            if (twoFactorInfo == null)
+            {
+                return BadRequest("Two Factor authentication info not found.");
+            }
+
             // Verify client information
-            if (!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            if (!Guid.TryParse(twoFactorInfo.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
@@ -406,7 +422,7 @@ namespace Store.WebAPI.Controllers
             else
             {
                 //Note: rememberClient: false - don't want to surpress future two-factor auth requests.
-                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticateModel.Code, rememberClient: false);
+                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(clientId, authenticateModel.Code, rememberClient: false);
             }
 
             return await AuthenticateAsync(signInResult, user, clientId);

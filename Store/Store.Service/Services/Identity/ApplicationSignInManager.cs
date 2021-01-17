@@ -27,7 +27,7 @@ namespace Store.Services.Identity
             IAuthenticationSchemeProvider schemes,
             IUserConfirmation<IUser> confirmation)
         {
-            UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            UserManager = userManager;
             _contextAccessor = contextAccessor;
             ClaimsFactory = claimsFactory;
             Options = optionsAccessor?.Value ?? new IdentityOptions();
@@ -36,12 +36,12 @@ namespace Store.Services.Identity
             _confirmation = confirmation;
         }
 
-        private readonly IHttpContextAccessor _contextAccessor;
         private HttpContext _context;
-        private IAuthenticationSchemeProvider _schemes;
-        private IUserConfirmation<IUser> _confirmation;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthenticationSchemeProvider _schemes;
+        private readonly IUserConfirmation<IUser> _confirmation;
 
-        public virtual ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         public ApplicationUserManager UserManager { get; set; }
 
@@ -194,33 +194,35 @@ namespace Store.Services.Identity
         /// Attempts to sign in the specified <paramref name="user"/> and <paramref name="password"/> combination
         /// as an asynchronous operation.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="user">The user to sign in.</param>
         /// <param name="password">The password to attempt to sign in with.</param>
         /// <param name="lockoutOnFailure">Flag indicating if the user account should be locked if the sign in fails.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> PasswordSignInAsync(IUser user, string password, bool lockoutOnFailure)
+        public virtual async Task<SignInResult> PasswordSignInAsync(Guid clientId, IUser user, string password, bool lockoutOnFailure)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            SignInResult passwordAttempt = await CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+            SignInResult passwordAttempt = await CheckPasswordSignInAsync(clientId, user, password, lockoutOnFailure);
 
-            return passwordAttempt.Succeeded ? await SignInOrTwoFactorAsync(user) : passwordAttempt;
+            return passwordAttempt.Succeeded ? await SignInOrTwoFactorAsync(clientId, user) : passwordAttempt;
         }
 
         /// <summary>
         /// Attempts to sign in the specified <paramref name="userName"/> and <paramref name="password"/> combination
         /// as an asynchronous operation.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="userName">The user name to sign in.</param>
         /// <param name="password">The password to attempt to sign in with.</param>
         /// <param name="lockoutOnFailure">Flag indicating if the user account should be locked if the sign in fails.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> PasswordSignInAsync(string userName, string password,  bool lockoutOnFailure)
+        public virtual async Task<SignInResult> PasswordSignInAsync(Guid clientId, string userName, string password,  bool lockoutOnFailure)
         {
             IUser user = await UserManager.FindByNameAsync(userName);
             if (user == null)
@@ -228,26 +230,27 @@ namespace Store.Services.Identity
                 return SignInResult.Failed;
             }
 
-            return await PasswordSignInAsync(user, password, lockoutOnFailure);
+            return await PasswordSignInAsync(clientId, user, password, lockoutOnFailure);
         }
 
         /// <summary>
         /// Attempts a password sign in for a user.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="user">The user to sign in.</param>
         /// <param name="password">The password to attempt to sign in with.</param>
         /// <param name="lockoutOnFailure">Flag indicating if the user account should be locked if the sign in fails.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
         /// <returns></returns>
-        public virtual async Task<SignInResult> CheckPasswordSignInAsync(IUser user, string password, bool lockoutOnFailure)
+        public virtual async Task<SignInResult> CheckPasswordSignInAsync(Guid clientId, IUser user, string password, bool lockoutOnFailure)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            SignInResult error = await PreSignInCheck(user);
+            SignInResult error = await PreSignInCheck(clientId, user);
             if (error != null)
             {
                 return error;
@@ -325,7 +328,7 @@ namespace Store.Services.Identity
         /// <returns></returns>
         public virtual async Task<SignInResult> TwoFactorRecoveryCodeSignInAsync(string recoveryCode)
         {
-            TwoFactorAuthenticationInfo twoFactorInfo = await RetrieveTwoFactorInfoAsync();
+            TwoFactorAuthenticationInfo twoFactorInfo = await GetTwoFactorInfoAsync();
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return SignInResult.Failed;
@@ -377,14 +380,15 @@ namespace Store.Services.Identity
         /// <summary>
         /// Validates the sign in code from an authenticator app and creates and signs in the user, as an asynchronous operation.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="code">The two factor authentication code to validate.</param>
         /// <param name="rememberClient">Flag indicating whether the current browser should be remember, suppressing all further 
         /// two factor authentication prompts.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> TwoFactorAuthenticatorSignInAsync(string code, bool rememberClient)
+        public virtual async Task<SignInResult> TwoFactorAuthenticatorSignInAsync(Guid clientId, string code, bool rememberClient)
         {
-            TwoFactorAuthenticationInfo twoFactorInfo = await RetrieveTwoFactorInfoAsync();
+            TwoFactorAuthenticationInfo twoFactorInfo = await GetTwoFactorInfoAsync();
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return SignInResult.Failed;
@@ -396,7 +400,7 @@ namespace Store.Services.Identity
                 return SignInResult.Failed;
             }
 
-            SignInResult error = await PreSignInCheck(user);
+            SignInResult error = await PreSignInCheck(clientId, user);
             if (error != null)
             {
                 return error;
@@ -418,15 +422,16 @@ namespace Store.Services.Identity
         /// <summary>
         /// Validates the two factor sign in code and creates and signs in the user, as an asynchronous operation.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="provider">The two factor authentication provider to validate the code against.</param>
         /// <param name="code">The two factor authentication code to validate.</param>
         /// <param name="rememberClient">Flag indicating whether the current browser should be remember, suppressing all further 
         /// two factor authentication prompts.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> TwoFactorSignInAsync(string provider, string code, bool rememberClient)
+        public virtual async Task<SignInResult> TwoFactorSignInAsync(Guid clientId, string provider, string code, bool rememberClient)
         {
-            TwoFactorAuthenticationInfo twoFactorInfo = await RetrieveTwoFactorInfoAsync();
+            TwoFactorAuthenticationInfo twoFactorInfo = await GetTwoFactorInfoAsync();
             if (twoFactorInfo == null || twoFactorInfo.UserId == null)
             {
                 return SignInResult.Failed;
@@ -438,7 +443,7 @@ namespace Store.Services.Identity
                 return SignInResult.Failed;
             }
 
-            SignInResult error = await PreSignInCheck(user);
+            SignInResult error = await PreSignInCheck(clientId, user);
             if (error != null)
             {
                 return error;
@@ -464,7 +469,7 @@ namespace Store.Services.Identity
         /// for the sign-in attempt.</returns>
         public virtual async Task<IUser> GetTwoFactorAuthenticationUserAsync()
         {
-            TwoFactorAuthenticationInfo info = await RetrieveTwoFactorInfoAsync();
+            TwoFactorAuthenticationInfo info = await GetTwoFactorInfoAsync();
             if (info == null)
             {
                 return null;
@@ -476,21 +481,23 @@ namespace Store.Services.Identity
         /// <summary>
         /// Signs in a user via a previously registered third party login, as an asynchronous operation.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="loginProvider">The login provider to use.</param>
         /// <param name="providerKey">The unique provider identifier for the user.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey) => ExternalLoginSignInAsync(loginProvider, providerKey, bypassTwoFactor: false);
+        public virtual Task<SignInResult> ExternalLoginSignInAsync(Guid clientId, string loginProvider, string providerKey) => ExternalLoginSignInAsync(clientId, loginProvider, providerKey, bypassTwoFactor: false);
 
         /// <summary>
         /// Signs in a user via a previously registered third party login, as an asynchronous operation.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="loginProvider">The login provider to use.</param>
         /// <param name="providerKey">The unique provider identifier for the user.</param>
         /// <param name="bypassTwoFactor">Flag indicating whether to bypass two factor authentication.</param>
         /// <returns>The task object representing the asynchronous operation containing the <see name="SignInResult"/>
         /// for the sign-in attempt.</returns>
-        public virtual async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool bypassTwoFactor)
+        public virtual async Task<SignInResult> ExternalLoginSignInAsync(Guid clientId, string loginProvider, string providerKey, bool bypassTwoFactor)
         {
             IUser user = await UserManager.FindByLoginAsync(loginProvider, providerKey);
             if (user == null)
@@ -498,13 +505,13 @@ namespace Store.Services.Identity
                 return SignInResult.Failed;
             }
 
-            SignInResult error = await PreSignInCheck(user);
+            SignInResult error = await PreSignInCheck(clientId, user);
             if (error != null)
             {
                 return error;
             }
 
-            return await SignInOrTwoFactorAsync(user, loginProvider, bypassTwoFactor);
+            return await SignInOrTwoFactorAsync(clientId, user, loginProvider, bypassTwoFactor);
         }
 
         /// <summary>
@@ -621,11 +628,13 @@ namespace Store.Services.Identity
         /// <param name="userId">The user whose is logging in via 2fa.</param>
         /// <param name="loginProvider">The 2fa provider.</param>
         /// <returns>A <see cref="ClaimsPrincipal"/> containing the user 2fa information.</returns>
-        internal static ClaimsPrincipal StoreTwoFactorInfo(string userId, string loginProvider)
+        internal static ClaimsPrincipal StoreTwoFactorInfo(string clientId, string userId, string loginProvider)
         {
             ClaimsIdentity identity = new ClaimsIdentity(IdentityConstants.TwoFactorUserIdScheme);
 
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            identity.AddClaim(new Claim("ClientId", clientId));
+
             if (loginProvider != null)
             {
                 identity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, loginProvider));
@@ -655,11 +664,12 @@ namespace Store.Services.Identity
         /// Signs in the specified <paramref name="user"/> if <paramref name="bypassTwoFactor"/> is set to false.
         /// Otherwise stores the <paramref name="user"/> for use after a two factor check.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="user"></param>
         /// <param name="loginProvider">The login provider to use. Default is null</param>
         /// <param name="bypassTwoFactor">Flag indicating whether to bypass two factor authentication. Default is false</param>
         /// <returns>Returns a <see cref="SignInResult"/></returns>
-        protected virtual async Task<SignInResult> SignInOrTwoFactorAsync(IUser user, string loginProvider = null, bool bypassTwoFactor = false)
+        protected virtual async Task<SignInResult> SignInOrTwoFactorAsync(Guid clientId, IUser user, string loginProvider = null, bool bypassTwoFactor = false)
         {
             if (!bypassTwoFactor && await IsTfaEnabled(user))
             {
@@ -667,7 +677,7 @@ namespace Store.Services.Identity
                 {
                     // Store the userId for use after two factor check
                     string userId = await UserManager.GetUserIdAsync(user);
-                    await Context.SignInAsync(IdentityConstants.TwoFactorUserIdScheme, StoreTwoFactorInfo(userId, loginProvider));
+                    await Context.SignInAsync(IdentityConstants.TwoFactorUserIdScheme, StoreTwoFactorInfo(clientId.ToString(), userId, loginProvider));
 
                     return SignInResult.TwoFactorRequired;
                 }
@@ -682,7 +692,7 @@ namespace Store.Services.Identity
             return SignInResult.Success;
         }
 
-        private async Task<TwoFactorAuthenticationInfo> RetrieveTwoFactorInfoAsync()
+        public async Task<TwoFactorAuthenticationInfo> GetTwoFactorInfoAsync()
         {
             AuthenticateResult result = await Context.AuthenticateAsync(IdentityConstants.TwoFactorUserIdScheme);
             if (result?.Principal != null)
@@ -690,7 +700,8 @@ namespace Store.Services.Identity
                 return new TwoFactorAuthenticationInfo
                 {
                     UserId = result.Principal.FindFirstValue(ClaimTypes.Name),
-                    LoginProvider = result.Principal.FindFirstValue(ClaimTypes.AuthenticationMethod)
+                    LoginProvider = result.Principal.FindFirstValue(ClaimTypes.AuthenticationMethod),
+                    ClientId = result.Principal.FindFirstValue("ClientId")
                 };
             }
 
@@ -722,14 +733,15 @@ namespace Store.Services.Identity
         /// <summary>
         /// Used to ensure that a user is allowed to sign in.
         /// </summary>
+        /// <param name="clientId">The client identifier.</param>
         /// <param name="user">The user</param>
         /// <returns>Null if the user should be allowed to sign in, otherwise the SignInResult why they should be denied.</returns>
-        protected virtual async Task<SignInResult> PreSignInCheck(IUser user)
+        protected virtual async Task<SignInResult> PreSignInCheck(Guid clientId, IUser user)
         {
             if (!await CanSignInAsync(user))
             {
                 string userId = await UserManager.GetUserIdAsync(user);
-                await Context.SignInAsync(ApplicationIdentityConstants.AccountVerificationScheme, StoreAccountVerificationInfo(userId));
+                await Context.SignInAsync(ApplicationIdentityConstants.AccountVerificationScheme, StoreAccountVerificationInfo(clientId.ToString(), userId));
 
                 return SignInResult.NotAllowed;
             }
@@ -757,7 +769,12 @@ namespace Store.Services.Identity
             return Task.CompletedTask;
         }
 
-        public async Task<SignInResult> RegisterAsync(IUser user)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="user">The user</param>
+        public async Task<SignInResult> RegisterAsync(Guid clientId, IUser user)
         {
             if (user == null)
             {
@@ -767,7 +784,7 @@ namespace Store.Services.Identity
             try
             {
                 string userId = await UserManager.GetUserIdAsync(user);
-                await Context.SignInAsync(ApplicationIdentityConstants.AccountVerificationScheme, StoreAccountVerificationInfo(userId));
+                await Context.SignInAsync(ApplicationIdentityConstants.AccountVerificationScheme, StoreAccountVerificationInfo(clientId.ToString(), userId));
 
                 return SignInResult.Success;
             }
@@ -777,7 +794,7 @@ namespace Store.Services.Identity
             }
         }
 
-        public async Task<SignInResult> AccountVerificationSignInAsync()
+        public async Task<SignInResult> AccountVerificationSignInAsync(Guid clientId)
         {
             IUser user = await GetAccountVerificationUserAsync();
             if (user == null)
@@ -798,12 +815,12 @@ namespace Store.Services.Identity
             // Cleanup the account verification user id cookie
             await Context.SignOutAsync(ApplicationIdentityConstants.AccountVerificationScheme);
 
-            return await SignInOrTwoFactorAsync(user);
+            return await SignInOrTwoFactorAsync(clientId, user);
         }
 
         public async Task<IUser> GetAccountVerificationUserAsync()
         {
-            AccountVerificationInfo verificationInfo = await RetrieveAccountVerificationInfoAsync();
+            AccountVerificationInfo verificationInfo = await GetAccountVerificationInfoAsync();
 
             if (verificationInfo?.UserId != null)
             {
@@ -813,7 +830,7 @@ namespace Store.Services.Identity
             return default;
         }
 
-        private async Task<AccountVerificationInfo> RetrieveAccountVerificationInfoAsync()
+        public async Task<AccountVerificationInfo> GetAccountVerificationInfoAsync()
         {
             AuthenticateResult result = await Context.AuthenticateAsync(ApplicationIdentityConstants.AccountVerificationScheme);
 
@@ -821,31 +838,37 @@ namespace Store.Services.Identity
             {
                 return new AccountVerificationInfo
                 {
-                    UserId = result.Principal.FindFirstValue(ClaimTypes.Name)
+                    UserId = result.Principal.FindFirstValue(ClaimTypes.Name),
+                    ClientId = result.Principal.FindFirstValue("ClientId")
                 };
             }
 
             return null;
         }
 
-        private static ClaimsPrincipal StoreAccountVerificationInfo(string userId)
+        private static ClaimsPrincipal StoreAccountVerificationInfo(string clientId, string userId)
         {
             ClaimsIdentity identity = new ClaimsIdentity(ApplicationIdentityConstants.AccountVerificationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            identity.AddClaim(new Claim("ClientId", clientId));
 
             return new ClaimsPrincipal(identity);
         }
+    }
 
-        internal class TwoFactorAuthenticationInfo
-        {
-            public string UserId { get; set; }
+    public class TwoFactorAuthenticationInfo
+    {
+        public string UserId { get; set; }
 
-            public string LoginProvider { get; set; }
-        }
+        public string LoginProvider { get; set; }
 
-        internal class AccountVerificationInfo
-        {
-            public string UserId { get; set; }
-        }
+        public string ClientId { get; set; }
+    }
+
+    public class AccountVerificationInfo
+    {
+        public string UserId { get; set; }
+
+        public string ClientId { get; set; }
     }
 }

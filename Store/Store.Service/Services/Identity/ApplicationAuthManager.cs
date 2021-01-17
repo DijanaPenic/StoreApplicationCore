@@ -173,6 +173,11 @@ namespace Store.Services.Identity
             return _authStore.RemoveExpiredRefreshTokensAsync();
         }
 
+        public Task<IClient> GetClientByIdAsync(Guid clientId)
+        {
+            return _authStore.FindClientByIdAsync(clientId);
+        }
+
         public async Task<string> AuthenticateClientAsync(Guid clientId, string clientSecret)
         {
             if (GuidHelper.IsNullOrEmpty(clientId))
