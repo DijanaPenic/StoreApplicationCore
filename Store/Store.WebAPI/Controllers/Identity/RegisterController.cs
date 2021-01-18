@@ -55,7 +55,7 @@ namespace Store.WebAPI.Controllers
         [AllowAnonymous]
         [Route("")]
         [Consumes("application/json")]
-        public async Task<IActionResult> RegisterUserAsync(RegisterPostApiModel registerUserModel)
+        public async Task<IActionResult> RegisterAsync(RegisterPostApiModel registerUserModel)
         {
             if (!ModelState.IsValid)
             {
@@ -115,7 +115,7 @@ namespace Store.WebAPI.Controllers
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("external")]
         [Consumes("application/json")]
-        public async Task<IActionResult> RegisterUserAsync([FromBody] RegisterExternalRequestApiModel registerModel)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterExternalRequestApiModel registerModel)
         {
             if (!ModelState.IsValid)
             {

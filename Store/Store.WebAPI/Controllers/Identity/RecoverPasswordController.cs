@@ -21,17 +21,20 @@ namespace Store.WebAPI.Controllers
     public class RecoverPasswordController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
+        private readonly ApplicationAuthManager _authManager;
         private readonly IEmailSenderService _emailClientSender;
         private readonly ILogger _logger;
 
         public RecoverPasswordController
         (
             ApplicationUserManager userManager,
+            ApplicationAuthManager authManager,
             IEmailSenderService emailClientSender,
             ILogger<RegisterController> logger
         )
         {
             _userManager = userManager;
+            _authManager = authManager;
             _emailClientSender = emailClientSender;
             _logger = logger;
         }
@@ -56,6 +59,12 @@ namespace Store.WebAPI.Controllers
             if (!Guid.TryParse(passwordRecoveryModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            IClient client = await _authManager.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound("Client not found.");
             }
 
             IUser user = await _userManager.FindByEmailAsync(passwordRecoveryModel.Email);

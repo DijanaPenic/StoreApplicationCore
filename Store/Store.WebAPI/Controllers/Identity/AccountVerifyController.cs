@@ -25,6 +25,7 @@ namespace Store.WebAPI.Controllers
     public class AccountVerifyController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
+        private readonly ApplicationAuthManager _authManager;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
         private readonly ISmsSenderService _smsSender;
@@ -34,6 +35,7 @@ namespace Store.WebAPI.Controllers
         public AccountVerifyController
         (
             ApplicationUserManager userManager,
+            ApplicationAuthManager authManager,
             ILogger<RegisterController> logger,
             IEmailSenderService emailClientSender,
             ISmsSenderService smsSender,
@@ -42,6 +44,7 @@ namespace Store.WebAPI.Controllers
         )
         {
             _userManager = userManager;
+            _authManager = authManager;
             _logger = logger;
             _emailClientSender = emailClientSender;
             _smsSender = smsSender;
@@ -49,7 +52,7 @@ namespace Store.WebAPI.Controllers
             _cacheProvider = cacheManager.CacheProvider;
         } 
 
-        /// <summary>Generates and sends the email confirmation token.</summary>
+        /// <summary>Generates and sends an email confirmation token to email address associated with user account.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="returnUrl">The return URL.</param>
@@ -86,6 +89,12 @@ namespace Store.WebAPI.Controllers
             if (user.EmailConfirmed)
             {
                 return BadRequest("Email is already confirmed.");
+            }
+
+            IClient client = await _authManager.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound("Client not found.");
             }
 
             // Get email confirmation token

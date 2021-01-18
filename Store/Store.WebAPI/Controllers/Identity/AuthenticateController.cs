@@ -84,7 +84,7 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAccountVerificationAsync()
         {
-            // Retrieve user information from cookie
+            // Retrieve user account information from cookie
             AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync(); 
             if (accountVerificationInfo == null)
             {
@@ -92,7 +92,12 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify user information
-            IUser user = await _userManager.FindByIdAsync(accountVerificationInfo.UserId.ToString());
+            if (string.IsNullOrEmpty(accountVerificationInfo.UserId))
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            IUser user = await _userManager.FindByIdAsync(accountVerificationInfo.UserId);
             if (user == null)
             {
                 return NotFound("User Id not found.");
@@ -102,6 +107,12 @@ namespace Store.WebAPI.Controllers
             if (!Guid.TryParse(accountVerificationInfo.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            IClient client = await _authManager.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound("Client not found.");
             }
 
             SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync(clientId);
@@ -172,6 +183,12 @@ namespace Store.WebAPI.Controllers
         {
             // Retrieve client_id for the currently logged in user
             Guid clientId = GetCurrentUserClientId();
+
+            IClient client = await _authManager.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound("Client not found.");
+            }
 
             try
             {
@@ -389,7 +406,7 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateUserAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -406,6 +423,12 @@ namespace Store.WebAPI.Controllers
             if (!Guid.TryParse(twoFactorInfo.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            IClient client = await _authManager.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound("Client not found.");
             }
 
             IUser user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
