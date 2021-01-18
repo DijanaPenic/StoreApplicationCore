@@ -4,6 +4,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
+using Store.Service.Constants;
+
 namespace Store.WebAPI.Controllers
 {
     abstract public class ApplicationControllerBase : ControllerBase
@@ -16,6 +18,6 @@ namespace Store.WebAPI.Controllers
 
         protected Guid GetCurrentUserId() => Guid.Parse(User.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
 
-        protected Guid GetCurrentUserClientId() => Guid.Parse(User.Claims.FirstOrDefault(uc => uc.Type == "ClientId")?.Value);
+        protected Guid GetCurrentUserClientId() => Guid.Parse(User.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
     }
 }

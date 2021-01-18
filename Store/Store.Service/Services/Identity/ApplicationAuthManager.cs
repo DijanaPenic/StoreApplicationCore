@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Service.Options;
+using Store.Service.Constants;
 using Store.Service.Common.Services.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
@@ -57,7 +58,7 @@ namespace Store.Services.Identity
             {
                 new Claim(ClaimTypes.Name, user.NormalizedUserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("ClientId", clientId.ToString())
+                new Claim(ApplicationClaimTypes.ClientIdentifier, clientId.ToString())
             };
 
             // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
