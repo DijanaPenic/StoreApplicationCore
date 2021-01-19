@@ -14,8 +14,8 @@ using Store.Common.Extensions;
 using Store.Common.Helpers.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.WebAPI.Models.Identity;
 using Store.Services.Identity;
+using Store.WebAPI.Models.Identity;
 using Store.Messaging.Services.Common;
 
 namespace Store.WebAPI.Controllers
@@ -26,6 +26,7 @@ namespace Store.WebAPI.Controllers
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly ApplicationAuthManager _authManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
@@ -34,6 +35,7 @@ namespace Store.WebAPI.Controllers
         (
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
+            ApplicationAuthManager authManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
             IEmailSenderService emailClientSender
@@ -41,13 +43,14 @@ namespace Store.WebAPI.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _authManager = authManager;
             _logger = logger;
             _mapper = mapper;
             _emailClientSender = emailClientSender;
         } 
 
         /// <summary>Registers a new user account.</summary>
-        /// <param name="registerUserModel">The register user model.</param>
+        /// <param name="registerModel">The register user model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
@@ -55,7 +58,7 @@ namespace Store.WebAPI.Controllers
         [AllowAnonymous]
         [Route("")]
         [Consumes("application/json")]
-        public async Task<IActionResult> RegisterAsync(RegisterPostApiModel registerUserModel)
+        public async Task<IActionResult> RegisterAsync(RegisterPostApiModel registerModel)
         {
             if (!ModelState.IsValid)
             {
@@ -63,15 +66,21 @@ namespace Store.WebAPI.Controllers
             }
 
             // Verify client information
-            if (!Guid.TryParse(registerUserModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
+            if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
-            IUser user = _mapper.Map<IUser>(registerUserModel);
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, registerModel.ClientSecret);
+            if (!string.IsNullOrEmpty(clientAuthResult))
+            {
+                return Unauthorized(clientAuthResult);
+            }
+
+            IUser user = _mapper.Map<IUser>(registerModel);
             user.IsApproved = true;
 
-            IdentityResult userResult = await _userManager.CreateAsync(user, registerUserModel.Password);
+            IdentityResult userResult = await _userManager.CreateAsync(user, registerModel.Password);
 
             if (!userResult.Succeeded) return BadRequest(userResult.Errors);
 
@@ -92,7 +101,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Email confirmation token has been generated.");
 
-            UriTemplate template = new UriTemplate(registerUserModel.ActivationUrl);
+            UriTemplate template = new UriTemplate(registerModel.ActivationUrl);
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },
@@ -126,6 +135,12 @@ namespace Store.WebAPI.Controllers
             if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
                 return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, registerModel.ClientSecret);
+            if (!string.IsNullOrEmpty(clientAuthResult))
+            {
+                return Unauthorized(clientAuthResult);
             }
 
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();

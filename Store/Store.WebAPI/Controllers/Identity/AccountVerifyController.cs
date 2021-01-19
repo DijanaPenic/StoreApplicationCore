@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
+using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -50,19 +51,18 @@ namespace Store.WebAPI.Controllers
             _smsSender = smsSender;
             _countriesService = countriesService;
             _cacheProvider = cacheManager.CacheProvider;
-        } 
+        }
 
         /// <summary>Generates and sends an email confirmation token to email address associated with user account.</summary>
         /// <param name="userId">The user identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="returnUrl">The return URL.</param>
+        /// <param name="emailConfirmationModel">The email confirmation model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("{userId:guid}/email")]
-        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromQuery] Guid clientId, [FromQuery] string returnUrl)
+        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, EmailConfirmationPostApiModel emailConfirmationModel)
         {
 			// TODO - potentially check if user is authenticated OR pending verification on login
 			
@@ -71,14 +71,21 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            if (clientId == Guid.Empty)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Client Id cannot be empty.");
+                return BadRequest(ModelState);
             }
 
-            if (string.IsNullOrWhiteSpace(returnUrl))
+            // Verify client information
+            if (!Guid.TryParse(emailConfirmationModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
             {
-                return BadRequest("Return URL cannot be empty.");
+                return BadRequest($"Client '{clientId}' format is invalid.");
+            }
+
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, emailConfirmationModel.ClientSecret);
+            if (!string.IsNullOrEmpty(clientAuthResult))
+            {
+                return Unauthorized(clientAuthResult);
             }
 
             IUser user = await _userManager.FindUserByIdAsync(userId);
@@ -91,18 +98,12 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Email is already confirmed.");
             }
 
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
             // Get email confirmation token
             string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             _logger.LogInformation("Email confirmation token has been generated.");
 
-            UriTemplate template = new UriTemplate(returnUrl);
+            UriTemplate template = new UriTemplate(emailConfirmationModel.ReturnUrl);
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },

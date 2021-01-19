@@ -61,10 +61,10 @@ namespace Store.WebAPI.Controllers
                 return BadRequest($"Client '{clientId}' format is invalid.");
             }
 
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
+            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, passwordRecoveryModel.ClientSecret);
+            if (!string.IsNullOrEmpty(clientAuthResult))
             {
-                return NotFound("Client not found.");
+                return Unauthorized(clientAuthResult);
             }
 
             IUser user = await _userManager.FindByEmailAsync(passwordRecoveryModel.Email);
