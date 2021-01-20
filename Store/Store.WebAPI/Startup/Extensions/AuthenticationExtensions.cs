@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ using Store.Service.Options;
 using Store.Service.Constants;
 using Store.Services.Identity;
 using Store.Model.Common.Models.Identity;
+using Store.WebAPI.Infrastructure.Authorization.Handlers;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {
@@ -120,6 +122,9 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 options.SaveToken = true;
                 options.TokenValidationParameters = tokenValidationParameters;
             });
+
+            // Add custom authentication scheme
+            services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, ClientAuthenticationHandler>("ClientAuthenticationScheme", options => { });
 
             // External Login configuration
             services.ConfigureExternalProviders(configuration);

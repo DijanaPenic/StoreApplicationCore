@@ -42,6 +42,9 @@ namespace Store.WebAPI
             // Authentication configuration
             services.AddAuthentication(Configuration);
 
+            // Authorization configuration
+            services.AddAuthorization(Configuration);
+
             // Swagger configuration
             services.AddSwagger();
 
