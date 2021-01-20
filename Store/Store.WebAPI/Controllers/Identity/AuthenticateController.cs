@@ -19,7 +19,7 @@ using Store.Common.Extensions;
 using Store.Services.Identity;
 using Store.Service.Common.Services.Identity;
 using Store.WebAPI.Models.Identity;
-using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
 
@@ -217,7 +217,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpDelete]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("expired-refresh-tokens")]
         public async Task<IActionResult> DeleteExpiredRefreshTokensAsync()
         {

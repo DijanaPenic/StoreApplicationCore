@@ -10,7 +10,7 @@ using Store.Common.Helpers.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
-using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
 
@@ -18,7 +18,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/books")]
-    [AuthorizationFilter(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
+    [UserAuthorization(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class BookController : ApplicationControllerBase
     {
         private readonly IBookService _bookService;

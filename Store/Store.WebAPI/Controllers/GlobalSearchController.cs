@@ -8,13 +8,13 @@ using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
 using Store.WebAPI.Models.GlobalSearch;
-using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/global-search")]
-    [AuthorizationFilter(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
+    [UserAuthorization(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class GlobalSearchController : ControllerBase
     {
         private readonly IGlobalSearchService _globalSearchService;

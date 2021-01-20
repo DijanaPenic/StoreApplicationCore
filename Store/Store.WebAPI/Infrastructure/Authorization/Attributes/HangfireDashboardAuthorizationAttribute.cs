@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using Store.Common.Helpers.Identity;
 
-namespace Store.WebAPI.Infrastructure.Attributes
+namespace Store.WebAPI.Infrastructure.Authorization.Attributes
 {
     public class HangfireDashboardAuthorizationAttribute : IDashboardAuthorizationFilter
     {

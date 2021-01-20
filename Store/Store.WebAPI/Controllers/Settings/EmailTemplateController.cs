@@ -43,7 +43,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpPost]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("")]
         public async Task<IActionResult> PostAsync([FromForm]IFormFile file, [FromForm]EmailTemplateType type)
         {
@@ -74,7 +74,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{emailTemplateId:guid}")]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid emailTemplateId, [FromForm] IFormFile file)
         {
@@ -101,7 +101,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{emailTemplateId:guid}")]
         [Produces("application/octet-stream")]
         public async Task<IActionResult> GetAsync([FromRoute] Guid emailTemplateId)
@@ -123,7 +123,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAsync()
         {
@@ -147,7 +147,7 @@ namespace Store.WebAPI.Controllers
         }
 
         [HttpDelete]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{emailTemplateId:guid}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid emailTemplateId)
         {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Store.Cache.Common;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
-using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Services.Identity;
 using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models.Identity;
@@ -40,7 +40,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Route("")]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Produces("application/json")]
         public async Task<IActionResult> GetRolesAsync()
         {

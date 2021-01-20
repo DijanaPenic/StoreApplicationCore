@@ -16,7 +16,7 @@ using Store.Common.Extensions;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
-using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Services.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -258,7 +258,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("")]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateUserAsync(UserPostApiModel createUserModel)
@@ -292,7 +292,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}")]
         [Consumes("application/json")]
         public async Task<IActionResult> PatchUserAsync([FromRoute] Guid userId, [FromBody] UserPatchApiModel userModel)
@@ -349,7 +349,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/lock")]
         public async Task<IActionResult> LockUserAsync([FromRoute] Guid userId)
         {
@@ -375,7 +375,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/unlock")]
         public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid userId)
         {
@@ -401,7 +401,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/approve")]
         public async Task<IActionResult> ApproveUserAsync([FromRoute] Guid userId)
         {
@@ -427,7 +427,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/disapprove")]
         public async Task<IActionResult> DisapproveUserAsync([FromRoute] Guid userId)
         {
@@ -569,7 +569,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("")]
         [Produces("application/json")]
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, bool showInactive = false, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
@@ -601,7 +601,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}")]
         [Produces("application/json")]
         public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string[] includeProperties)
@@ -626,7 +626,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AuthorizationFilter(RoleHelper.Admin)]
+        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/roles")]
         [Produces("application/json")]
         public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, string[] rolesToAssign)

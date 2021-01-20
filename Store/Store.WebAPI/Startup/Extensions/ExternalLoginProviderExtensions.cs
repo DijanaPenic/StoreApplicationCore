@@ -28,7 +28,6 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             void externalLoginAuthOptions(OAuthOptions options)
             {
-
                 options.ClientId = config.ClientId;
                 options.ClientSecret = config.ClientSecret;
                 options.SignInScheme = IdentityConstants.ExternalScheme;
