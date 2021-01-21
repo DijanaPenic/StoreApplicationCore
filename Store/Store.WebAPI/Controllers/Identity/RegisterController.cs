@@ -16,6 +16,7 @@ using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Services.Identity;
 using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Messaging.Services.Common;
 
 namespace Store.WebAPI.Controllers
@@ -55,7 +56,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterAsync(RegisterPostApiModel registerModel)
@@ -63,18 +64,6 @@ namespace Store.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            // Verify client information
-            if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, registerModel.ClientSecret);
-            if (!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
             }
 
             IUser user = _mapper.Map<IUser>(registerModel);
@@ -92,6 +81,9 @@ namespace Store.WebAPI.Controllers
             if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
             _logger.LogInformation("Guest role has been assigned to the user.");
+
+            // Retrieve client_id
+            Guid clientId = GetCurrentUserClientId();
 
             // Save the registration cookie - if the cookie is present in the browser, the user can be automaticalled signed in. Otherwise, the user must be redirected to the Login page.
             await _signInManager.RegisterAsync(clientId, user);
@@ -121,6 +113,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
+        [ClientAuthorization]
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("external")]
         [Consumes("application/json")]
@@ -129,18 +122,6 @@ namespace Store.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            // Verify client information
-            if (!Guid.TryParse(registerModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, registerModel.ClientSecret);
-            if (!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
             }
 
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
@@ -257,7 +238,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Sending email confirmation token to confirm association with {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                await _emailClientSender.SendConfirmExternalAccountAsync(clientId, existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
+                await _emailClientSender.SendConfirmExternalAccountAsync(GetCurrentUserClientId(), existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
                 return Ok(ExternalAuthStep.PendingExternalLoginCreation);
             }

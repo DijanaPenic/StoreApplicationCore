@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Services.Identity;
 using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
 
@@ -21,20 +21,17 @@ namespace Store.WebAPI.Controllers
     public class RecoverPasswordController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly ApplicationAuthManager _authManager;
         private readonly IEmailSenderService _emailClientSender;
         private readonly ILogger _logger;
 
         public RecoverPasswordController
         (
             ApplicationUserManager userManager,
-            ApplicationAuthManager authManager,
             IEmailSenderService emailClientSender,
             ILogger<RegisterController> logger
         )
         {
             _userManager = userManager;
-            _authManager = authManager;
             _emailClientSender = emailClientSender;
             _logger = logger;
         }
@@ -45,7 +42,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("")]
         [Consumes("application/json")]
         public async Task<IActionResult> InitiatePasswordRecoveryAsync(PasswordRecoveryPostApiModel passwordRecoveryModel)
@@ -53,18 +50,6 @@ namespace Store.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            // Verify client information
-            if (!Guid.TryParse(passwordRecoveryModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, passwordRecoveryModel.ClientSecret);
-            if (!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
             }
 
             IUser user = await _userManager.FindByEmailAsync(passwordRecoveryModel.Email);
@@ -89,7 +74,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending password recovery email.");
 
-            await _emailClientSender.SendResetPasswordAsync(clientId, passwordRecoveryModel.Email, callbackUrl, user.UserName);
+            await _emailClientSender.SendResetPasswordAsync(GetCurrentUserClientId(), passwordRecoveryModel.Email, callbackUrl, user.UserName);
 
             return Ok();
         }

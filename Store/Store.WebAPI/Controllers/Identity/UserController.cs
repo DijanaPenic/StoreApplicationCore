@@ -31,7 +31,6 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
         private readonly ApplicationSignInManager _signInManager;
-        private readonly ApplicationAuthManager _authManager;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IEmailSenderService _emailClientSender;
@@ -41,7 +40,6 @@ namespace Store.WebAPI.Controllers
             ApplicationUserManager userManager,
             ApplicationRoleManager roleManager,
             ApplicationSignInManager signInManager,
-            ApplicationAuthManager authManager,
             ILogger<UserController> logger,
             IMapper mapper,
             IEmailSenderService emailClientSender
@@ -50,7 +48,6 @@ namespace Store.WebAPI.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
-            _authManager = authManager;
             _logger = logger;
             _mapper = mapper;
             _emailClientSender = emailClientSender;
@@ -136,15 +133,6 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            // Retrieve client_id for the currently logged in user
-            Guid clientId = GetCurrentUserClientId();
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
             if (user.Email != userProfileModel.Email) user.EmailConfirmed = false;
 
             _mapper.Map(userProfileModel, user);
@@ -169,7 +157,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation("Sending email confirmation email.");
 
-                await _emailClientSender.SendConfirmEmailAsync(clientId, user.Email, callbackUrl, user.UserName);
+                await _emailClientSender.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
             }
 
             return Ok();
@@ -487,15 +475,6 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User must be logged in.");
             }
 
-            // Retrieve client_id for the currently logged in user
-            Guid clientId = GetCurrentUserClientId();
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
             IdentityResult result;
 
             if (isCurrentUser)
@@ -511,7 +490,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation("Sending email with password information.");
 
-                await _emailClientSender.SendChangePasswordEmailAsync(clientId, user.Email, user.UserName, changePasswordModel.NewPassword);
+                await _emailClientSender.SendChangePasswordEmailAsync(GetCurrentUserClientId(), user.Email, user.UserName, changePasswordModel.NewPassword);
             }
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);

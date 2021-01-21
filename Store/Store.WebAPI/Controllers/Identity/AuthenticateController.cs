@@ -82,7 +82,7 @@ namespace Store.WebAPI.Controllers
         [AllowAnonymous]
         [Route("account-verification")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAccountVerificationAsync()
+        public async Task<IActionResult> AuthenticateAsync()
         {
             // Retrieve user account information from cookie
             AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync(); 
@@ -103,18 +103,7 @@ namespace Store.WebAPI.Controllers
                 return NotFound("User Id not found.");
             }
 
-            // Verify client information
-            if (!Guid.TryParse(accountVerificationInfo.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
+            Guid clientId = Guid.Parse(accountVerificationInfo.ClientId);
             SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync(clientId);
 
             return await AuthenticateAsync(signInResult, user, clientId);
@@ -126,7 +115,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -135,18 +124,6 @@ namespace Store.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            // Verify client information
-            if(!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid."); 
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, authenticateModel.ClientSecret);
-            if(!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
             }
 
             // Check user's status
@@ -163,6 +140,8 @@ namespace Store.WebAPI.Controllers
             {
                 return Unauthorized($"User [{user.UserName}] is not approved.");
             }
+
+            Guid clientId = GetCurrentUserClientId();
 
             // Attempt to sign in
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(clientId, user, authenticateModel.Password, lockoutOnFailure: true); 
@@ -181,20 +160,11 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> RenewTokensAsync([FromRoute]string refreshToken)
         {
-            // Retrieve client_id for the currently logged in user
-            Guid clientId = GetCurrentUserClientId();
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
             try
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken, accessToken, clientId);
+                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken, accessToken, GetCurrentUserClientId());
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 
@@ -289,6 +259,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
+        [ClientAuthorization]
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("external")]
         [Consumes("application/json")]
@@ -300,23 +271,14 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Verify client information
-            if (!Guid.TryParse(authenticateModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, authenticateModel.ClientSecret);
-            if (!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
-            }
-
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();     
             if (externalLoginInfo == null)
             {
                 return BadRequest("External login information is missing.");
             }
+
+            // Retrieve client_id
+            Guid clientId = GetCurrentUserClientId();
 
             // Sign in the user with this external login provider if the user already has a *confirmed* external login.
             IUser user = await _userManager.FindUserByLoginAsync(externalLoginInfo, loginConfirmed: true);
@@ -419,25 +381,15 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Two Factor authentication info not found.");
             }
 
-            // Verify client information
-            if (!Guid.TryParse(twoFactorInfo.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
             IUser user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
             {
                 return BadRequest("Two-factor authentication action is not supported for the user.");
             }
 
+            Guid clientId = Guid.Parse(twoFactorInfo.ClientId);
             SignInResult signInResult;
+
             if (authenticateModel.UseRecoveryCode)
             {
                 signInResult = await _signInManager.TwoFactorRecoveryCodeSignInAsync(authenticateModel.Code);

@@ -9,12 +9,10 @@ using Microsoft.Extensions.Logging;
 
 using Store.Common.Enums;
 using Store.Common.Helpers.Identity;
-using Store.Services.Identity;
 using Store.Service.Common.Services;
 using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Models.Settings;
-using Store.WebAPI.Infrastructure.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 
 namespace Store.WebAPI.Controllers
 {
@@ -23,20 +21,17 @@ namespace Store.WebAPI.Controllers
     [Route("api/email-templates")]
     public class EmailTemplateController : ApplicationControllerBase
     {
-        private readonly ApplicationAuthManager _authManager;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IEmailTemplateService _emailTemplateService;
 
         public EmailTemplateController
         (
-            ApplicationAuthManager authManager,
             ILogger<SettingsController> logger,
             IMapper mapper,
             IEmailTemplateService emailTemplateService
         )
         {
-            _authManager = authManager;
             _logger = logger;
             _mapper = mapper;
             _emailTemplateService = emailTemplateService;
@@ -54,12 +49,6 @@ namespace Store.WebAPI.Controllers
 
             // Retrieve client_id for the currently logged in user
             Guid clientId = GetCurrentUserClientId();
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
 
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(clientId, type);
             if(emailTemplateExists)
@@ -129,12 +118,6 @@ namespace Store.WebAPI.Controllers
         {
             // Retrieve client_id for the currently logged in user
             Guid clientId = GetCurrentUserClientId();
-
-            IClient client = await _authManager.GetClientByIdAsync(clientId);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
 
             IEnumerable<IEmailTemplate> emailTemplates = await _emailTemplateService.FindEmailTemplatesByClientIdAsync(clientId);
 

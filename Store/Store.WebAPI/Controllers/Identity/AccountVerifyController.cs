@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
-using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Services.Identity;
 using Store.Service.Common.Services;
 using Store.Messaging.Services.Common;
@@ -26,7 +26,6 @@ namespace Store.WebAPI.Controllers
     public class AccountVerifyController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly ApplicationAuthManager _authManager;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
         private readonly ISmsSenderService _smsSender;
@@ -36,7 +35,6 @@ namespace Store.WebAPI.Controllers
         public AccountVerifyController
         (
             ApplicationUserManager userManager,
-            ApplicationAuthManager authManager,
             ILogger<RegisterController> logger,
             IEmailSenderService emailClientSender,
             ISmsSenderService smsSender,
@@ -45,7 +43,6 @@ namespace Store.WebAPI.Controllers
         )
         {
             _userManager = userManager;
-            _authManager = authManager;
             _logger = logger;
             _emailClientSender = emailClientSender;
             _smsSender = smsSender;
@@ -60,7 +57,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("{userId:guid}/email")]
         public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, EmailConfirmationPostApiModel emailConfirmationModel)
         {
@@ -74,18 +71,6 @@ namespace Store.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            // Verify client information
-            if (!Guid.TryParse(emailConfirmationModel.ClientId, out Guid clientId) || GuidHelper.IsNullOrEmpty(clientId))
-            {
-                return BadRequest($"Client '{clientId}' format is invalid.");
-            }
-
-            string clientAuthResult = await _authManager.AuthenticateClientAsync(clientId, emailConfirmationModel.ClientSecret);
-            if (!string.IsNullOrEmpty(clientAuthResult))
-            {
-                return Unauthorized(clientAuthResult);
             }
 
             IUser user = await _userManager.FindUserByIdAsync(userId);
@@ -112,7 +97,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending email confirmation email.");
 
-            await _emailClientSender.SendConfirmEmailAsync(clientId, user.Email, callbackUrl, user.UserName); 
+            await _emailClientSender.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName); 
 
             return Ok();
         }

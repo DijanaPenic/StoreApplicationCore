@@ -12,12 +12,6 @@ namespace Store.WebAPI.Models.Identity
         public bool AssociateExistingAccount { get; set; }
 
         [Required]
-        public string ConfirmationUrl { get; set; }       
-            
-        [Required]
-        public string ClientId { get; set; }
-
-        [Required]
-        public string ClientSecret { get; set; }
+        public string ConfirmationUrl { get; set; }         
     }
 }
