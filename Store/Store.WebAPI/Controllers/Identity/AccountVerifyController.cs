@@ -109,9 +109,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("{userId:guid}/email/token/{token}")]
-        public async Task<IActionResult> ConfirmUserEmailAsync([FromRoute] Guid userId, [FromRoute] string token)
+        public async Task<IActionResult> ConfirmEmailAsync([FromRoute] Guid userId, [FromRoute] string token)
         {
             if (userId == Guid.Empty)
             {
@@ -140,7 +140,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost] 
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("external/{userId:guid}/email/token/{token}")]
         public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromRoute] string token)
         {
@@ -184,7 +184,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("{userId:guid}/sms")]
         [Consumes("application/json")]
         public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
@@ -254,7 +254,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("{userId:guid}/sms/token/{token}")]
         public async Task<IActionResult> ConfirmPhoneNumberAsync([FromRoute] Guid userId, [FromRoute] string token, [FromQuery] string phoneNumber)
         {

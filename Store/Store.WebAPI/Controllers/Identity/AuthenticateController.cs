@@ -74,7 +74,7 @@ namespace Store.WebAPI.Controllers
             return Ok(authInfoModel);
         }
 
-        /// <summary>Attempts to authenticate user at the end of the account verification process.</summary>
+        /// <summary>Attempts to authenticate user at the end of the account verification process (account verififcation: phone number and/or email verification).</summary>
         /// <returns>
         ///   <br />
         /// </returns>

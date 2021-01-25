@@ -86,7 +86,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [AllowAnonymous]
+        [ClientAuthorization]
         [Route("{userId:guid}")]
         [Consumes("application/json")]
         public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid userId, PasswordRecoveryPatchApiModel passwordRecoveryModel)
