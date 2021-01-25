@@ -14,10 +14,14 @@ namespace Store.WebAPI.Controllers
 
         protected IActionResult Created() => StatusCode(StatusCodes.Status201Created);
 
-        protected bool IsCurrentUser(Guid userId) => GetCurrentUserId() == userId;
+        protected bool IsCurrentUser(Guid userId) => GetUserId(User) == userId;
 
-        protected Guid GetCurrentUserId() => Guid.Parse(User.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
+        protected Guid GetCurrentUserClientId() => GetClientId(User);
 
-        protected Guid GetCurrentUserClientId() => Guid.Parse(User.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
+        protected bool IsUser(Guid userId, ClaimsPrincipal claimsPrincipal) => GetUserId(claimsPrincipal) == userId;
+
+        protected Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
+
+        protected Guid GetClientId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
     }
 }

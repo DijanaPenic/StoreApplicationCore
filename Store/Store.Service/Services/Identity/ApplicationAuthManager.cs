@@ -114,7 +114,7 @@ namespace Store.Services.Identity
 
         public async Task<IJwtAuthResult> RenewTokensAsync(string refreshToken, string accessToken, Guid clientId)
         {
-            (ClaimsPrincipal claimsPrincipal, JwtSecurityToken jwtToken) = await DecodeJwtTokenAsync(accessToken);
+            (ClaimsPrincipal claimsPrincipal, JwtSecurityToken jwtToken) = await DecodeAccessTokenAsync(accessToken);
 
             if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
             {
@@ -146,7 +146,19 @@ namespace Store.Services.Identity
             return await GenerateTokensAsync(user.Id, clientId, provider);
         }
 
-        public Task<(ClaimsPrincipal, JwtSecurityToken)> DecodeJwtTokenAsync(string token)
+        public async Task<ClaimsPrincipal> ValidateAccessTokenAsync(string token)
+        {
+            (ClaimsPrincipal claimsPrincipal, JwtSecurityToken jwtToken) = await DecodeAccessTokenAsync(token);
+
+            if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
+            {
+                return default;
+            }
+
+            return claimsPrincipal;
+        }
+
+        public Task<(ClaimsPrincipal, JwtSecurityToken)> DecodeAccessTokenAsync(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Collections.Generic;
 using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
 using Store.Common.Extensions;
+using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Constants;
@@ -26,6 +29,8 @@ namespace Store.WebAPI.Controllers
     public class AccountVerifyController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
+        private readonly ApplicationAuthManager _authManager;
+        private readonly ApplicationSignInManager _signInManager;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
         private readonly ISmsSenderService _smsSender;
@@ -35,6 +40,8 @@ namespace Store.WebAPI.Controllers
         public AccountVerifyController
         (
             ApplicationUserManager userManager,
+            ApplicationAuthManager authManager,
+            ApplicationSignInManager signInManager,
             ILogger<RegisterController> logger,
             IEmailSenderService emailClientSender,
             ISmsSenderService smsSender,
@@ -43,6 +50,8 @@ namespace Store.WebAPI.Controllers
         )
         {
             _userManager = userManager;
+            _authManager = authManager;
+            _signInManager = signInManager;
             _logger = logger;
             _emailClientSender = emailClientSender;
             _smsSender = smsSender;
@@ -57,16 +66,12 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [ClientAuthorization]
+        [AllowAnonymous]
         [Route("{userId:guid}/email")]
         public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, EmailConfirmationPostApiModel emailConfirmationModel)
         {
-			// TODO - potentially check if user is authenticated OR pending verification on login
-			
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
+            (IActionResult authActionResult, Guid clientId) = await AuthenticateUserAsync(userId);
+            if (authActionResult != null) return authActionResult;
 
             if (!ModelState.IsValid)
             {
@@ -97,7 +102,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending email confirmation email.");
 
-            await _emailClientSender.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName); 
+            await _emailClientSender.SendConfirmEmailAsync(clientId, user.Email, callbackUrl, user.UserName); 
 
             return Ok();
         }
@@ -184,17 +189,13 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [ClientAuthorization]
+        [AllowAnonymous]
         [Route("{userId:guid}/sms")]
         [Consumes("application/json")]
         public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
         {
-			// TODO - potentially check if user is authenticated OR pending verification on login
-			
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
+            (IActionResult authActionResult, Guid _) = await AuthenticateUserAsync(userId);
+            if (authActionResult != null) return authActionResult;
 
             if (!ModelState.IsValid)
             {
@@ -234,10 +235,10 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Generating phone number confirmation token.");
 
-            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber);
+            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber).GetDigits();
 
             // Get sms confirmation token
-            string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber.GetDigits());
+            string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
 
             _logger.LogInformation("Sending SMS confirmation token to activate the account.");
 
@@ -272,6 +273,55 @@ namespace Store.WebAPI.Controllers
             IdentityResult result = await _userManager.ChangePhoneNumberAsync(user, phoneNumber.GetDigits(), token);
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
+        }
+
+        /// <summary>Checks if user is logged in (current user or admin) OR pending verification on login.</summary>
+        private async Task<(IActionResult, Guid)> AuthenticateUserAsync(Guid userId)
+        {
+            Guid clientId;
+            IActionResult actionResult = null;
+
+            if (userId == Guid.Empty)
+            {
+                actionResult = BadRequest("User Id cannot be empty.");
+            }
+
+            string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                // Retrieve user account information from token
+                ClaimsPrincipal claimsPrincipal = await _authManager.ValidateAccessTokenAsync(accessToken);
+                if (claimsPrincipal == null)
+                {
+                    actionResult = Unauthorized("Invalid access token!");
+                }
+
+                bool hasPermissions = IsUser(userId, claimsPrincipal) || claimsPrincipal.IsInRole(RoleHelper.Admin);
+                if (!hasPermissions)
+                {
+                    actionResult = Forbid();
+                }
+
+                clientId = GetClientId(claimsPrincipal);
+            }
+            else
+            {
+                // Retrieve user account information from cookie
+                AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
+                if (accountVerificationInfo == null)
+                {
+                    actionResult = Unauthorized("Account information not found.");
+                }
+
+                if (Guid.Parse(accountVerificationInfo.UserId) != userId)
+                {
+                    actionResult = Forbid();
+                }
+
+                clientId = Guid.Parse(accountVerificationInfo.ClientId);
+            }
+
+            return (actionResult, clientId);
         }
     }
 }
