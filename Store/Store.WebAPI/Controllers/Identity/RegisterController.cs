@@ -9,12 +9,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-using Store.Common.Helpers;
-using Store.Common.Extensions;
-using Store.Common.Helpers.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Services.Identity;
+using Store.Common.Extensions;
+using Store.Common.Helpers.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Messaging.Services.Common;
@@ -27,7 +26,6 @@ namespace Store.WebAPI.Controllers
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
-        private readonly ApplicationAuthManager _authManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IEmailSenderService _emailClientSender;
@@ -36,7 +34,6 @@ namespace Store.WebAPI.Controllers
         (
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
-            ApplicationAuthManager authManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
             IEmailSenderService emailClientSender
@@ -44,7 +41,6 @@ namespace Store.WebAPI.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _authManager = authManager;
             _logger = logger;
             _mapper = mapper;
             _emailClientSender = emailClientSender;

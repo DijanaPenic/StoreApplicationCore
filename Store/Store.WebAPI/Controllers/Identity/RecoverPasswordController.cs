@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Extensions;
