@@ -70,8 +70,8 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/email")]
         public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, EmailConfirmationPostApiModel emailConfirmationModel)
         {
-            (IActionResult authActionResult, Guid clientId) = await AuthenticateUserAsync(userId);
-            if (authActionResult != null) return authActionResult;
+            AuthenticateResult authResult = await AuthenticateUserAsync(userId);
+            if (authResult.Action != null) return authResult.Action;
 
             if (!ModelState.IsValid)
             {
@@ -102,7 +102,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending email confirmation email.");
 
-            await _emailClientSender.SendConfirmEmailAsync(clientId, user.Email, callbackUrl, user.UserName); 
+            await _emailClientSender.SendConfirmEmailAsync(authResult.ClientId, user.Email, callbackUrl, user.UserName); 
 
             return Ok();
         }
@@ -194,8 +194,8 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
         {
-            (IActionResult authActionResult, Guid _) = await AuthenticateUserAsync(userId);
-            if (authActionResult != null) return authActionResult;
+            AuthenticateResult authResult = await AuthenticateUserAsync(userId);
+            if (authResult.Action != null) return authResult.Action;
 
             if (!ModelState.IsValid)
             {
@@ -276,14 +276,13 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Checks if user is logged in (current user or admin) OR pending verification on login.</summary>
-        private async Task<(IActionResult, Guid)> AuthenticateUserAsync(Guid userId)
+        private async Task<AuthenticateResult> AuthenticateUserAsync(Guid userId)
         {
-            Guid clientId;
-            IActionResult actionResult = null;
+            AuthenticateResult result = new AuthenticateResult();
 
             if (userId == Guid.Empty)
             {
-                actionResult = BadRequest("User Id cannot be empty.");
+                result.Action = BadRequest("User Id cannot be empty.");
             }
 
             string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
@@ -293,16 +292,16 @@ namespace Store.WebAPI.Controllers
                 ClaimsPrincipal claimsPrincipal = await _authManager.ValidateAccessTokenAsync(accessToken);
                 if (claimsPrincipal == null)
                 {
-                    actionResult = Unauthorized("Invalid access token!");
+                    result.Action = Unauthorized("Invalid access token!");
                 }
 
                 bool hasPermissions = IsUser(userId, claimsPrincipal) || claimsPrincipal.IsInRole(RoleHelper.Admin);
                 if (!hasPermissions)
                 {
-                    actionResult = Forbid();
+                    result.Action = Forbid();
                 }
 
-                clientId = GetClientId(claimsPrincipal);
+                result.ClientId = GetClientId(claimsPrincipal);
             }
             else
             {
@@ -310,18 +309,25 @@ namespace Store.WebAPI.Controllers
                 AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
                 if (accountVerificationInfo == null)
                 {
-                    actionResult = Unauthorized("Account information not found.");
+                    result.Action = Unauthorized("Account information not found.");
                 }
 
                 if (Guid.Parse(accountVerificationInfo.UserId) != userId)
                 {
-                    actionResult = Forbid();
+                    result.Action = Forbid();
                 }
 
-                clientId = Guid.Parse(accountVerificationInfo.ClientId);
+                result.ClientId = Guid.Parse(accountVerificationInfo.ClientId);
             }
 
-            return (actionResult, clientId);
+            return result;
+        }
+
+        public class AuthenticateResult
+        {
+            public IActionResult Action { get; set; }
+
+            public Guid ClientId { get; set; }
         }
     }
 }
