@@ -20,18 +20,18 @@ namespace Store.WebAPI.Controllers
     public class RecoverPasswordController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly IEmailSenderService _emailClientSender;
+        private readonly IEmailService _emailService;
         private readonly ILogger _logger;
 
         public RecoverPasswordController
         (
             ApplicationUserManager userManager,
-            IEmailSenderService emailClientSender,
+            IEmailService emailService,
             ILogger<RegisterController> logger
         )
         {
             _userManager = userManager;
-            _emailClientSender = emailClientSender;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -73,7 +73,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending password recovery email.");
 
-            await _emailClientSender.SendResetPasswordAsync(GetCurrentUserClientId(), passwordRecoveryModel.Email, callbackUrl, user.UserName);
+            await _emailService.SendResetPasswordAsync(GetCurrentUserClientId(), passwordRecoveryModel.Email, callbackUrl, user.UserName);
 
             return Ok();
         }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Store.Messaging.Services.Common
 {
-    public interface IEmailSenderService
+    public interface IEmailService
     {
         Task SendConfirmAccountAsync(Guid clientId, string email, string url);
 

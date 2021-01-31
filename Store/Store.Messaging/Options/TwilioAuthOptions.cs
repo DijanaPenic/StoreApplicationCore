@@ -1,6 +1,6 @@
 ﻿namespace Store.Messaging.Options
 {
-    public class SmsSenderAuthOptions
+    public class TwilioAuthOptions
     {
         public const string Position = "Twilio";
 

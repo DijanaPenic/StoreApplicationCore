@@ -28,7 +28,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationSignInManager _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        private readonly IEmailSenderService _emailClientSender;
+        private readonly IEmailService _emailService;
 
         public RegisterController
         (
@@ -36,14 +36,14 @@ namespace Store.WebAPI.Controllers
             ApplicationSignInManager signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
-            IEmailSenderService emailClientSender
+            IEmailService emailService
         )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
-            _emailClientSender = emailClientSender;
+            _emailService = emailService;
         } 
 
         /// <summary>Registers a new user account.</summary>
@@ -98,7 +98,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending account activation email to activate account.");
 
-            await _emailClientSender.SendConfirmAccountAsync(clientId, user.Email, callbackUrl);
+            await _emailService.SendConfirmAccountAsync(clientId, user.Email, callbackUrl);
 
             return Ok();
         }
@@ -234,7 +234,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Sending email confirmation token to confirm association with {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                await _emailClientSender.SendConfirmExternalAccountAsync(GetCurrentUserClientId(), existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
+                await _emailService.SendConfirmExternalAccountAsync(GetCurrentUserClientId(), existingUser.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
                 return Ok(ExternalAuthStep.PendingExternalLoginCreation);
             }

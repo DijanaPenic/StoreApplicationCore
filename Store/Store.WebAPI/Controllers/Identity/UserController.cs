@@ -33,7 +33,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationSignInManager _signInManager;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IEmailSenderService _emailClientSender;
+        private readonly IEmailService _emailService;
 
         public UserController
         (
@@ -42,7 +42,7 @@ namespace Store.WebAPI.Controllers
             ApplicationSignInManager signInManager,
             ILogger<UserController> logger,
             IMapper mapper,
-            IEmailSenderService emailClientSender
+            IEmailService emailService
         )
         {
             _userManager = userManager;
@@ -50,7 +50,7 @@ namespace Store.WebAPI.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
-            _emailClientSender = emailClientSender;
+            _emailService = emailService;
         }
 
         /// <summary>Retrieves user profile for the user.</summary>
@@ -157,7 +157,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation("Sending email confirmation email.");
 
-                await _emailClientSender.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
+                await _emailService.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
             }
 
             return Ok();
@@ -490,7 +490,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation("Sending email with password information.");
 
-                await _emailClientSender.SendChangePasswordEmailAsync(GetCurrentUserClientId(), user.Email, user.UserName, changePasswordModel.NewPassword);
+                await _emailService.SendChangePasswordEmailAsync(GetCurrentUserClientId(), user.Email, user.UserName, changePasswordModel.NewPassword);
             }
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);

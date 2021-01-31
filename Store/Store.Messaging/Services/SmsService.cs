@@ -9,19 +9,19 @@ using Store.Messaging.Services.Common;
 
 namespace Store.Messaging.Services
 {
-    public class SmsSenderService : ISmsSenderService
+    public class SmsService : ISmsService
     {
-        private readonly SmsSenderAuthOptions _smsConfig; 
+        private readonly TwilioAuthOptions _smsConfig; 
         
-        public SmsSenderService(IOptions<SmsSenderAuthOptions> options)
+        public SmsService(IOptions<TwilioAuthOptions> options)
         {
             _smsConfig = options.Value;
+
+            TwilioClient.Init(_smsConfig.AccountSID, _smsConfig.AuthToken);
         }
 
         public Task SendSmsAsync(string phoneNumber, string body)
-        {
-            TwilioClient.Init(_smsConfig.AccountSID, _smsConfig.AuthToken);
-
+        {         
             Task<MessageResource> message = MessageResource.CreateAsync(
                 body: body,
                 from: new PhoneNumber(_smsConfig.FromPhoneNumber),

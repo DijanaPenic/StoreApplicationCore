@@ -1,6 +1,6 @@
 ﻿namespace Store.Messaging.Options
 {
-    public class EmailSenderAuthOptions
+    public class SendGridAuthOptions
     {
         public const string Position = "SendGrid";
 

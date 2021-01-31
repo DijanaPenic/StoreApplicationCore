@@ -17,17 +17,19 @@ using Store.Service.Common.Services;
 
 namespace Store.Messaging.Services
 {
-    public class EmailSenderService : IEmailSenderService
+    public class EmailService : IEmailService
     {
-        private readonly EmailSenderAuthOptions _emailConfig;
+        private readonly SendGridAuthOptions _emailConfig;
         private readonly IRazorViewToStringRenderer _razorViewToStringRenderer;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly SendGridClient _client;
 
-        public EmailSenderService(IOptions<EmailSenderAuthOptions> options, IRazorViewToStringRenderer razorViewToStringRenderer, IEmailTemplateService emailTemplateService)
+        public EmailService(IOptions<SendGridAuthOptions> options, IRazorViewToStringRenderer razorViewToStringRenderer, IEmailTemplateService emailTemplateService)
         {
             _emailConfig = options.Value;
             _razorViewToStringRenderer = razorViewToStringRenderer;
             _emailTemplateService = emailTemplateService;
+            _client = new SendGridClient(_emailConfig.Key);
         }
 
         public async Task SendConfirmAccountAsync(Guid clientId, string email, string url)
@@ -129,8 +131,6 @@ namespace Store.Messaging.Services
 
         private Task SendEmailAsync(string email, string subject, string message)
         {
-            SendGridClient client = new SendGridClient(_emailConfig.Key);
-
             SendGridMessage msg = new SendGridMessage()
             {
                 From = new EmailAddress(_emailConfig.FromEmail, "Store Email Server"), 
@@ -143,7 +143,7 @@ namespace Store.Messaging.Services
             // Disable click tracking: https://sendgrid.com/docs/User_Guide/Settings/tracking.html
             msg.SetClickTracking(false, false);
 
-            return client.SendEmailAsync(msg);
+            return _client.SendEmailAsync(msg);
         }
     }
 }

@@ -32,8 +32,9 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationAuthManager _authManager;
         private readonly ApplicationSignInManager _signInManager;
         private readonly ILogger _logger;
-        private readonly IEmailSenderService _emailClientSender;
-        private readonly ISmsSenderService _smsSender;
+        private readonly IEmailService _emailService;
+        private readonly ISmsService _smsService;
+        private readonly IVoiceService _voiceService;
         private readonly ICountriesService _countriesService;
         private readonly ICacheProvider _cacheProvider;
 
@@ -43,8 +44,9 @@ namespace Store.WebAPI.Controllers
             ApplicationAuthManager authManager,
             ApplicationSignInManager signInManager,
             ILogger<RegisterController> logger,
-            IEmailSenderService emailClientSender,
-            ISmsSenderService smsSender,
+            IEmailService emailService,
+            ISmsService smsService,
+            IVoiceService voiceService,
             ICountriesService countriesService,
             ICacheManager cacheManager
         )
@@ -53,8 +55,9 @@ namespace Store.WebAPI.Controllers
             _authManager = authManager;
             _signInManager = signInManager;
             _logger = logger;
-            _emailClientSender = emailClientSender;
-            _smsSender = smsSender;
+            _emailService = emailService;
+            _smsService = smsService;
+            _voiceService = voiceService;
             _countriesService = countriesService;
             _cacheProvider = cacheManager.CacheProvider;
         }
@@ -102,7 +105,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending email confirmation email.");
 
-            await _emailClientSender.SendConfirmEmailAsync(authResult.ClientId, user.Email, callbackUrl, user.UserName); 
+            await _emailService.SendConfirmEmailAsync(authResult.ClientId, user.Email, callbackUrl, user.UserName); 
 
             return Ok();
         }

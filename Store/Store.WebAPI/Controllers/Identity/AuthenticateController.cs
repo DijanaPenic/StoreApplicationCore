@@ -35,7 +35,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly ApplicationSignInManager _signInManager;
-        private readonly IEmailSenderService _emailClientSender;
+        private readonly IEmailService _emailService;
 
         public AuthenticateController
         (
@@ -43,14 +43,14 @@ namespace Store.WebAPI.Controllers
             ApplicationAuthManager authManager,
             ApplicationSignInManager signInManager,
             ILogger<AuthenticateController> logger,
-            IEmailSenderService emailClientSender
+            IEmailService emailService
         )
         {
             _userManager = userManager;
             _authManager = authManager;
             _signInManager = signInManager;
             _logger = logger;
-            _emailClientSender = emailClientSender;
+            _emailService = emailService;
         }
 
         /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
@@ -335,7 +335,7 @@ namespace Store.WebAPI.Controllers
 
                     _logger.LogInformation($"Sending email confirmation token to confirm association of {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                    await _emailClientSender.SendConfirmExternalAccountAsync(clientId, user.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
+                    await _emailService.SendConfirmExternalAccountAsync(clientId, user.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
                     return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
                 }

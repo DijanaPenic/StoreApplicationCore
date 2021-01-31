@@ -2,7 +2,7 @@
 
 namespace Store.Messaging.Services.Common
 {
-    public interface ISmsSenderService
+    public interface ISmsService
     {
         Task SendSmsAsync(string phoneNumber, string body);
     }
