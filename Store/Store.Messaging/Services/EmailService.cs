@@ -19,17 +19,17 @@ namespace Store.Messaging.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly SendGridAuthOptions _emailConfig;
+        private readonly SendGridAuthOptions _config;
         private readonly IRazorViewToStringRenderer _razorViewToStringRenderer;
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly SendGridClient _client;
 
         public EmailService(IOptions<SendGridAuthOptions> options, IRazorViewToStringRenderer razorViewToStringRenderer, IEmailTemplateService emailTemplateService)
         {
-            _emailConfig = options.Value;
+            _config = options.Value;
             _razorViewToStringRenderer = razorViewToStringRenderer;
             _emailTemplateService = emailTemplateService;
-            _client = new SendGridClient(_emailConfig.Key);
+            _client = new SendGridClient(_config.Key);
         }
 
         public async Task SendConfirmAccountAsync(Guid clientId, string email, string url)
@@ -133,7 +133,7 @@ namespace Store.Messaging.Services
         {
             SendGridMessage msg = new SendGridMessage()
             {
-                From = new EmailAddress(_emailConfig.FromEmail, "Store Email Server"), 
+                From = new EmailAddress(_config.FromEmail, "Store Email Server"), 
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

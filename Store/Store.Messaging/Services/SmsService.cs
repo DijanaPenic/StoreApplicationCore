@@ -11,20 +11,20 @@ namespace Store.Messaging.Services
 {
     public class SmsService : ISmsService
     {
-        private readonly TwilioAuthOptions _smsConfig; 
+        private readonly TwilioAuthOptions _config; 
         
         public SmsService(IOptions<TwilioAuthOptions> options)
         {
-            _smsConfig = options.Value;
+            _config = options.Value;
 
-            TwilioClient.Init(_smsConfig.AccountSID, _smsConfig.AuthToken);
+            TwilioClient.Init(_config.AccountSID, _config.AuthToken);
         }
 
         public Task SendSmsAsync(string phoneNumber, string body)
         {         
             Task<MessageResource> message = MessageResource.CreateAsync(
                 body: body,
-                from: new PhoneNumber(_smsConfig.FromPhoneNumber),
+                from: new PhoneNumber(_config.FromPhoneNumber),
                 to: new PhoneNumber(phoneNumber)
             );
 
