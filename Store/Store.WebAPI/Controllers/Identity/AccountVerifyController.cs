@@ -238,7 +238,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Generating phone number confirmation token.");
 
-            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber).GetDigits();
+            string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber.GetDigits());
 
             // Get confirmation token
             string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
