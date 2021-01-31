@@ -304,14 +304,16 @@ namespace Store.WebAPI.Controllers
                 {
                     result.Action = Unauthorized("Invalid access token!");
                 }
-
-                bool hasPermissions = IsUser(userId, claimsPrincipal) || claimsPrincipal.IsInRole(RoleHelper.Admin);
-                if (!hasPermissions)
+                else
                 {
-                    result.Action = Forbid();
-                }
+                    bool hasPermissions = IsUser(userId, claimsPrincipal) || claimsPrincipal.IsInRole(RoleHelper.Admin);
+                    if (!hasPermissions)
+                    {
+                        result.Action = Forbid();
+                    }
 
-                result.ClientId = GetClientId(claimsPrincipal);
+                    result.ClientId = GetClientId(claimsPrincipal);
+                }
             }
             else
             {
@@ -321,13 +323,15 @@ namespace Store.WebAPI.Controllers
                 {
                     result.Action = Unauthorized("Account information not found.");
                 }
-
-                if (Guid.Parse(accountVerificationInfo.UserId) != userId)
+                else
                 {
-                    result.Action = Forbid();
-                }
+                    if (Guid.Parse(accountVerificationInfo.UserId) != userId)
+                    {
+                        result.Action = Forbid();
+                    }
 
-                result.ClientId = Guid.Parse(accountVerificationInfo.ClientId);
+                    result.ClientId = Guid.Parse(accountVerificationInfo.ClientId);
+                }
             }
 
             return result;
