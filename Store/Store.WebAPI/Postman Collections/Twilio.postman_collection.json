@@ -1,0 +1,30 @@
+{
+	"info": {
+		"_postman_id": "f87978d1-f181-4fc0-b1a4-44d7c41620f8",
+		"name": "Twilio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Monbile Phone Verification Token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/twilio/phone-number/token/123456",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"twilio",
+						"phone-number",
+						"token",
+						"123456"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
