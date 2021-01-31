@@ -17,7 +17,7 @@ namespace Store.DAL.Configuration.Identity
             builder.HasKey(r => r.Id);
 
             // Index for "normalized" role name to allow efficient lookups
-            builder.HasIndex(r => r.NormalizedName).HasName("RoleNameIndex").IsUnique();
+            builder.HasIndex(r => r.NormalizedName).HasDatabaseName("RoleNameIndex").IsUnique();
 
             // A concurrency token for use with the optimistic concurrency checking
             builder.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();

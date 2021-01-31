@@ -16,8 +16,8 @@ namespace Store.DAL.Configuration.Identity
             builder.HasKey(u => u.Id);
 
             // Indexes for "normalized" username and email, to allow efficient lookups
-            builder.HasIndex(u => u.NormalizedUserName).HasName("UserNameIndex").IsUnique();
-            builder.HasIndex(u => u.NormalizedEmail).HasName("EmailIndex");
+            builder.HasIndex(u => u.NormalizedUserName).HasDatabaseName("UserNameIndex").IsUnique();
+            builder.HasIndex(u => u.NormalizedEmail).HasDatabaseName("EmailIndex");
 
             // A concurrency token for use with the optimistic concurrency checking
             builder.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();

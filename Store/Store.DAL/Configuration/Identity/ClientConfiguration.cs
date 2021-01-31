@@ -24,7 +24,7 @@ namespace Store.DAL.Configuration.Identity
             builder.Property(c => c.AllowedOrigin).HasMaxLength(100);
 
             // Set indeces
-            builder.HasIndex(c => c.Name).HasName("NameIndex").IsUnique();
+            builder.HasIndex(c => c.Name).HasDatabaseName("NameIndex").IsUnique();
 
             // Seed data
             builder.HasData
