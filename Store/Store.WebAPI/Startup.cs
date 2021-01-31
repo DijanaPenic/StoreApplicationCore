@@ -51,11 +51,8 @@ namespace Store.WebAPI
             // Hangfire configuration
             services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("Database")));
 
-            // Email configuration
-            services.AddEmail(Configuration);
-
-            // SMS configuration
-            services.AddSms(Configuration);
+            // Messaging configuration (SMS, voice, email)
+            services.AddMessaging(Configuration);
 
             // File provider configuration
             services.AddFileProvider(Configuration);

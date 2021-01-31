@@ -23,5 +23,7 @@ namespace Store.WebAPI.Controllers
         protected Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
 
         protected Guid GetClientId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
+        
+        protected Uri GetAbsoluteUri(string relativeUrl) => new Uri($"{Request.Scheme}://{Request.Host}{relativeUrl}", UriKind.Absolute);
     }
 }

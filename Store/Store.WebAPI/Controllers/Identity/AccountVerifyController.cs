@@ -185,7 +185,7 @@ namespace Store.WebAPI.Controllers
             return Ok();
         }
 
-        /// <summary>Generates the phone number confirmation token and sends it via SMS to the phone number.</summary>
+        /// <summary>Generates the phone number confirmation token and sends it via SMS or voice call to the phone number.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="phoneNumberVerifyModel">The phone number verify model.</param>
         /// <returns>
@@ -193,7 +193,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
-        [Route("{userId:guid}/sms")]
+        [Route("{userId:guid}/phone-number")]
         [Consumes("application/json")]
         public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
         {
@@ -240,12 +240,19 @@ namespace Store.WebAPI.Controllers
 
             string phoneNumber = string.Concat(phoneNumberVerifyModel.CountryCodeNumber, phoneNumberVerifyModel.PhoneNumber).GetDigits();
 
-            // Get sms confirmation token
+            // Get confirmation token
             string token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
 
-            _logger.LogInformation("Sending SMS confirmation token to activate the account.");
+            _logger.LogInformation("Sending confirmation token to activate the account.");
 
-            await _smsSender.SendSmsAsync(phoneNumber, $"Your Store verification code is: {token}.");
+            if (phoneNumberVerifyModel.IsVoiceCall)
+            {
+                await _voiceService.CallAsync(phoneNumber, GetAbsoluteUri(Url.RouteUrl(RouteNames.TwilioPhoneNumberVerificationToken, new { token })));
+            }
+            else
+            {
+                await _smsService.SendSmsAsync(phoneNumber, $"Your Store verification code is: {token}.");
+            }
 
             return Ok();
         }
@@ -259,8 +266,8 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [ClientAuthorization]
-        [Route("{userId:guid}/sms/token/{token}")]
-        public async Task<IActionResult> ConfirmPhoneNumberAsync([FromRoute] Guid userId, [FromRoute] string token, [FromQuery] string phoneNumber)
+        [Route("{userId:guid}/phone-number/{phoneNumber}/token/{token}")]
+        public async Task<IActionResult> ConfirmPhoneNumberAsync([FromRoute] Guid userId, [FromRoute] string token, [FromRoute] string phoneNumber)
         {
             if (userId == Guid.Empty)
             {

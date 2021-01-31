@@ -13,5 +13,7 @@ namespace Store.WebAPI.Models.Identity
         [Required]
         [Phone]
         public string PhoneNumber { get; set; }
+
+        public bool IsVoiceCall { get; set; }
     }
 }
