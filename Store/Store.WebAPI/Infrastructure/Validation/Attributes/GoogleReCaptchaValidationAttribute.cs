@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 
-namespace Store.WebAPI.Infrastructure.Authorization.Attributes
+namespace Store.WebAPI.Infrastructure.Validation.Attributes
 {
     // Blog post: https://dejanstojanovic.net/aspnet/2018/may/using-google-recaptcha-v2-in-aspnet-core-web-application/
 

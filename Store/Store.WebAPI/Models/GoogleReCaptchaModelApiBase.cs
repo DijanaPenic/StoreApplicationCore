@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-using Store.WebAPI.Infrastructure.Authorization.Attributes;
+using Store.WebAPI.Infrastructure.Validation.Attributes;
 
 namespace Store.WebAPI.Models
 {

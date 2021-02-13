@@ -14,7 +14,7 @@ using Store.Service.Options;
 using Store.Service.Constants;
 using Store.Services.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.WebAPI.Infrastructure.Authorization.Handlers;
+using Store.WebAPI.Infrastructure.Authentication.Handlers;
 
 namespace Store.WebAPI.Application.Startup.Extensions
 {

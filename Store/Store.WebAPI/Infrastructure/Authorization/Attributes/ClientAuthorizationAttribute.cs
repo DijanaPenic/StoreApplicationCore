@@ -6,7 +6,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Attributes
     {
         public ClientAuthorizationAttribute()
         {
-            Policy = "ClientAuthenticationPolicy";
+            Policy = "ClientAuthentication";
         }
     }
 }

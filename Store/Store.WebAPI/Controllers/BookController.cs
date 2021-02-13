@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.Common.Helpers.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
+using Store.WebAPI.Infrastructure.Authorization;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
@@ -18,7 +18,6 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/books")]
-    [UserAuthorization(RoleHelper.Admin, RoleHelper.Customer, RoleHelper.StoreManager)]
     public class BookController : ApplicationControllerBase
     {
         private readonly IBookService _bookService;
@@ -39,6 +38,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("{bookId:guid}")]
         [Produces("application/json")]
+        [ResourceAuthorization(ResourcePermission.BooksRead)]
         public async Task<IActionResult> GetAsync([FromRoute]Guid bookId, [FromQuery] string[] includeProperties)
         {
             if (bookId == Guid.Empty)
@@ -64,6 +64,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
+        [ResourceAuthorization(ResourcePermission.BooksRead)]
         public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
                                                   int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
@@ -92,6 +93,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Consumes("application/json")]
+        [ResourceAuthorization(ResourcePermission.BooksCreate)]
         public async Task<IActionResult> PostAsync([FromBody]BookPostApiModel bookModel)
         {
             if (!ModelState.IsValid)
@@ -118,6 +120,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [Route("{bookId:guid}")]
         [Consumes("application/json")]
+        [ResourceAuthorization(ResourcePermission.BooksUpdate)]
         public async Task<IActionResult> PatchAsync([FromRoute]Guid bookId, [FromBody]BookPatchApiModel bookModel)
         {
             if (bookId == Guid.Empty || !ModelState.IsValid)
@@ -143,6 +146,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpDelete]
         [Route("{bookId:guid}")]
+        [ResourceAuthorization(ResourcePermission.BooksDelete)]
         public async Task<IActionResult> DeleteAsync([FromRoute]Guid bookId)
         {
             if (bookId == Guid.Empty)

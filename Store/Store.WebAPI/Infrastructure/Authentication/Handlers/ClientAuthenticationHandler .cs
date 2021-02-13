@@ -12,10 +12,10 @@ using Store.Common.Helpers;
 using Store.Services.Identity;
 using Store.Service.Constants;
 
-namespace Store.WebAPI.Infrastructure.Authorization.Handlers
+namespace Store.WebAPI.Infrastructure.Authentication.Handlers
 {
     // Blog Post: https://www.roundthecode.com/dotnet/how-to-add-basic-authentication-to-asp-net-core-application
-    public class ClientAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class ClientAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions> 
     {
         private readonly ApplicationAuthManager _authManager;
 
