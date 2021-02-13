@@ -64,7 +64,7 @@ namespace Store.Repositories.Identity
         public async Task<IRole> FindByNameAsync(string roleName)
         {
             return await QuerySingleOrDefaultAsync<Role>(
-                sql: $"SELECT * FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.Name} = @{nameof(roleName)}",
+                sql: $"SELECT * FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}",
                 param: new { roleName }
             );
         }
