@@ -50,7 +50,7 @@ namespace Store.WebAPI.Mapper.Profiles
             // Create maps for global search models
             CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
 
-            // Create maps for identity models
+            // Create maps for user models
             CreateMap<UserPatchApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
             CreateMap<UserProfilePatchApiModel, IUser>().ReverseMap();
 
@@ -60,9 +60,12 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<UserPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
             CreateMap<RegisterPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());
 
-            CreateMap<RoleGetApiModel, IRole>().ConstructUsing(src => new Role()).ReverseMap();
-
             CreateMap<UserLoginInfo, ExternalLoginGetApiModel>();
+
+            // Create maps for role models
+            CreateMap<RoleGetApiModel, IRole>().ReverseMap();
+            CreateMap<RolePostApiModel, IRole>().ReverseMap();
+            CreateMap<RolePatchApiModel, IRole>().ReverseMap();
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();

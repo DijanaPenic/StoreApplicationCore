@@ -12,8 +12,12 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task DeleteAsync(Guid userId, string roleName);
 
+        Task<int> GetUserCountByRoleNameAsync(string roleName);
+
         Task<IEnumerable<string>> GetRoleNamesByUserIdAsync(Guid userId);
 
         Task<IEnumerable<IUser>> GetUsersByRoleNameAsync(string roleName);
+
+        Task<int> GetUserRoleCombinationCountByRoleNameAsync(string roleName);
     }
 }

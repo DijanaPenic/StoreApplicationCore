@@ -69,6 +69,14 @@ namespace Store.Repositories.Identity
             );
         }
 
+        public async Task<IEnumerable<IRole>> FindByNameAsync(string[] roleNames)
+        {
+            return await QueryAsync<Role>(
+                sql: $"SELECT * FROM {RoleSchema.Table} WHERE {RoleSchema.Columns.NormalizedName} = ANY(@{nameof(roleNames)})",
+                param: new { roleNames }
+            );
+        }
+
         public Task DeleteByKeyAsync(Guid key)
         {
             return ExecuteAsync(

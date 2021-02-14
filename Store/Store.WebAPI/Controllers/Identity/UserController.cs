@@ -295,17 +295,17 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(userModel.Roles);
-            if (!isRoleSelectionValid)
-            {
-                return BadRequest("Invalid role selection.");
-            }
-
             // Find the user we want to update
             IUser user = await _userManager.FindUserByIdAsync(userId, nameof(IUser.Roles));
             if (user == null)
             {
                 return NotFound();
+            }
+
+            bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(userModel.Roles);
+            if (!isRoleSelectionValid)
+            {
+                return BadRequest("Invalid role selection.");
             }
 
             _mapper.Map(userModel, user);
@@ -314,7 +314,7 @@ namespace Store.WebAPI.Controllers
             if (!userResult.Succeeded) return BadRequest(userResult.Errors);
 
             // Remove user from roles that are not listed in model.roles
-            IEnumerable<string> rolesToRemove = user.Roles.Where(r => !userModel.Roles.Contains(r.Name)).Select(r => r.Name);
+            IEnumerable<string> rolesToRemove = user.Roles.Select(r => r.Name).Except(userModel.Roles);
             IdentityResult removeRolesResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
 
             if (!removeRolesResult.Succeeded) return BadRequest(removeRolesResult.Errors);
@@ -605,12 +605,12 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [UserAuthorization(RoleHelper.Admin)]
+        //[UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/roles")]
         [Produces("application/json")]
         public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, string[] rolesToAssign)
         {
-            if (rolesToAssign == null || rolesToAssign.Length == 0 || userId == Guid.Empty)
+            if (rolesToAssign?.Length == 0 || userId == Guid.Empty)
             {
                 return BadRequest();
             }

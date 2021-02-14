@@ -62,6 +62,17 @@ namespace Store.Repositories.Identity
                 param: new { roleName });
         }
 
+        public async Task<int> GetUserCountByRoleNameAsync(string roleName)
+        {
+            return await ExecuteScalarAsync<int>(
+                sql: $@"
+                    SELECT count(*) FROM {UserRoleSchema.Table} ur 
+                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
+                    WHERE r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
+                ",
+                param: new { roleName });
+        }
+
         public Task DeleteAsync(Guid userId, string roleName)
         {
             return ExecuteAsync(
@@ -75,6 +86,21 @@ namespace Store.Repositories.Identity
                 ",
                 param: new { userId, roleName }
             );
+        }
+
+        public async Task<int> GetUserRoleCombinationCountByRoleNameAsync(string roleName)
+        {
+            return await ExecuteScalarAsync<int>(
+                sql: $@"
+                    SELECT count(distinct(ur_outer.{UserRoleSchema.Columns.RoleId})) FROM {UserRoleSchema.Table} ur_outer 
+                    WHERE ur_outer.{UserRoleSchema.Columns.UserId} 
+                    IN(
+                        SELECT ur.{UserRoleSchema.Columns.UserId} FROM {UserRoleSchema.Table} ur 
+                            INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
+                        WHERE r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
+                    )
+                ",
+                param: new { roleName });
         }
     }
 }

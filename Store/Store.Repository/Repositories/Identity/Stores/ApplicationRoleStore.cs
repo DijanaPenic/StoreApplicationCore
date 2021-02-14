@@ -229,9 +229,36 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationRoleStore<IRole> Members
 
-        public Task<IEnumerable<IRole>> GetRolesAsync()
+        public async Task<IEnumerable<IRole>> FindByNameAsync(string[] normalizedRoleNames, CancellationToken cancellationToken)
         {
-            return _unitOfWork.RoleRepository.GetAsync();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (normalizedRoleNames?.Length == 0)
+                throw new ArgumentNullException(nameof(normalizedRoleNames));
+
+            IEnumerable<IRole> roles = await _unitOfWork.RoleRepository.FindByNameAsync(normalizedRoleNames);
+
+            return roles;
+        }
+
+        public async Task<int> GetUserCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (string.IsNullOrWhiteSpace(normalizedRoleName))
+                throw new ArgumentNullException(nameof(normalizedRoleName));
+
+            return await _unitOfWork.UserRoleRepository.GetUserCountByRoleNameAsync(normalizedRoleName);
+        }
+
+        public async Task<int> GetUserRoleCombinationCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (string.IsNullOrWhiteSpace(normalizedRoleName))
+                throw new ArgumentNullException(nameof(normalizedRoleName));
+
+            return await _unitOfWork.UserRoleRepository.GetUserRoleCombinationCountByRoleNameAsync(normalizedRoleName);
         }
 
         #endregion
