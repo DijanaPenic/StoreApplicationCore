@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Models.Identity;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -259,6 +260,11 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(normalizedRoleName));
 
             return await _unitOfWork.UserRoleRepository.GetUserRoleCombinationCountByRoleNameAsync(normalizedRoleName);
+        }
+
+        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        {
+            return _unitOfWork.RoleRepository.FindAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
         }
 
         #endregion

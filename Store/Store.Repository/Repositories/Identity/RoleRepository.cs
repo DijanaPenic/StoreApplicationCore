@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Text;
 using System.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.Common.Helpers;
-using Store.Models.Identity;
+using Store.Common.Extensions;
+using Store.Model.Models;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Models.Identity;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
+
+using static Dapper.SqlMapper;
 
 namespace Store.Repositories.Identity
 {
@@ -51,6 +57,27 @@ namespace Store.Repositories.Identity
             return await QueryAsync<Role>(
                 sql: $"SELECT * FROM {RoleSchema.Table}"
             );
+        }
+
+        public async Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        {
+            using GridReader reader = await FindAsync
+            (
+                table: $"{RoleSchema.Table} r", 
+                select: "*", 
+                searchFilter: (searchString == null) ? string.Empty : $"(LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
+                include: string.Empty, 
+                searchString, 
+                sortOrderProperty: $"r.{sortOrderProperty}", 
+                isDescendingSortOrder, 
+                pageNumber,
+                pageSize
+            );
+
+            IEnumerable<IRole> roles = reader.Read<Role>();
+            int totalCount = reader.ReadFirst<int>();
+
+            return new PagedEnumerable<IRole>(roles, totalCount, pageSize, pageNumber);
         }
 
         public async Task<IRole> FindByKeyAsync(Guid key)

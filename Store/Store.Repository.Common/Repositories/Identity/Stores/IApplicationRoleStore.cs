@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity.Stores
@@ -15,5 +16,7 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
         Task<int> GetUserRoleCombinationCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken);
 
         Task<IEnumerable<IRole>> FindByNameAsync(string[] normalizedRoleNames, CancellationToken cancellationToken);
+
+        Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize);
     }
 }

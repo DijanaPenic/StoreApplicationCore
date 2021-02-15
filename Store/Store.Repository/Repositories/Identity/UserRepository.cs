@@ -6,17 +6,15 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.Common.Helpers;
-using Store.Common.Extensions;
+using Store.Model.Models;
 using Store.Models.Identity;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
-
-using Store.Model.Models;
-using Store.Model.Common.Models;
 
 namespace Store.Repositories.Identity
 {
@@ -26,7 +24,7 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        class UserInclude
+        class Prefetch
         {
             public bool Roles { get; set; }
             public bool Claims { get; set; }
@@ -107,14 +105,7 @@ namespace Store.Repositories.Identity
 
         public async Task<IPagedEnumerable<IUser>> FindAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            // Prepare query parameters
-            int offset = (pageNumber - 1) * pageSize;
-            sortOrderProperty = sortOrderProperty.ToSnakeCase();
-            searchString = searchString?.ToLowerInvariant();
-
-            // Set search filter
-            string searchFilter = @$"WHERE 
-                                    u.{UserSchema.Columns.IsDeleted} = FALSE
+            string searchFilter = @$"u.{UserSchema.Columns.IsDeleted} = FALSE
                                     {(showInactive 
                                         ? string.Empty 
                                         : $"AND u.{UserSchema.Columns.IsApproved} = TRUE")}
@@ -122,32 +113,23 @@ namespace Store.Repositories.Identity
                                         ? string.Empty 
                                         : $"AND ((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)}))")}";
 
-            // Set query base
-            StringBuilder sql = new StringBuilder(@$"SELECT u.*, r.*, uc.*, ul.*, ut.* FROM {UserSchema.Table} u");
-            sql.Append(Environment.NewLine);
+            using GridReader reader = await FindAsync
+            (
+                table: $"{UserSchema.Table} u", 
+                select: "u.*, r.*, uc.*, ul.*, ut.*", 
+                searchFilter, 
+                include: IncludeQuery(out Prefetch prefetch, includeProperties), 
+                searchString, 
+                sortOrderProperty: $"u.{sortOrderProperty}", 
+                isDescendingSortOrder, 
+                pageNumber, 
+                pageSize
+            );
 
-            // Set prefetch
-            sql.Append(Include(out UserInclude include, includeProperties));
-
-            // Set filter and paging
-            sql.Append($@"{searchFilter}
-                          ORDER by u.{sortOrderProperty} {((isDescendingSortOrder) ? "DESC" : "ASC")}
-                          OFFSET @{nameof(offset)} ROWS
-                          FETCH NEXT @{nameof(pageSize)} ROWS ONLY;");
-            sql.Append(Environment.NewLine);
-
-            // Check total count
-            sql.Append(@$"SELECT COUNT(*) FROM {UserSchema.Table} u {searchFilter}");
-
-            // Get results from the database and prepare response model
-            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });  // TODO - fix "searchString"
-
-            IEnumerable<IUser> users = ReadUsers(reader, include);
+            IEnumerable<IUser> users = ReadUsers(reader, prefetch);
             int totalCount = reader.ReadFirst<int>();
 
-            IPagedEnumerable<IUser> result = new PagedEnumerable<IUser>(users, totalCount, pageSize, pageNumber);
-
-            return result;
+            return new PagedEnumerable<IUser>(users, totalCount, pageSize, pageNumber);
         }
 
         public async Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties)
@@ -157,7 +139,7 @@ namespace Store.Repositories.Identity
             sql.Append(Environment.NewLine);
 
             // Set prefetch
-            sql.Append(Include(out UserInclude include, includeProperties));
+            sql.Append(IncludeQuery(out Prefetch include, includeProperties));
 
             // Set filter
             sql.Append($@"WHERE u.{UserSchema.Columns.Id} = @{nameof(key)};");
@@ -224,11 +206,11 @@ namespace Store.Repositories.Identity
                 param: entity);
         }
 
-        private static string Include(out UserInclude include, params string[] includeProperties)
+        private static string IncludeQuery(out Prefetch include, params string[] includeProperties)
         {
             StringBuilder sql = new StringBuilder();
 
-            include = new UserInclude
+            include = new Prefetch
             {
                 Roles = (includeProperties.Contains(nameof(IUser.Roles))),
                 Claims = (includeProperties.Contains(nameof(IUser.Claims))),
@@ -255,7 +237,7 @@ namespace Store.Repositories.Identity
             return sql.ToString();
         }
 
-        private static IEnumerable<IUser> ReadUsers(GridReader reader, UserInclude include)
+        private static IEnumerable<IUser> ReadUsers(GridReader reader, Prefetch include)
         {
             IEnumerable<IUser> users = reader.Read<User, Role, UserClaim, UserLogin, UserToken, User>((user, role, userClaim, userLogin, userToken) =>
             {

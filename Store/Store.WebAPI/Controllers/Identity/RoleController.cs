@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
+using Store.WebAPI.Models;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
+using Store.Common.Helpers;
 using Store.Services.Identity;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
@@ -56,6 +58,37 @@ namespace Store.WebAPI.Controllers
                 return Ok(_mapper.Map<RoleGetApiModel>(role));
 
             return NotFound();
+        }
+
+        /// <summary>Retrieves roles by specified search criteria.</summary>
+        /// <param name="searchString">The search string.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
+        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetAsync(string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, int pageSize = DefaultParameters.PageSize, 
+                                                  bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(RoleGetApiModel.Name))
+        {
+            IPagedEnumerable<IRole> roles = await _roleManager.FindRolesAsync
+            (
+                searchString,
+                ModelMapperHelper.GetPropertyMapping<RoleGetApiModel, IRole>(_mapper, sortOrderProperty),
+                isDescendingSortOrder,
+                pageNumber,
+                pageSize
+            );
+
+            if (roles != null)
+            {
+                return Ok(_mapper.Map<PagedApiResponse<RoleGetApiModel>>(roles));
+            }
+
+            return NoContent();
         }
 
         /// <summary>Creates a new role.</summary>
