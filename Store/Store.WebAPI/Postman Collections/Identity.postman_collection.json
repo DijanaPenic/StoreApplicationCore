@@ -295,6 +295,32 @@
 					"response": []
 				},
 				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}/delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_id}}",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Lock User",
 					"request": {
 						"method": "PATCH",

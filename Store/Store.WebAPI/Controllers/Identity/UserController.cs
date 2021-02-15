@@ -383,6 +383,32 @@ namespace Store.WebAPI.Controllers
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
+        /// <summary>Deletes the user (soft delete).</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpDelete]
+        [UserAuthorization(RoleHelper.Admin)]
+        [Route("{userId:guid}/delete")]
+        public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            IUser user = await _userManager.FindUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userManager.DeleteAsync(user);
+
+            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+        }
+
         /// <summary>Updates user's account status to "Approved", i.e. confirms the user.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>
