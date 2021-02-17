@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-using Store.Cache.Common;
 using Store.WebAPI.Models;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
@@ -20,7 +19,6 @@ namespace Store.WebAPI.Controllers
     [Route("api/roles")]
     public class RoleController : ApplicationControllerBase
     {
-        private readonly ICacheProvider _cacheProvider;
         private readonly ApplicationRoleManager _roleManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
@@ -28,13 +26,11 @@ namespace Store.WebAPI.Controllers
         public RoleController
         (
             ApplicationRoleManager roleManager,
-            ICacheManager cacheManager,
             IMapper mapper,
             ILogger<RoleController> logger
         )
         {
             _roleManager = roleManager;
-            _cacheProvider = cacheManager.CacheProvider;
             _mapper = mapper;
             _logger = logger;
         }
