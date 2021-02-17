@@ -502,7 +502,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation("Ten two factor recovery codes are generatied for the user.");
 
-                TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
+                TwoFactorRecoveryResponseApiModel response = new TwoFactorRecoveryResponseApiModel
                 {
                     RecoveryCodes = recoveryCodes.ToArray()
                 };
@@ -551,7 +551,7 @@ namespace Store.WebAPI.Controllers
 
             IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number);
 
-            TwoFactoryRecoveryResponseApiModel response = new TwoFactoryRecoveryResponseApiModel
+            TwoFactorRecoveryResponseApiModel response = new TwoFactorRecoveryResponseApiModel
             {
                 RecoveryCodes = recoveryCodes.ToArray()
             };
