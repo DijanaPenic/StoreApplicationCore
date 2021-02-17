@@ -34,7 +34,7 @@ namespace Store.DAL.Configuration.Identity
             // Note that these relationships are configured with no navigation properties
 
             // Each User can have many UserClaims
-            builder.HasMany<UserClaimEntity>()WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+            builder.HasMany<UserClaimEntity>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
 
             // Each User can have many UserLogins
             builder.HasMany<UserLoginEntity>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
