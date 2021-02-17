@@ -22,7 +22,6 @@ namespace Store.DAL.Schema.Identity
             public static string PasswordHash { get; } = nameof(UserEntity.PasswordHash).ToSnakeCase();
             public static string TwoFactorEnabled { get; } = nameof(UserEntity.TwoFactorEnabled).ToSnakeCase();
             public static string LockoutEnabled { get; } = nameof(UserEntity.LockoutEnabled).ToSnakeCase();
-            public static string IsDeleted { get; } = nameof(UserEntity.IsDeleted).ToSnakeCase();
             public static string IsApproved { get; } = nameof(UserEntity.IsApproved).ToSnakeCase();
             public static string AccessFailedCount { get; } = nameof(UserEntity.AccessFailedCount).ToSnakeCase();
             public static string ConcurrencyStamp { get; } = nameof(UserEntity.ConcurrencyStamp).ToSnakeCase();

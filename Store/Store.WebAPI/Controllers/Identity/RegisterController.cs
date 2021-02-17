@@ -201,7 +201,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation($"There is a user account registered with {registerModel.AssociateEmail} email.");
 
-                if (existingUser.IsDeleted || !existingUser.IsApproved)
+                if (!existingUser.IsApproved)
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 

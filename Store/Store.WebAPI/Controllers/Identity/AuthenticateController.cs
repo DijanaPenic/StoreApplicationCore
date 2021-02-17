@@ -132,10 +132,6 @@ namespace Store.WebAPI.Controllers
             {
                 return Unauthorized($"Failed to log in - invalid username and/or password.");
             }
-            if (user.IsDeleted)
-            {
-                return Unauthorized($"User [{user.UserName}] has been deleted.");
-            }
             if (!user.IsApproved)
             {
                 return Unauthorized($"User [{user.UserName}] is not approved.");
@@ -304,7 +300,7 @@ namespace Store.WebAPI.Controllers
             {
                 _logger.LogInformation($"There is user account registered with {userEmail} email.");
 
-                if (user.IsDeleted || !user.IsApproved)
+                if (!user.IsApproved)
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 

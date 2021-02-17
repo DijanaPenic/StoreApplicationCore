@@ -58,7 +58,6 @@ namespace Store.Repositories.Identity
                         {UserSchema.Columns.SecurityStamp},
 	                    {UserSchema.Columns.TwoFactorEnabled}, 
 	                    {UserSchema.Columns.IsApproved}, 
-	                    {UserSchema.Columns.IsDeleted}, 
                         {UserSchema.Columns.UserName},
                         {UserSchema.Columns.DateCreatedUtc},
                         {UserSchema.Columns.DateUpdatedUtc})
@@ -80,7 +79,6 @@ namespace Store.Repositories.Identity
                         @{nameof(entity.SecurityStamp)},
 	                    @{nameof(entity.TwoFactorEnabled)}, 
 	                    @{nameof(entity.IsApproved)},
-	                    @{nameof(entity.IsDeleted)},
                         @{nameof(entity.UserName)},
                         @{nameof(entity.DateCreatedUtc)},
                         @{nameof(entity.DateUpdatedUtc)})",
@@ -105,8 +103,7 @@ namespace Store.Repositories.Identity
 
         public async Task<IPagedEnumerable<IUser>> FindAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            string searchFilter = @$"u.{UserSchema.Columns.IsDeleted} = FALSE
-                                    {(showInactive 
+            string searchFilter = @$"{(showInactive 
                                         ? string.Empty 
                                         : $"AND u.{UserSchema.Columns.IsApproved} = TRUE")}
                                     {((searchString == null) 
@@ -198,7 +195,6 @@ namespace Store.Repositories.Identity
 	                    {UserSchema.Columns.SecurityStamp} = @{nameof(entity.SecurityStamp)}, 
                         {UserSchema.Columns.TwoFactorEnabled} = @{nameof(entity.TwoFactorEnabled)},
                         {UserSchema.Columns.IsApproved} = @{nameof(entity.IsApproved)},
-                        {UserSchema.Columns.IsDeleted} = @{nameof(entity.IsDeleted)},
 	                    {UserSchema.Columns.UserName} = @{nameof(entity.UserName)},
                         {UserSchema.Columns.DateUpdatedUtc}  = @{nameof(entity.DateUpdatedUtc)}
 

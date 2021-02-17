@@ -31,8 +31,6 @@ namespace Store.Model.Common.Models.Identity
 
         bool LockoutEnabled { get; set; }
 
-        bool IsDeleted { get; set; }
-
         bool IsApproved { get; set; }
 
         int AccessFailedCount { get; set; }

@@ -39,8 +39,6 @@ namespace Store.Entities.Identity
 
         public bool LockoutEnabled { get; set; }
 
-        public bool IsDeleted { get; set; }
-
         public bool IsApproved { get; set; }
 
         public int AccessFailedCount { get; set; }

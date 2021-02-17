@@ -24,8 +24,6 @@ namespace Store.WebAPI.Models.Identity
 
         public DateTime DateUpdatedUtc { get; set; }
 
-        public bool IsDeleted { get; set; }
-
         public bool IsApproved { get; set; }
 
         public bool LockoutEnabled { get; set; }
