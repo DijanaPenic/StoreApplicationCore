@@ -8,7 +8,7 @@ using Store.WebAPI.Infrastructure.Authorization.Requirements;
 namespace Store.WebAPI.Infrastructure.Authorization.Providers
 {
     public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider {
-        const string RESOURCE_POLICY_PREFIX = "Resource_";
+        const string SECTION_POLICY_PREFIX = "Section_";
 
         public DefaultAuthorizationPolicyProvider FallbackPolicyProvider { get; }
 
@@ -45,12 +45,15 @@ namespace Store.WebAPI.Infrastructure.Authorization.Providers
 
         public Task<AuthorizationPolicy> GetPolicyAsync(string policyName) 
         {
-            if (policyName.StartsWith(RESOURCE_POLICY_PREFIX, StringComparison.OrdinalIgnoreCase)) 
+            if (policyName.StartsWith(SECTION_POLICY_PREFIX, StringComparison.OrdinalIgnoreCase)) 
             {
-                ResourcePermission resourcePermission = (ResourcePermission)Enum.Parse(typeof(ResourcePermission), policyName[RESOURCE_POLICY_PREFIX.Length..]);
+                string[] policyData = policyName[SECTION_POLICY_PREFIX.Length..].Split('.');
+
+                SectionType sectionType = Enum.Parse<SectionType>(policyData[0]);
+                AccessAction accessAction = Enum.Parse<AccessAction>(policyData[1]);
 
                 AuthorizationPolicyBuilder policy = new AuthorizationPolicyBuilder();
-                policy.AddRequirements(new ResourcePermissionRequirement(resourcePermission));
+                policy.AddRequirements(new SectionPolicyRequirement(sectionType, accessAction));
 
                 return Task.FromResult(policy.Build());
             } 

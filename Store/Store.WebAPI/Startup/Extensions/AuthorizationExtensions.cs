@@ -16,7 +16,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             services.AddTransient<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
             // Handlers must be provided for the requirements of the authorization policies
-            services.AddTransient<IAuthorizationHandler, ResourceAuthorizationHandler>();
+            services.AddTransient<IAuthorizationHandler, SectionAuthorizationHandler>();
 
             // Permission builder
             services.AddTransient<IPermissionsBuilder, PermissionsBuilder>();
