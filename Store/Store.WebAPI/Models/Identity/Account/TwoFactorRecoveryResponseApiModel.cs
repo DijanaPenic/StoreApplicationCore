@@ -1,6 +1,6 @@
 ﻿namespace Store.WebAPI.Models.Identity
 {
-    public class TwoFactoryRecoveryResponseApiModel
+    public class TwoFactorRecoveryResponseApiModel
     {
         public string[] RecoveryCodes { get; set; }
     }
