@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Collections.Generic;
 
-namespace Store.WebAPI.Infrastructure.Authorization
+namespace Store.Services.Identity
 {
     public class ClaimsComparer : IEqualityComparer<Claim>
     {

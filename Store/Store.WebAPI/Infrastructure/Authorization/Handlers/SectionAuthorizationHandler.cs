@@ -14,12 +14,12 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
     public class SectionAuthorizationHandler : AuthorizationHandler<SectionPolicyRequirement>
     {
         private readonly ApplicationUserManager _userManager;
-        private readonly IPermissionsBuilder _permissionsBuilder;
+        private readonly ApplicationPermissionsManager _permissionsManager;
 
-        public SectionAuthorizationHandler(ApplicationUserManager userManager, IPermissionsBuilder permissionsBuilder)
+        public SectionAuthorizationHandler(ApplicationUserManager userManager, ApplicationPermissionsManager permissionsManager)
         {
             _userManager = userManager;
-            _permissionsBuilder = permissionsBuilder;
+            _permissionsManager = permissionsManager;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SectionPolicyRequirement requirement)
@@ -35,7 +35,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
                 return;
             }
 
-            IList<Claim> roleClaims = await _permissionsBuilder.BuildRoleClaims(user);
+            IList<Claim> roleClaims = await _permissionsManager.BuildRoleClaims(user);
 
             bool roleClaimPredicate(Claim rc)
             {

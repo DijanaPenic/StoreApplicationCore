@@ -61,6 +61,9 @@ namespace Store.WebAPI.Application.Startup.Extensions
             // ApplicationAuthManager dependencies
             services.AddTransient<ApplicationAuthManager>();
 
+            // ApplicationPermissionsManager dependencies
+            services.AddTransient<ApplicationPermissionsManager>();
+
             // Cookies configuration
             // Caution: need to enable cookies because of SignInManager: "All the authentication logic is tied to sign in manager which is tied to cookies in general."
             // Source: https://github.com/openiddict/openiddict-core/issues/578

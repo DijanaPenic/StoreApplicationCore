@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.WebAPI.Infrastructure.Authorization;
 using Store.WebAPI.Infrastructure.Authorization.Handlers;
 using Store.WebAPI.Infrastructure.Authorization.Providers;
 
@@ -17,9 +16,6 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             // Handlers must be provided for the requirements of the authorization policies
             services.AddTransient<IAuthorizationHandler, SectionAuthorizationHandler>();
-
-            // Permission builder
-            services.AddTransient<IPermissionsBuilder, PermissionsBuilder>();
         }
     }
 }

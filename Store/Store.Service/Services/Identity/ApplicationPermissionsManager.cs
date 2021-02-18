@@ -3,18 +3,17 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
 
-using Store.Services.Identity;
 using Store.Model.Common.Models.Identity;
 
-namespace Store.WebAPI.Infrastructure.Authorization
+namespace Store.Services.Identity
 {
-    public class PermissionsBuilder : IPermissionsBuilder
+    public class ApplicationPermissionsManager
     {
         private readonly ApplicationUserManager _userManager;
 
         private readonly ApplicationRoleManager _roleManager;
 
-        public PermissionsBuilder(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
+        public ApplicationPermissionsManager(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
