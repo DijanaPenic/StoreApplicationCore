@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 
+using Store.Common.Enums;
 using Store.Services.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Requirements;
@@ -41,7 +42,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
             {
                 string[] sectionData = rc.Value.Split('.');
 
-                return Enum.Parse<SectionType>(sectionData[0]) == requirement.SectionType && Enum.Parse<AccessAction>(sectionData[1]) == requirement.AccessAction;
+                return Enum.Parse<SectionType>(sectionData[0]) == requirement.SectionType && Enum.Parse<AccessType>(sectionData[1]) == requirement.AccessAction;
             }
 
             if (roleClaims.FirstOrDefault(roleClaimPredicate) != null)

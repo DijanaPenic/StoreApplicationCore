@@ -38,7 +38,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("{bookId:guid}")]
         [Produces("application/json")]
-        [SectionAuthorization(SectionType.Book, AccessAction.Read)]
+        [SectionAuthorization(SectionType.Book, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute]Guid bookId, [FromQuery] string[] includeProperties)
         {
             if (bookId == Guid.Empty)
@@ -64,7 +64,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
-        [SectionAuthorization(SectionType.Book, AccessAction.Read)]
+        [SectionAuthorization(SectionType.Book, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
                                                   int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
@@ -93,7 +93,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Consumes("application/json")]
-        [SectionAuthorization(SectionType.Book, AccessAction.Create)]
+        [SectionAuthorization(SectionType.Book, AccessType.Create)]
         public async Task<IActionResult> PostAsync([FromBody]BookPostApiModel bookModel)
         {
             if (!ModelState.IsValid)
@@ -120,7 +120,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [Route("{bookId:guid}")]
         [Consumes("application/json")]
-        [SectionAuthorization(SectionType.Book, AccessAction.Update)]
+        [SectionAuthorization(SectionType.Book, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute]Guid bookId, [FromBody]BookPatchApiModel bookModel)
         {
             if (bookId == Guid.Empty || !ModelState.IsValid)
@@ -146,7 +146,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpDelete]
         [Route("{bookId:guid}")]
-        [SectionAuthorization(SectionType.Book, AccessAction.Delete)]
+        [SectionAuthorization(SectionType.Book, AccessType.Delete)]
         public async Task<IActionResult> DeleteAsync([FromRoute]Guid bookId)
         {
             if (bookId == Guid.Empty)

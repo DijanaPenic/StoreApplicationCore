@@ -1,4 +1,4 @@
-﻿namespace Store.WebAPI.Infrastructure.Authorization
+﻿namespace Store.Common.Enums
 {
     public enum SectionType
     {

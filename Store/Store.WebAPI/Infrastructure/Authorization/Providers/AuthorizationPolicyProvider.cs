@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 
+using Store.Common.Enums;
 using Store.WebAPI.Infrastructure.Authorization.Requirements;
 
 namespace Store.WebAPI.Infrastructure.Authorization.Providers
@@ -50,7 +51,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Providers
                 string[] policyData = policyName[SECTION_POLICY_PREFIX.Length..].Split('.');
 
                 SectionType sectionType = Enum.Parse<SectionType>(policyData[0]);
-                AccessAction accessAction = Enum.Parse<AccessAction>(policyData[1]);
+                AccessType accessAction = Enum.Parse<AccessType>(policyData[1]);
 
                 AuthorizationPolicyBuilder policy = new AuthorizationPolicyBuilder();
                 policy.AddRequirements(new SectionPolicyRequirement(sectionType, accessAction));
