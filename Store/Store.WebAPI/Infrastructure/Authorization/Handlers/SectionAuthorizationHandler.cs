@@ -36,7 +36,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
                 return;
             }
 
-            IList<Claim> roleClaims = await _permissionsManager.BuildRoleClaims(user);
+            IList<Claim> roleClaims = await _permissionsManager.BuildRoleClaimsAsync(user);
 
             bool roleClaimPredicate(Claim rc)
             {

@@ -19,7 +19,7 @@ namespace Store.Services.Identity
             _roleManager = roleManager;
         }
 
-        public async Task<IList<Claim>> BuildRoleClaims(IUser user)
+        public async Task<IList<Claim>> BuildRoleClaimsAsync(IUser user)
         {
             List<Claim> roleClaims = new List<Claim>();
 
