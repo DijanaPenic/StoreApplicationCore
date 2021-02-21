@@ -75,6 +75,16 @@ namespace Store.Repositories.Identity
             );
         }
 
+        public Task DeleteByTypeAndValueExpressionAsync(string type, string valueExpression)
+        {
+            return ExecuteAsync(
+                sql: @$"DELETE FROM {RoleClaimSchema.Table} WHERE 
+                            {RoleClaimSchema.Columns.ClaimType} = @{nameof(type)} AND
+                            {RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(valueExpression)}",
+                param: new { type, valueExpression = $"{valueExpression}%" }    // Starts with
+            );
+        }
+
         public Task UpdateAsync(IRoleClaim entity)
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;

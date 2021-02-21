@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Enums;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -15,10 +16,8 @@ using Store.Repository.Common.Repositories.Identity.Stores;
 namespace Store.Repositories.Identity.Stores
 {
     public class ApplicationRoleStore :
-            IRoleClaimStore<IRole>,
-
-            // Custom implementation
-            IApplicationRoleStore<IRole>
+            IApplicationRoleClaimStore,
+            IApplicationRoleStore
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 
@@ -224,6 +223,17 @@ namespace Store.Repositories.Identity.Stores
                 await _unitOfWork.RoleClaimRepository.DeleteByKeyAsync(roleClaim.Id);
                 _unitOfWork.Commit();
             }
+        }
+
+        public async Task RemoveClaimsAsync(IRole role, string type, string valueExpression, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (role == null)
+                throw new ArgumentNullException(nameof(role));
+            
+            await _unitOfWork.RoleClaimRepository.DeleteByTypeAndValueExpressionAsync(type, valueExpression);
+            _unitOfWork.Commit();
         }
 
         #endregion

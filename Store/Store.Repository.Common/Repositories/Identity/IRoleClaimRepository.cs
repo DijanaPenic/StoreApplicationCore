@@ -10,5 +10,7 @@ namespace Store.Repository.Common.Repositories.Identity
     public interface IRoleClaimRepository : IDapperGenericRepository<IRoleClaim, Guid>
     {
         Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId);
+
+        Task DeleteByTypeAndValueExpressionAsync(string type, string valueExpression);
     }
 }

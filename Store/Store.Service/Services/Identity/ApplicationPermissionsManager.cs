@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 using Store.Model.Common.Models.Identity;
 
@@ -21,6 +23,11 @@ namespace Store.Services.Identity
 
         public async Task<IList<Claim>> BuildRoleClaimsAsync(IUser user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             List<Claim> roleClaims = new List<Claim>();
 
             if (_userManager.SupportsUserRole)
@@ -44,6 +51,38 @@ namespace Store.Services.Identity
             }
 
             return roleClaims;
+        }
+
+        public async Task<IdentityResult> UpdatePolicyAsync(IRole role, IPolicy policy)
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+            if (policy == null)
+            {
+                throw new ArgumentNullException(nameof(policy));
+            }
+
+            try
+            {
+                string roleClaimType = "Permission";
+
+                // Delete all role claims for section
+                await _roleManager.RemoveClaimsAsync(role, roleClaimType, $"{policy.Section}.");
+
+                foreach (IAccessAction accessAction in policy.Actions.Where(a => a.IsEnabled))
+                {
+                    Claim roleClaim = new Claim(roleClaimType, $"{policy.Section}.{accessAction.Type}");
+                    await _roleManager.AddClaimAsync(role, roleClaim);
+                }
+
+                return IdentityResult.Success;
+            }
+            catch (Exception ex)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = ex.Message, Description = ex.Message });
+            }
         }
     }
 }

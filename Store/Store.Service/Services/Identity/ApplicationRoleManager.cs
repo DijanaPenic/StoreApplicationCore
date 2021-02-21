@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Enums;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -61,6 +62,30 @@ namespace Store.Services.Identity
             }
 
             return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
+        }
+
+        public async Task<IdentityResult> RemoveClaimsAsync(IRole role, string type, string valueExpression)
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+
+            IApplicationRoleClaimStore claimStore = GetClaimStore();
+            await claimStore.RemoveClaimsAsync(role, type, valueExpression, CancellationToken);
+
+            return await UpdateRoleAsync(role);
+        }
+
+        private IApplicationRoleClaimStore GetClaimStore()
+        {
+            IApplicationRoleClaimStore cast = Store as IApplicationRoleClaimStore;
+            if (cast == null)
+            {
+                throw new NotSupportedException("Store not IApplicationRoleClaimStore.");
+            }
+
+            return cast;
         }
     }
 }

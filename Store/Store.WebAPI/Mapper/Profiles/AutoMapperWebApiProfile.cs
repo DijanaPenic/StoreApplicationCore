@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
 using System.Linq;
+using AutoMapper;
 using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Enums;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
 using Store.WebAPI.Models.Settings;
@@ -10,7 +12,6 @@ using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Models.Bookstore;
 using Store.WebAPI.Models.GlobalSearch;
 using Store.WebAPI.Mapper.Converters;
-using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
@@ -66,6 +67,10 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<RoleGetApiModel, IRole>().ReverseMap();
             CreateMap<RolePostApiModel, IRole>().ReverseMap();
             CreateMap<RolePatchApiModel, IRole>().ReverseMap();
+
+            // Create maps for permissions
+            CreateMap<PolicyPostApiModel, IPolicy>().ForMember(dst => dst.Section, opt => opt.MapFrom(src => Enum.Parse<SectionType>(src.Section, true)));
+            CreateMap<AccessActionModel, IAccessAction>().ForMember(dst => dst.Type, opt => opt.MapFrom(src => Enum.Parse<AccessType>(src.Type, true)));
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();
