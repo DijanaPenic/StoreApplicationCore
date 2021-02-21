@@ -17,8 +17,8 @@ namespace Store.Services.Identity
 {
     public sealed class ApplicationUserManager : UserManager<IUser>
     {
-        private readonly IApplicationUserStore<IUser> _userStore;
-        private readonly IApplicationLoginUserStore<IUser> _loginStore;
+        private readonly IApplicationUserStore _userStore;
+        private readonly IApplicationLoginUserStore _loginStore;
         private readonly IUserPasswordStore<IUser> _passwordStore;
         private readonly TwoFactorAuthOptions _twoFactorAuthConfig;
 
@@ -35,8 +35,8 @@ namespace Store.Services.Identity
             IOptions<TwoFactorAuthOptions> twoFactorAuthOptions) 
             : base(userStore, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
-            _userStore = (IApplicationUserStore<IUser>)userStore;
-            _loginStore = (IApplicationLoginUserStore<IUser>)userStore;
+            _userStore = (IApplicationUserStore)userStore;
+            _loginStore = (IApplicationLoginUserStore)userStore;
             _passwordStore = (IUserPasswordStore<IUser>)userStore;
             _twoFactorAuthConfig = twoFactorAuthOptions.Value;
         }

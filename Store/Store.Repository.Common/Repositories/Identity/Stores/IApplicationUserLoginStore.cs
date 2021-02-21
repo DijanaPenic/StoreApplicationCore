@@ -8,7 +8,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity.Stores
 {
-    public interface IApplicationLoginUserStore<TUser> : IUserLoginStore<TUser>, IDisposable where TUser : class, IUser
+    public interface IApplicationLoginUserStore : IUserLoginStore<IUser>, IDisposable
     {
         Task AddLoginAsync(IUser user, UserLoginInfo login, string token, CancellationToken cancellationToken);
 
@@ -22,6 +22,6 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 
         Task ConfirmLoginAsync(IUserLogin login, CancellationToken cancellationToken);
 
-        Task<IList<UserLoginInfo>> FindLoginsAsync(TUser user, bool loginConfirmed, CancellationToken cancellationToken);
+        Task<IList<UserLoginInfo>> FindLoginsAsync(IUser user, bool loginConfirmed, CancellationToken cancellationToken);
     }
 }

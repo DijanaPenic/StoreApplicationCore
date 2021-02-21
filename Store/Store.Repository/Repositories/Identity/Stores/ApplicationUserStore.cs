@@ -28,8 +28,8 @@ namespace Store.Repositories.Identity.Stores
             IUserTwoFactorRecoveryCodeStore<IUser>,
 
             // Custom implementation
-            IApplicationUserStore<IUser>,
-            IApplicationLoginUserStore<IUser>
+            IApplicationUserStore,
+            IApplicationLoginUserStore
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 

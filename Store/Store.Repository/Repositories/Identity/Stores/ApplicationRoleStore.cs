@@ -180,7 +180,7 @@ namespace Store.Repositories.Identity.Stores
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
 
-            IList<Claim> result = (await _unitOfWork.RoleClaimRepository.FindByRoleIdAsync(role.Id)).Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
+            IList<Claim> result = (await _unitOfWork.RoleClaimRepository.FindByRoleIdAsync(role.Id)).Select(rc => new Claim(rc.ClaimType, rc.ClaimValue)).ToList();
 
             return result;
         }
@@ -216,7 +216,7 @@ namespace Store.Repositories.Identity.Stores
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
 
-            IRoleClaim roleClaim = (await _unitOfWork.RoleClaimRepository.FindByRoleIdAsync(role.Id)).SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            IRoleClaim roleClaim = (await _unitOfWork.RoleClaimRepository.FindByRoleIdAsync(role.Id)).SingleOrDefault(rc => rc.ClaimType == claim.Type && rc.ClaimValue == claim.Value);
 
             if (roleClaim != null)
             {

@@ -14,7 +14,7 @@ namespace Store.Services.Identity
 {
     public sealed class ApplicationRoleManager : RoleManager<IRole>
     {
-        private readonly IApplicationRoleStore<IRole> _roleStore;
+        private readonly IApplicationRoleStore _roleStore;
 
         public ApplicationRoleManager(
             IRoleStore<IRole> roleStore,
@@ -24,7 +24,7 @@ namespace Store.Services.Identity
             ILogger<ApplicationRoleManager> logger) 
             : base(roleStore, roleValidators, keyNormalizer, errors, logger)
         {
-            _roleStore = (IApplicationRoleStore<IRole>)roleStore;
+            _roleStore = (IApplicationRoleStore)roleStore;
         }
 
         public async Task<bool> IsValidRoleSelectionAsync(string[] roles)

@@ -9,7 +9,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity.Stores
 {
-    public interface IApplicationRoleStore<TRole> : IRoleStore<TRole>, IDisposable where TRole : class, IRole
+    public interface IApplicationRoleStore : IRoleStore<IRole>, IDisposable
     {
         Task<int> GetUserCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken);
 
