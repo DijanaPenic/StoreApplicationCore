@@ -79,8 +79,7 @@ namespace Store.Services.Identity
 
         private IApplicationRoleClaimStore GetClaimStore()
         {
-            IApplicationRoleClaimStore cast = Store as IApplicationRoleClaimStore;
-            if (cast == null)
+            if (Store is not IApplicationRoleClaimStore cast)
             {
                 throw new NotSupportedException("Store not IApplicationRoleClaimStore.");
             }
