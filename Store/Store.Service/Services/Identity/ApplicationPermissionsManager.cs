@@ -11,8 +11,9 @@ namespace Store.Services.Identity
 {
     public class ApplicationPermissionsManager
     {
-        private readonly ApplicationUserManager _userManager;
+        public const string CLAIM_KEY = "Permission";
 
+        private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
 
         public ApplicationPermissionsManager(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
@@ -66,18 +67,21 @@ namespace Store.Services.Identity
 
             try
             {
-                string roleClaimType = "Permission";
-
-                // Delete all role claims for section
-                await _roleManager.RemoveClaimsAsync(role, roleClaimType, $"{policy.Section}.");
-
-                foreach (IAccessAction accessAction in policy.Actions.Where(a => a.IsEnabled))
+                if (_roleManager.SupportsRoleClaims)
                 {
-                    Claim roleClaim = new Claim(roleClaimType, $"{policy.Section}.{accessAction.Type}");
-                    await _roleManager.AddClaimAsync(role, roleClaim);
+                    // Delete all role claims for section
+                    await _roleManager.RemoveClaimsAsync(role, CLAIM_KEY, $"{policy.Section}.");
+
+                    foreach (IAccessAction accessAction in policy.Actions.Where(a => a.IsEnabled))
+                    {
+                        Claim roleClaim = new Claim(CLAIM_KEY, $"{policy.Section}.{accessAction.Type}");
+                        await _roleManager.AddClaimAsync(role, roleClaim);
+                    }
+
+                    return IdentityResult.Success;
                 }
 
-                return IdentityResult.Success;
+                return IdentityResult.Failed(new IdentityError { Code = "Not Supported", Description = "The SupportsRoleClaims flag is not enabled." });
             }
             catch (Exception ex)
             {
