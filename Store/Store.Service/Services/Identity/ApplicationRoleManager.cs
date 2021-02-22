@@ -64,7 +64,7 @@ namespace Store.Services.Identity
             return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
         }
 
-        public async Task<IdentityResult> RemoveClaimsAsync(IRole role, string type, string valueExpression)
+        public async Task<IdentityResult> RemoveClaimsAsync(IRole role, string type, string searchString)
         {
             if (role == null)
             {
@@ -72,7 +72,7 @@ namespace Store.Services.Identity
             }
 
             IApplicationRoleClaimStore claimStore = GetClaimStore();
-            await claimStore.RemoveClaimsAsync(role, type, valueExpression, CancellationToken);
+            await claimStore.RemoveClaimsAsync(role, type, searchString, CancellationToken);
 
             return await UpdateRoleAsync(role);
         }

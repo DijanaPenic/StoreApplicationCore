@@ -75,13 +75,14 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public Task DeleteByTypeAndValueExpressionAsync(string type, string valueExpression)
+        public Task DeleteAsync(Guid roleId, string type, string searchString)
         {
             return ExecuteAsync(
                 sql: @$"DELETE FROM {RoleClaimSchema.Table} WHERE 
+                            {RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)} AND
                             {RoleClaimSchema.Columns.ClaimType} = @{nameof(type)} AND
-                            {RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(valueExpression)}",
-                param: new { type, valueExpression = $"{valueExpression}%" }    // Starts with
+                            {RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(searchString)}",
+                param: new { type, searchString = $"%{searchString}%" }   
             );
         }
 

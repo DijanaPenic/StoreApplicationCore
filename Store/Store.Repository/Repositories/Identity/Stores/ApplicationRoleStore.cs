@@ -225,14 +225,14 @@ namespace Store.Repositories.Identity.Stores
             }
         }
 
-        public async Task RemoveClaimsAsync(IRole role, string type, string valueExpression, CancellationToken cancellationToken = default)
+        public async Task RemoveClaimsAsync(IRole role, string type, string searchString, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
             
-            await _unitOfWork.RoleClaimRepository.DeleteByTypeAndValueExpressionAsync(type, valueExpression);
+            await _unitOfWork.RoleClaimRepository.DeleteAsync(role.Id, type, searchString);
             _unitOfWork.Commit();
         }
 
