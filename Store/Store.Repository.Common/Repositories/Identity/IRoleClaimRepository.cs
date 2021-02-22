@@ -11,6 +11,8 @@ namespace Store.Repository.Common.Repositories.Identity
     {
         Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId);
 
-        Task DeleteByTypeAndValueExpressionAsync(string type, string valueExpression);
+
+        Task DeleteAsync(Guid roleId, string type, string searchString);
+
     }
 }

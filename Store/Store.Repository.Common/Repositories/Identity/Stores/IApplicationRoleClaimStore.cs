@@ -10,6 +10,6 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IApplicationRoleClaimStore : IRoleClaimStore<IRole>, IDisposable
     {
-        Task RemoveClaimsAsync(IRole role, string type, string valueExpression, CancellationToken cancellationToken = default);
+        Task RemoveClaimsAsync(IRole role, string type, string searchString, CancellationToken cancellationToken = default);
     }
 }
