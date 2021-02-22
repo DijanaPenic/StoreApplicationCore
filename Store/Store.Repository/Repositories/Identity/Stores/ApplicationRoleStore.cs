@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Common.Enums;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -234,6 +233,13 @@ namespace Store.Repositories.Identity.Stores
             
             await _unitOfWork.RoleClaimRepository.DeleteAsync(role.Id, type, searchString);
             _unitOfWork.Commit();
+        }
+
+        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, IRole role = null, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return _unitOfWork.RoleClaimRepository.FindAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, role?.Id);
         }
 
         #endregion

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 
@@ -11,6 +12,7 @@ namespace Store.Repository.Common.Repositories.Identity
     {
         Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId);
 
+        Task<IPagedEnumerable<IRoleClaim>> FindAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null);
 
         Task DeleteAsync(Guid roleId, string type, string searchString);
 

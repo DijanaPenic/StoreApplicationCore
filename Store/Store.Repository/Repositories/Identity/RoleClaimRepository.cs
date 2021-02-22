@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Text;
 using System.Data;
+using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Store.Common.Helpers;
+using Store.Model.Models;
 using Store.Models.Identity;
+using Store.Common.Helpers;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
+
+using static Dapper.SqlMapper;
 
 namespace Store.Repositories.Identity
 {
@@ -100,6 +106,39 @@ namespace Store.Repositories.Identity
                     WHERE {RoleClaimSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity
             );
+        }
+
+        public async Task<IPagedEnumerable<IRoleClaim>> FindAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null)
+        {
+            IList<string> filterConditions = new List<string>
+            {
+                $"rc.{ RoleClaimSchema.Columns.ClaimType} = @{nameof(type)}"
+            };
+            if (searchString != null) filterConditions.Add(@$"LOWER(rc.{RoleClaimSchema.Columns.ClaimValue}) LIKE @{nameof(searchString)}");
+            if (!GuidHelper.IsNullOrEmpty(roleId)) filterConditions.Add($"rc.{RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)}");
+
+            dynamic searchParameters = new ExpandoObject();
+            searchParameters.Type = type;
+            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
+            searchParameters.RoleId = roleId;
+
+            using GridReader reader = await FindAsync
+            (
+                table: $"{RoleClaimSchema.Table} rc",
+                select: "*",
+                filter: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
+                include: string.Empty,
+                sortOrderProperty: $"rc.{RoleClaimSchema.Columns.ClaimValue}",
+                isDescendingSortOrder: isDescendingSortOrder,
+                pageNumber: pageNumber,
+                pageSize: pageSize,
+                searchParameters: searchParameters
+            );
+
+            IEnumerable<IRoleClaim> roleClaims = reader.Read<RoleClaim>();
+            int totalCount = reader.ReadFirst<int>();
+
+            return new PagedEnumerable<IRoleClaim>(roleClaims, totalCount, pageSize, pageNumber);
         }
     }
 }
