@@ -8,6 +8,7 @@ using Dapper;
 using Store.Common.Extensions;
 
 using static Dapper.SqlMapper;
+using System.Dynamic;
 
 namespace Store.Repository.Core.Dapper
 {
@@ -47,12 +48,14 @@ namespace Store.Repository.Core.Dapper
             return Connection.QueryMultipleAsync(sql, param);
         }
 
-        protected async Task<GridReader> FindAsync(string table, string select, string searchFilter, string include, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        protected async Task<GridReader> FindAsync(string table, string select, string filter, string include, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, dynamic searchParameters)
         {
             // Prepare query parameters
-            int offset = (pageNumber - 1) * pageSize;
-            sortOrderProperty = sortOrderProperty.ToSnakeCase();
-            searchString = searchString?.ToLowerInvariant();
+            dynamic parameters = searchParameters ?? new ExpandoObject();
+
+            parameters.pageSize = pageSize;
+            parameters.offset = (pageNumber - 1) * pageSize;
+            parameters.sortOrderProperty = sortOrderProperty.ToSnakeCase();
 
             // Set query base
             StringBuilder sql = new StringBuilder(@$"SELECT {select} FROM {table}");
@@ -62,17 +65,17 @@ namespace Store.Repository.Core.Dapper
             sql.Append(include);
 
             // Set filter and paging
-            sql.Append($@"WHERE {searchFilter}
-                          ORDER by {sortOrderProperty} {((isDescendingSortOrder) ? "DESC" : "ASC")}
-                          OFFSET @{nameof(offset)} ROWS
-                          FETCH NEXT @{nameof(pageSize)} ROWS ONLY;");
+            sql.Append($@"{filter}
+                          ORDER by @{nameof(parameters.sortOrderProperty)} {((isDescendingSortOrder) ? "DESC" : "ASC")}
+                          OFFSET @{nameof(parameters.offset)} ROWS
+                          FETCH NEXT @{nameof(parameters.pageSize)} ROWS ONLY;");
             sql.Append(Environment.NewLine);
 
             // Check total count
-            sql.Append(@$"SELECT COUNT(*) FROM {table} WHERE {searchFilter}");
+            sql.Append(@$"SELECT COUNT(*) FROM {table} {filter}");
 
             // Get results from the database and prepare response model
-            return await Connection.QueryMultipleAsync(sql.ToString(), param: new { searchString = $"%{searchString}%", offset, pageSize });  // TODO - fix "searchString"
+            return await Connection.QueryMultipleAsync(sql.ToString(), (object)parameters);  
         }
     }
 }

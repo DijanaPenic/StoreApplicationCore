@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Text;
 using System.Data;
+using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Store.Common.Helpers;
-using Store.Common.Extensions;
 using Store.Model.Models;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Common.Helpers;
 using Store.Models.Identity;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
@@ -61,17 +60,20 @@ namespace Store.Repositories.Identity
 
         public async Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
         {
+            dynamic searchParameters = new ExpandoObject();
+            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
+
             using GridReader reader = await FindAsync
             (
                 table: $"{RoleSchema.Table} r", 
                 select: "*", 
-                searchFilter: (searchString == null) ? string.Empty : $"(LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
+                filter: (searchString == null) ? string.Empty : $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
                 include: string.Empty, 
-                searchString, 
-                sortOrderProperty: $"r.{sortOrderProperty}", 
-                isDescendingSortOrder, 
-                pageNumber,
-                pageSize
+                sortOrderProperty: $"r.{sortOrderProperty}",
+                isDescendingSortOrder: isDescendingSortOrder,
+                pageNumber: pageNumber,
+                pageSize: pageSize,
+                searchParameters: searchParameters
             );
 
             IEnumerable<IRole> roles = reader.Read<Role>();

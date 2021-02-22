@@ -2,14 +2,15 @@
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Store.Common.Helpers;
 using Store.Model.Models;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Common.Helpers;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
@@ -103,24 +104,25 @@ namespace Store.Repositories.Identity
 
         public async Task<IPagedEnumerable<IUser>> FindAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            string searchFilter = @$"{(showInactive 
-                                        ? string.Empty 
-                                        : $"AND u.{UserSchema.Columns.IsApproved} = TRUE")}
-                                    {((searchString == null) 
-                                        ? string.Empty 
-                                        : $"AND ((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)}))")}";
+            IList<string> filterConditions = new List<string>();
+
+            if (!showInactive) filterConditions.Add($"u.{UserSchema.Columns.IsApproved} = TRUE");
+            if (searchString != null) filterConditions.Add($"((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)}))");
+
+            dynamic searchParameters = new ExpandoObject();
+            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
 
             using GridReader reader = await FindAsync
             (
                 table: $"{UserSchema.Table} u", 
                 select: "u.*, r.*, uc.*, ul.*, ut.*", 
-                searchFilter, 
+                filter: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(), 
                 include: IncludeQuery(out Prefetch prefetch, includeProperties), 
-                searchString, 
-                sortOrderProperty: $"u.{sortOrderProperty}", 
-                isDescendingSortOrder, 
-                pageNumber, 
-                pageSize
+                sortOrderProperty: $"u.{sortOrderProperty}",
+                isDescendingSortOrder: isDescendingSortOrder,
+                pageNumber: pageNumber,
+                pageSize: pageSize,
+                searchParameters: searchParameters
             );
 
             IEnumerable<IUser> users = ReadUsers(reader, prefetch);
