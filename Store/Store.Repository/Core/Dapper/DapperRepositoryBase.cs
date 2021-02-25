@@ -48,31 +48,38 @@ namespace Store.Repository.Core.Dapper
             return Connection.QueryMultipleAsync(sql, param);
         }
 
-        protected async Task<GridReader> FindAsync(string table, string select, string filter, string include, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, dynamic searchParameters)
+        protected async Task<GridReader> FindAsync(string tableName, string tableAlias, string selectAlias, string filterExpression, string includeExpression, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, dynamic searchParameters)
         {
             // Prepare query parameters
             dynamic parameters = searchParameters ?? new ExpandoObject();
 
-            parameters.pageSize = pageSize;
-            parameters.offset = (pageNumber - 1) * pageSize;
-            parameters.sortOrderProperty = sortOrderProperty.ToSnakeCase();
+            parameters.PageSize = pageSize;
+            parameters.Offset = (pageNumber - 1) * pageSize;
+            parameters.SortOrderProperty = $"{tableAlias}.{sortOrderProperty}".ToSnakeCase();
+
+            string order = $"ORDER BY @{nameof(parameters.SortOrderProperty)} {((isDescendingSortOrder) ? "DESC" : "ASC")}";
 
             // Set query base
-            StringBuilder sql = new StringBuilder(@$"SELECT {select} FROM {table}");
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@$"SELECT {selectAlias} FROM
+                          (
+                              SELECT * FROM {tableName} {tableAlias}
+                              {filterExpression}
+                              {order}
+                              OFFSET @{nameof(parameters.Offset)} ROWS
+                              FETCH NEXT @{nameof(parameters.PageSize)} ROWS ONLY
+                          ) as {tableAlias}");
             sql.Append(Environment.NewLine);
 
-            // Set prefetch
-            sql.Append(include);
+            // Set prefetch and order
+            sql.Append(includeExpression);
+            sql.Append(Environment.NewLine);
 
-            // Set filter and paging
-            sql.Append($@"{filter}
-                          ORDER by @{nameof(parameters.sortOrderProperty)} {((isDescendingSortOrder) ? "DESC" : "ASC")}
-                          OFFSET @{nameof(parameters.offset)} ROWS
-                          FETCH NEXT @{nameof(parameters.pageSize)} ROWS ONLY;");
+            sql.Append($"{order};");
             sql.Append(Environment.NewLine);
 
             // Check total count
-            sql.Append(@$"SELECT COUNT(*) FROM {table} {filter}");
+            sql.Append(@$"SELECT COUNT(*) FROM {tableName} {filterExpression}");
 
             // Get results from the database and prepare response model
             return await Connection.QueryMultipleAsync(sql.ToString(), (object)parameters);  

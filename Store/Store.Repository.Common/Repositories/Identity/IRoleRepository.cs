@@ -14,6 +14,8 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IEnumerable<IRole>> FindByNameAsync(string[] roleNames);
 
-        Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize);
+        Task<IRole> FindByKeyAsync(Guid key, params string[] includeProperties);
+
+        Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
     }
 }

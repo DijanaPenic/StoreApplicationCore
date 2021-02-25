@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Store.Model.Common.Models.Identity;
 
@@ -19,5 +20,7 @@ namespace Store.Models.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
+
+        public ICollection<IRoleClaim> Claims { get; set; }
     }
 }

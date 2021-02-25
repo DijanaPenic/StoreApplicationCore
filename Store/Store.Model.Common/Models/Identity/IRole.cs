@@ -1,4 +1,6 @@
-﻿using Store.Model.Common.Models.Core;
+﻿using System.Collections.Generic;
+
+using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models.Identity
 {
@@ -11,5 +13,7 @@ namespace Store.Model.Common.Models.Identity
         string NormalizedName { get; set; }
 
         bool Stackable { get; set; }
+
+        ICollection<IRoleClaim> Claims { get; set; }
     }
 }

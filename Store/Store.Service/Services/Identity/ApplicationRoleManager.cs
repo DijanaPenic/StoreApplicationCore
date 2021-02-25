@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Common.Enums;
+using Store.Common.Helpers;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -54,14 +54,24 @@ namespace Store.Services.Identity
             return _roleStore.GetUserRoleCombinationCountByRoleNameAsync(role.NormalizedName, CancellationToken);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        public Task<IRole> FindRoleByIdAsync(Guid id, params string[] includeProperties)
+        {
+            if (GuidHelper.IsNullOrEmpty(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return _roleStore.FindRoleByIdAsync(id, includeProperties);
+        }
+
+        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
             if (sortOrderProperty == null)
             {
                 throw new ArgumentNullException(nameof(sortOrderProperty));
             }
 
-            return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
+            return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
         public async Task<IdentityResult> RemoveClaimsAsync(IRole role, string type, string searchString)

@@ -36,6 +36,7 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Retrieves the role by identifier.</summary>
+        /// <param name="includeProperties">The include properties.</param>
         /// <param name="roleId">The role identifier.</param>
         /// <returns>
         ///   <br />
@@ -43,12 +44,12 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("{roleId:guid}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAsync([FromRoute] Guid roleId)
+        public async Task<IActionResult> GetAsync([FromRoute] Guid roleId, [FromQuery] string[] includeProperties)
         {
             if (roleId == Guid.Empty)
                 return BadRequest();
 
-            IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
+            IRole role = await _roleManager.FindByIdAsync(roleId, includeProperties);
 
             if (role != null)
                 return Ok(_mapper.Map<RoleGetApiModel>(role));
@@ -57,6 +58,7 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Retrieves roles by specified search criteria.</summary>
+        /// <param name="includeProperties">The include properties.</param>
         /// <param name="searchString">The search string.</param>
         /// <param name="pageNumber">The page number.</param>
         /// <param name="pageSize">Size of the page.</param>
@@ -67,8 +69,8 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAsync(string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, int pageSize = DefaultParameters.PageSize, 
-                                                  bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(RoleGetApiModel.Name))
+        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber, 
+                                                  int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(RoleGetApiModel.Name))
         {
             IPagedEnumerable<IRole> roles = await _roleManager.FindRolesAsync
             (
@@ -76,7 +78,8 @@ namespace Store.WebAPI.Controllers
                 ModelMapperHelper.GetPropertyMapping<RoleGetApiModel, IRole>(_mapper, sortOrderProperty),
                 isDescendingSortOrder,
                 pageNumber,
-                pageSize
+                pageSize,
+                includeProperties
             );
 
             if (roles != null)

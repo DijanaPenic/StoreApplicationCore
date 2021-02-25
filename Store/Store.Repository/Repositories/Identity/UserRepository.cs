@@ -25,14 +25,6 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        class Prefetch
-        {
-            public bool Roles { get; set; }
-            public bool Claims { get; set; }
-            public bool Logins { get; set; }
-            public bool Tokens { get; set; }
-        }
-
         public Task AddAsync(IUser entity)
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
@@ -114,18 +106,19 @@ namespace Store.Repositories.Identity
 
             using GridReader reader = await FindAsync
             (
-                table: $"{UserSchema.Table} u", 
-                select: "u.*, r.*, uc.*, ul.*, ut.*", 
-                filter: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(), 
-                include: IncludeQuery(out Prefetch prefetch, includeProperties), 
-                sortOrderProperty: $"u.{sortOrderProperty}",
+                tableName: UserSchema.Table,
+                tableAlias: "u",
+                selectAlias: "u.*, r.*, uc.*, ul.*, ut.*", 
+                filterExpression: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(), 
+                includeExpression: IncludeQuery(includeProperties), 
+                sortOrderProperty: sortOrderProperty,
                 isDescendingSortOrder: isDescendingSortOrder,
                 pageNumber: pageNumber,
                 pageSize: pageSize,
                 searchParameters: searchParameters
             );
 
-            IEnumerable<IUser> users = ReadUsers(reader, prefetch);
+            IEnumerable<IUser> users = ReadUsers(reader);
             int totalCount = reader.ReadFirst<int>();
 
             return new PagedEnumerable<IUser>(users, totalCount, pageSize, pageNumber);
@@ -138,14 +131,14 @@ namespace Store.Repositories.Identity
             sql.Append(Environment.NewLine);
 
             // Set prefetch
-            sql.Append(IncludeQuery(out Prefetch include, includeProperties));
+            sql.Append(IncludeQuery(includeProperties));
 
             // Set filter
             sql.Append($@"WHERE u.{UserSchema.Columns.Id} = @{nameof(key)};");
 
             // Execute query and read user
             using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
-            IUser user = ReadUsers(reader, include).FirstOrDefault();
+            IUser user = ReadUsers(reader).FirstOrDefault();
 
             return user;
         }
@@ -204,19 +197,16 @@ namespace Store.Repositories.Identity
                 param: entity);
         }
 
-        private static string IncludeQuery(out Prefetch include, params string[] includeProperties)
+        private static string IncludeQuery(params string[] includeProperties)
         {
             StringBuilder sql = new StringBuilder();
 
-            include = new Prefetch
-            {
-                Roles = (includeProperties.Contains(nameof(IUser.Roles))),
-                Claims = (includeProperties.Contains(nameof(IUser.Claims))),
-                Logins = (includeProperties.Contains(nameof(IUser.Logins))),
-                Tokens = (includeProperties.Contains(nameof(IUser.Tokens)))
-            };
+            bool includeRoles = includeProperties.Contains(nameof(IUser.Roles));
+            bool includeClaims = includeProperties.Contains(nameof(IUser.Claims));
+            bool includeLogins = includeProperties.Contains(nameof(IUser.Logins));
+            bool includetokens = includeProperties.Contains(nameof(IUser.Tokens));
 
-            if (include.Roles)
+            if (includeRoles)
             {
                 sql.Append($@"INNER JOIN {UserRoleSchema.Table} ur on ur.{UserRoleSchema.Columns.UserId} = u.{UserSchema.Columns.Id} 
                               INNER JOIN {RoleSchema.Table} r on r.{RoleSchema.Columns.Id} = ur.{UserRoleSchema.Columns.RoleId}");
@@ -227,19 +217,18 @@ namespace Store.Repositories.Identity
             }
             sql.Append(Environment.NewLine);
 
-            sql.Append($@"LEFT JOIN {UserClaimSchema.Table} uc on {(include.Claims ? $"uc.{UserClaimSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
-                          LEFT JOIN {UserLoginSchema.Table} ul on {(include.Logins ? $"ul.{UserLoginSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
-                          LEFT JOIN {UserTokenSchema.Table} ut on {(include.Tokens ? $"ut.{UserTokenSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}");
-            sql.Append(Environment.NewLine);
+            sql.Append($@"LEFT JOIN {UserClaimSchema.Table} uc on {(includeClaims ? $"uc.{UserClaimSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
+                          LEFT JOIN {UserLoginSchema.Table} ul on {(includeLogins ? $"ul.{UserLoginSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
+                          LEFT JOIN {UserTokenSchema.Table} ut on {(includetokens ? $"ut.{UserTokenSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}");
 
             return sql.ToString();
         }
 
-        private static IEnumerable<IUser> ReadUsers(GridReader reader, Prefetch include)
+        private static IEnumerable<IUser> ReadUsers(GridReader reader)
         {
-            IEnumerable<IUser> users = reader.Read<User, Role, UserClaim, UserLogin, UserToken, User>((user, role, userClaim, userLogin, userToken) =>
+            IEnumerable<IUser> users = reader.Read<User, Role, UserClaim, UserLogin, UserToken, User>((user, userRole, userClaim, userLogin, userToken) =>
             {
-                if (role != null) user.Roles = new List<IRole>() { role };
+                if (userRole != null) user.Roles = new List<IRole>() { userRole };
                 if (userClaim != null) user.Claims = new List<IUserClaim>() { userClaim };
                 if (userLogin != null) user.Logins = new List<IUserLogin>() { userLogin };
                 if (userToken != null) user.Tokens = new List<IUserToken>() { userToken };
@@ -247,14 +236,14 @@ namespace Store.Repositories.Identity
                 return user;
             }, splitOn: $"{RoleSchema.Columns.Id}, {UserClaimSchema.Columns.Id}, {UserLoginSchema.Columns.LoginProvider}, {UserTokenSchema.Columns.UserId}");
 
-            IEnumerable<IUser> mergedUsers = users.GroupBy(p => p.Id).Select(gu =>
+            IEnumerable<IUser> mergedUsers = users.GroupBy(u => u.Id).Select(gu =>
             {
                 IUser user = gu.First();
 
-                if (include.Roles) user.Roles = gu.Select(u => u.Roles.Single()).ToList();
-                if (include.Claims) user.Claims = gu.Select(u => u.Claims.Single()).ToList();
-                if (include.Logins) user.Logins = gu.Select(u => u.Logins.Single()).ToList();
-                if (include.Tokens) user.Tokens = gu.Select(u => u.Tokens.Single()).ToList();
+                user.Roles = gu.Where(u => u.Roles != null).Select(u => u.Roles.Single()).ToList();
+                user.Claims = gu.Where(u => u.Claims != null).Select(u => u.Claims.Single()).ToList();
+                user.Logins = gu.Where(u => u.Logins != null).Select(u => u.Logins.Single()).ToList();
+                user.Tokens = gu.Where(u => u.Tokens != null).Select(u => u.Tokens.Single()).ToList();
 
                 return user;
             });

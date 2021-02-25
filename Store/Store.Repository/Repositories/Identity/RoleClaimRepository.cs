@@ -124,11 +124,12 @@ namespace Store.Repositories.Identity
 
             using GridReader reader = await FindAsync
             (
-                table: $"{RoleClaimSchema.Table} rc",
-                select: "*",
-                filter: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
-                include: string.Empty,
-                sortOrderProperty: $"rc.{RoleClaimSchema.Columns.ClaimValue}",
+                tableName: RoleClaimSchema.Table,
+                tableAlias: "rc",
+                selectAlias: "*",
+                filterExpression: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
+                includeExpression: string.Empty,
+                sortOrderProperty: RoleClaimSchema.Columns.ClaimValue,
                 isDescendingSortOrder: isDescendingSortOrder,
                 pageNumber: pageNumber,
                 pageSize: pageSize,

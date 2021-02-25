@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.Linq;
 using System.Data;
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -58,28 +60,50 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        public async Task<IRole> FindByKeyAsync(Guid key, params string[] includeProperties)
+        {
+            // Set query base
+            StringBuilder sql = new StringBuilder(@$"SELECT r.*, rc.* FROM {RoleSchema.Table} r");
+            sql.Append(Environment.NewLine);
+
+            // Set prefetch
+            sql.Append(IncludeQuery(includeProperties));
+
+            // Set filter
+            sql.Append($@"WHERE u.{RoleSchema.Columns.Id} = @{nameof(key)};");
+
+            // Execute query and read user
+            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
+            IRole role = ReadRoles(reader).FirstOrDefault();
+
+            return role;
+        }
+
+        public async Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
             dynamic searchParameters = new ExpandoObject();
             searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
 
             using GridReader reader = await FindAsync
             (
-                table: $"{RoleSchema.Table} r", 
-                select: "*", 
-                filter: (searchString == null) ? string.Empty : $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
-                include: string.Empty, 
-                sortOrderProperty: $"r.{sortOrderProperty}",
+                tableName: RoleSchema.Table,
+                tableAlias: "r",
+                selectAlias: "r.*, rc.*", 
+                filterExpression: (searchString == null) ? string.Empty : $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
+                includeExpression: IncludeQuery(includeProperties), 
+                sortOrderProperty: sortOrderProperty,
                 isDescendingSortOrder: isDescendingSortOrder,
                 pageNumber: pageNumber,
                 pageSize: pageSize,
                 searchParameters: searchParameters
             );
 
-            IEnumerable<IRole> roles = reader.Read<Role>();
+            IEnumerable<IRole> roles = ReadRoles(reader);
             int totalCount = reader.ReadFirst<int>();
 
-            return new PagedEnumerable<IRole>(roles, totalCount, pageSize, pageNumber);
+            var result = new PagedEnumerable<IRole>(roles, totalCount, pageSize, pageNumber);
+
+            return result;
         }
 
         public async Task<IRole> FindByKeyAsync(Guid key)
@@ -130,5 +154,31 @@ namespace Store.Repositories.Identity
                 param: entity
             );
         }
+
+        private static string IncludeQuery(params string[] includeProperties)
+        {
+            return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includeProperties.Contains(nameof(IRole.Claims)) ? $"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}" : "FALSE")}";
+        }
+
+        private static IEnumerable<IRole> ReadRoles(GridReader reader)
+        {
+            IEnumerable<IRole> roles = reader.Read<Role, RoleClaim, Role>((role, roleClaim) =>
+            {
+                if (roleClaim != null) role.Claims = new List<IRoleClaim>() { roleClaim };
+
+                return role;
+            }, splitOn: $"{RoleClaimSchema.Columns.Id}");
+
+            IEnumerable<IRole> mergedRoles = roles.GroupBy(r => r.Id).Select(gr =>
+            {
+                IRole role = gr.First();
+                role.Claims = gr.Where(r => r.Claims != null).Select(r => r.Claims.Single()).ToList();
+
+                return role;
+            });
+
+            return mergedRoles;
+        }
+
     }
 }

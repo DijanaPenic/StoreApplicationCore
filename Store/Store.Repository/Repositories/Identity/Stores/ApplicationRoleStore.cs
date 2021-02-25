@@ -246,6 +246,11 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationRoleStore<IRole> Members
 
+        public Task<IRole> FindRoleByIdAsync(Guid id, params string[] includeProperties)
+        {
+            return _unitOfWork.RoleRepository.FindByKeyAsync(id, includeProperties);
+        }
+
         public async Task<IEnumerable<IRole>> FindByNameAsync(string[] normalizedRoleNames, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -278,9 +283,9 @@ namespace Store.Repositories.Identity.Stores
             return await _unitOfWork.UserRoleRepository.GetUserRoleCombinationCountByRoleNameAsync(normalizedRoleName);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
         {
-            return _unitOfWork.RoleRepository.FindAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
+            return _unitOfWork.RoleRepository.FindAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
         #endregion
