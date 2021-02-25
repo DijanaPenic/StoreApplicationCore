@@ -132,13 +132,14 @@ namespace Store.Repositories.Identity
 
             // Set prefetch
             sql.Append(IncludeQuery(includeProperties));
+            sql.Append(Environment.NewLine);
 
             // Set filter
             sql.Append($@"WHERE u.{UserSchema.Columns.Id} = @{nameof(key)};");
 
             // Execute query and read user
             using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
-            IUser user = ReadUsers(reader).FirstOrDefault();
+            IUser user = ReadUsers(reader).SingleOrDefault();
 
             return user;
         }

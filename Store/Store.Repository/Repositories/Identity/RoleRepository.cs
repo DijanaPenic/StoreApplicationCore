@@ -68,13 +68,14 @@ namespace Store.Repositories.Identity
 
             // Set prefetch
             sql.Append(IncludeQuery(includeProperties));
+            sql.Append(Environment.NewLine);
 
             // Set filter
-            sql.Append($@"WHERE u.{RoleSchema.Columns.Id} = @{nameof(key)};");
+            sql.Append($@"WHERE r.{RoleSchema.Columns.Id} = @{nameof(key)};");
 
             // Execute query and read user
             using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
-            IRole role = ReadRoles(reader).FirstOrDefault();
+            IRole role = ReadRoles(reader).SingleOrDefault();
 
             return role;
         }
