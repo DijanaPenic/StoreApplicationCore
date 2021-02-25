@@ -12,6 +12,6 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
     {
         Task RemoveClaimsAsync(IRole role, string type, string searchString, CancellationToken cancellationToken = default);
 
-        Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, IRole role = null, CancellationToken cancellationToken = default);
+        Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null, CancellationToken cancellationToken = default);
     }
 }

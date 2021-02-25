@@ -49,7 +49,7 @@ namespace Store.WebAPI.Controllers
             if (roleId == Guid.Empty)
                 return BadRequest();
 
-            IRole role = await _roleManager.FindByIdAsync(roleId, includeProperties);
+            IRole role = await _roleManager.FindRoleByIdAsync(roleId, includeProperties);
 
             if (role != null)
                 return Ok(_mapper.Map<RoleGetApiModel>(role));

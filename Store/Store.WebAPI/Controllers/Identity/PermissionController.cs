@@ -11,6 +11,7 @@ using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.Model.Common.Models;
 using Store.WebAPI.Models;
+using Store.Common.Helpers;
 
 namespace Store.WebAPI.Controllers.Identity
 {
@@ -102,7 +103,7 @@ namespace Store.WebAPI.Controllers.Identity
                 isDescendingSortOrder,
                 pageNumber,
                 pageSize,
-                role
+                role.Id
             );
 
             if (roleClaims != null)

@@ -87,7 +87,7 @@ namespace Store.Services.Identity
             return await UpdateRoleAsync(role);
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, IRole role = null)
+        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null)
         {
             if (string.IsNullOrEmpty(type))
             {
@@ -96,7 +96,7 @@ namespace Store.Services.Identity
 
             IApplicationRoleClaimStore claimStore = GetClaimStore();
 
-            return claimStore.FindClaimsAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, role, CancellationToken);
+            return claimStore.FindClaimsAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, roleId, CancellationToken);
         }
 
         private IApplicationRoleClaimStore GetClaimStore()

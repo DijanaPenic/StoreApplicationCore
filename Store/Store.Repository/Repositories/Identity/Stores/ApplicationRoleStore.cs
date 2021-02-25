@@ -235,11 +235,11 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, IRole role = null, CancellationToken cancellationToken = default)
+        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleClaimRepository.FindAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, role?.Id);
+            return _unitOfWork.RoleClaimRepository.FindAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, roleId);
         }
 
         #endregion
