@@ -79,7 +79,7 @@ namespace Store.Repository.Core.Dapper
             sql.Append(Environment.NewLine);
 
             // Check total count
-            sql.Append(@$"SELECT COUNT(*) FROM {tableName} {filterExpression}");
+            sql.Append(@$"SELECT COUNT(*) FROM {tableName} {tableAlias} {filterExpression};");
 
             // Get results from the database and prepare response model
             return await Connection.QueryMultipleAsync(sql.ToString(), (object)parameters);  
