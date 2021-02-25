@@ -609,9 +609,9 @@ namespace Store.Repositories.Identity.Stores
             if (claims == null)
                 throw new ArgumentNullException(nameof(claims));
 
-            IEnumerable<UserClaim> userClaims = claims.Select(c => GetUserClaimEntity(c, user.Id));
+            IEnumerable<IUserClaim> userClaims = claims.Select(c => GetUserClaimEntity(c, user.Id));
 
-            if (userClaims.Count() > 0)
+            if (userClaims.Any())
             {
                 userClaims.ToList().ForEach(async userClaim =>
                 {
@@ -661,7 +661,7 @@ namespace Store.Repositories.Identity.Stores
 
             IEnumerable<IUserClaim> userClaims = await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id);
 
-            if (claims.Count() > 0)
+            if (claims.Any())
             {
                 claims.ToList().ForEach(async userClaim =>
                 {
@@ -1058,7 +1058,7 @@ namespace Store.Repositories.Identity.Stores
 
         #region Private Methods
 
-        private UserClaim GetUserClaimEntity(Claim value, Guid userId)
+        private static IUserClaim GetUserClaimEntity(Claim value, Guid userId)
         {
             return value == null
                 ? default
