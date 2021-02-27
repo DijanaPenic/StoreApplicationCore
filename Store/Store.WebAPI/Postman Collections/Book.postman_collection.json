@@ -64,7 +64,7 @@
 							"disabled": true
 						},
 						{
-							"key": "sort_order_field",
+							"key": "sort_order_property",
 							"value": "Name",
 							"disabled": true
 						},

@@ -20,7 +20,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/roles/{{role_id}}",
+							"raw": "{{base_url}}/api/roles/{{role_id}}?include_properties=Policies",
 							"host": [
 								"{{base_url}}"
 							],
@@ -28,6 +28,12 @@
 								"api",
 								"roles",
 								"{{role_id}}"
+							],
+							"query": [
+								{
+									"key": "include_properties",
+									"value": "Policies"
+								}
 							]
 						}
 					},
@@ -45,7 +51,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/roles",
+							"raw": "{{base_url}}/api/roles?is_descending_sort_order=true&sort_order_property=Name&search_string=Guest&page_size=3&page_number=1&include_properties=Policies",
 							"host": [
 								"{{base_url}}"
 							],
@@ -56,28 +62,27 @@
 							"query": [
 								{
 									"key": "is_descending_sort_order",
-									"value": "true",
-									"disabled": true
+									"value": "true"
 								},
 								{
-									"key": "sort_order_field",
-									"value": "Name",
-									"disabled": true
+									"key": "sort_order_property",
+									"value": "Name"
 								},
 								{
 									"key": "search_string",
-									"value": "Guest",
-									"disabled": true
+									"value": "Guest"
 								},
 								{
 									"key": "page_size",
-									"value": "2",
-									"disabled": true
+									"value": "3"
 								},
 								{
 									"key": "page_number",
-									"value": "2",
-									"disabled": true
+									"value": "1"
+								},
+								{
+									"key": "include_properties",
+									"value": "Policies"
 								}
 							]
 						}
@@ -480,7 +485,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users",
+							"raw": "{{base_url}}/api/users?sort_order_property=UserName",
 							"host": [
 								"{{base_url}}"
 							],
@@ -495,9 +500,8 @@
 									"disabled": true
 								},
 								{
-									"key": "sort_order_field",
-									"value": "UserName",
-									"disabled": true
+									"key": "sort_order_property",
+									"value": "UserName"
 								},
 								{
 									"key": "search_string",
@@ -515,7 +519,7 @@
 									"disabled": true
 								},
 								{
-									"key": "includeProperties",
+									"key": "include_properties",
 									"value": "Roles",
 									"disabled": true
 								}
@@ -1540,6 +1544,92 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Permissions",
+			"item": [
+				{
+					"name": "Update Policy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"section\": \"Book\",\r\n    \"access_actions\": [\r\n        { \"type\": \"Read\", \"is_enabled\": true },\r\n        { \"type\": \"Update\", \"is_enabled\": true },\r\n        { \"type\": \"Delete\", \"is_enabled\": true },\r\n        { \"type\": \"Create\", \"is_enabled\": true }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/{{role_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"permissions",
+								"{{role_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Policies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/{{section}}?is_descending_sort_order=true&sort_order_property=Name&search_string=Guest&page_size=3&page_number=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"permissions",
+								"{{section}}"
+							],
+							"query": [
+								{
+									"key": "is_descending_sort_order",
+									"value": "true"
+								},
+								{
+									"key": "sort_order_property",
+									"value": "Name"
+								},
+								{
+									"key": "search_string",
+									"value": "Guest"
+								},
+								{
+									"key": "page_size",
+									"value": "3"
+								},
+								{
+									"key": "page_number",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1569,7 +1659,11 @@
 		},
 		{
 			"key": "role_id",
-			"value": "d72ef5e5-f08a-4173-b83a-74618893891b"
+			"value": "9621c09c-06b1-45fb-8baf-38e0757e2f59"
+		},
+		{
+			"key": "section",
+			"value": "Book"
 		}
 	]
 }
