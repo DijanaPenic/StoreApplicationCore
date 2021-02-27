@@ -21,6 +21,8 @@ namespace Store.Repositories.Identity
 {
     internal class RoleRepository : DapperRepositoryBase, IRoleRepository
     {
+        public const string CLAIM_PERMISSION_KEY = "Permission";
+
         public RoleRepository(IDbTransaction transaction) : base(transaction)
         { 
         }
@@ -90,7 +92,7 @@ namespace Store.Repositories.Identity
                 tableName: RoleSchema.Table,
                 tableAlias: "r",
                 selectAlias: "r.*, rc.*", 
-                filterExpression: (searchString == null) ? string.Empty : $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
+                filterExpression: $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
                 includeExpression: IncludeQuery(includeProperties), 
                 sortOrderProperty: sortOrderProperty,
                 isDescendingSortOrder: isDescendingSortOrder,
@@ -158,14 +160,16 @@ namespace Store.Repositories.Identity
 
         private static string IncludeQuery(params string[] includeProperties)
         {
-            return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includeProperties.Contains(nameof(IRole.Claims)) ? $"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}" : "FALSE")}";
+            bool includeClaims = includeProperties.Contains(nameof(IRole.Policies));
+
+            return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includeClaims ? $"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}" : "FALSE")}";
         }
 
         private static IEnumerable<IRole> ReadRoles(GridReader reader)
         {
             IEnumerable<IRole> roles = reader.Read<Role, RoleClaim, Role>((role, roleClaim) =>
             {
-                if (roleClaim != null) role.Claims = new List<IRoleClaim>() { roleClaim };
+                if (roleClaim?.ClaimType == CLAIM_PERMISSION_KEY) role.Policies = new List<IRoleClaim>() { roleClaim };
 
                 return role;
             }, splitOn: $"{RoleClaimSchema.Columns.Id}");
@@ -173,7 +177,7 @@ namespace Store.Repositories.Identity
             IEnumerable<IRole> mergedRoles = roles.GroupBy(r => r.Id).Select(gr =>
             {
                 IRole role = gr.First();
-                role.Claims = gr.Where(r => r.Claims != null).Select(r => r.Claims.Single()).ToList();
+                role.Policies = gr.Where(r => r.Policies != null).Select(r => r.Policies.Single()).ToList();
 
                 return role;
             });

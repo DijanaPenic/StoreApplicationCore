@@ -21,6 +21,6 @@ namespace Store.Models.Identity
 
         public DateTime DateUpdatedUtc { get; set; }
 
-        public ICollection<IRoleClaim> Claims { get; set; }
+        public ICollection<IRoleClaim> Policies { get; set; }
     }
 }

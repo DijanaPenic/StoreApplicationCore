@@ -7,7 +7,7 @@ namespace Store.WebAPI.Models.Identity
 {
     public class PolicyPostApiModel
     {
-        public AccessActionModel[] Actions { get; set; }
+        public AccessActionModel[] AccessActions { get; set; }
 
         [Required]
         [EnumValidation(typeof(SectionType))]

@@ -64,14 +64,14 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<UserLoginInfo, ExternalLoginGetApiModel>();
 
             // Create maps for role models
-            CreateMap<RoleGetApiModel, IRole>().ReverseMap();
-            CreateMap<RolePostApiModel, IRole>().ReverseMap();
-            CreateMap<RolePatchApiModel, IRole>().ReverseMap();
+            CreateMap(typeof(IRole), typeof(RoleGetApiModel)).ConvertUsing(typeof(PolicyConverter<IRole, RoleGetApiModel>));
+            CreateMap<RolePostApiModel, IRole>();
+            CreateMap<RolePatchApiModel, IRole>();
 
             // Create maps for permissions
             CreateMap<PolicyPostApiModel, IPolicy>().ForMember(dst => dst.Section, opt => opt.MapFrom(src => Enum.Parse<SectionType>(src.Section, true)));
             CreateMap<AccessActionModel, IAccessAction>().ForMember(dst => dst.Type, opt => opt.MapFrom(src => Enum.Parse<AccessType>(src.Type, true)));
-            CreateMap<RoleClaimGetApiModel, IRoleClaim>().ReverseMap();
+            CreateMap<RoleClaimGetApiModel, IRoleClaim>().ReverseMap();  
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();
