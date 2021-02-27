@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
+using Store.Common.Enums;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
@@ -17,5 +18,7 @@ namespace Store.Repository.Common.Repositories.Identity
         Task<IRole> FindByKeyAsync(Guid key, params string[] includeProperties);
 
         Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+        
+        Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize);
     }
 }

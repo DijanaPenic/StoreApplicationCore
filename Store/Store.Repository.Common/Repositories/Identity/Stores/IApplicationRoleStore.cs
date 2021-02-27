@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Enums;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
@@ -20,5 +21,7 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
         Task<IRole> FindRoleByIdAsync(Guid id, params string[] includeProperties);
 
         Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+
+        Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize);
     }
 }

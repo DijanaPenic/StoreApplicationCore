@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Store.Model.Models;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Models.Identity;
 using Store.DAL.Schema.Identity;
@@ -94,6 +95,39 @@ namespace Store.Repositories.Identity
                 selectAlias: "r.*, rc.*", 
                 filterExpression: $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
                 includeExpression: IncludeQuery(includeProperties), 
+                sortOrderProperty: sortOrderProperty,
+                isDescendingSortOrder: isDescendingSortOrder,
+                pageNumber: pageNumber,
+                pageSize: pageSize,
+                searchParameters: searchParameters
+            );
+
+            IEnumerable<IRole> roles = ReadRoles(reader);
+            int totalCount = reader.ReadFirst<int>();
+
+            var result = new PagedEnumerable<IRole>(roles, totalCount, pageSize, pageNumber);
+
+            return result;
+        }
+
+        public async Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        {
+            dynamic searchParameters = new ExpandoObject();
+            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
+            searchParameters.SectionType = $"{sectionType}.%";
+
+            string includeExpression = $@"LEFT JOIN {RoleClaimSchema.Table} rc on
+                                                rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
+                                                AND rc.{RoleClaimSchema.Columns.ClaimType} = '{CLAIM_PERMISSION_KEY}'
+                                                AND rc.{RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(sectionType)}";
+
+            using GridReader reader = await FindAsync
+            (
+                tableName: RoleSchema.Table,
+                tableAlias: "r",
+                selectAlias: "r.*, rc.*",
+                filterExpression: @$"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
+                includeExpression: includeExpression,
                 sortOrderProperty: sortOrderProperty,
                 isDescendingSortOrder: isDescendingSortOrder,
                 pageNumber: pageNumber,
