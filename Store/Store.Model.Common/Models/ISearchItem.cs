@@ -10,6 +10,6 @@ namespace Store.Model.Common.Models
 
         string Name { get; set; }
 
-        ModuleType Type { get; set; }
+        SectionType Type { get; set; }
     }
 }

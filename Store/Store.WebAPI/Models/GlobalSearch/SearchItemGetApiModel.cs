@@ -10,6 +10,6 @@ namespace Store.WebAPI.Models.GlobalSearch
 
         public string Name { get; set; }
 
-        public ModuleType Type { get; set; }
+        public SectionType Type { get; set; }
     }
 }

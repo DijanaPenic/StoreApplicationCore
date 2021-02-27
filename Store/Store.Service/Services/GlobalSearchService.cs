@@ -18,11 +18,11 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<ISearchItem>> FindAsync(string searchString, IList<ModuleType> searchTypes)
+        public async Task<IEnumerable<ISearchItem>> FindAsync(string searchString, IList<SectionType> searchTypes)
         {
             IList<ISearchItem> searchItems = new List<ISearchItem>();
 
-            if (searchTypes.Contains(ModuleType.Book))
+            if (searchTypes.Contains(SectionType.Book))
             {
                 IEnumerable<IBook> books = await _unitOfWork.BookRepository.FindAsync
                 (
@@ -38,14 +38,14 @@ namespace Store.Services
                     {
                         Id = book.Id,
                         Name = $"{book.Name} ({book.Bookstore.Name})",
-                        Type = ModuleType.Book
+                        Type = SectionType.Book
                     };
 
                     searchItems.Add(searchItem);
                 }
             }
 
-            if (searchTypes.Contains(ModuleType.Bookstore))
+            if (searchTypes.Contains(SectionType.Bookstore))
             {
                 IEnumerable<IBookstore> bookstores = await _unitOfWork.BookstoreRepository.FindAsync
                 (
@@ -60,7 +60,7 @@ namespace Store.Services
                     {
                         Id = bookstore.Id,
                         Name = bookstore.Name,
-                        Type = ModuleType.Bookstore
+                        Type = SectionType.Bookstore
                     };
 
                     searchItems.Add(searchItem);

@@ -39,12 +39,12 @@ namespace Store.WebAPI.Controllers
                 return BadRequest();
 
             // Configure search types per roles (Note: all roles can search books)
-            IList<ModuleType> searchTypes = new List<ModuleType> { ModuleType.Book, ModuleType.Bookstore };
+            IList<SectionType> searchTypes = new List<SectionType> { SectionType.Book, SectionType.Bookstore };
 
             // Admin and Store Manager roles can search bookstores 
             if (User.IsInRole(RoleHelper.Admin) || User.IsInRole(RoleHelper.StoreManager))
             {
-                searchTypes.Add(ModuleType.Bookstore);
+                searchTypes.Add(SectionType.Bookstore);
             }
 
             IEnumerable<ISearchItem> searchResults = await _globalSearchService.FindAsync(searchString, searchTypes);

@@ -8,6 +8,6 @@ namespace Store.Service.Common.Services
 {
     public interface IGlobalSearchService
     {
-        Task<IEnumerable<ISearchItem>> FindAsync(string searchString, IList<ModuleType> searchTypes);
+        Task<IEnumerable<ISearchItem>> FindAsync(string searchString, IList<SectionType> searchTypes);
     }
 }
