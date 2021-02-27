@@ -45,7 +45,7 @@ namespace Store.Common.Helpers
         {
             PropertyMap dstProp = mapping.PropertyMaps.FirstOrDefault(p => p.DestinationName.Equals(property));
 
-            if (dstProp.SourceMembers.Count() > 0)
+            if (dstProp.SourceMembers.Count > 0)
                 return dstProp.SourceMembers.FirstOrDefault().Name;
 
             return dstProp.SourceMember.Name;
