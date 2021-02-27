@@ -160,9 +160,12 @@ namespace Store.Repositories.Identity
 
         private static string IncludeQuery(params string[] includeProperties)
         {
-            bool includeClaims = includeProperties.Contains(nameof(IRole.Policies));
+            bool includePolicies = includeProperties.Contains(nameof(IRole.Policies));
 
-            return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includeClaims ? $"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}" : "FALSE")}";
+            return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includePolicies ? 
+                            @$"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
+                            {(includePolicies ? $"AND rc.{RoleClaimSchema.Columns.ClaimType} = '{CLAIM_PERMISSION_KEY}'" : string.Empty)}"
+                      : "FALSE")}";
         }
 
         private static IEnumerable<IRole> ReadRoles(GridReader reader)
