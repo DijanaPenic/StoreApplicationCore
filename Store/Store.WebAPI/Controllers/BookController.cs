@@ -9,7 +9,6 @@ using Store.Common.Helpers;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
-using Store.WebAPI.Infrastructure.Authorization;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
@@ -39,7 +38,7 @@ namespace Store.WebAPI.Controllers
         [Route("{bookId:guid}")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromRoute]Guid bookId, [FromQuery] string[] includeProperties)
+        public async Task<IActionResult> GetAsync([FromRoute] Guid bookId, [FromQuery] string[] includeProperties)
         {
             if (bookId == Guid.Empty)
                 return BadRequest();
@@ -65,8 +64,9 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, string searchString = DefaultParameters.SearchString, int pageNumber = DefaultParameters.PageNumber,
-                                                  int pageSize = DefaultParameters.PageSize, bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, string sortOrderProperty = nameof(BookGetApiModel.Name))
+        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
+                                                  [FromQuery] string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
             IPagedList<IBook> books = await _bookService.FindBooksAsync
             (
@@ -94,7 +94,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [Consumes("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Create)]
-        public async Task<IActionResult> PostAsync([FromBody]BookPostApiModel bookModel)
+        public async Task<IActionResult> PostAsync([FromBody] BookPostApiModel bookModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -121,7 +121,7 @@ namespace Store.WebAPI.Controllers
         [Route("{bookId:guid}")]
         [Consumes("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Update)]
-        public async Task<IActionResult> PatchAsync([FromRoute]Guid bookId, [FromBody]BookPatchApiModel bookModel)
+        public async Task<IActionResult> PatchAsync([FromRoute] Guid bookId, [FromBody] BookPatchApiModel bookModel)
         {
             if (bookId == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
@@ -147,7 +147,7 @@ namespace Store.WebAPI.Controllers
         [HttpDelete]
         [Route("{bookId:guid}")]
         [SectionAuthorization(SectionType.Book, AccessType.Delete)]
-        public async Task<IActionResult> DeleteAsync([FromRoute]Guid bookId)
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid bookId)
         {
             if (bookId == Guid.Empty)
                 return BadRequest();

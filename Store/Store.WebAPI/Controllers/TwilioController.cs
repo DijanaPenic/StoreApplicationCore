@@ -20,7 +20,7 @@ namespace Store.WebAPI.Controllers
 
         [HttpGet]
         [Route("phone-number/token/{token}", Name = RouteNames.TwilioPhoneNumberVerificationToken)]
-        public IActionResult PhoneNumberVerificationToken(string token)
+        public IActionResult PhoneNumberVerificationToken([FromRoute] string token)
         {
             VoiceResponse voiceResponse = new VoiceResponse();
             voiceResponse.Say($"Your phone number verification token is {token}", VoiceEnum.Alice, 3);

@@ -154,7 +154,7 @@ namespace Store.WebAPI.Controllers
         [Authorize]
         [Route("renew/token/{refreshToken}")]
         [Produces("application/json")]
-        public async Task<IActionResult> RenewTokensAsync([FromRoute]string refreshToken)
+        public async Task<IActionResult> RenewTokensAsync([FromRoute] string refreshToken)
         {
             try
             {
@@ -260,7 +260,7 @@ namespace Store.WebAPI.Controllers
         [Route("external")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync(AuthenticateExternalRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateExternalRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -364,7 +364,7 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync(AuthenticateTwoFactorRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateTwoFactorRequestApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {

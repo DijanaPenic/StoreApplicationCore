@@ -71,7 +71,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("{userId:guid}/email")]
-        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, EmailConfirmationPostApiModel emailConfirmationModel)
+        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] EmailConfirmationPostApiModel emailConfirmationModel)
         {
             AuthenticateResult authResult = await AuthenticateUserAsync(userId);
             if (authResult.Action != null) return authResult.Action;
@@ -195,7 +195,7 @@ namespace Store.WebAPI.Controllers
         [AllowAnonymous]
         [Route("{userId:guid}/phone-number")]
         [Consumes("application/json")]
-        public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
+        public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
         {
             AuthenticateResult authResult = await AuthenticateUserAsync(userId);
             if (authResult.Action != null) return authResult.Action;

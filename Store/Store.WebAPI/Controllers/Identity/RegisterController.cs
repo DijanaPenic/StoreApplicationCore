@@ -55,7 +55,7 @@ namespace Store.WebAPI.Controllers
         [ClientAuthorization]
         [Route("")]
         [Consumes("application/json")]
-        public async Task<IActionResult> RegisterAsync(RegisterPostApiModel registerModel)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterPostApiModel registerModel)
         {
             if (!ModelState.IsValid)
             {

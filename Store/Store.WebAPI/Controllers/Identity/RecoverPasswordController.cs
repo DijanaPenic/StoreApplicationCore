@@ -44,7 +44,7 @@ namespace Store.WebAPI.Controllers
         [ClientAuthorization]
         [Route("")]
         [Consumes("application/json")]
-        public async Task<IActionResult> InitiatePasswordRecoveryAsync(PasswordRecoveryPostApiModel passwordRecoveryModel)
+        public async Task<IActionResult> InitiatePasswordRecoveryAsync([FromBody] PasswordRecoveryPostApiModel passwordRecoveryModel)
         {
             if (!ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace Store.WebAPI.Controllers
         [ClientAuthorization]
         [Route("{userId:guid}")]
         [Consumes("application/json")]
-        public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid userId, PasswordRecoveryPatchApiModel passwordRecoveryModel)
+        public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid userId, [FromBody] PasswordRecoveryPatchApiModel passwordRecoveryModel)
         {
             if (userId == Guid.Empty)
             {

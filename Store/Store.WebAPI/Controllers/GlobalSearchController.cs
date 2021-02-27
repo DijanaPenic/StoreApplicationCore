@@ -33,7 +33,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAsync(string searchString)
+        public async Task<IActionResult> GetAsync([FromQuery] string searchString)
         {
             if (string.IsNullOrWhiteSpace(searchString))
                 return BadRequest();

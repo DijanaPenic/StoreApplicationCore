@@ -40,7 +40,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [UserAuthorization(RoleHelper.Admin)]
         [Route("")]
-        public async Task<IActionResult> PostAsync([FromForm]IFormFile file, [FromForm]EmailTemplateType type)
+        public async Task<IActionResult> PostAsync([FromForm]IFormFile file, [FromForm] EmailTemplateType type)
         {
             if (file?.Length == 0)
             {
