@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Store.WebAPI.Models.Identity
+﻿namespace Store.WebAPI.Models.Identity
 {
     public class UserProfileGetApiModel
     {
@@ -14,7 +12,7 @@ namespace Store.WebAPI.Models.Identity
 
         public bool PhoneNumberConfirmed { get; set; }
 
-        public IList<ExternalLoginGetApiModel> ExternalLogins { get; set; }
+        public ExternalLoginGetApiModel[] ExternalLogins { get; set; }
 
         public bool TwoFactorEnabled { get; set; }
 

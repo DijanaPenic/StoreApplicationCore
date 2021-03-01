@@ -94,7 +94,7 @@ namespace Store.WebAPI.Controllers
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                ExternalLogins = _mapper.Map<IList<ExternalLoginGetApiModel>>(logins),
+                ExternalLogins = _mapper.Map<ExternalLoginGetApiModel[]>(logins),
                 TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
                 HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
                 TwoFactorClientRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),

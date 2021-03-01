@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Store.WebAPI.Models.Book;
+﻿using Store.WebAPI.Models.Book;
 
 namespace Store.WebAPI.Models.Bookstore
 {
@@ -10,7 +8,7 @@ namespace Store.WebAPI.Models.Bookstore
 
         public string Location { get; set; }
 
-        public ICollection<BookGetApiModel> Books { get; set; }
+        public BookGetApiModel[] Books { get; set; }
 
         public int BooksCount { get; set; }
     }
