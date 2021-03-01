@@ -88,7 +88,7 @@ namespace Store.Repositories.Identity
                             {RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)} AND
                             {RoleClaimSchema.Columns.ClaimType} = @{nameof(type)} AND
                             {RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(searchString)}",
-                param: new { type, searchString = $"%{searchString}%" }   
+                param: new { type, roleId, searchString = $"%{searchString}%" }   
             );
         }
 
