@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
+using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Extensions;
 using Store.Services.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -31,6 +32,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
@@ -40,6 +42,7 @@ namespace Store.WebAPI.Controllers
             ApplicationUserManager userManager,
             ApplicationRoleManager roleManager,
             ApplicationSignInManager signInManager,
+            IAuthorizationService authorizationService,
             ILogger<UserController> logger,
             IMapper mapper,
             IEmailService emailService
@@ -48,6 +51,7 @@ namespace Store.WebAPI.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _authorizationService = authorizationService;
             _logger = logger;
             _mapper = mapper;
             _emailService = emailService;
@@ -69,7 +73,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -179,7 +183,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -223,7 +227,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Provider Key cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -246,9 +250,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("")]
         [Consumes("application/json")]
+        [SectionAuthorization(SectionType.User, AccessType.Create)]
         public async Task<IActionResult> CreateUserAsync([FromBody] UserPostApiModel createUserModel)
         {
             if (!ModelState.IsValid)
@@ -280,9 +284,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}")]
         [Consumes("application/json")]
+        [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> PatchUserAsync([FromRoute] Guid userId, [FromBody] UserPatchApiModel userModel)
         {
             if (userId == Guid.Empty)
@@ -337,8 +341,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/lock")]
+        [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> LockUserAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
@@ -363,8 +367,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/unlock")]
+        [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
@@ -389,8 +393,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpDelete]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/delete")]
+        [SectionAuthorization(SectionType.User, AccessType.Delete)]
         public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
@@ -415,8 +419,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/approve")]
+        [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> ApproveUserAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
@@ -441,8 +445,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/disapprove")]
+        [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> DisapproveUserAsync([FromRoute] Guid userId)
         {
             if (userId == Guid.Empty)
@@ -489,7 +493,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Old Password must be provided.");
             }
 
-            bool hasPermissions = isCurrentUser || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -544,7 +548,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -574,9 +578,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [UserAuthorization(RoleHelper.Admin)]
-        [Route("")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.User, AccessType.Read)]
         public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, [FromQuery] bool showInactive = false, [FromQuery] string searchString = DefaultParameters.SearchString, 
                                                        [FromQuery] int pageNumber = DefaultParameters.PageNumber, [FromQuery] int pageSize = DefaultParameters.PageSize, 
                                                        [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, [FromQuery] string sortOrderProperty = nameof(UserGetApiModel.UserName))
@@ -607,9 +610,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.User, AccessType.Read)]
         public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string[] includeProperties)
         {
             if (userId == Guid.Empty)
@@ -632,9 +635,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPatch]
-        //[UserAuthorization(RoleHelper.Admin)]
         [Route("{userId:guid}/roles")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, [FromQuery] string[] rolesToAssign)
         {
             if (rolesToAssign?.Length == 0 || userId == Guid.Empty)
@@ -685,7 +688,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();

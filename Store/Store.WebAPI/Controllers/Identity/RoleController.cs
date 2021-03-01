@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
+using Store.Common.Enums;
+using Store.Common.Helpers;
 using Store.WebAPI.Models;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
-using Store.Common.Helpers;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Services.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -44,6 +46,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("{roleId:guid}")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid roleId, [FromQuery] string[] includeProperties)
         {
             if (roleId == Guid.Empty)
@@ -69,6 +72,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(RoleGetApiModel.Name))
@@ -98,6 +102,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Create)]
         public async Task<IActionResult> PostAsync([FromBody] RolePostApiModel roleModel)
         {
             if (!ModelState.IsValid)
@@ -123,6 +128,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [Consumes("application/json")]
         [Route("{roleId:guid}")]
+        [SectionAuthorization(SectionType.Role, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid roleId, [FromBody] RolePatchApiModel roleModel)
         {
             if (roleId == Guid.Empty)
@@ -167,6 +173,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpDelete]
         [Route("{roleId:guid}")]
+        [SectionAuthorization(SectionType.Role, AccessType.Delete)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid roleId)
         {
             if (roleId == Guid.Empty)

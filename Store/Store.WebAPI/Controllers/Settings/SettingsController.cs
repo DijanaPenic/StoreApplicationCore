@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 using Store.Cache.Common;
 using Store.WebAPI.Constants;
@@ -36,13 +37,14 @@ namespace Store.WebAPI.Controllers
             _cacheProvider = cacheManager.CacheProvider;
         }
 
-        /// <summary>Retrieves the countries lookup.</summary>
+        /// <summary>Retrieves the countries lookup from database or cache.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Route("countries/all")]
         [Produces("application/json")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCountriesAsync()
         {
             IList<ICountry> countries = await _cacheProvider.GetOrAddAsync

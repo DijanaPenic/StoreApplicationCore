@@ -6,6 +6,8 @@
         Bookstore,
         Report,
         User,
-        Role
+        Role,
+        EmailTemplate,
+        Security
     }
 }

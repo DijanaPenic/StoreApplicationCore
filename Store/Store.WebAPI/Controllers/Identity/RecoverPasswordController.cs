@@ -42,7 +42,6 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [ClientAuthorization]
-        [Route("")]
         [Consumes("application/json")]
         public async Task<IActionResult> InitiatePasswordRecoveryAsync([FromBody] PasswordRecoveryPostApiModel passwordRecoveryModel)
         {

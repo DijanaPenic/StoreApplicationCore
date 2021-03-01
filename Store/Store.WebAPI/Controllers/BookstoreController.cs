@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.Common.Helpers.Identity;
 using Store.Cache.Common;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
@@ -21,7 +20,6 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/bookstores")]
-    [UserAuthorization(RoleHelper.StoreManager, RoleHelper.Admin)]
     public class BookstoreController : ApplicationControllerBase
     {
         private readonly IBookstoreService _bookstoreService;
@@ -44,6 +42,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("{bookstoreId:guid}")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid bookstoreId, [FromQuery] string[] includeProperties)
         {        
             if (bookstoreId == Guid.Empty)
@@ -70,6 +69,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("{bookstoreId:guid}/books")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid bookstoreId, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(BookGetApiModel.Name))
@@ -103,6 +103,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Route("all")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties)
         {
             Task<IEnumerable<IBookstore>> GetBookstoresFuncAsync()
@@ -146,6 +147,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(BookstoreGetApiModel.Name))
@@ -176,6 +178,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Create)]
         public async Task<IActionResult> PostAsync([FromBody] BookstorePostApiModel bookstoreModel)
         {
             if (!ModelState.IsValid)
@@ -203,6 +206,7 @@ namespace Store.WebAPI.Controllers
         [HttpPatch]
         [Route("{bookstoreId:guid}")]
         [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid bookstoreId, [FromBody] BookstorePatchApiModel bookstoreModel)
         {
             if (bookstoreId == Guid.Empty || !ModelState.IsValid)
@@ -229,6 +233,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpDelete]
         [Route("{bookstoreId:guid}")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Delete)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid bookstoreId)
         {
             if (bookstoreId == Guid.Empty)

@@ -42,7 +42,8 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
             {
                 string[] sectionData = rc.Value.Split('.');
 
-                return Enum.Parse<SectionType>(sectionData[0]) == requirement.SectionType && Enum.Parse<AccessType>(sectionData[1]) == requirement.AccessAction;
+                return Enum.Parse<SectionType>(sectionData[0]) == requirement.SectionType && 
+                       Enum.Parse<AccessType>(sectionData[1]) == requirement.AccessAction;
             }
 
             if (roleClaims.FirstOrDefault(roleClaimPredicate) != null)

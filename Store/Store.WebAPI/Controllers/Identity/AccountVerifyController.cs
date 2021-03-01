@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
+using Store.Common.Enums;
 using Store.Common.Extensions;
-using Store.Common.Helpers.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Extensions;
 using Store.Services.Identity;
 using Store.Service.Common.Services;
 using Store.Messaging.Services.Common;
@@ -31,6 +32,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly ILogger _logger;
         private readonly IEmailService _emailService;
         private readonly ISmsService _smsService;
@@ -43,6 +45,7 @@ namespace Store.WebAPI.Controllers
             ApplicationUserManager userManager,
             ApplicationAuthManager authManager,
             ApplicationSignInManager signInManager,
+            IAuthorizationService authorizationService,
             ILogger<RegisterController> logger,
             IEmailService emailService,
             ISmsService smsService,
@@ -54,6 +57,7 @@ namespace Store.WebAPI.Controllers
             _userManager = userManager;
             _authManager = authManager;
             _signInManager = signInManager;
+            _authorizationService = authorizationService;
             _logger = logger;
             _emailService = emailService;
             _smsService = smsService;
@@ -285,7 +289,7 @@ namespace Store.WebAPI.Controllers
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
 
-        /// <summary>Checks if user is logged in (current user or admin) OR pending verification on login.</summary>
+        /// <summary>Checks if user is logged in (current user or authorized user) OR pending verification on login.</summary>
         private async Task<AuthenticateResult> AuthenticateUserAsync(Guid userId)
         {
             AuthenticateResult result = new AuthenticateResult();
@@ -306,7 +310,7 @@ namespace Store.WebAPI.Controllers
                 }
                 else
                 {
-                    bool hasPermissions = IsUser(userId, claimsPrincipal) || claimsPrincipal.IsInRole(RoleHelper.Admin);
+                    bool hasPermissions = IsUser(userId, claimsPrincipal) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
                     if (!hasPermissions)
                     {
                         result.Action = Forbid();

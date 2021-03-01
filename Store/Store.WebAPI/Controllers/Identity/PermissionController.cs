@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
+using Store.Common.Enums;
+using Store.Common.Helpers;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
 using Store.Services.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.Common.Helpers;
-using Store.Common.Enums;
 
 namespace Store.WebAPI.Controllers.Identity
 {

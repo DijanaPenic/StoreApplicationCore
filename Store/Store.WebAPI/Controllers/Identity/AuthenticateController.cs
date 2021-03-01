@@ -13,13 +13,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
+using Store.Common.Enums;
 using Store.Common.Helpers;
-using Store.Common.Helpers.Identity;
 using Store.Common.Extensions;
 using Store.Services.Identity;
 using Store.Service.Common.Services.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
+using Store.WebAPI.Infrastructure.Authorization.Extensions;
 using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
 
@@ -35,6 +36,7 @@ namespace Store.WebAPI.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IEmailService _emailService;
 
         public AuthenticateController
@@ -42,6 +44,7 @@ namespace Store.WebAPI.Controllers
             ApplicationUserManager userManager,
             ApplicationAuthManager authManager,
             ApplicationSignInManager signInManager,
+            IAuthorizationService authorizationService,
             ILogger<AuthenticateController> logger,
             IEmailService emailService
         )
@@ -49,6 +52,7 @@ namespace Store.WebAPI.Controllers
             _userManager = userManager;
             _authManager = authManager;
             _signInManager = signInManager;
+            _authorizationService = authorizationService;
             _logger = logger;
             _emailService = emailService;
         }
@@ -116,7 +120,6 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [ClientAuthorization]
-        [Route("")]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordApiModel authenticateModel)
@@ -183,8 +186,8 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpDelete]
-        [UserAuthorization(RoleHelper.Admin)]
         [Route("expired-refresh-tokens")]
+        [SectionAuthorization(SectionType.Security, AccessType.Delete)]
         public async Task<IActionResult> DeleteExpiredRefreshTokensAsync()
         {
             try
@@ -415,7 +418,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -471,7 +474,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -532,7 +535,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || User.IsInRole(RoleHelper.Admin);
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();

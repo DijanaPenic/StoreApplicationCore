@@ -53,7 +53,6 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [ClientAuthorization]
-        [Route("")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterPostApiModel registerModel)
         {
@@ -71,8 +70,8 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation($"User [{user.UserName}] has been registered.");
 
-            // Assign user to Guest role
-            IdentityResult roleResult = await _userManager.AddToRolesAsync(user, new List<string>() { RoleHelper.Guest });
+            // Assign user to the Guest role
+            IdentityResult roleResult = await _userManager.AddToRoleAsync(user, RoleHelper.Guest);
 
             if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
@@ -158,7 +157,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation("Adding Guest role to the user.");
 
-                await _userManager.AddToRolesAsync(newUser, new List<string>() { RoleHelper.Guest });               
+                await _userManager.AddToRoleAsync(newUser, RoleHelper.Guest);               
 
                 _logger.LogInformation("Adding external login for the user.");
 
