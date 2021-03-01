@@ -236,7 +236,7 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null, CancellationToken cancellationToken)
+        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, Guid? roleId = null)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

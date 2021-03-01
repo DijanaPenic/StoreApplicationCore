@@ -107,7 +107,7 @@ namespace Store.Services.Identity
 
             IApplicationRoleClaimStore claimStore = GetClaimStore();
 
-            return claimStore.FindClaimsAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, roleId, CancellationToken);
+            return claimStore.FindClaimsAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, CancellationToken, roleId);
         }
 
         private IApplicationRoleClaimStore GetClaimStore()
