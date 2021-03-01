@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Store.Common.Helpers;
@@ -20,10 +19,8 @@ namespace Store.Repositories.Identity.Stores
 
         #region IUserRefreshToken Members
 
-        public async Task AddRefreshTokenAsync(IUserRefreshToken refreshToken, CancellationToken cancellationToken)
+        public async Task AddRefreshTokenAsync(IUserRefreshToken refreshToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (refreshToken == null)
                 throw new ArgumentNullException(nameof(refreshToken));
 
@@ -32,10 +29,8 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public async Task RemoveRefreshTokenAsync(Guid refreshTokenId, CancellationToken cancellationToken)
+        public async Task RemoveRefreshTokenAsync(Guid refreshTokenId)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (GuidHelper.IsNullOrEmpty(refreshTokenId))
                 throw new ArgumentNullException(nameof(refreshTokenId));
 
@@ -44,10 +39,8 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public async Task RemoveRefreshTokenAsync(Guid userId, Guid clientId, CancellationToken cancellationToken)
+        public async Task RemoveRefreshTokenAsync(Guid userId, Guid clientId)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (GuidHelper.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
 
@@ -59,29 +52,23 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public async Task RemoveExpiredRefreshTokensAsync(CancellationToken cancellationToken)
+        public async Task RemoveExpiredRefreshTokensAsync()
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             await _unitOfWork.UserRefreshTokenRepository.DeleteExpiredAsync();
 
             _unitOfWork.Commit();
         }
 
-        public Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId, CancellationToken cancellationToken)
+        public Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (GuidHelper.IsNullOrEmpty(refreshTokenId))
                 throw new ArgumentNullException(nameof(refreshTokenId));
 
             return _unitOfWork.UserRefreshTokenRepository.FindByKeyAsync(refreshTokenId);
         }
 
-        public Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue, CancellationToken cancellationToken)
+        public Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (string.IsNullOrWhiteSpace(refreshTokenValue))
                 throw new ArgumentNullException(nameof(refreshTokenValue));
 
@@ -92,20 +79,16 @@ namespace Store.Repositories.Identity.Stores
 
         #region IClientStore Members
 
-        public Task<IClient> FindClientByIdAsync(Guid clientId, CancellationToken cancellationToken)
+        public Task<IClient> FindClientByIdAsync(Guid clientId)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));
 
             return _unitOfWork.ClientRepository.FindByKeyAsync(clientId);
         }
 
-        public Task<IClient> FindClientByNameAsync(string name, CancellationToken cancellationToken)
+        public Task<IClient> FindClientByNameAsync(string name)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
