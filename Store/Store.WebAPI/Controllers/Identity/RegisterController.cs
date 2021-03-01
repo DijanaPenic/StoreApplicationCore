@@ -112,7 +112,7 @@ namespace Store.WebAPI.Controllers
         [Authorize(AuthenticationSchemes = "Identity.External")]
         [Route("external")]
         [Consumes("application/json")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterExternalRequestApiModel registerModel)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterExternalPostApiModel registerModel)
         {
             if (!ModelState.IsValid)
             {

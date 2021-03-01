@@ -2,7 +2,7 @@
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class AuthenticateExternalRequestApiModel
+    public class AuthenticateExternalPostApiModel
     {
         [Required]
         public string ConfirmationUrl { get; set; }

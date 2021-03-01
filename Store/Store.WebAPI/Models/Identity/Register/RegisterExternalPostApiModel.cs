@@ -2,7 +2,7 @@
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class RegisterExternalRequestApiModel
+    public class RegisterExternalPostApiModel
     {
         public string UserName { get; set; }
 

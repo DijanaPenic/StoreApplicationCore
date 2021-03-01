@@ -1,8 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class AuthenticateResponseApiModel
+    public class AuthenticateGetApiModel
     {
         public Guid UserId { get; set; }
 

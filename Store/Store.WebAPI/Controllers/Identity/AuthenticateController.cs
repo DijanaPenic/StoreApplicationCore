@@ -122,7 +122,7 @@ namespace Store.WebAPI.Controllers
         [ClientAuthorization]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordPostApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -167,7 +167,7 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 
-                RenewTokenResponseApiModel authenticationResponse = new RenewTokenResponseApiModel
+                RenewTokenGetApiModel authenticationResponse = new RenewTokenGetApiModel
                 {
                     AccessToken = jwtResult.AccessToken,
                     RefreshToken = jwtResult.RefreshToken
@@ -263,7 +263,7 @@ namespace Store.WebAPI.Controllers
         [Route("external")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateExternalRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateExternalPostApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -307,7 +307,7 @@ namespace Store.WebAPI.Controllers
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.UserNotAllowed });
+                    return Ok(new AuthenticateGetApiModel { ExternalAuthStep = ExternalAuthStep.UserNotAllowed });
                 }
 
                 _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
@@ -336,7 +336,7 @@ namespace Store.WebAPI.Controllers
 
                     await _emailService.SendConfirmExternalAccountAsync(clientId, user.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
 
-                    return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
+                    return Ok(new AuthenticateGetApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
                 }
 
                 // Add the external provider (confirmed = true)
@@ -354,7 +354,7 @@ namespace Store.WebAPI.Controllers
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
             _logger.LogInformation($"A new user account must be created or external login must be associated with different email address.");
 
-            return Ok(new AuthenticateResponseApiModel { ExternalAuthStep = ExternalAuthStep.UserNotFound });
+            return Ok(new AuthenticateGetApiModel { ExternalAuthStep = ExternalAuthStep.UserNotFound });
         }
 
         /// <summary>Authenticates the user using the two factor authentication code.</summary>
@@ -367,7 +367,7 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateTwoFactorRequestApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateTwoFactorPostApiModel authenticateModel)
         {
             if (!ModelState.IsValid)
             {
@@ -595,7 +595,7 @@ namespace Store.WebAPI.Controllers
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));
 
-            AuthenticateResponseApiModel authResponse = new AuthenticateResponseApiModel
+            AuthenticateGetApiModel authResponse = new AuthenticateGetApiModel
             {
                 UserId = user.Id,
                 Email = user.Email,
