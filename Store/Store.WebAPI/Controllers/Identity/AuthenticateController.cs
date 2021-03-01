@@ -187,7 +187,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpDelete]
         [Route("expired-refresh-tokens")]
-        [SectionAuthorization(SectionType.Security, AccessType.Delete)]
+        [SectionAuthorization(SectionType.User, AccessType.Full)]
         public async Task<IActionResult> DeleteExpiredRefreshTokensAsync()
         {
             try

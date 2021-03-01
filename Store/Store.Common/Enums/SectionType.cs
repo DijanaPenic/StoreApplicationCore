@@ -7,7 +7,6 @@
         Report,
         User,
         Role,
-        EmailTemplate,
-        Security
+        EmailTemplate
     }
 }
