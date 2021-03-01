@@ -62,7 +62,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _roleStore.FindRoleByIdAsync(id, includeProperties);
+            return _roleStore.FindRoleByIdAsync(id, CancellationToken, includeProperties);
         }
 
         public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
@@ -72,7 +72,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(sortOrderProperty));
             }
 
-            return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, CancellationToken, includeProperties);
         }
 
         public Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
@@ -82,7 +82,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(sortOrderProperty));
             }
 
-            return _roleStore.FindRolesAndPoliciesAsync(sectionType, searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
+            return _roleStore.FindRolesAndPoliciesAsync(sectionType, searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, CancellationToken);
         }
 
         public async Task<IdentityResult> RemoveClaimsAsync(IRole role, string type, string searchString)

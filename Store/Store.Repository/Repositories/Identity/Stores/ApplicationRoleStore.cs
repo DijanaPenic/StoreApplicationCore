@@ -173,7 +173,7 @@ namespace Store.Repositories.Identity.Stores
 
         #region IRoleClaimStore<IRole> Members
 
-        public async Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
+        public async Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -185,7 +185,7 @@ namespace Store.Repositories.Identity.Stores
             return result;
         }
 
-        public async Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
+        public async Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -206,7 +206,7 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public async Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
+        public async Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -225,7 +225,7 @@ namespace Store.Repositories.Identity.Stores
             }
         }
 
-        public async Task RemoveClaimsAsync(IRole role, string type, string searchString, CancellationToken cancellationToken = default)
+        public async Task RemoveClaimsAsync(IRole role, string type, string searchString, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -236,7 +236,7 @@ namespace Store.Repositories.Identity.Stores
             _unitOfWork.Commit();
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null, CancellationToken cancellationToken = default)
+        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -247,8 +247,10 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationRoleStore<IRole> Members
 
-        public Task<IRole> FindRoleByIdAsync(Guid id, params string[] includeProperties)
+        public Task<IRole> FindRoleByIdAsync(Guid id, CancellationToken cancellationToken, params string[] includeProperties)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             return _unitOfWork.RoleRepository.FindByKeyAsync(id, includeProperties);
         }
 
@@ -284,13 +286,17 @@ namespace Store.Repositories.Identity.Stores
             return await _unitOfWork.UserRoleRepository.GetUserRoleCombinationCountByRoleNameAsync(normalizedRoleName);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, params string[] includeProperties)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             return _unitOfWork.RoleRepository.FindAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        public Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             return _unitOfWork.RoleRepository.FindRolesWithPoliciesAsync(sectionType, searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
         }
 

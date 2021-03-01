@@ -10,9 +10,9 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IApplicationUserStore : IUserStore<IUser>, IDisposable
     {
-        Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+        Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, params string[] includeProperties);
 
-        Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties);
+        Task<IUser> FindUserByIdAsync(Guid id, CancellationToken cancellationToken, params string[] includeProperties);
 
         Task ApproveUserAsync(IUser user, CancellationToken cancellationToken);
 

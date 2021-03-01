@@ -156,7 +156,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(sortOrderProperty)); 
             }
 
-            return _userStore.FindUsersAsync(searchString, showInactive, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _userStore.FindUsersAsync(searchString, showInactive, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, CancellationToken, includeProperties);
         }
 
         public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
@@ -166,7 +166,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _userStore.FindUserByIdAsync(id, includeProperties);
+            return _userStore.FindUserByIdAsync(id, CancellationToken, includeProperties);
         }
 
         public async Task<IdentityResult> ApproveUserAsync(IUser user)

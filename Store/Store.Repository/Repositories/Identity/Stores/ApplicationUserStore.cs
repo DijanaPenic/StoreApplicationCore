@@ -932,13 +932,17 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationUserStore<IUser> Members
 
-        public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, params string[] includeProperties)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             return _unitOfWork.UserRepository.FindAsync(searchString, showInactive,  sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
         }
 
-        public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
+        public Task<IUser> FindUserByIdAsync(Guid id, CancellationToken cancellationToken, params string[] includeProperties)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             return _unitOfWork.UserRepository.FindByKeyAsync(id, includeProperties); 
         }
 
