@@ -70,8 +70,11 @@ namespace Store.WebAPI.Controllers
         [Route("{bookstoreId:guid}/books")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromRoute] Guid bookstoreId, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
+        public async Task<IActionResult> GetAsync([FromRoute] Guid bookstoreId,
+                                                  [FromQuery] string searchString = DefaultParameters.SearchString,
+                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+                                                  [FromQuery] int pageSize = DefaultParameters.PageSize,
+                                                  [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
             if (bookstoreId == Guid.Empty)
@@ -148,8 +151,11 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
+        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, 
+                                                  [FromQuery] string searchString = DefaultParameters.SearchString, 
+                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+                                                  [FromQuery] int pageSize = DefaultParameters.PageSize,
+                                                  [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(BookstoreGetApiModel.Name))
         {
             IPagedList<IBookstore> bookstores = await _bookstoreService.FindBookstoresAsync

@@ -64,8 +64,11 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber,
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
+        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, 
+                                                  [FromQuery] string searchString = DefaultParameters.SearchString,
+                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+                                                  [FromQuery] int pageSize = DefaultParameters.PageSize,
+                                                  [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(BookGetApiModel.Name))
         {
             IPagedList<IBook> books = await _bookService.FindBooksAsync

@@ -580,9 +580,13 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.User, AccessType.Read)]
-        public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, [FromQuery] bool showInactive = false, [FromQuery] string searchString = DefaultParameters.SearchString, 
-                                                       [FromQuery] int pageNumber = DefaultParameters.PageNumber, [FromQuery] int pageSize = DefaultParameters.PageSize, 
-                                                       [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, [FromQuery] string sortOrderProperty = nameof(UserGetApiModel.UserName))
+        public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, 
+                                                       [FromQuery] bool showInactive = false, 
+                                                       [FromQuery] string searchString = DefaultParameters.SearchString, 
+                                                       [FromQuery] int pageNumber = DefaultParameters.PageNumber, 
+                                                       [FromQuery] int pageSize = DefaultParameters.PageSize, 
+                                                       [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
+                                                       [FromQuery] string sortOrderProperty = nameof(UserGetApiModel.UserName))
         {
             IPagedEnumerable<IUser> users = await _userManager.FindUsersAsync
             (

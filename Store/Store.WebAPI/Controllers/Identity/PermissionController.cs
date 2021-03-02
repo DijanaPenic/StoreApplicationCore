@@ -85,8 +85,11 @@ namespace Store.WebAPI.Controllers.Identity
         [HttpGet]
         [Route("{section}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAsync([FromRoute] string section, [FromQuery] string searchString = DefaultParameters.SearchString, [FromQuery] int pageNumber = DefaultParameters.PageNumber, 
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
+        public async Task<IActionResult> GetAsync([FromRoute] string section, 
+                                                  [FromQuery] string searchString = DefaultParameters.SearchString, 
+                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber, 
+                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, 
+                                                  [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
                                                   [FromQuery] string sortOrderProperty = nameof(RoleGetApiModel.Name))
         {
             if(!Enum.TryParse(section, out SectionType sectionType))
