@@ -53,7 +53,7 @@ namespace Store.Common.Extensions
 
         public static IQueryable<TDestination> ProjectTo<TSource, TDestination>(this IQueryable<TSource> source, IMapper mapper, params string[] includeParameters)
         {
-            includeParameters ??= new string[] { };
+            includeParameters ??= Array.Empty<string>();
 
             return source.ProjectTo<TDestination>(mapper.ConfigurationProvider, null, includeParameters);
         }

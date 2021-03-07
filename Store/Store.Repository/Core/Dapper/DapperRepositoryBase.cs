@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Data;
+using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Dapper;
@@ -8,7 +9,6 @@ using Dapper;
 using Store.Common.Extensions;
 
 using static Dapper.SqlMapper;
-using System.Dynamic;
 
 namespace Store.Repository.Core.Dapper
 {
