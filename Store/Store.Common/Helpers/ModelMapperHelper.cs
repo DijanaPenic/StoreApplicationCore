@@ -18,6 +18,8 @@ namespace Store.Common.Helpers
                 }
             }
 
+            properties = properties.Where(p => string.IsNullOrEmpty(p)).ToArray();
+
             return properties;
         }
 
@@ -45,10 +47,16 @@ namespace Store.Common.Helpers
         {
             PropertyMap dstProp = mapping.PropertyMaps.FirstOrDefault(p => p.DestinationName.Equals(property));
 
-            if (dstProp.SourceMembers.Count > 0)
-                return dstProp.SourceMembers.FirstOrDefault().Name;
+            if(dstProp != null)
+            { 
+                if (dstProp.SourceMembers.Count > 0)
+                    return dstProp.SourceMembers.FirstOrDefault().Name;
 
-            return dstProp.SourceMember.Name;
+                return dstProp.SourceMember.Name;
+            }
+
+            // Couldn't map to destination property
+            return default;
         }
     }
 }
