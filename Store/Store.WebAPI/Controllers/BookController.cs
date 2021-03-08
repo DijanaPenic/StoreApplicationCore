@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Common.Parameters;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
@@ -22,7 +23,12 @@ namespace Store.WebAPI.Controllers
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
 
-        public BookController(IBookService bookService, IMapper mapper)
+        public BookController
+        (
+            IBookService bookService, 
+            IMapper mapper,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _bookService = bookService;
             _mapper = mapper;

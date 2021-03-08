@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Store.Cache.Common;
 using Store.Common.Enums;
 using Store.Common.Extensions;
+using Store.Common.Parameters;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Constants;
@@ -51,8 +52,9 @@ namespace Store.WebAPI.Controllers
             ISmsService smsService,
             IVoiceService voiceService,
             ICountriesService countriesService,
-            ICacheManager cacheManager
-        )
+            ICacheManager cacheManager,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _userManager = userManager;
             _authManager = authManager;

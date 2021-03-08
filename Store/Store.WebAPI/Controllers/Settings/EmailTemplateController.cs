@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Enums;
+using Store.Common.Parameters;
 using Store.Service.Common.Services;
 using Store.Model.Common.Models;
 using Store.WebAPI.Models.Settings;
@@ -28,8 +29,9 @@ namespace Store.WebAPI.Controllers
         (
             ILogger<SettingsController> logger,
             IMapper mapper,
-            IEmailTemplateService emailTemplateService
-        )
+            IEmailTemplateService emailTemplateService,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _logger = logger;
             _mapper = mapper;

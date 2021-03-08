@@ -13,6 +13,7 @@ using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Services.Identity;
 using Store.Common.Extensions;
+using Store.Common.Parameters;
 using Store.Common.Helpers.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
@@ -36,8 +37,9 @@ namespace Store.WebAPI.Controllers
             ApplicationSignInManager signInManager,
             ILogger<RegisterController> logger,
             IMapper mapper,
-            IEmailService emailService
-        )
+            IEmailService emailService,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _userManager = userManager;
             _signInManager = signInManager;

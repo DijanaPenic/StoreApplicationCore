@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Common.Parameters;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
@@ -30,8 +31,9 @@ namespace Store.WebAPI.Controllers.Identity
             ApplicationRoleManager roleManager,
             ApplicationPermissionsManager permissionsManager,
             IMapper mapper,
-            ILogger<PermissionController> logger
-        )
+            ILogger<PermissionController> logger,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _roleManager = roleManager;
             _permissionManager = permissionsManager;

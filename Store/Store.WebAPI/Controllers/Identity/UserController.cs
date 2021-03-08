@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
+using Store.Common.Parameters;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
@@ -45,8 +46,9 @@ namespace Store.WebAPI.Controllers
             IAuthorizationService authorizationService,
             ILogger<UserController> logger,
             IMapper mapper,
-            IEmailService emailService
-        )
+            IEmailService emailService,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _userManager = userManager;
             _roleManager = roleManager;

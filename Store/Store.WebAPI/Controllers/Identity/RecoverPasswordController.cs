@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Extensions;
+using Store.Common.Parameters;
 using Store.Services.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
@@ -27,8 +28,9 @@ namespace Store.WebAPI.Controllers
         (
             ApplicationUserManager userManager,
             IEmailService emailService,
-            ILogger<RegisterController> logger
-        )
+            ILogger<RegisterController> logger,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _userManager = userManager;
             _emailService = emailService;

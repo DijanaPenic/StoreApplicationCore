@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
+using Store.Common.Parameters;
 using Store.Services.Identity;
 using Store.Service.Common.Services.Identity;
 using Store.WebAPI.Models.Identity;
@@ -46,8 +47,9 @@ namespace Store.WebAPI.Controllers
             ApplicationSignInManager signInManager,
             IAuthorizationService authorizationService,
             ILogger<AuthenticateController> logger,
-            IEmailService emailService
-        )
+            IEmailService emailService,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _userManager = userManager;
             _authManager = authManager;
@@ -55,7 +57,7 @@ namespace Store.WebAPI.Controllers
             _authorizationService = authorizationService;
             _logger = logger;
             _emailService = emailService;
-        }
+        }    
 
         /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
         /// <returns>

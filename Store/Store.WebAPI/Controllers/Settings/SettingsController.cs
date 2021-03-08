@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Store.Cache.Common;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Settings;
+using Store.Common.Parameters;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
 
@@ -28,8 +29,9 @@ namespace Store.WebAPI.Controllers
             ILogger<SettingsController> logger,
             IMapper mapper,
             ICountriesService countriesService,
-            ICacheManager cacheManager
-        )
+            ICacheManager cacheManager,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _logger = logger;
             _mapper = mapper;
