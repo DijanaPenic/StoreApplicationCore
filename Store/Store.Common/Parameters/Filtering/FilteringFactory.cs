@@ -1,19 +1,20 @@
-﻿using Autofac;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Store.Common.Parameters.Filtering
 {
     public class FilteringFactory : IFilteringFactory
     {
-        private readonly ILifetimeScope _lifeTimeScope;
+        private readonly IServiceProvider _serviceProvider;
 
-        public FilteringFactory(ILifetimeScope lifeTimeScope)
+        public FilteringFactory(IServiceProvider serviceProvider)
         {
-            _lifeTimeScope = lifeTimeScope;
+            _serviceProvider = serviceProvider;
         }
 
         public T Create<T>() where T : IFilteringParameters
         {
-            return _lifeTimeScope.Resolve<T>();
+            return _serviceProvider.GetService<T>();
         }
     }
 }

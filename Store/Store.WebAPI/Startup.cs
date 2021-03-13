@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
 
 using Store.Cache.DependencyInjection;
+using Store.Common.DependencyInjection;
 using Store.WebAPI.Application.Startup;
 using Store.WebAPI.Application.Startup.Extensions;
 using Store.Service.DependencyInjection;
@@ -30,6 +31,9 @@ namespace Store.WebAPI
         {
             // Auto Mapper configuration
             services.AddAutoMapper();
+
+            // Common configuration
+            services.AddCommonComponents();
 
             // Repository configuration
             services.AddRepositoryComponents(Configuration);

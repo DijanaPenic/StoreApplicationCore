@@ -101,7 +101,7 @@ namespace Store.Repositories.Identity.Stores
 
         public void Dispose()
         {
-            // Dispose does nothing since we want Autofac to manage the lifecycle of our Unit of Work
+            // Dispose does nothing since we want IoC container to manage the lifecycle of our Unit of Work
         }
 
         #endregion

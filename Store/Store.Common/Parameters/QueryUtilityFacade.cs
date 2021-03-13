@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
@@ -9,31 +10,31 @@ namespace Store.Common.Parameters
 {
     public class QueryUtilityFacade : IQueryUtilityFacade
     {
-        private readonly ILifetimeScope _lifeTimeScope;
+        private readonly IServiceProvider _serviceProvider;
 
-        public QueryUtilityFacade(ILifetimeScope lifeTimeScope)
+        public QueryUtilityFacade(IServiceProvider serviceProvider)
         {
-            _lifeTimeScope = lifeTimeScope;
+            _serviceProvider = serviceProvider;
         }
 
         public IFilteringFactory CreateFilteringFactory()
         {
-            return _lifeTimeScope.Resolve<IFilteringFactory>();
+            return _serviceProvider.GetService<IFilteringFactory>();
         }
 
         public IPagingFactory CreatePagingFactory()
         {
-            return _lifeTimeScope.Resolve<IPagingFactory>();
+            return _serviceProvider.GetService<IPagingFactory>();
         }
 
         public ISortingFactory CreateSortingFactory()
         {
-            return _lifeTimeScope.Resolve<ISortingFactory>();
+            return _serviceProvider.GetService<ISortingFactory>();
         }
 
         public IOptionsFactory CreateOptionsFactory()
         {
-            return _lifeTimeScope.Resolve<IOptionsFactory>();
+            return _serviceProvider.GetService<IOptionsFactory>();
         }
     }
 }
