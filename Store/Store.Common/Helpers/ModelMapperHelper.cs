@@ -69,8 +69,7 @@ namespace Store.Common.Helpers
             return sorting;
         }
 
-        // TODO - need to remove params!
-        public static string[] GetPropertyMappings<TDestination, TSource>(IMapper mapper, params string[] properties)
+        public static string[] GetPropertyMappings<TDestination, TSource>(IMapper mapper, string[] properties)
         {
             IList<string> result = new List<string>();
 
@@ -94,6 +93,16 @@ namespace Store.Common.Helpers
             }
 
             return result.ToArray();
+        }
+
+        public static string[] GetPropertyMappings<TDestination, TSource>(IMapper mapper, string properties)
+        {
+            if (string.IsNullOrWhiteSpace(properties))
+            {
+                return Array.Empty<string>();
+            }
+
+            return GetPropertyMappings<TDestination, TSource>(mapper, properties.Split(','));
         }
 
         public static string GetPropertyMapping<TDestination, TSource>(IMapper mapper, string property)
