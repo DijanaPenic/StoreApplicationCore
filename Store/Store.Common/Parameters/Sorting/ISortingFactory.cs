@@ -2,6 +2,6 @@
 {
     public interface ISortingFactory
     {
-        ISortingParameters Create(string sort);
+        ISortingParameters Create(string[] sort);
     }
 }

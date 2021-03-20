@@ -6,12 +6,9 @@
         {
         }
 
-        public ISortingParameters Create(string sort)
+        public ISortingParameters Create(string[] sort)
         {
-            ISortingParameters result = new SortingParameters(sort);
-            result.Initialize();
-
-            return result;
+            return new SortingParameters(sort);
         }
     }
 }

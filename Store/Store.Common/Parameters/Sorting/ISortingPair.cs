@@ -4,7 +4,7 @@
     {
         bool Ascending { get; }
 
-        string OrderBy { get; }
+        string OrderBy { get; set; }
 
         string GetSortExpression();
     }

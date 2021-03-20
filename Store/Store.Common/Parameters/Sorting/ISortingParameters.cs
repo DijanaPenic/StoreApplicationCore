@@ -4,8 +4,6 @@ namespace Store.Common.Parameters.Sorting
 {
     public interface ISortingParameters
     {
-        IList<ISortingPair> Sorters { get; }
-
-        void Initialize();
+        IList<ISortingPair> Sorters { get; set; }
     }
 }

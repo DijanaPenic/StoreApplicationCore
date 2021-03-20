@@ -10,31 +10,27 @@ namespace Store.Common.Parameters.Sorting
         public const string DescendingDirection = "desc";
         public const char SortingParametersSeparator = '|';
 
-        private readonly string _sort = null;
+        private readonly string[] _sort = null;
 
-        public IList<ISortingPair> Sorters
-        { 
-            get; 
-            private set; 
-        }
+        public IList<ISortingPair> Sorters { get; set; }
 
-        public SortingParameters(string sort)
+        public SortingParameters(string[] sort)
         {
             _sort = sort;
+            Initialize();
         }
 
-        public void Initialize()
+        private void Initialize()
         {
-            Sorters = new List<ISortingPair>();
+            if (_sort.Length == 0) return;
 
-            if (string.IsNullOrWhiteSpace(_sort)) return;
-            string[] sortingRequests = _sort.Split(',');
+            Sorters = new List<ISortingPair>();   
 
-            foreach (string sortingRequest in sortingRequests)
+            foreach (string sortingRequest in _sort)
             {
                 IList<string> sortParams = sortingRequest.Split(SortingParametersSeparator).ToList();
                 if (sortParams.Count < 1)
-                    throw new ArgumentNullException("Sorting field or direction.");
+                    throw new ArgumentNullException("Not a valid sorting format.");
 
                 if (!string.IsNullOrWhiteSpace(sortParams[0]))
                 {

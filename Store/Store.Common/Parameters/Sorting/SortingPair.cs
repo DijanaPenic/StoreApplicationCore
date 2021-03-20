@@ -4,7 +4,7 @@
     {
         public bool Ascending { get; private set; }
 
-        public string OrderBy { get; private set; }
+        public string OrderBy { get; set; }
 
         public SortingPair(string orderBy, bool ascending)
         {
@@ -20,7 +20,7 @@
                 OrderBy, 
                 SortingParameters.SortingParametersSeparator, 
                 Ascending ? SortingParameters.AscendingDirection : SortingParameters.DescendingDirection
-            ).ToLowerInvariant();
+            );
         }
     }
 }
