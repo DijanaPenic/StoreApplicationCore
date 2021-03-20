@@ -8,6 +8,6 @@ namespace Store.Common.Parameters.Filtering
 
         DateTimeRange? DateUpdated { get; set; }
 
-        string SearchPhrase { get; set; }
+        string SearchString { get; set; }
     }
 }
