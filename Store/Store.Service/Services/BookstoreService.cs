@@ -28,7 +28,7 @@ namespace Store.Services
 
         public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize)
         {
-            return _unitOfWork.BookRepository.FindByBookstoreIdAsync(bookstoreId, searchString, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize);
+            return _unitOfWork.BookRepository.FindByBookIdAsync(bookstoreId, searchString, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize);
         }
 
         public Task<IEnumerable<IBookstore>> GetBookstoresAsync(params string[] includeProperties)

@@ -9,6 +9,10 @@ using Store.DAL.Context;
 using Store.Repository.Core;
 using Store.Repository.Common.Repositories;
 using Store.Common.Extensions;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models;
 
 namespace Store.Repositories
@@ -19,7 +23,16 @@ namespace Store.Repositories
         {
         }
 
-        public Task<IPagedList<IBook>> FindByBookstoreIdAsync(Guid bookstoreId, string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize)
+        public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        {
+            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString)
+                                                ? (Expression<Func<IBook, bool>>)null
+                                                : b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString) || b.Bookstore.Name.Contains(filter.SearchString);
+
+            return FindAsync(filterExpression, paging, sorting, options);
+        }
+
+        public Task<IPagedList<IBook>> FindByBookIdAsync(Guid bookstoreId, string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize)
         {
             Expression<Func<IBook, bool>> filterExpression = b => b.BookstoreId == bookstoreId;
 

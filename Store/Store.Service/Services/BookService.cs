@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using X.PagedList;
 
 using Store.Common.Enums;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models;
 using Store.Repository.Common.Core;
 using Store.Service.Common.Services;
@@ -20,21 +24,19 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<IBook>> GetBooksAsync(params string[] includeProperties)
+        public Task<IEnumerable<IBook>> GetBooksAsync(IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.GetAsync(includeProperties);
+            return _unitOfWork.BookRepository.GetAsync(options);
         }
 
-        public Task<IBook> FindBookByIdAsync(Guid bookId, params string[] includeProperties)
+        public Task<IBook> FindBookByIdAsync(Guid bookId, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.FindByIdAsync(bookId, includeProperties);
+            return _unitOfWork.BookRepository.FindByIdAsync(bookId, options);
         }
 
-        public Task<IPagedList<IBook>> FindBooksAsync(string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
+        public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(searchString) ? (Expression<Func<IBook, bool>>)null : b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString);
-
-            return _unitOfWork.BookRepository.FindAsync(filterExpression, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize, includeProperties);
+            return _unitOfWork.BookRepository.FindBooksAsync(filter, paging, sorting, options);
         }
 
         public async Task<ResponseStatus> UpdateBookAsync(IBook book)

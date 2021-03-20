@@ -14,6 +14,9 @@ namespace Store.Repository.Common.Core
 {
     public interface IGenericRepository<TDomain> where TDomain : class, IPoco
     {
+        Task<IEnumerable<TDomain>> GetAsync(IOptionsParameters options);
+
+        // TODO - remove
         Task<IEnumerable<TDomain>> GetAsync(params string[] includeProperties);
 
         Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(params string[] includeProperties);
@@ -29,6 +32,9 @@ namespace Store.Repository.Common.Core
 
         Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties);
 
+        Task<TDomain> FindByIdAsync(Guid id, IOptionsParameters options);
+
+        // TODO - remove
         Task<TDomain> FindByIdAsync(Guid id, params string[] includeProperties);
 
         Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, params string[] includeProperties) where TDestination : IPoco;

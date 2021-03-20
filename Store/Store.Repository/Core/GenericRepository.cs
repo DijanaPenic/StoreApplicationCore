@@ -36,6 +36,15 @@ namespace Store.Repository.Core
             Mapper = mapper ?? throw new ArgumentNullException("GenericRepository - mapper is missing.");
         }
 
+        public async Task<IEnumerable<TDomain>> GetAsync(IOptionsParameters options)
+        {
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
+            IEnumerable<TEntity> entities = await Set.Include(entityProperties).ToListAsync();
+
+            return Mapper.Map<IEnumerable<TDomain>>(entities);
+        }
+
+        // TODO - remove
         public async Task<IEnumerable<TDomain>> GetAsync(params string[] includeProperties)
         {
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
@@ -88,6 +97,15 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
 
+        public async Task<TDomain> FindByIdAsync(Guid id, IOptionsParameters options)
+        {
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
+            TEntity entity = await Set.Include(entityProperties).FirstOrDefaultAsync(e => e.Id == id);
+
+            return Mapper.Map<TDomain>(entity);
+        }
+
+        // TODO - remove
         public async Task<TDomain> FindByIdAsync(Guid id, params string[] includeProperties)
         {
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
@@ -170,7 +188,7 @@ namespace Store.Repository.Core
         {
             Expression<Func<TEntity, bool>> entityFilter = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
             ISortingParameters entitySorting = ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties.ToArray());
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
 
             IQueryable<TEntity> query = Set.Filter(entityFilter)
                                            .Include(entityProperties)

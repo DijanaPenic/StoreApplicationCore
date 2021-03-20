@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Parameters;
+using Store.Common.Parameters.Filtering;
 using Store.WebAPI.Constants;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
@@ -44,12 +45,16 @@ namespace Store.WebAPI.Controllers
         [Route("{bookId:guid}")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromRoute] Guid bookId, [FromQuery] string[] includeProperties)
+        public async Task<IActionResult> GetAsync([FromRoute] Guid bookId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
             if (bookId == Guid.Empty)
                 return BadRequest();
 
-            IBook book = await _bookService.FindBookByIdAsync(bookId, ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties));
+            IBook book = await _bookService.FindBookByIdAsync
+            (
+                bookId,
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties))
+            );
 
             if (book != null)
                 return Ok(_mapper.Map<BookGetApiModel>(book)); 
@@ -62,29 +67,25 @@ namespace Store.WebAPI.Controllers
         /// <param name="searchString">The search string.</param>
         /// <param name="pageNumber">The page number.</param>
         /// <param name="pageSize">Size of the page.</param>
-        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
-        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <param name="sortOrder">The sort order.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Book, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromQuery] string[] includeProperties, 
+        public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties, 
                                                   [FromQuery] string searchString = DefaultParameters.SearchString,
                                                   [FromQuery] int pageNumber = DefaultParameters.PageNumber,
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize,
-                                                  [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
-                                                  [FromQuery] string sortOrderProperty = nameof(BookGetApiModel.Name))
+                                                  [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
             IPagedList<IBook> books = await _bookService.FindBooksAsync
             (
-                searchString,
-                isDescendingSortOrder,
-                ModelMapperHelper.GetPropertyMapping<BookGetApiModel, IBook>(_mapper, sortOrderProperty),
-                pageNumber,
-                pageSize,
-                ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties)
+                filter: FilteringFactory.Create<IFilteringParameters>(searchString), 
+                paging: PagingFactory.Create(pageNumber, pageSize), 
+                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookGetApiModel, IBook>(_mapper, sortOrder)), 
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties))
             );
 
             if (books != null)
