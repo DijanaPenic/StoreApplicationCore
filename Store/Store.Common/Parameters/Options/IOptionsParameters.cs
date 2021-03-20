@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Store.Common.Parameters.Options
+﻿namespace Store.Common.Parameters.Options
 {
     public interface IOptionsParameters
     {
-        IEnumerable<string> Properties { get; set; }
+        string[] Properties { get; set; }
     }
 }

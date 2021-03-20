@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Store.Common.Parameters.Options
+﻿namespace Store.Common.Parameters.Options
 {
     public class OptionsFactory : IOptionsFactory
     {
@@ -8,7 +6,7 @@ namespace Store.Common.Parameters.Options
         {
         }
 
-        public IOptionsParameters Create(IEnumerable<string> properties = null)
+        public IOptionsParameters Create(string[] properties = null)
         {
             return new OptionsParameters(properties);
         }
