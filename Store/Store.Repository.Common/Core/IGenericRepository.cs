@@ -19,14 +19,14 @@ namespace Store.Repository.Common.Core
         // TODO - remove
         Task<IEnumerable<TDomain>> GetAsync(params string[] includeProperties);
 
-        Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(params string[] includeProperties);
+        Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(IOptionsParameters options);
 
         Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
         // TODO - remove
         Task<IPagedList<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties);
 
-        Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties);
+        Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
         Task<IEnumerable<TDomain>> FindAsync(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties);
 
@@ -37,7 +37,7 @@ namespace Store.Repository.Common.Core
         // TODO - remove
         Task<TDomain> FindByIdAsync(Guid id, params string[] includeProperties);
 
-        Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, params string[] includeProperties) where TDestination : IPoco;
+        Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, IOptionsParameters options) where TDestination : IPoco;
 
         Task<ResponseStatus> AddAsync(TDomain model);
 

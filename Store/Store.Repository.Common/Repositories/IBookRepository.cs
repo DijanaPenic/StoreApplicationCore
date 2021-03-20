@@ -15,6 +15,6 @@ namespace Store.Repository.Common.Repositories
     {
         Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
-        Task<IPagedList<IBook>> FindByBookIdAsync(Guid bookstoreId, string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize);
+        Task<IPagedList<IBook>> FindByBookIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
     }
 }

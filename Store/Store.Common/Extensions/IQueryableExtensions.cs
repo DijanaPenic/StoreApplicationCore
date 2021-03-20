@@ -31,7 +31,7 @@ namespace Store.Common.Extensions
             return filterExpression != null ? source.Where(filterExpression) : source;
         }
 
-        public static IQueryable<TDestination> ProjectTo<TSource, TDestination>(this IQueryable<TSource> source, IMapper mapper, params string[] includeParameters)
+        public static IQueryable<TDestination> ProjectTo<TSource, TDestination>(this IQueryable<TSource> source, IMapper mapper, string[] includeParameters)
         {
             includeParameters ??= Array.Empty<string>();
 

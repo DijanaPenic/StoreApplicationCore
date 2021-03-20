@@ -22,26 +22,26 @@ namespace Store.Repositories
 
         public async Task<IEmailTemplate> FindByClientIdAsync(Guid clientId, EmailTemplateType emailTemplateType)
         {
-            EmailTemplateEntity entity = await Set.FirstOrDefaultAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
+            EmailTemplateEntity entity = await DbSet.FirstOrDefaultAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
 
             return Mapper.Map<IEmailTemplate>(entity);
         }
 
         public async Task<IEnumerable<IEmailTemplate>> FindByClientIdAsync(Guid clientId)
         {
-            IEnumerable<EmailTemplateEntity> entity = await Set.Where(et => et.ClientId == clientId).ToListAsync();
+            IEnumerable<EmailTemplateEntity> entity = await DbSet.Where(et => et.ClientId == clientId).ToListAsync();
 
             return Mapper.Map<IEnumerable<IEmailTemplate>>(entity);
         }
 
         public Task<bool> ExistsAsync(Guid emailTemplateId)
         {
-           return Set.AnyAsync(et => et.Id == emailTemplateId);
+           return DbSet.AnyAsync(et => et.Id == emailTemplateId);
         }
 
         public Task<bool> ExistsAsync(Guid clientId, EmailTemplateType emailTemplateType)
         {
-            return Set.AnyAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
+            return DbSet.AnyAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
         }
     }
 }

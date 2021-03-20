@@ -32,16 +32,16 @@ namespace Store.Repositories
             return FindAsync(filterExpression, paging, sorting, options);
         }
 
-        public Task<IPagedList<IBook>> FindByBookIdAsync(Guid bookstoreId, string searchString, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize)
+        public Task<IPagedList<IBook>> FindByBookIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             Expression<Func<IBook, bool>> filterExpression = b => b.BookstoreId == bookstoreId;
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(filter.SearchString))
             {
-                filterExpression = filterExpression.And(b => b.Name.Contains(searchString) || b.Author.Contains(searchString));
+                filterExpression = filterExpression.And(b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString));
             }
 
-            return FindAsync(filterExpression, isDescendingSortOrder, sortOrderProperty, pageNumber, pageSize);
+            return FindAsync(filterExpression, paging, sorting, options);
         }
     }
 }

@@ -22,24 +22,23 @@ namespace Store.Repository.Core
 {
     public class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
     {
-        private DbSet<TEntity> _set;
+        private readonly ApplicationDbContext _dbContext;
+        private DbSet<TEntity> _dbSet;
 
-        protected DbSet<TEntity> Set => _set ??= DbContext.Set<TEntity>();
+        protected DbSet<TEntity> DbSet => _dbSet ??= _dbContext.Set<TEntity>();
 
         protected IMapper Mapper { get; }
 
-        protected ApplicationDbContext DbContext { get; }
-
         public GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
         {
-            DbContext = dbContext ?? throw new ArgumentNullException("GenericRepository - database context is missing.");
-            Mapper = mapper ?? throw new ArgumentNullException("GenericRepository - mapper is missing.");
+            _dbContext = dbContext;
+            Mapper = mapper;
         }
 
         public async Task<IEnumerable<TDomain>> GetAsync(IOptionsParameters options)
         {
             string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
-            IEnumerable<TEntity> entities = await Set.Include(entityProperties).ToListAsync();
+            IEnumerable<TEntity> entities = await DbSet.Include(entityProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
@@ -48,15 +47,15 @@ namespace Store.Repository.Core
         public async Task<IEnumerable<TDomain>> GetAsync(params string[] includeProperties)
         {
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
-            IEnumerable<TEntity> entities = await Set.Include(entityIncludeProperties).ToListAsync();
+            IEnumerable<TEntity> entities = await DbSet.Include(entityIncludeProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        public async Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(params string[] includeProperties)
+        public async Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDestination>(IOptionsParameters options)
         {
-            string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
-            IList<TDestination> destItems = await Set.ProjectTo<TEntity, TDestination>(Mapper, entityIncludeProperties).ToListAsync();
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
+            IList<TDestination> destItems = await DbSet.ProjectTo<TEntity, TDestination>(Mapper, entityProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
@@ -76,9 +75,9 @@ namespace Store.Repository.Core
             return entityPagedList.ToPagedList<TEntity, TDomain>(Mapper);
         }
 
-        public async Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, int pageNumber, int pageSize, params string[] includeProperties)
+        public async Task<IPagedList<TDomain>> FindWithProjectionAsync<TDestination>(Expression<Func<TDomain, bool>> filterExpression, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            IPagedList<TDestination> destPagedList = await FindWithProjection<TDestination>(filterExpression, isDescendingSortOrder, sortOrderProperty, includeProperties).ToPagedListAsync(pageNumber, pageSize);
+            IPagedList<TDestination> destPagedList = await FindWithProjection<TDestination>(filterExpression, sorting, options).ToPagedListAsync(paging.PageNumber, paging.PageSize);
 
             return destPagedList.ToPagedList<TDestination, TDomain>(Mapper);
         }
@@ -100,7 +99,7 @@ namespace Store.Repository.Core
         public async Task<TDomain> FindByIdAsync(Guid id, IOptionsParameters options)
         {
             string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
-            TEntity entity = await Set.Include(entityProperties).FirstOrDefaultAsync(e => e.Id == id);
+            TEntity entity = await DbSet.Include(entityProperties).FirstOrDefaultAsync(e => e.Id == id);
 
             return Mapper.Map<TDomain>(entity);
         }
@@ -109,17 +108,17 @@ namespace Store.Repository.Core
         public async Task<TDomain> FindByIdAsync(Guid id, params string[] includeProperties)
         {
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
-            TEntity entity = await Set.Include(entityIncludeProperties).FirstOrDefaultAsync(e => e.Id == id);
+            TEntity entity = await DbSet.Include(entityIncludeProperties).FirstOrDefaultAsync(e => e.Id == id);
 
             return Mapper.Map<TDomain>(entity);
         }
 
-        public async Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, params string[] includeProperties) where TDestination : IPoco
+        public async Task<TDomain> FindByIdWithProjectionAsync<TDestination>(Guid id, IOptionsParameters options) where TDestination : IPoco
         {
-            string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDestination, TEntity>(Mapper, includeProperties);
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDestination, TEntity>(Mapper, options.Properties);
 
             // TODO - Projection won't work if filter delegate is used in FirstOrDefaultAsync - getting exception
-            TDestination destItem = await Set.Where(e => e.Id == id).ProjectTo<TEntity, TDestination>(Mapper, entityIncludeProperties).FirstOrDefaultAsync(); 
+            TDestination destItem = await DbSet.Where(e => e.Id == id).ProjectTo<TEntity, TDestination>(Mapper, entityProperties).FirstOrDefaultAsync();
 
             return Mapper.Map<TDomain>(destItem);
         }
@@ -135,19 +134,19 @@ namespace Store.Repository.Core
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            Set.Add(entity);
+            DbSet.Add(entity);
 
             return Task.FromResult(ResponseStatus.Success);
         }
 
         public async Task<ResponseStatus> DeleteByIdAsync(Guid id)
         {
-            TEntity entity = await Set.FindAsync(id);
+            TEntity entity = await DbSet.FindAsync(id);
 
             if (entity == null)
                 return ResponseStatus.NotFound;
 
-            Set.Remove(entity);
+            DbSet.Remove(entity);
 
             return ResponseStatus.Success;
         }
@@ -160,7 +159,7 @@ namespace Store.Repository.Core
             // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
             // Need to search context or the store because AutoMapper creates a new instance of the object during domain->entity mapping and sometimes
             // the newly created instance cannot be attached to the context (if we're already tracking the original instance)
-            TEntity entity = await Set.FindAsync(id);
+            TEntity entity = await DbSet.FindAsync(id);
 
             if (entity == null)
                 return ResponseStatus.NotFound;
@@ -174,7 +173,7 @@ namespace Store.Repository.Core
             // Also, the author is highly suggesting against the domain->entity mappings.
             Mapper.Map(model, entity);
             
-            DbContext.Entry(entity).State = EntityState.Modified;
+            _dbContext.Entry(entity).State = EntityState.Modified;
 
             return ResponseStatus.Success;
         }
@@ -186,11 +185,11 @@ namespace Store.Repository.Core
 
         private IQueryable<TEntity> Find(Expression<Func<TDomain, bool>> filterExpression, ISortingParameters sorting, IOptionsParameters options)
         {
-            Expression<Func<TEntity, bool>> entityFilter = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
+            Expression<Func<TEntity, bool>> entityFiltering = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
             ISortingParameters entitySorting = ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
             string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
 
-            IQueryable<TEntity> query = Set.Filter(entityFilter)
+            IQueryable<TEntity> query = DbSet.Filter(entityFiltering)
                                            .Include(entityProperties)
                                            .OrderBy(entitySorting);
 
@@ -204,20 +203,34 @@ namespace Store.Repository.Core
             string entitySortOrderProperty = ModelMapperHelper.GetPropertyMapping<TDomain, TEntity>(Mapper, sortOrderProperty);
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
 
-            IQueryable<TEntity> query = Set.Filter(entityFilterExpression)
+            IQueryable<TEntity> query = DbSet.Filter(entityFilterExpression)
                                            .Include(entityIncludeProperties);
                                            //.OrderBy(entitySortOrderProperty, isDescendingSortOrder);
 
             return query;
         }
 
+        private IQueryable<TDestination> FindWithProjection<TDestination>(Expression<Func<TDomain, bool>> filterExpression, ISortingParameters sorting, IOptionsParameters options)
+        {
+            Expression<Func<TEntity, bool>> entityFiltering = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
+            ISortingParameters entitySorting = ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options.Properties);
+
+            IQueryable<TDestination> query = DbSet.Filter(entityFiltering)
+                                                .OrderBy(entitySorting)
+                                                .ProjectTo<TEntity, TDestination>(Mapper, entityProperties);
+
+            return query;
+        }
+
+        // TODO - remove
         private IQueryable<TDestination> FindWithProjection<TDestination>(Expression<Func<TDomain, bool>> filterExpression, bool isDescendingSortOrder, string sortOrderProperty, params string[] includeProperties)
         {
             Expression<Func<TEntity, bool>> entityFilterExpression = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
             string entitySortOrderProperty = ModelMapperHelper.GetPropertyMapping<TDomain, TEntity>(Mapper, sortOrderProperty);
             string[] entityIncludeProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, includeProperties);
 
-            IQueryable<TDestination> query = Set.Filter(entityFilterExpression)
+            IQueryable<TDestination> query = DbSet.Filter(entityFilterExpression)
                                                 //.OrderBy(entitySortOrderProperty, isDescendingSortOrder)
                                                 .ProjectTo<TEntity, TDestination>(Mapper, entityIncludeProperties);
 

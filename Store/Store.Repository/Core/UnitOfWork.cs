@@ -11,14 +11,14 @@ namespace Store.Repository.Core
 {
     public class UnitOfWork : IUnitOfWork
     {
-
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
         public IBookRepository BookRepository => new BookRepository(_dbContext, _mapper);
-        public IBookstoreRepository BookstoreRepository => new BookstoreRepository(_dbContext, _mapper);
-        public IEmailTemplateRepository EmailTemplateRepository => new EmailTemplateRepository(_dbContext, _mapper);
 
+        public IBookstoreRepository BookstoreRepository => new BookstoreRepository(_dbContext, _mapper);
+
+        public IEmailTemplateRepository EmailTemplateRepository => new EmailTemplateRepository(_dbContext, _mapper);
 
         public UnitOfWork(ApplicationDbContext dbContext, IMapper mapper)
         {
