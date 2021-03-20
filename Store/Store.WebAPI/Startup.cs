@@ -63,7 +63,7 @@ namespace Store.WebAPI
             services.AddFileProvider(Configuration);
 
             // Controller configuration
-            services.AddControllers(options => 
+            services.AddControllers(options =>
             {
                 options.ValueProviderFactories.Add(new SnakeCaseQueryValueProviderFactory());
             })
@@ -71,9 +71,6 @@ namespace Store.WebAPI
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-            })
-            .AddJsonOptions(options =>
-            {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
         }
