@@ -60,10 +60,13 @@ namespace Store.Common.Helpers
 
         public static ISortingParameters GetSortPropertyMappings<TDestination, TSource>(IMapper mapper, ISortingParameters sorting)
         {
-            foreach (ISortingPair sortPair in sorting.Sorters)
+            if (sorting.Sorters != null)
             {
-                TypeMap mapping = GetTypeMap<TDestination, TSource>(mapper);
-                sortPair.OrderBy = GetSourceProperty(mapper, mapping, sortPair.OrderBy);
+                foreach (ISortingPair sortPair in sorting.Sorters)
+                {
+                    TypeMap mapping = GetTypeMap<TDestination, TSource>(mapper);
+                    sortPair.OrderBy = GetSourceProperty(mapper, mapping, sortPair.OrderBy);
+                }
             }
 
             return sorting;

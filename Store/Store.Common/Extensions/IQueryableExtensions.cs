@@ -45,7 +45,7 @@ namespace Store.Common.Extensions
 
         public static IQueryable<T> OrderBy<T>(this IQueryable<T> source, ISortingParameters sortingParameters)
         {
-            if (sortingParameters == null) return source;
+            if (sortingParameters?.Sorters == null) return source;
 
             int sortingCount = sortingParameters.Sorters.Count;
             if (sortingCount == 0) return source;
