@@ -19,7 +19,7 @@ namespace Store.Common.Parameters.Filtering
 
         public T Create<T>(string searchString) where T : IFilteringParameters
         {
-            T result = _serviceProvider.GetService<T>();
+            T result = Create<T>();
             result.SearchString = searchString;
 
             return result;
