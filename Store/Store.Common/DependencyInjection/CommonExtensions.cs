@@ -20,6 +20,7 @@ namespace Store.Common.DependencyInjection
             services.AddScoped<IOptionsFactory, OptionsFactory>();
 
             services.AddScoped<IFilteringParameters, FilteringParameters>();
+            services.AddScoped<IGlobalFilteringParameters, GlobalFilteringParameters>();
         }
     }
 }

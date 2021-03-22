@@ -4,32 +4,38 @@ using System.Collections.Generic;
 using Store.Models;
 using Store.Model.Common.Models;
 using Store.Common.Enums;
+using Store.Common.Parameters;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Filtering;
 using Store.Repository.Common.Core;
 using Store.Service.Common.Services;
 
 namespace Store.Services
 {
-    public class GlobalSearchService : IGlobalSearchService
+    public class GlobalSearchService : ParametersService, IGlobalSearchService
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public GlobalSearchService(IUnitOfWork unitOfWork)
+        public GlobalSearchService
+        (
+            IUnitOfWork unitOfWork,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base (queryUtilityFacade)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<ISearchItem>> FindAsync(string searchString, IList<SectionType> searchTypes)
+        public async Task<IEnumerable<ISearchItem>> FindAsync(IGlobalFilteringParameters filtering)
         {
             IList<ISearchItem> searchItems = new List<ISearchItem>();
 
-            if (searchTypes.Contains(SectionType.Book))
+            if (filtering.SearchTypes.Contains(SectionType.Book))
             {
                 IEnumerable<IBook> books = await _unitOfWork.BookRepository.FindAsync
                 (
-                    b => b.Name.Contains(searchString) || b.Author.Contains(searchString) || b.Bookstore.Name.Contains(searchString),
-                    true,
-                    nameof(IBook.Name),
-                    nameof(IBook.Bookstore)
+                    filterExpression: b => b.Name.Contains(filtering.SearchString) || b.Author.Contains(filtering.SearchString) || b.Bookstore.Name.Contains(filtering.SearchString),
+                    sorting: SortingFactory.Create(new[] { $"{nameof(IBook.Name)}|desc" }),
+                    options: OptionsFactory.Create(new[] { nameof(IBook.Bookstore) })
                 );
 
                 foreach (IBook book in books)
@@ -45,13 +51,13 @@ namespace Store.Services
                 }
             }
 
-            if (searchTypes.Contains(SectionType.Bookstore))
+            if (filtering.SearchTypes.Contains(SectionType.Bookstore))
             {
                 IEnumerable<IBookstore> bookstores = await _unitOfWork.BookstoreRepository.FindAsync
                 (
-                    bs => bs.Name.Contains(searchString) || bs.Location.Contains(searchString),
-                    true,
-                    nameof(IBookstore.Name)
+                    filterExpression: bs => bs.Name.Contains(filtering.SearchString) || bs.Location.Contains(filtering.SearchString),
+                    sorting: SortingFactory.Create(new[] { $"{nameof(IBookstore.Name)}|desc" }),
+                    options: null
                 );
 
                 foreach (IBookstore bookstore in bookstores)

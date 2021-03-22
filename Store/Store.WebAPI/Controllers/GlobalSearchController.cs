@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 using Store.Common.Enums;
+using Store.Common.Parameters;
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models;
 using Store.Service.Common.Services;
 using Store.WebAPI.Models.GlobalSearch;
@@ -15,7 +17,7 @@ namespace Store.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/global-search")]
-    public class GlobalSearchController : ControllerBase
+    public class GlobalSearchController : ApplicationControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IGlobalSearchService _globalSearchService;
@@ -25,8 +27,9 @@ namespace Store.WebAPI.Controllers
         (
             IAuthorizationService authorizationService,
             IGlobalSearchService globalSearchService, 
-            IMapper mapper
-        )
+            IMapper mapper,
+            IQueryUtilityFacade queryUtilityFacade
+        ) : base(queryUtilityFacade)
         {
             _authorizationService = authorizationService;
             _globalSearchService = globalSearchService;
@@ -45,7 +48,7 @@ namespace Store.WebAPI.Controllers
         {
             if (string.IsNullOrWhiteSpace(searchString))
             {
-                return BadRequest("Must provide search string.");
+                return BadRequest("Must provide a search string.");
             }
 
             IList<SectionType> searchTypes = await GetSearchableSectionTypesAsync(new SectionType[] 
@@ -59,7 +62,10 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IEnumerable<ISearchItem> searchResults = await _globalSearchService.FindAsync(searchString, searchTypes);
+            IGlobalFilteringParameters filtering = FilteringFactory.Create<IGlobalFilteringParameters>(searchString);
+            filtering.SearchTypes = searchTypes;
+
+            IEnumerable<ISearchItem> searchResults = await _globalSearchService.FindAsync(filtering);
 
             if (searchResults != null)
             {

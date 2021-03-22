@@ -36,7 +36,7 @@ namespace Store.Services
 
         public async Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId)
         {
-            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId, null);
             if (emailTemplate == null) return default;
 
             return await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
@@ -57,7 +57,7 @@ namespace Store.Services
 
         public async Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream)
         {
-            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId, null);
 
             await _fileProvider.SaveFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name), templateStream);
 
