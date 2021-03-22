@@ -2,6 +2,6 @@
 {
     public interface IOptionsParameters
     {
-        string[] Properties { get; set; }
+        string[] Properties { get; }
     }
 }

@@ -12,6 +12,7 @@ namespace Store.Common.Parameters.Sorting
 
         private readonly string[] _sort = null;
 
+        // Setter is not private because of the model mapper (the ModelMapperHelper class)
         public IList<ISortingPair> Sorters { get; set; }
 
         public SortingParameters(string[] sort)

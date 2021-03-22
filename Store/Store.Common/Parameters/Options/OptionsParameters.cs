@@ -2,7 +2,11 @@
 {
     public class OptionsParameters : IOptionsParameters
     {
-        public string[] Properties { get; set; }
+        public string[] Properties
+        {
+            get;
+            private set;
+        }
 
         public OptionsParameters(string[] properties = null)
         {
