@@ -297,11 +297,11 @@ namespace Store.Repositories.Identity.Stores
             return _unitOfWork.RoleRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleRepository.FindRolesWithPoliciesAsync(sectionType, searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize);
+            return _unitOfWork.RoleRepository.FindRolesWithPoliciesAsync(filter, paging, sorting);
         }
 
         #endregion

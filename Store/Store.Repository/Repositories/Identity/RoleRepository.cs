@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using Store.Model.Models;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
@@ -18,10 +17,10 @@ using Store.Common.Parameters.Filtering;
 using Store.Models.Identity;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
+using Store.Repository.Repositories.Models;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
-using Store.Repository.Repositories.Models;
 
 namespace Store.Repositories.Identity
 {
@@ -117,35 +116,37 @@ namespace Store.Repositories.Identity
             return result;
         }
 
-        public async Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        public async Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
             dynamic searchParameters = new ExpandoObject();
-            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
-            searchParameters.SectionType = $"{sectionType}.%";
+            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
+            searchParameters.SectionType = $"{filter.SectionType}.%";
 
             string includeExpression = $@"LEFT JOIN {RoleClaimSchema.Table} rc on
                                                 rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
                                                 AND rc.{RoleClaimSchema.Columns.ClaimType} = '{CLAIM_PERMISSION_KEY}'
-                                                AND rc.{RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(sectionType)}";
+                                                AND rc.{RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(filter.SectionType)}";
 
-            using GridReader reader = await FindAsync
-            (
-                tableName: RoleSchema.Table,
-                tableAlias: "r",
-                selectAlias: "r.*, rc.*",
-                filterExpression: @$"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
-                includeExpression: includeExpression,
-                sortOrderProperty: sortOrderProperty,
-                isDescendingSortOrder: isDescendingSortOrder,
-                pageNumber: pageNumber,
-                pageSize: pageSize,
-                searchParameters: searchParameters
-            );
+            IFilterModel filterModel = new FilterModel()
+            {
+                Expression = @$"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(filter.SectionType)})",
+                Parameters = searchParameters
+            };
+
+            IQueryTableModel queryTableModel = new QueryTableModel()
+            {
+                TableName = RoleSchema.Table,
+                TableAlias = "r",
+                SelectStatement = "r.*, rc.*",
+                IncludeStatement = includeExpression
+            };
+
+            using GridReader reader = await FindAsync(queryTableModel, filterModel, paging, sorting);
 
             IEnumerable<IRole> roles = ReadRoles(reader);
             int totalCount = reader.ReadFirst<int>();
 
-            var result = new PagedEnumerable<IRole>(roles, totalCount, pageSize, pageNumber);
+            var result = new PagedEnumerable<IRole>(roles, totalCount, paging.PageSize, paging.PageNumber);
 
             return result;
         }

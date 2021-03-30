@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Parameters;
+using Store.Common.Parameters.Filtering;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
@@ -79,34 +80,32 @@ namespace Store.WebAPI.Controllers.Identity
         /// <param name="searchString">The search string.</param>
         /// <param name="pageNumber">The page number.</param>
         /// <param name="pageSize">Size of the page.</param>
-        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
-        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <param name="sortOrder">The sort order.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Route("{section}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAsync([FromRoute] string section, 
-                                                  [FromQuery] string searchString = DefaultParameters.SearchString, 
-                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber, 
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize, 
-                                                  [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
-                                                  [FromQuery] string sortOrderProperty = nameof(RoleGetApiModel.Name))
+        public async Task<IActionResult> GetAsync([FromRoute] string section,
+                                                  [FromQuery] string searchString = DefaultParameters.SearchString,
+                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+                                                  [FromQuery] int pageSize = DefaultParameters.PageSize,
+                                                  [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
             if(!Enum.TryParse(section, out SectionType sectionType))
             {
                 return BadRequest("Section not supported.");
             }
 
+            IPermissionFilteringParameters filter = FilteringFactory.Create<IPermissionFilteringParameters>(searchString);
+            filter.SectionType = sectionType;
+
             IPagedEnumerable<IRole> roles = await _roleManager.FindRolesWithPoliciesAsync
             (
-                sectionType,
-                searchString,
-                ModelMapperHelper.GetPropertyMapping<RoleGetApiModel, IRole>(_mapper, sortOrderProperty),
-                isDescendingSortOrder,
-                pageNumber,
-                pageSize
+                filter,
+                paging: PagingFactory.Create(pageNumber, pageSize),
+                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<RoleGetApiModel, IRole>(_mapper, sortOrder))
             );
 
             if (roles != null)

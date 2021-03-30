@@ -74,14 +74,9 @@ namespace Store.Services.Identity
             return _roleStore.FindRolesAsync(filter, paging, sorting, options, CancellationToken);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)
+        public Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
-            if (sortOrderProperty == null)
-            {
-                throw new ArgumentNullException(nameof(sortOrderProperty));
-            }
-
-            return _roleStore.FindRolesAndPoliciesAsync(sectionType, searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, CancellationToken);
+            return _roleStore.FindRolesAndPoliciesAsync(filter, paging, sorting, CancellationToken);
         }
 
         public async Task<IdentityResult> RemoveClaimsAsync(IRole role, string type, string searchString)
