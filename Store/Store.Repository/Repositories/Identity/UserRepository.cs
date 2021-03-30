@@ -11,11 +11,17 @@ using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Common.Helpers;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
+
+using Store.Repository.Repositories.Models;
 
 namespace Store.Repositories.Identity
 {
@@ -94,44 +100,46 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IPagedEnumerable<IUser>> FindAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public async Task<IPagedEnumerable<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             IList<string> filterConditions = new List<string>();
 
-            if (!showInactive) filterConditions.Add($"u.{UserSchema.Columns.IsApproved} = TRUE");
-            if (searchString != null) filterConditions.Add($"((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(searchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(searchString)}))");
+            if (!filter.ShowInactive) filterConditions.Add($"u.{UserSchema.Columns.IsApproved} = TRUE");
+            if (filter.SearchString != null) filterConditions.Add($"((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(filter.SearchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(filter.SearchString)}))");
 
             dynamic searchParameters = new ExpandoObject();
-            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
+            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
 
-            using GridReader reader = await FindAsync
-            (
-                tableName: UserSchema.Table,
-                tableAlias: "u",
-                selectAlias: "u.*, r.*, uc.*, ul.*, ut.*", 
-                filterExpression: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(), 
-                includeExpression: IncludeQuery(includeProperties), 
-                sortOrderProperty: sortOrderProperty,
-                isDescendingSortOrder: isDescendingSortOrder,
-                pageNumber: pageNumber,
-                pageSize: pageSize,
-                searchParameters: searchParameters
-            );
+            IFilterModel filterModel = new FilterModel()
+            {
+                Expression = new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
+                Parameters = searchParameters
+            };
+
+            IQueryTableModel queryTableModel = new QueryTableModel()
+            {
+                TableName = UserSchema.Table,
+                TableAlias = "u",
+                SelectStatement = "u.*, r.*, uc.*, ul.*, ut.*",
+                IncludeStatement = IncludeQuery(options)
+            };
+
+            using GridReader reader = await FindAsync(queryTableModel, filterModel, paging, sorting);
 
             IEnumerable<IUser> users = ReadUsers(reader);
             int totalCount = reader.ReadFirst<int>();
 
-            return new PagedEnumerable<IUser>(users, totalCount, pageSize, pageNumber);
+            return new PagedEnumerable<IUser>(users, totalCount, paging.PageSize, paging.PageNumber);
         }
 
-        public async Task<IUser> FindByKeyAsync(Guid key, params string[] includeProperties)
+        public async Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options)
         {
             // Set query base
             StringBuilder sql = new StringBuilder(@$"SELECT u.*, r.*, uc.*, ul.*, ut.* FROM {UserSchema.Table} u");
             sql.Append(Environment.NewLine);
 
             // Set prefetch
-            sql.Append(IncludeQuery(includeProperties));
+            sql.Append(IncludeQuery(options));
             sql.Append(Environment.NewLine);
 
             // Set filter
@@ -198,24 +206,32 @@ namespace Store.Repositories.Identity
                 param: entity);
         }
 
-        private static string IncludeQuery(params string[] includeProperties)
-        {
+        private static string IncludeQuery(IOptionsParameters options)
+        {        
+            string[] includeProperties = options?.Properties;
+
+            bool includeRoles, includeClaims, includeLogins, includetokens;
+            includeRoles = includeClaims = includeLogins = includetokens = false;
+
+            if (includeProperties?.Length > 0)
+            {
+                includeRoles = includeProperties.Contains(nameof(IUser.Roles));
+                includeClaims = includeProperties.Contains(nameof(IUser.Claims));
+                includeLogins = includeProperties.Contains(nameof(IUser.Logins));
+                includetokens = includeProperties.Contains(nameof(IUser.Tokens));
+            }
+
             StringBuilder sql = new StringBuilder();
-
-            bool includeRoles = includeProperties.Contains(nameof(IUser.Roles));
-            bool includeClaims = includeProperties.Contains(nameof(IUser.Claims));
-            bool includeLogins = includeProperties.Contains(nameof(IUser.Logins));
-            bool includetokens = includeProperties.Contains(nameof(IUser.Tokens));
-
             if (includeRoles)
             {
                 sql.Append($@"INNER JOIN {UserRoleSchema.Table} ur on ur.{UserRoleSchema.Columns.UserId} = u.{UserSchema.Columns.Id} 
-                              INNER JOIN {RoleSchema.Table} r on r.{RoleSchema.Columns.Id} = ur.{UserRoleSchema.Columns.RoleId}");
+                                INNER JOIN {RoleSchema.Table} r on r.{RoleSchema.Columns.Id} = ur.{UserRoleSchema.Columns.RoleId}");
             }
             else
             {
                 sql.Append($@"LEFT JOIN {RoleSchema.Table} r on FALSE");
             }
+
             sql.Append(Environment.NewLine);
 
             sql.Append($@"LEFT JOIN {UserClaimSchema.Table} uc on {(includeClaims ? $"uc.{UserClaimSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}

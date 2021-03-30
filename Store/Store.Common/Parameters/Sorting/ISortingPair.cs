@@ -7,5 +7,7 @@
         string OrderBy { get; set; }
 
         string GetSortExpression();
+
+        string GetQuerySortExpression();
     }
 }

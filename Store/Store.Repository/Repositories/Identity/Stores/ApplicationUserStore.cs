@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Repository.Common.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity.Stores;
 
@@ -932,18 +936,18 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationUserStore<IUser> Members
 
-        public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, params string[] includeProperties)
+        public Task<IPagedEnumerable<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.UserRepository.FindAsync(searchString, showInactive,  sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _unitOfWork.UserRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public Task<IUser> FindUserByIdAsync(Guid id, CancellationToken cancellationToken, params string[] includeProperties)
+        public Task<IUser> FindUserByIdAsync(Guid id, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.UserRepository.FindByKeyAsync(id, includeProperties); 
+            return _unitOfWork.UserRepository.FindByKeyAsync(id, options); 
         }
 
         public Task ApproveUserAsync(IUser user, CancellationToken cancellationToken)

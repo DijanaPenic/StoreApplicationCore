@@ -8,6 +8,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Common.Helpers;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Service.Options;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -149,24 +153,19 @@ namespace Store.Services.Identity
             return result;
         }
 
-        public Task<IPagedEnumerable<IUser>> FindUsersAsync(string searchString, bool showInactive, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public Task<IPagedEnumerable<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            if (sortOrderProperty == null)
-            {
-                throw new ArgumentNullException(nameof(sortOrderProperty)); 
-            }
-
-            return _userStore.FindUsersAsync(searchString, showInactive, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, CancellationToken, includeProperties);
+            return _userStore.FindUsersAsync(filter, paging, sorting, options, CancellationToken);
         }
 
-        public Task<IUser> FindUserByIdAsync(Guid id, params string[] includeProperties)
+        public Task<IUser> FindUserByIdAsync(Guid id, IOptionsParameters options = null)
         {
             if (GuidHelper.IsNullOrEmpty(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _userStore.FindUserByIdAsync(id, CancellationToken, includeProperties);
+            return _userStore.FindUserByIdAsync(id, options, CancellationToken);
         }
 
         public async Task<IdentityResult> ApproveUserAsync(IUser user)

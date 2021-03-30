@@ -14,6 +14,7 @@ using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Common.Parameters;
+using Store.Common.Parameters.Filtering;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Constants;
@@ -302,7 +303,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Find the user we want to update
-            IUser user = await _userManager.FindUserByIdAsync(userId, nameof(IUser.Roles));
+            IUser user = await _userManager.FindUserByIdAsync(userId, OptionsFactory.Create(new string[] { nameof(IUser.Roles) }));
             if (user == null)
             {
                 return NotFound();
@@ -569,36 +570,34 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Retrieves users by specified search criteria.</summary>
-        /// <param name="includeProperties">The include properties.</param>
         /// <param name="showInactive">if set to <c>true</c> [show inactive].</param>
+        /// <param name="includeProperties">The include properties.</param>
         /// <param name="searchString">The search string.</param>
         /// <param name="pageNumber">The page number.</param>
         /// <param name="pageSize">Size of the page.</param>
-        /// <param name="isDescendingSortOrder">if set to <c>true</c> [is descending sort order].</param>
-        /// <param name="sortOrderProperty">The sort order property.</param>
+        /// <param name="sortOrder">The sort order.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.User, AccessType.Read)]
-        public async Task<IActionResult> GetUsersAsync([FromQuery] string[] includeProperties, 
-                                                       [FromQuery] bool showInactive = false, 
-                                                       [FromQuery] string searchString = DefaultParameters.SearchString, 
-                                                       [FromQuery] int pageNumber = DefaultParameters.PageNumber, 
-                                                       [FromQuery] int pageSize = DefaultParameters.PageSize, 
-                                                       [FromQuery] bool isDescendingSortOrder = DefaultParameters.IsDescendingSortOrder, 
-                                                       [FromQuery] string sortOrderProperty = nameof(UserGetApiModel.UserName))
+        public async Task<IActionResult> GetUsersAsync([FromQuery] bool showInactive = false,
+                                                       [FromQuery] string includeProperties = DefaultParameters.IncludeProperties,
+                                                       [FromQuery] string searchString = DefaultParameters.SearchString,
+                                                       [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+                                                       [FromQuery] int pageSize = DefaultParameters.PageSize,
+                                                       [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
+            IUserFilteringParameters filter = FilteringFactory.Create<IUserFilteringParameters>(searchString);
+            filter.ShowInactive = showInactive;
+
             IPagedEnumerable<IUser> users = await _userManager.FindUsersAsync
             (
-                searchString,
-                showInactive,
-                ModelMapperHelper.GetPropertyMapping<UserGetApiModel, IUser>(_mapper, sortOrderProperty),
-                isDescendingSortOrder,
-                pageNumber,
-                pageSize,
-                ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)
+                filter,
+                paging: PagingFactory.Create(pageNumber, pageSize),
+                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<UserGetApiModel, IUser>(_mapper, sortOrder)),
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties))
             );
 
             if (users != null)
@@ -619,14 +618,14 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.User, AccessType.Read)]
-        public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string[] includeProperties)
+        public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId, ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties));
+            IUser user = await _userManager.FindUserByIdAsync(userId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)));
 
             if (user != null)
                 return Ok(_mapper.Map<UserGetApiModel>(user));

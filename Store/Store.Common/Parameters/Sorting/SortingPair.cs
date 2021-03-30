@@ -1,4 +1,6 @@
-﻿namespace Store.Common.Parameters.Sorting
+﻿using Store.Common.Extensions;
+
+namespace Store.Common.Parameters.Sorting
 {
     public class SortingPair : ISortingPair
     {
@@ -19,6 +21,16 @@
                 "{0}{1}{2}", 
                 OrderBy, 
                 SortingParameters.SortingParametersSeparator, 
+                Ascending ? SortingParameters.AscendingDirection : SortingParameters.DescendingDirection
+            );
+        }
+
+        public virtual string GetQuerySortExpression()
+        {
+            return string.Format
+            (
+                "{0} {1}",
+                OrderBy.ToSnakeCase(),
                 Ascending ? SortingParameters.AscendingDirection : SortingParameters.DescendingDirection
             );
         }

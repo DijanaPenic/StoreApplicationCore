@@ -21,6 +21,7 @@ namespace Store.Common.DependencyInjection
 
             services.AddScoped<IFilteringParameters, FilteringParameters>();
             services.AddScoped<IGlobalFilteringParameters, GlobalFilteringParameters>();
+            services.AddScoped<IUserFilteringParameters, UserFilteringParameters>();
         }
     }
 }

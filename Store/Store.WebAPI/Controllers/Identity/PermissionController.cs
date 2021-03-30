@@ -96,7 +96,7 @@ namespace Store.WebAPI.Controllers.Identity
         {
             if(!Enum.TryParse(section, out SectionType sectionType))
             {
-                return BadRequest("Section not supported");
+                return BadRequest("Section not supported.");
             }
 
             IPagedEnumerable<IRole> roles = await _roleManager.FindRolesWithPoliciesAsync
