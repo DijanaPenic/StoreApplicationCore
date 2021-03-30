@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Identity;
 
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -55,24 +59,19 @@ namespace Store.Services.Identity
             return _roleStore.GetUserRoleCombinationCountByRoleNameAsync(role.NormalizedName, CancellationToken);
         }
 
-        public Task<IRole> FindRoleByIdAsync(Guid id, params string[] includeProperties)
+        public Task<IRole> FindRoleByIdAsync(Guid id, IOptionsParameters options)
         {
             if (GuidHelper.IsNullOrEmpty(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _roleStore.FindRoleByIdAsync(id, CancellationToken, includeProperties);
+            return _roleStore.FindRoleByIdAsync(id, options, CancellationToken);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public Task<IPagedEnumerable<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            if (sortOrderProperty == null)
-            {
-                throw new ArgumentNullException(nameof(sortOrderProperty));
-            }
-
-            return _roleStore.FindRolesAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, CancellationToken, includeProperties);
+            return _roleStore.FindRolesAsync(filter, paging, sorting, options, CancellationToken);
         }
 
         public Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize)

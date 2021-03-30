@@ -11,12 +11,17 @@ using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Common.Enums;
 using Store.Common.Helpers;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Models.Identity;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
+using Store.Repository.Repositories.Models;
 
 namespace Store.Repositories.Identity
 {
@@ -63,14 +68,14 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IRole> FindByKeyAsync(Guid key, params string[] includeProperties)
+        public async Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options)
         {
             // Set query base
             StringBuilder sql = new StringBuilder(@$"SELECT r.*, rc.* FROM {RoleSchema.Table} r");
             sql.Append(Environment.NewLine);
 
             // Set prefetch
-            sql.Append(IncludeQuery(includeProperties));
+            sql.Append(IncludeQuery(options));
             sql.Append(Environment.NewLine);
 
             // Set filter
@@ -83,29 +88,31 @@ namespace Store.Repositories.Identity
             return role;
         }
 
-        public async Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties)
+        public async Task<IPagedEnumerable<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             dynamic searchParameters = new ExpandoObject();
-            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
+            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
 
-            using GridReader reader = await FindAsync
-            (
-                tableName: RoleSchema.Table,
-                tableAlias: "r",
-                selectAlias: "r.*, rc.*", 
-                filterExpression: $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(searchString)})",
-                includeExpression: IncludeQuery(includeProperties), 
-                sortOrderProperty: sortOrderProperty,
-                isDescendingSortOrder: isDescendingSortOrder,
-                pageNumber: pageNumber,
-                pageSize: pageSize,
-                searchParameters: searchParameters
-            );
+            IFilterModel filterModel = new FilterModel()
+            {
+                Expression = $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(filter.SearchString)})",
+                Parameters = searchParameters
+            };
+
+            IQueryTableModel queryTableModel = new QueryTableModel()
+            {
+                TableName = RoleSchema.Table,
+                TableAlias = "r",
+                SelectStatement = "r.*, rc.*",
+                IncludeStatement = IncludeQuery(options)
+            };
+
+            using GridReader reader = await FindAsync(queryTableModel, filterModel, paging, sorting);
 
             IEnumerable<IRole> roles = ReadRoles(reader);
             int totalCount = reader.ReadFirst<int>();
 
-            var result = new PagedEnumerable<IRole>(roles, totalCount, pageSize, pageNumber);
+            var result = new PagedEnumerable<IRole>(roles, totalCount, paging.PageSize, paging.PageNumber);
 
             return result;
         }
@@ -192,9 +199,9 @@ namespace Store.Repositories.Identity
             );
         }
 
-        private static string IncludeQuery(params string[] includeProperties)
+        private static string IncludeQuery(IOptionsParameters options)
         {
-            bool includePolicies = includeProperties.Contains(nameof(IRole.Policies));
+            bool includePolicies = options.Properties.Contains(nameof(IRole.Policies));
 
             return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includePolicies ? 
                             @$"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 

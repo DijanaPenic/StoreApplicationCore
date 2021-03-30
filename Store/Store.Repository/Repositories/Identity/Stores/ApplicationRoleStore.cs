@@ -12,6 +12,10 @@ using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity.Stores;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
 
 namespace Store.Repositories.Identity.Stores
 {
@@ -247,11 +251,11 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationRoleStore<IRole> Members
 
-        public Task<IRole> FindRoleByIdAsync(Guid id, CancellationToken cancellationToken, params string[] includeProperties)
+        public Task<IRole> FindRoleByIdAsync(Guid id, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleRepository.FindByKeyAsync(id, includeProperties);
+            return _unitOfWork.RoleRepository.FindByKeyAsync(id, options);
         }
 
         public async Task<IEnumerable<IRole>> FindByNameAsync(string[] normalizedRoleNames, CancellationToken cancellationToken)
@@ -286,11 +290,11 @@ namespace Store.Repositories.Identity.Stores
             return await _unitOfWork.UserRoleRepository.GetUserRoleCombinationCountByRoleNameAsync(normalizedRoleName);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, params string[] includeProperties)
+        public Task<IPagedEnumerable<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleRepository.FindAsync(searchString, sortOrderProperty, isDescendingSortOrder, pageNumber, pageSize, includeProperties);
+            return _unitOfWork.RoleRepository.FindAsync(filter, paging, sorting, options);
         }
 
         public Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken)

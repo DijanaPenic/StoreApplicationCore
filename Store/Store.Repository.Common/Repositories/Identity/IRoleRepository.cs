@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Store.Common.Enums;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core.Dapper;
@@ -15,9 +19,9 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IEnumerable<IRole>> FindByNameAsync(string[] roleNames);
 
-        Task<IRole> FindByKeyAsync(Guid key, params string[] includeProperties);
+        Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options);
 
-        Task<IPagedEnumerable<IRole>> FindAsync(string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize, params string[] includeProperties);
+        Task<IPagedEnumerable<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
         
         Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(SectionType sectionType, string searchString, string sortOrderProperty, bool isDescendingSortOrder, int pageNumber, int pageSize);
     }
