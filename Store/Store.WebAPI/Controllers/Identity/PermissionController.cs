@@ -11,6 +11,7 @@ using Store.Common.Parameters;
 using Store.Common.Parameters.Filtering;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Identity;
+using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.WebAPI.Constants;
 using Store.Services.Identity;
 using Store.Model.Common.Models;
@@ -51,6 +52,7 @@ namespace Store.WebAPI.Controllers.Identity
         [HttpPost]
         [Route("{roleId:guid}")]
         [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Full)]
         public async Task<IActionResult> PostAsync([FromRoute] Guid roleId, [FromBody] PolicyPostApiModel policyModel)
         {
             if (roleId == Guid.Empty)
@@ -87,6 +89,7 @@ namespace Store.WebAPI.Controllers.Identity
         [HttpGet]
         [Route("{section}")]
         [Produces("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Full)]
         public async Task<IActionResult> GetAsync([FromRoute] string section,
                                                   [FromQuery] string searchString = DefaultParameters.SearchString,
                                                   [FromQuery] int pageNumber = DefaultParameters.PageNumber,
