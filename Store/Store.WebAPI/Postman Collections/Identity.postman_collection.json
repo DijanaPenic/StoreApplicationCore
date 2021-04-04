@@ -51,7 +51,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/roles?is_descending_sort_order=true&sort_order_property=Name&search_string=Guest&page_size=3&page_number=1&include_properties=Policies",
+							"raw": "{{base_url}}/api/roles?sort_order=name|desc&search_string=Guest&page_size=3&page_number=1&include_properties=policies",
 							"host": [
 								"{{base_url}}"
 							],
@@ -61,12 +61,8 @@
 							],
 							"query": [
 								{
-									"key": "is_descending_sort_order",
-									"value": "true"
-								},
-								{
-									"key": "sort_order_property",
-									"value": "Name"
+									"key": "sort_order",
+									"value": "name|desc"
 								},
 								{
 									"key": "search_string",
@@ -82,7 +78,7 @@
 								},
 								{
 									"key": "include_properties",
-									"value": "Policies"
+									"value": "policies"
 								}
 							]
 						}
@@ -474,7 +470,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Users",
+					"name": "Get Users (filter)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -485,7 +481,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users?sort_order_property=UserName",
+							"raw": "{{base_url}}/api/users?sort_order=user_name|desc&search_string=dijana&page_size=2&page_number=1&include_properties=roles",
 							"host": [
 								"{{base_url}}"
 							],
@@ -495,33 +491,24 @@
 							],
 							"query": [
 								{
-									"key": "is_descending_sort_order",
-									"value": "true",
-									"disabled": true
-								},
-								{
-									"key": "sort_order_property",
-									"value": "UserName"
+									"key": "sort_order",
+									"value": "user_name|desc"
 								},
 								{
 									"key": "search_string",
-									"value": "dijana",
-									"disabled": true
+									"value": "dijana"
 								},
 								{
 									"key": "page_size",
-									"value": "2",
-									"disabled": true
+									"value": "2"
 								},
 								{
 									"key": "page_number",
-									"value": "2",
-									"disabled": true
+									"value": "1"
 								},
 								{
 									"key": "include_properties",
-									"value": "Roles",
-									"disabled": true
+									"value": "roles"
 								}
 							]
 						}
@@ -552,7 +539,7 @@
 							"query": [
 								{
 									"key": "include_properties",
-									"value": "Roles",
+									"value": "roles",
 									"disabled": true
 								}
 							]
@@ -1566,17 +1553,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"section\": \"Book\",\r\n    \"access_actions\": [\r\n        { \"type\": \"Read\", \"is_enabled\": true },\r\n        { \"type\": \"Update\", \"is_enabled\": true },\r\n        { \"type\": \"Delete\", \"is_enabled\": true },\r\n        { \"type\": \"Create\", \"is_enabled\": true }\r\n    ]\r\n}"
+							"raw": "{\r\n    \"section\": \"Book\",\r\n    \"actions\": [\r\n        { \"type\": \"Read\", \"is_enabled\": true },\r\n        { \"type\": \"Update\", \"is_enabled\": true },\r\n        { \"type\": \"Delete\", \"is_enabled\": true },\r\n        { \"type\": \"Create\", \"is_enabled\": true }\r\n    ]\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/permissions/{{role_id}}",
+							"raw": "{{base_url}}/api/permissions/9621c09c-06b1-45fb-8baf-38e0757e2f59",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"permissions",
-								"{{role_id}}"
+								"9621c09c-06b1-45fb-8baf-38e0757e2f59"
 							]
 						}
 					},
@@ -1594,7 +1581,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/permissions/{{section}}?is_descending_sort_order=true&sort_order_property=Name&search_string=Guest&page_size=3&page_number=1",
+							"raw": "{{base_url}}/api/permissions/{{section}}?sort_order=name|desc&search_string=Guest&page_size=3&page_number=1",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1605,12 +1592,8 @@
 							],
 							"query": [
 								{
-									"key": "is_descending_sort_order",
-									"value": "true"
-								},
-								{
-									"key": "sort_order_property",
-									"value": "Name"
+									"key": "sort_order",
+									"value": "name|desc"
 								},
 								{
 									"key": "search_string",
