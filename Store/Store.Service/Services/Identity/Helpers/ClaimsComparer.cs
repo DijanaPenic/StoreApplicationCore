@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Store.Services.Identity
 {
-    public class ClaimsComparer : IEqualityComparer<Claim>
+    internal class ClaimsComparer : IEqualityComparer<Claim>
     {
         public bool Equals(Claim x, Claim y)
         {

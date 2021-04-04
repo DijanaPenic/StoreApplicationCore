@@ -1,6 +1,8 @@
-﻿namespace Store.Repository.Repositories.Models
+﻿using Store.Repository.Common.Models;
+
+namespace Store.Repository.Repositories.Models
 {
-    public class FilterModel : IFilterModel
+    internal class FilterModel : IFilterModel
     {
         public string Expression { get; set; }
 

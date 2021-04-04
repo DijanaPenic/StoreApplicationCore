@@ -6,7 +6,7 @@ using Store.Common.Parameters.Filtering;
 
 namespace Store.Services
 {
-    abstract public class ParametersService
+    internal abstract class ParametersService
     {
         private IOptionsFactory _optionsFactory = null;
         private IPagingFactory _pagingFactory = null;

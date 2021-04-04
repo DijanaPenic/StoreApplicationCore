@@ -18,7 +18,7 @@ using Store.Repository.Common.Repositories.Identity.Stores;
 
 namespace Store.Repositories.Identity.Stores
 {
-    public class ApplicationUserStore :
+    internal class ApplicationUserStore :
             IUserPasswordStore<IUser>,
             IUserEmailStore<IUser>,
             IUserRoleStore<IUser>,

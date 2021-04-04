@@ -1,4 +1,4 @@
-﻿namespace Store.Repository.Repositories.Models
+﻿namespace Store.Repository.Common.Models
 {
     public interface IFilterModel
     {

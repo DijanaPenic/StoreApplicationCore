@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Identity;
 
 using Store.Common.Helpers;
 using Store.Common.Parameters.Paging;
-using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Filtering;
 using Store.Service.Options;
 using Store.Model.Common.Models;

@@ -22,11 +22,6 @@ namespace Store.Repository.DependencyInjection
         {
             string connectionString = configuration.GetConnectionString("Database");
 
-            services.AddTransient<IBookstoreRepository, BookstoreRepository>();
-            services.AddTransient<IBookRepository, BookRepository>();
-            services.AddTransient<IEmailTemplateRepository, EmailTemplateRepository>();
-
-            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<,>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IDapperUnitOfWork, DapperUnitOfWork>(provider => new DapperUnitOfWork(connectionString));
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());

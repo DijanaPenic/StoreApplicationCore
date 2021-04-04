@@ -17,7 +17,7 @@ using Store.Model.Common.Models;
 
 namespace Store.Repositories
 {
-    public class BookRepository : GenericRepository<BookEntity, IBook>, IBookRepository
+    internal class BookRepository : GenericRepository<BookEntity, IBook>, IBookRepository
     {
         public BookRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {

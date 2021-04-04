@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;

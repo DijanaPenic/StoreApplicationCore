@@ -13,7 +13,7 @@ using Store.FileProvider.Common.Core;
 
 namespace Store.Services
 {
-    public class EmailTemplateService : IEmailTemplateService
+    internal class EmailTemplateService : IEmailTemplateService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileProvider _fileProvider;

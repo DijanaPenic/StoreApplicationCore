@@ -17,11 +17,11 @@ using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
 using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
+using Store.Repository.Common.Models;
 using Store.Repository.Common.Repositories.Identity;
+using Store.Repository.Repositories.Models;
 
 using static Dapper.SqlMapper;
-
-using Store.Repository.Repositories.Models;
 
 namespace Store.Repositories.Identity
 {

@@ -8,7 +8,7 @@ using Store.Repository.Common.Repositories.Identity.Stores;
 
 namespace Store.Repositories.Identity.Stores
 {
-    public class ApplicationAuthStore : IApplicationAuthStore
+    internal class ApplicationAuthStore : IApplicationAuthStore
     {
         private readonly IDapperUnitOfWork _unitOfWork;
 

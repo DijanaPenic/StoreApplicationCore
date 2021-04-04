@@ -5,14 +5,13 @@ using Store.Models;
 using Store.Model.Common.Models;
 using Store.Common.Enums;
 using Store.Common.Parameters;
-using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Filtering;
 using Store.Repository.Common.Core;
 using Store.Service.Common.Services;
 
 namespace Store.Services
 {
-    public class GlobalSearchService : ParametersService, IGlobalSearchService
+    internal class GlobalSearchService : ParametersService, IGlobalSearchService
     {
         private readonly IUnitOfWork _unitOfWork;
 

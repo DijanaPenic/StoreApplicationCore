@@ -10,7 +10,7 @@ using Store.Service.Common.Services;
 
 namespace Store.Services
 {
-    public class CountriesService : ICountriesService
+    internal class CountriesService : ICountriesService
     {
         private readonly string _countriesURL;
         private HttpClient _httpClient = null;

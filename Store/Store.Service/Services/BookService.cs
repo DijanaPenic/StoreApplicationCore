@@ -14,7 +14,7 @@ using Store.Service.Common.Services;
 
 namespace Store.Services
 {
-    public class BookService : IBookService
+    internal class BookService : IBookService
     {
         private readonly IUnitOfWork _unitOfWork;
 

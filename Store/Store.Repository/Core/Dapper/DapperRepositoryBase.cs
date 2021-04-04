@@ -11,7 +11,7 @@ using static Dapper.SqlMapper;
 using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
-using Store.Repository.Repositories.Models;
+using Store.Repository.Common.Models;
 
 namespace Store.Repository.Core.Dapper
 {

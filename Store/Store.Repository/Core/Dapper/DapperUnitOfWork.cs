@@ -8,7 +8,7 @@ using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Core.Dapper
 {
-    public class DapperUnitOfWork : IDapperUnitOfWork
+    internal class DapperUnitOfWork : IDapperUnitOfWork
     {
         #region Fields
 

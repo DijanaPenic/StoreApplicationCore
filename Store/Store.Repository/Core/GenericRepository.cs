@@ -20,7 +20,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Repository.Core
 {
-    public class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
+    internal abstract class GenericRepository<TEntity, TDomain> : IGenericRepository<TDomain> where TDomain : class, IPoco where TEntity : class, IDBPoco
     {
         private readonly ApplicationDbContext _dbContext;
         private DbSet<TEntity> _dbSet;

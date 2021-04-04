@@ -4,7 +4,7 @@ using Store.Service.Common.Services.Identity;
 
 namespace Store.Services.Identity
 {
-    public class JwtAuthResult : IJwtAuthResult
+    internal class JwtAuthResult : IJwtAuthResult
     {
         public string AccessToken { get; set; }
 

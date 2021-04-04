@@ -6,7 +6,7 @@ using Store.Common.Infrastructure.Serialization;
 
 namespace Store.Service.Serialization
 {
-    public static class JsonSerializerInit
+    internal static class JsonSerializerInit
     {
         public static JsonSerializerOptions GetJsonSerializerOptions()
         {

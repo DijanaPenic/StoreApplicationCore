@@ -14,7 +14,7 @@ using Store.Model.Common.Models;
 
 namespace Store.Repositories
 {
-    public class EmailTemplateRepository : GenericRepository<EmailTemplateEntity, IEmailTemplate>, IEmailTemplateRepository
+    internal class EmailTemplateRepository : GenericRepository<EmailTemplateEntity, IEmailTemplate>, IEmailTemplateRepository
     {
         public EmailTemplateRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {

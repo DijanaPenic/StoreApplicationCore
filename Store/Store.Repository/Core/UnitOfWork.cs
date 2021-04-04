@@ -9,7 +9,7 @@ using Store.Repository.Common.Repositories;
 
 namespace Store.Repository.Core
 {
-    public class UnitOfWork : IUnitOfWork
+    internal class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;

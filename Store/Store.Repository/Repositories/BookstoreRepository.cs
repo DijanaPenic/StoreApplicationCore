@@ -16,7 +16,7 @@ using Store.Common.Parameters.Filtering;
 
 namespace Store.Repositories
 {
-    public class BookstoreRepository : GenericRepository<BookstoreEntity, IBookstore>, IBookstoreRepository
+    internal class BookstoreRepository : GenericRepository<BookstoreEntity, IBookstore>, IBookstoreRepository
     {
         public BookstoreRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {

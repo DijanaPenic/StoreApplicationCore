@@ -1,6 +1,8 @@
-﻿namespace Store.Repository.Repositories.Models
+﻿using Store.Repository.Common.Models;
+
+namespace Store.Repository.Repositories.Models
 {
-    public class QueryTableModel : IQueryTableModel
+    internal class QueryTableModel : IQueryTableModel
     {
         public string TableName { get; set; }
          
