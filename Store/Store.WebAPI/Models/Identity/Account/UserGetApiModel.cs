@@ -2,10 +2,8 @@
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class UserGetApiModel
+    public class UserGetApiModel : ApiModelBase
     {
-        public Guid Id { get; set; }
-
         public string Email { get; set; }
 
         public bool EmailConfirmed { get; set; }
@@ -19,10 +17,6 @@ namespace Store.WebAPI.Models.Identity
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
-
-        public DateTime DateCreatedUtc { get; set; }
-
-        public DateTime DateUpdatedUtc { get; set; }
 
         public bool IsApproved { get; set; }
 
