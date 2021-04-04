@@ -23,6 +23,7 @@ namespace Store.Common.DependencyInjection
             services.AddScoped<IGlobalFilteringParameters, GlobalFilteringParameters>();
             services.AddScoped<IUserFilteringParameters, UserFilteringParameters>();
             services.AddScoped<IPermissionFilteringParameters, PermissionFilteringParameters>();
+            services.AddScoped<IRoleClaimFilteringParameters, RoleClaimFilteringParameters>();
         }
     }
 }

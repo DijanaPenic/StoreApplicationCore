@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Filtering;
 using Store.Repository.Common.Core.Dapper;
 
 namespace Store.Repository.Common.Repositories.Identity
@@ -12,9 +15,8 @@ namespace Store.Repository.Common.Repositories.Identity
     {
         Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId);
 
-        Task<IPagedEnumerable<IRoleClaim>> FindAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null);
+        Task<IPagedEnumerable<IRoleClaim>> FindAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);
 
-        Task DeleteAsync(Guid roleId, string type, string searchString);
-
+        Task DeleteAsync(IRoleClaimFilteringParameters filter);
     }
 }

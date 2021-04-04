@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using Store.Model.Models;
 using Store.Models.Identity;
 using Store.Common.Helpers;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.DAL.Schema.Identity;
@@ -15,6 +18,7 @@ using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
 using static Dapper.SqlMapper;
+using Store.Repository.Repositories.Models;
 
 namespace Store.Repositories.Identity
 {
@@ -81,14 +85,14 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public Task DeleteAsync(Guid roleId, string type, string searchString)
+        public Task DeleteAsync(IRoleClaimFilteringParameters filter)
         {
             return ExecuteAsync(
                 sql: @$"DELETE FROM {RoleClaimSchema.Table} WHERE 
-                            {RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)} AND
-                            {RoleClaimSchema.Columns.ClaimType} = @{nameof(type)} AND
-                            {RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(searchString)}",
-                param: new { type, roleId, searchString = $"%{searchString}%" }   
+                            {RoleClaimSchema.Columns.RoleId} = @{nameof(filter.RoleId)} AND
+                            {RoleClaimSchema.Columns.ClaimType} = @{nameof(filter.Type)} AND
+                            {RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(filter.SearchString)}",
+                param: new { filter.Type, filter.RoleId, searchString = $"%{filter.SearchString}%" }   
             );
         }
 
@@ -108,38 +112,40 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IPagedEnumerable<IRoleClaim>> FindAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, Guid? roleId = null)
+        public async Task<IPagedEnumerable<IRoleClaim>> FindAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
             IList<string> filterConditions = new List<string>
             {
-                $"rc.{ RoleClaimSchema.Columns.ClaimType} = @{nameof(type)}"
+                $"rc.{ RoleClaimSchema.Columns.ClaimType} = @{nameof(filter.Type)}"
             };
-            if (searchString != null) filterConditions.Add(@$"LOWER(rc.{RoleClaimSchema.Columns.ClaimValue}) LIKE @{nameof(searchString)}");
-            if (!GuidHelper.IsNullOrEmpty(roleId)) filterConditions.Add($"rc.{RoleClaimSchema.Columns.RoleId} = @{nameof(roleId)}");
+            if (filter.SearchString != null) filterConditions.Add(@$"LOWER(rc.{RoleClaimSchema.Columns.ClaimValue}) LIKE @{nameof(filter.SearchString)}");
+            if (!GuidHelper.IsNullOrEmpty(filter.RoleId)) filterConditions.Add($"rc.{RoleClaimSchema.Columns.RoleId} = @{nameof(filter.RoleId)}");
 
             dynamic searchParameters = new ExpandoObject();
-            searchParameters.Type = type;
-            searchParameters.SearchString = $"%{searchString?.ToLowerInvariant()}%";
-            searchParameters.RoleId = roleId;
+            searchParameters.Type = filter.Type;
+            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
+            searchParameters.RoleId = filter.RoleId;
 
-            using GridReader reader = await FindAsync
-            (
-                tableName: RoleClaimSchema.Table,
-                tableAlias: "rc",
-                selectAlias: "*",
-                filterExpression: new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
-                includeExpression: string.Empty,
-                sortOrderProperty: RoleClaimSchema.Columns.ClaimValue,
-                isDescendingSortOrder: isDescendingSortOrder,
-                pageNumber: pageNumber,
-                pageSize: pageSize,
-                searchParameters: searchParameters
-            );
+            IFilterModel filterModel = new FilterModel()
+            {
+                Expression = new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
+                Parameters = searchParameters
+            };
+
+            IQueryTableModel queryTableModel = new QueryTableModel()
+            {
+                TableName = RoleClaimSchema.Table,
+                TableAlias = "rc",
+                SelectStatement = "*",
+                IncludeStatement = string.Empty
+            };
+
+            using GridReader reader = await FindAsync(queryTableModel, filterModel, paging, sorting);
 
             IEnumerable<IRoleClaim> roleClaims = reader.Read<RoleClaim>();
             int totalCount = reader.ReadFirst<int>();
 
-            return new PagedEnumerable<IRoleClaim>(roleClaims, totalCount, pageSize, pageNumber);
+            return new PagedEnumerable<IRoleClaim>(roleClaims, totalCount, paging.PageSize, paging.PageNumber);
         }
     }
 }

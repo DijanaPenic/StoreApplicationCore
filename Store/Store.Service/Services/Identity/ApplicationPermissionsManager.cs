@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.Services.Identity
@@ -15,11 +16,18 @@ namespace Store.Services.Identity
 
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
+        private readonly IFilteringFactory _filteringFactory;
 
-        public ApplicationPermissionsManager(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
+        public ApplicationPermissionsManager
+        (
+            ApplicationUserManager userManager, 
+            ApplicationRoleManager roleManager, 
+            IFilteringFactory filteringFactory
+        )
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _filteringFactory = filteringFactory;
         }
 
         public async Task<IList<Claim>> BuildRoleClaimsAsync(IUser user)
@@ -29,7 +37,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            List<Claim> roleClaims = new List<Claim>();
+            List<Claim> userRoleClaims = new List<Claim>();
 
             if (_userManager.SupportsUserRole)
             {
@@ -42,16 +50,16 @@ namespace Store.Services.Identity
                         IRole role = await _roleManager.FindByNameAsync(roleName);
                         if (role != null)
                         {
-                            IList<Claim> rc = await _roleManager.GetClaimsAsync(role);
-                            roleClaims.AddRange(rc.ToList());
+                            IList<Claim> roleClaims = await _roleManager.GetClaimsAsync(role);
+                            userRoleClaims.AddRange(roleClaims.ToList());
                         }
                     }
 
-                    roleClaims = roleClaims.Distinct(new ClaimsComparer()).ToList();
+                    userRoleClaims = userRoleClaims.Distinct(new ClaimsComparer()).ToList();
                 }
             }
 
-            return roleClaims;
+            return userRoleClaims;
         }
 
         public async Task<IdentityResult> UpdatePolicyAsync(IRole role, IPolicy policy)
@@ -69,8 +77,12 @@ namespace Store.Services.Identity
             {
                 if (_roleManager.SupportsRoleClaims)
                 {
+                    IRoleClaimFilteringParameters filter = _filteringFactory.Create<IRoleClaimFilteringParameters>(searchString: $"{policy.Section}.");
+                    filter.RoleId = role.Id;
+                    filter.Type = CLAIM_KEY;
+
                     // Delete all role claims for section
-                    await _roleManager.RemoveClaimsAsync(role, CLAIM_KEY, $"{policy.Section}.");
+                    await _roleManager.RemoveClaimsAsync(role, filter);
 
                     foreach (IAccessAction accessAction in policy.Actions.Where(a => a.IsEnabled))
                     {

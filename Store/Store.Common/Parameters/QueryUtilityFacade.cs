@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using Store.Common.Parameters.Paging;
-using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Filtering;
 
 namespace Store.Common.Parameters

@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Common.Enums;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -229,22 +228,19 @@ namespace Store.Repositories.Identity.Stores
             }
         }
 
-        public async Task RemoveClaimsAsync(IRole role, string type, string searchString, CancellationToken cancellationToken)
+        public async Task RemoveClaimsAsync(IRoleClaimFilteringParameters filter, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            if (role == null)
-                throw new ArgumentNullException(nameof(role));
             
-            await _unitOfWork.RoleClaimRepository.DeleteAsync(role.Id, type, searchString);
+            await _unitOfWork.RoleClaimRepository.DeleteAsync(filter);
             _unitOfWork.Commit();
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(string type, string searchString, bool isDescendingSortOrder, int pageNumber, int pageSize, CancellationToken cancellationToken, Guid? roleId = null)
+        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleClaimRepository.FindAsync(type, searchString, isDescendingSortOrder, pageNumber, pageSize, roleId);
+            return _unitOfWork.RoleClaimRepository.FindAsync(filter, paging, sorting);
         }
 
         #endregion
