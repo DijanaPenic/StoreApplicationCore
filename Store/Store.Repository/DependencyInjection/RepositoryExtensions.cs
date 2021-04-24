@@ -4,12 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Store.DAL.Context;
-using Store.Repositories;
 using Store.Repository.Core;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Core;
 using Store.Repository.Common.Core.Dapper;
-using Store.Repository.Common.Repositories;
 using Store.Repository.Common.Repositories.Identity.Stores;
 using Store.Repositories.Identity.Stores;
 using Store.Model.Common.Models.Identity;
