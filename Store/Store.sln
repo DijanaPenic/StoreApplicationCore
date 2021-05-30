@@ -43,7 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.FileProvider", "Store
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.FileProvider.Common", "Store.FileProvider.Common\Store.FileProvider.Common.csproj", "{D0DA948B-9008-4F6F-BDF6-A2545B07453C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Messaging.Templates", "Store.Messaging.Templates\Store.Messaging.Templates.csproj", "{C3419A80-833E-4178-B36D-DC7B8C408C6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Messaging.Templates", "Store.Messaging.Templates\Store.Messaging.Templates.csproj", "{C3419A80-833E-4178-B36D-DC7B8C408C6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Generator", "Store.Generator\Store.Generator.csproj", "{16D4DB78-6DDE-44D5-9EA0-F5C85AFB2979}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,6 +137,10 @@ Global
 		{C3419A80-833E-4178-B36D-DC7B8C408C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3419A80-833E-4178-B36D-DC7B8C408C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3419A80-833E-4178-B36D-DC7B8C408C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16D4DB78-6DDE-44D5-9EA0-F5C85AFB2979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16D4DB78-6DDE-44D5-9EA0-F5C85AFB2979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16D4DB78-6DDE-44D5-9EA0-F5C85AFB2979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16D4DB78-6DDE-44D5-9EA0-F5C85AFB2979}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
