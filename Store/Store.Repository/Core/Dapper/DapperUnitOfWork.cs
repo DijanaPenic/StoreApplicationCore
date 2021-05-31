@@ -45,16 +45,13 @@ namespace Store.Repository.Core.Dapper
 
         #endregion
 
-        // TOOD - what needs to be disposed? 
-        // 1 - track opened connections to database
-        // 2 - 
         public DapperUnitOfWork(ApplicationDbContext dbContext, IMapper mapper)
         {
-            dbContext.Connection.Open();
-            dbContext.Transaction = dbContext.Connection.BeginTransaction();
             _dbContext = dbContext;
-
             _mapper = mapper;
+
+            _dbContext.Connection.Open();
+            _dbContext.Database.BeginTransaction();
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
@@ -85,24 +82,20 @@ namespace Store.Repository.Core.Dapper
 
         public IEmailTemplateRepository EmailTemplateRepository => _emailTemplateRepository ??= new EmailTemplateRepository(_dbContext, _mapper);
 
-        // TODO - need to save changes on dbContext
-        public async Task SaveChangesAsync()
+        public async Task CommitAsync()
         {
             try
             {
-                _dbContext.Transaction.Commit();
                 await _dbContext.SaveChangesAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch
             {
-                _dbContext.Transaction.Rollback();
+                await _dbContext.Database.RollbackTransactionAsync();
             }
             finally
             {
-                // Transaction should be disposed after commit/rollback
-                _dbContext.Transaction.Dispose();
-
-                _dbContext.Transaction = _dbContext.Connection.BeginTransaction();
+                await _dbContext.Database.BeginTransactionAsync();
             }
         }
 

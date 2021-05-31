@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using Store.Entities;
 using Store.Entities.Identity;
@@ -38,9 +39,9 @@ namespace Store.DAL.Context
 
         public DbSet<ClientEntity> Clients { get; set; }
 
-        public IDbConnection Connection => Database.GetDbConnection();
+        public IDbConnection Connection => Database.GetDbConnection();  // multiple calls will return the same connection
 
-        public IDbTransaction Transaction { get; set; }
+        public IDbTransaction Transaction => Database.CurrentTransaction?.GetDbTransaction();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

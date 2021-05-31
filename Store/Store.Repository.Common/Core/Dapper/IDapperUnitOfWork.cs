@@ -31,6 +31,6 @@ namespace Store.Repository.Common.Core.Dapper
 
         IEmailTemplateRepository EmailTemplateRepository { get; }
 
-        Task SaveChangesAsync();
+        Task CommitAsync();
     }
 }

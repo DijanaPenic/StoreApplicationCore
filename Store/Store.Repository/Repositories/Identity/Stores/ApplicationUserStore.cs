@@ -58,7 +58,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(user));
 
                 await _unitOfWork.UserRepository.AddAsync(user);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
 
                 return IdentityResult.Success;
             }
@@ -78,7 +78,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(user));
 
                 await _unitOfWork.UserRepository.DeleteByKeyAsync(user.Id);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
 
                 return IdentityResult.Success;
             }
@@ -176,7 +176,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(user));
 
                 await _unitOfWork.UserRepository.UpdateAsync(user);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
 
                 return IdentityResult.Success;
             }
@@ -326,7 +326,7 @@ namespace Store.Repositories.Identity.Stores
             };
 
             await _unitOfWork.UserLoginRepository.AddAsync(loginEntity);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -343,7 +343,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(providerKey));
 
             await _unitOfWork.UserLoginRepository.DeleteByKeyAsync(new UserLoginKey { LoginProvider = loginProvider, ProviderKey = providerKey });
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
@@ -407,7 +407,7 @@ namespace Store.Repositories.Identity.Stores
             };
 
             await _unitOfWork.UserLoginRepository.AddAsync(loginEntity);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task UpdateLoginAsync(IUserLogin login, CancellationToken cancellationToken)
@@ -418,7 +418,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(login));
 
             await _unitOfWork.UserLoginRepository.UpdateAsync(login);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<IUserLogin> FindLoginAsync(UserLoginInfo login, CancellationToken cancellationToken)
@@ -474,7 +474,7 @@ namespace Store.Repositories.Identity.Stores
             login.IsConfirmed = true;
 
             await _unitOfWork.UserLoginRepository.UpdateAsync(login);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<IList<UserLoginInfo>> FindLoginsAsync(IUser user, bool loginConfirmed, CancellationToken cancellationToken)
@@ -506,7 +506,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(roleName));
 
             await _unitOfWork.UserRoleRepository.AddAsync(user.Id, roleName);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task RemoveFromRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
@@ -520,7 +520,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(roleName));
 
             await _unitOfWork.UserRoleRepository.DeleteAsync(user.Id, roleName);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
@@ -622,7 +622,7 @@ namespace Store.Repositories.Identity.Stores
                     await _unitOfWork.UserClaimRepository.AddAsync(userClaim);
                 });
 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
             }
         }
 
@@ -647,7 +647,7 @@ namespace Store.Repositories.Identity.Stores
                 claimEntity.ClaimValue = newClaim.Value;
 
                 await _unitOfWork.UserClaimRepository.UpdateAsync(claimEntity);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
             }
         }
 
@@ -671,7 +671,7 @@ namespace Store.Repositories.Identity.Stores
                     await _unitOfWork.UserClaimRepository.DeleteByKeyAsync(userClaimEntity.Id);
                 });
 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
             }
         }
 
@@ -716,14 +716,14 @@ namespace Store.Repositories.Identity.Stores
                 };
 
                 await _unitOfWork.UserTokenRepository.AddAsync(userToken);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
             }
             else
             {
                 userToken.Value = value;
 
                 await _unitOfWork.UserTokenRepository.UpdateAsync(userToken);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
             }
         }
 
@@ -745,7 +745,7 @@ namespace Store.Repositories.Identity.Stores
             if (userToken != null)
             {
                 await _unitOfWork.UserTokenRepository.DeleteByKeyAsync(userToken);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
             }
         }
 
