@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Store.DAL.Context;
+using Store.DAL.Schema.Identity;
 using Store.Common.Helpers;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Repositories.Identity;
 
@@ -14,7 +14,7 @@ namespace Store.Repositories.Identity
 {
     internal class UserRefreshTokenRepository : DapperRepositoryBase, IUserRefreshTokenRepository
     {
-        public UserRefreshTokenRepository(IDbTransaction transaction) : base(transaction)
+        public UserRefreshTokenRepository(ApplicationDbContext dbContext) : base(dbContext)
         { 
         }
 

@@ -1,5 +1,6 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 
+using Store.Repository.Common.Repositories;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Common.Core.Dapper
@@ -24,6 +25,12 @@ namespace Store.Repository.Common.Core.Dapper
 
         IClientRepository ClientRepository { get; }
 
-        void Commit();
+        IBookRepository BookRepository { get; }
+
+        IBookstoreRepository BookstoreRepository { get; }
+
+        IEmailTemplateRepository EmailTemplateRepository { get; }
+
+        Task SaveChangesAsync();
     }
 }

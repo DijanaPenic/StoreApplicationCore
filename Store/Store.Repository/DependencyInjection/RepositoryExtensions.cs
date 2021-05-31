@@ -16,17 +16,21 @@ namespace Store.Repository.DependencyInjection
 {
     public static class RepositoryExtensions
     {
+        // Implement the infrastructure persistence layer with Entity Framework Core: 
+        // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-implementation-entity-framework-core
         public static void AddRepositoryComponents(this IServiceCollection services, IConfiguration configuration)
         {
             string connectionString = configuration.GetConnectionString("Database");
 
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddTransient<IDapperUnitOfWork, DapperUnitOfWork>(provider => new DapperUnitOfWork(connectionString));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDapperUnitOfWork, DapperUnitOfWork>();
+
+            // DbContext scope: https://docs.microsoft.com/en-us/ef/core/dbcontext-configuration/
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
-            services.AddTransient<IUserStore<IUser>, ApplicationUserStore>();
-            services.AddTransient<IRoleStore<IRole>, ApplicationRoleStore>();
-            services.AddTransient<IApplicationAuthStore, ApplicationAuthStore>();
+            services.AddScoped<IUserStore<IUser>, ApplicationUserStore>();
+            services.AddScoped<IRoleStore<IRole>, ApplicationRoleStore>();
+            services.AddScoped<IApplicationAuthStore, ApplicationAuthStore>();
         }
     }
 }

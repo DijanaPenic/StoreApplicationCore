@@ -58,7 +58,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(user));
 
                 await _unitOfWork.UserRepository.AddAsync(user);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
 
                 return IdentityResult.Success;
             }
@@ -78,7 +78,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(user));
 
                 await _unitOfWork.UserRepository.DeleteByKeyAsync(user.Id);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
 
                 return IdentityResult.Success;
             }
@@ -176,7 +176,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(user));
 
                 await _unitOfWork.UserRepository.UpdateAsync(user);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
 
                 return IdentityResult.Success;
             }
@@ -326,7 +326,7 @@ namespace Store.Repositories.Identity.Stores
             };
 
             await _unitOfWork.UserLoginRepository.AddAsync(loginEntity);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -343,7 +343,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(providerKey));
 
             await _unitOfWork.UserLoginRepository.DeleteByKeyAsync(new UserLoginKey { LoginProvider = loginProvider, ProviderKey = providerKey });
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
@@ -407,7 +407,7 @@ namespace Store.Repositories.Identity.Stores
             };
 
             await _unitOfWork.UserLoginRepository.AddAsync(loginEntity);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateLoginAsync(IUserLogin login, CancellationToken cancellationToken)
@@ -418,7 +418,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(login));
 
             await _unitOfWork.UserLoginRepository.UpdateAsync(login);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<IUserLogin> FindLoginAsync(UserLoginInfo login, CancellationToken cancellationToken)
@@ -474,7 +474,7 @@ namespace Store.Repositories.Identity.Stores
             login.IsConfirmed = true;
 
             await _unitOfWork.UserLoginRepository.UpdateAsync(login);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<IList<UserLoginInfo>> FindLoginsAsync(IUser user, bool loginConfirmed, CancellationToken cancellationToken)
@@ -506,7 +506,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(roleName));
 
             await _unitOfWork.UserRoleRepository.AddAsync(user.Id, roleName);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveFromRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
@@ -520,7 +520,7 @@ namespace Store.Repositories.Identity.Stores
                 throw new ArgumentNullException(nameof(roleName));
 
             await _unitOfWork.UserRoleRepository.DeleteAsync(user.Id, roleName);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
@@ -603,7 +603,7 @@ namespace Store.Repositories.Identity.Stores
             return result;
         }
 
-        public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        public async Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -622,10 +622,8 @@ namespace Store.Repositories.Identity.Stores
                     await _unitOfWork.UserClaimRepository.AddAsync(userClaim);
                 });
 
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
-
-            return Task.CompletedTask;
         }
 
         public async Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
@@ -649,7 +647,7 @@ namespace Store.Repositories.Identity.Stores
                 claimEntity.ClaimValue = newClaim.Value;
 
                 await _unitOfWork.UserClaimRepository.UpdateAsync(claimEntity);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
@@ -673,7 +671,7 @@ namespace Store.Repositories.Identity.Stores
                     await _unitOfWork.UserClaimRepository.DeleteByKeyAsync(userClaimEntity.Id);
                 });
 
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
@@ -718,14 +716,14 @@ namespace Store.Repositories.Identity.Stores
                 };
 
                 await _unitOfWork.UserTokenRepository.AddAsync(userToken);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
             else
             {
                 userToken.Value = value;
 
                 await _unitOfWork.UserTokenRepository.UpdateAsync(userToken);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
@@ -747,7 +745,7 @@ namespace Store.Repositories.Identity.Stores
             if (userToken != null)
             {
                 await _unitOfWork.UserTokenRepository.DeleteByKeyAsync(userToken);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 

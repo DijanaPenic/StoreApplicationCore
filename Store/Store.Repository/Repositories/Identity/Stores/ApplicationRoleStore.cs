@@ -41,7 +41,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(role));
 
                 await _unitOfWork.RoleRepository.AddAsync(role);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
 
                 return IdentityResult.Success;
             }
@@ -61,7 +61,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(role));
 
                 await _unitOfWork.RoleRepository.DeleteByKeyAsync(role.Id);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
 
                 return IdentityResult.Success;
             }
@@ -162,7 +162,7 @@ namespace Store.Repositories.Identity.Stores
                     throw new ArgumentNullException(nameof(role));
 
                 await _unitOfWork.RoleRepository.UpdateAsync(role);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
 
                 return IdentityResult.Success;
             }
@@ -206,7 +206,7 @@ namespace Store.Repositories.Identity.Stores
             };
 
             await _unitOfWork.RoleClaimRepository.AddAsync(roleClaim);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken)
@@ -224,7 +224,7 @@ namespace Store.Repositories.Identity.Stores
             if (roleClaim != null)
             {
                 await _unitOfWork.RoleClaimRepository.DeleteByKeyAsync(roleClaim.Id);
-                _unitOfWork.Commit();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
@@ -233,7 +233,7 @@ namespace Store.Repositories.Identity.Stores
             cancellationToken.ThrowIfCancellationRequested();
             
             await _unitOfWork.RoleClaimRepository.DeleteAsync(filter);
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)

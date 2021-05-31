@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 using Store.Entities;
 using Store.Entities.Identity;
@@ -36,6 +37,10 @@ namespace Store.DAL.Context
         public DbSet<UserRefreshTokenEntity> UserRefreshTokens { get; set; }
 
         public DbSet<ClientEntity> Clients { get; set; }
+
+        public IDbConnection Connection => Database.GetDbConnection();
+
+        public IDbTransaction Transaction { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

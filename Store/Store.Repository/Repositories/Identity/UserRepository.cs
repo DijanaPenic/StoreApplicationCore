@@ -6,6 +6,10 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using static Dapper.SqlMapper;
+
+using Store.DAL.Context;
+using Store.DAL.Schema.Identity;
 using Store.Model.Models;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
@@ -15,19 +19,16 @@ using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
-using Store.DAL.Schema.Identity;
 using Store.Repository.Core.Dapper;
 using Store.Repository.Common.Models;
 using Store.Repository.Common.Repositories.Identity;
 using Store.Repository.Repositories.Models;
 
-using static Dapper.SqlMapper;
-
 namespace Store.Repositories.Identity
 {
     internal class UserRepository : DapperRepositoryBase, IUserRepository
     {
-        public UserRepository(IDbTransaction transaction) : base(transaction)
+        public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
         { 
         }
 

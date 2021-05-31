@@ -26,7 +26,7 @@ namespace Store.Repositories.Identity.Stores
 
             await _unitOfWork.UserRefreshTokenRepository.AddAsync(refreshToken);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveRefreshTokenAsync(Guid refreshTokenId)
@@ -36,7 +36,7 @@ namespace Store.Repositories.Identity.Stores
 
             await _unitOfWork.UserRefreshTokenRepository.DeleteByKeyAsync(refreshTokenId);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveRefreshTokenAsync(Guid userId, Guid clientId)
@@ -49,14 +49,14 @@ namespace Store.Repositories.Identity.Stores
 
             await _unitOfWork.UserRefreshTokenRepository.DeleteAsync(userId, clientId);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveExpiredRefreshTokensAsync()
         {
             await _unitOfWork.UserRefreshTokenRepository.DeleteExpiredAsync();
 
-            _unitOfWork.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId)
