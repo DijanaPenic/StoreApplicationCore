@@ -47,29 +47,33 @@ namespace Store.Services
         public async Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)
         {
             ResponseStatus status = await _unitOfWork.BookstoreRepository.UpdateAsync(bookstore);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> UpdateBookstoreAsync(Guid bookstoreId, IBookstore bookstore)
         {
             ResponseStatus status = await _unitOfWork.BookstoreRepository.UpdateAsync(bookstoreId, bookstore);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> InsertBookstoreAsync(IBookstore bookstore)
         {
             ResponseStatus status = await _unitOfWork.BookstoreRepository.AddAsync(bookstore);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> DeleteBookstoreAsync(Guid bookstoreId)
         {
             ResponseStatus status = await _unitOfWork.BookstoreRepository.DeleteByIdAsync(bookstoreId);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
     }
 }

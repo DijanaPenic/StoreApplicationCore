@@ -2,17 +2,17 @@
 using System.Threading.Tasks;
 
 using Store.Common.Helpers;
-using Store.Model.Common.Models.Identity;
-using Store.Repository.Common.Core.Dapper;
+using Store.Repository.Common.Core;
 using Store.Repository.Common.Repositories.Identity.Stores;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repositories.Identity.Stores
 {
     internal class ApplicationAuthStore : IApplicationAuthStore
     {
-        private readonly IDapperUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ApplicationAuthStore(IDapperUnitOfWork unitOfWork)
+        public ApplicationAuthStore(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

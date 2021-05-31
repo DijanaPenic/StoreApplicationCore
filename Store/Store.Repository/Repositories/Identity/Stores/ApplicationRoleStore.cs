@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.Repository.Common.Core.Dapper;
+using Store.Repository.Common.Core;
 using Store.Repository.Common.Repositories.Identity.Stores;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
@@ -22,9 +22,9 @@ namespace Store.Repositories.Identity.Stores
             IApplicationRoleClaimStore,
             IApplicationRoleStore
     {
-        private readonly IDapperUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ApplicationRoleStore(IDapperUnitOfWork unitOfWork)
+        public ApplicationRoleStore(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

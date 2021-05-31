@@ -128,7 +128,7 @@ namespace Store.WebAPI.Controllers
             IEnumerable<IBookstore> bookstores;
 
             // Need to fetch from the database as we're not storing bookstore prefetch data in cache
-            if (includeProperties.Length == 0)
+            if (includeProperties?.Length == 0)
             {
                 bookstores = await _cacheProvider.GetOrAddAsync
                 (

@@ -41,29 +41,33 @@ namespace Store.Services
         public async Task<ResponseStatus> UpdateBookAsync(IBook book)
         {
             ResponseStatus status = await _unitOfWork.BookRepository.UpdateAsync(book);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> UpdateBookAsync(Guid bookId, IBook book)
         {
             ResponseStatus status = await _unitOfWork.BookRepository.UpdateAsync(bookId, book);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> AddBookAsync(IBook book)
         {
             ResponseStatus status = await _unitOfWork.BookRepository.AddAsync(book);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> DeleteBookAsync(Guid bookId)
         {
             ResponseStatus status = await _unitOfWork.BookRepository.DeleteByIdAsync(bookId);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
     }
 }

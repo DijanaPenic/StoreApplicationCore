@@ -277,7 +277,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("User assigned to roles.");
 
-            return Ok();
+            return Created();
         }
 
         /// <summary>Updates the user.</summary>

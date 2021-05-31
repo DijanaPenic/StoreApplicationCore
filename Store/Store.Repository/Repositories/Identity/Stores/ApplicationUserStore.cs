@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Repository.Common.Core;
+using Store.Repository.Common.Repositories.Identity.Stores;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
-using Store.Repository.Common.Core.Dapper;
-using Store.Repository.Common.Repositories.Identity.Stores;
 
 namespace Store.Repositories.Identity.Stores
 {
@@ -35,13 +35,13 @@ namespace Store.Repositories.Identity.Stores
             IApplicationUserStore,
             IApplicationLoginUserStore
     {
-        private readonly IDapperUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         private const string InternalLoginProvider = "[AspNetUserStore]";
         private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
         private const string RecoveryCodeTokenName = "RecoveryCodes";
 
-        public ApplicationUserStore(IDapperUnitOfWork unitOfWork)
+        public ApplicationUserStore(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

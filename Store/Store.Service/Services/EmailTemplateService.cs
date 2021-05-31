@@ -62,8 +62,9 @@ namespace Store.Services
             await _fileProvider.SaveFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name), templateStream);
 
             ResponseStatus status = await _unitOfWork.EmailTemplateRepository.UpdateAsync(emailTemplate);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> AddEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream)
@@ -80,15 +81,17 @@ namespace Store.Services
             };
 
             ResponseStatus status = await _unitOfWork.EmailTemplateRepository.AddAsync(emailTemplate);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         public async Task<ResponseStatus> DeleteEmailTemplateAsync(Guid emailTemplateId)
         {
             ResponseStatus status = await _unitOfWork.EmailTemplateRepository.DeleteByIdAsync(emailTemplateId);
+            if (status != ResponseStatus.Success) return status;
 
-            return await _unitOfWork.SaveChangesAsync(status);
+            return await _unitOfWork.CommitAsync();
         }
 
         private static string GetEmailTemplatePath(string fileName) => $"templates\\{fileName}";

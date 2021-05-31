@@ -118,7 +118,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("A new role has been created successfully.");
 
-            return Ok();
+            return Created();
         }
 
         /// <summary>Updates the role.</summary>

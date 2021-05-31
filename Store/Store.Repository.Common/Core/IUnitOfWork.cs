@@ -2,12 +2,29 @@
 
 using Store.Common.Enums;
 using Store.Repository.Common.Repositories;
+using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Common.Core
 {
     public interface IUnitOfWork
     {
-        #region Properties
+        IRoleRepository RoleRepository { get; }
+
+        IRoleClaimRepository RoleClaimRepository { get; }
+
+        IUserRepository UserRepository { get; }
+
+        IUserClaimRepository UserClaimRepository { get; }
+
+        IUserLoginRepository UserLoginRepository { get; }
+
+        IUserTokenRepository UserTokenRepository { get; }
+
+        IUserRoleRepository UserRoleRepository { get; }
+
+        IUserRefreshTokenRepository UserRefreshTokenRepository { get; }
+
+        IClientRepository ClientRepository { get; }
 
         IBookRepository BookRepository { get; }
 
@@ -15,12 +32,6 @@ namespace Store.Repository.Common.Core
 
         IEmailTemplateRepository EmailTemplateRepository { get; }
 
-        #endregion
-
-        #region Methods
-
-        Task<ResponseStatus> SaveChangesAsync(ResponseStatus status);
-
-        #endregion
+        Task<ResponseStatus> CommitAsync();
     }
 }
