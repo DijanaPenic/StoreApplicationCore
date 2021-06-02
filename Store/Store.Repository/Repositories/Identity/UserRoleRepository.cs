@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AutoMapper;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.Repository.Core.Dapper;
+using Store.Repository.Core;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
 {
-    internal class UserRoleRepository : DapperRepositoryBase, IUserRoleRepository
+    internal class UserRoleRepository : GenericRepository, IUserRoleRepository
     {
-        public UserRoleRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public UserRoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
 
@@ -21,7 +22,7 @@ namespace Store.Repositories.Identity
         {
             DateTime dateCreated = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {UserRoleSchema.Table}(
                         {UserRoleSchema.Columns.UserId}, 
@@ -64,7 +65,7 @@ namespace Store.Repositories.Identity
 
         public async Task<int> GetUserCountByRoleNameAsync(string roleName)
         {
-            return await ExecuteScalarAsync<int>(
+            return await ExecuteQueryScalarAsync<int>(
                 sql: $@"
                     SELECT count(*) FROM {UserRoleSchema.Table} ur 
                         INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
@@ -75,7 +76,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteAsync(Guid userId, string roleName)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserRoleSchema.Table} ur 
                         USING {RoleSchema.Table} r
@@ -90,7 +91,7 @@ namespace Store.Repositories.Identity
 
         public async Task<int> GetUserRoleCombinationCountByRoleNameAsync(string roleName)
         {
-            return await ExecuteScalarAsync<int>(
+            return await ExecuteQueryScalarAsync<int>(
                 sql: $@"
                     SELECT count(distinct(ur_outer.{UserRoleSchema.Columns.RoleId})) FROM {UserRoleSchema.Table} ur_outer 
                     WHERE ur_outer.{UserRoleSchema.Columns.UserId} 

@@ -22,8 +22,6 @@ namespace Store.Service.Common.Services
 
         Task<IPagedList<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
-        Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore);
-
         Task<ResponseStatus> UpdateBookstoreAsync(Guid bookstoreId, IBookstore bookstore);
 
         Task<ResponseStatus> InsertBookstoreAsync(IBookstore bookstore);

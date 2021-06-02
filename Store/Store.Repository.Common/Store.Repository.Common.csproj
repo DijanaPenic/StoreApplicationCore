@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.78" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Store.Entity\Store.Entity.csproj" />
     <ProjectReference Include="..\Store.Model.Common\Store.Model.Common.csproj" />
     <ProjectReference Include="..\Store.Model\Store.Model.csproj" />
   </ItemGroup>

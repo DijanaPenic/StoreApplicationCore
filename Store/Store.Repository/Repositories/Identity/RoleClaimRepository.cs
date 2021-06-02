@@ -3,6 +3,7 @@ using System.Text;
 using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AutoMapper;
 
 using static Dapper.SqlMapper;
 
@@ -14,18 +15,18 @@ using Store.Common.Helpers;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Filtering;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
-using Store.Repository.Core.Dapper;
+using Store.Repository.Core;
 using Store.Repository.Common.Models;
 using Store.Repository.Common.Repositories.Identity;
 using Store.Repository.Repositories.Models;
+using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repositories.Identity
 {
-    internal class RoleClaimRepository : DapperRepositoryBase, IRoleClaimRepository
+    internal class RoleClaimRepository : GenericRepository, IRoleClaimRepository
     {
-        public RoleClaimRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public RoleClaimRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
 
@@ -35,7 +36,7 @@ namespace Store.Repositories.Identity
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {RoleClaimSchema.Table}(
                         {RoleClaimSchema.Columns.Id},
@@ -80,7 +81,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteByKeyAsync(Guid key)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $"DELETE FROM {RoleClaimSchema.Table} WHERE {RoleClaimSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
@@ -88,7 +89,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteAsync(IRoleClaimFilteringParameters filter)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: @$"DELETE FROM {RoleClaimSchema.Table} WHERE 
                             {RoleClaimSchema.Columns.RoleId} = @{nameof(filter.RoleId)} AND
                             {RoleClaimSchema.Columns.ClaimType} = @{nameof(filter.Type)} AND
@@ -101,7 +102,7 @@ namespace Store.Repositories.Identity
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     UPDATE {RoleClaimSchema.Table} SET 
                         {RoleClaimSchema.Columns.ClaimType} = @{nameof(entity.ClaimType)}, 
@@ -141,7 +142,7 @@ namespace Store.Repositories.Identity
                 IncludeStatement = string.Empty
             };
 
-            using GridReader reader = await FindAsync(queryTableModel, filterModel, paging, sorting);
+            using GridReader reader = await FindQueryAsync(queryTableModel, filterModel, paging, sorting);
 
             IEnumerable<IRoleClaim> roleClaims = reader.Read<RoleClaim>();
             int totalCount = reader.ReadFirst<int>();

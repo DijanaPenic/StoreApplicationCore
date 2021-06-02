@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AutoMapper;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.Repository.Core.Dapper;
+using Store.Repository.Core;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
 {
-    internal class UserTokenRepository : DapperRepositoryBase, IUserTokenRepository
+    internal class UserTokenRepository : GenericRepository, IUserTokenRepository
     {
-        public UserTokenRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public UserTokenRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
 
@@ -22,7 +23,7 @@ namespace Store.Repositories.Identity
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {UserTokenSchema.Table}(
                         {UserTokenSchema.Columns.UserId}, 
@@ -64,7 +65,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteByKeyAsync(IUserTokenKey key)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserTokenSchema.Table}
                     WHERE 
@@ -79,7 +80,7 @@ namespace Store.Repositories.Identity
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     UPDATE {UserTokenSchema.Table} SET 
                         {UserTokenSchema.Columns.Value} = @{nameof(entity.Value)},

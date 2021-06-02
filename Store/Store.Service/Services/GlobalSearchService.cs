@@ -24,55 +24,58 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
+        // TODO - refactoring
         public async Task<IEnumerable<ISearchItem>> FindAsync(IGlobalFilteringParameters filtering)
         {
-            IList<ISearchItem> searchItems = new List<ISearchItem>();
+            return default;
 
-            if (filtering.SearchTypes.Contains(SectionType.Book))
-            {
-                IEnumerable<IBook> books = await _unitOfWork.BookRepository.FindAsync
-                (
-                    filterExpression: b => b.Name.Contains(filtering.SearchString) || b.Author.Contains(filtering.SearchString) || b.Bookstore.Name.Contains(filtering.SearchString),
-                    sorting: SortingFactory.Create(new[] { $"{nameof(IBook.Name)}|desc" }),
-                    options: OptionsFactory.Create(new[] { nameof(IBook.Bookstore) })
-                );
+            //IList<ISearchItem> searchItems = new List<ISearchItem>();
 
-                foreach (IBook book in books)
-                {
-                    ISearchItem searchItem = new SearchItem
-                    {
-                        Id = book.Id,
-                        Name = $"{book.Name} ({book.Bookstore.Name})",
-                        Type = SectionType.Book
-                    };
+            //if (filtering.SearchTypes.Contains(SectionType.Book))
+            //{
+            //    IEnumerable<IBook> books = await _unitOfWork.BookRepository.FindBooksAsync
+            //    (
+            //        filter: FilteringFactory.Create<IFilteringParameters>(filtering.SearchString),
+            //        sorting: SortingFactory.Create(new[] { $"{nameof(IBook.Name)}|desc" }),
+            //        options: OptionsFactory.Create(new[] { nameof(IBook.Bookstore) })
+            //    );
 
-                    searchItems.Add(searchItem);
-                }
-            }
+            //    foreach (IBook book in books)
+            //    {
+            //        ISearchItem searchItem = new SearchItem
+            //        {
+            //            Id = book.Id,
+            //            Name = $"{book.Name} ({book.Bookstore.Name})",
+            //            Type = SectionType.Book
+            //        };
 
-            if (filtering.SearchTypes.Contains(SectionType.Bookstore))
-            {
-                IEnumerable<IBookstore> bookstores = await _unitOfWork.BookstoreRepository.FindAsync
-                (
-                    filterExpression: bs => bs.Name.Contains(filtering.SearchString) || bs.Location.Contains(filtering.SearchString),
-                    sorting: SortingFactory.Create(new[] { $"{nameof(IBookstore.Name)}|desc" }),
-                    options: null
-                );
+            //        searchItems.Add(searchItem);
+            //    }
+            //}
 
-                foreach (IBookstore bookstore in bookstores)
-                {
-                    ISearchItem searchItem = new SearchItem
-                    {
-                        Id = bookstore.Id,
-                        Name = bookstore.Name,
-                        Type = SectionType.Bookstore
-                    };
+            //if (filtering.SearchTypes.Contains(SectionType.Bookstore))
+            //{
+            //    IEnumerable<IBookstore> bookstores = await _unitOfWork.BookstoreRepository.FindAsync
+            //    (
+            //        filterExpression: bs => bs.Name.Contains(filtering.SearchString) || bs.Location.Contains(filtering.SearchString),
+            //        sorting: SortingFactory.Create(new[] { $"{nameof(IBookstore.Name)}|desc" }),
+            //        options: null
+            //    );
 
-                    searchItems.Add(searchItem);
-                }
-            }
+            //    foreach (IBookstore bookstore in bookstores)
+            //    {
+            //        ISearchItem searchItem = new SearchItem
+            //        {
+            //            Id = bookstore.Id,
+            //            Name = bookstore.Name,
+            //            Type = SectionType.Bookstore
+            //        };
 
-            return searchItems;
+            //        searchItems.Add(searchItem);
+            //    }
+            //}
+
+            //return searchItems;
         }
     }
 }

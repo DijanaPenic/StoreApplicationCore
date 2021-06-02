@@ -7,11 +7,10 @@ using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
-using Store.Repository.Common.Core.Dapper;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
-    public interface IUserRepository : IDapperGenericRepository<IUser, Guid>
+    public interface IUserRepository : IIdentityRepository<IUser, Guid>
     {
         Task<IUser> FindByNormalizedUserNameAsync(string normalizedUserName);
 

@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AutoMapper;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
 using Store.Common.Helpers;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.Repository.Core.Dapper;
+using Store.Repository.Core;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
 {
-    internal class UserRefreshTokenRepository : DapperRepositoryBase, IUserRefreshTokenRepository
+    internal class UserRefreshTokenRepository : GenericRepository, IUserRefreshTokenRepository
     {
-        public UserRefreshTokenRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public UserRefreshTokenRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
 
@@ -24,7 +25,7 @@ namespace Store.Repositories.Identity
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {UserRefreshTokenSchema.Table}(
                         {UserRefreshTokenSchema.Columns.Id},
@@ -71,7 +72,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteByKeyAsync(Guid key)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserRefreshTokenSchema.Table}
                     WHERE {UserRefreshTokenSchema.Columns.Id} = @{nameof(key)}",
@@ -81,7 +82,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteAsync(Guid userId, Guid clientId)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserRefreshTokenSchema.Table}
                     WHERE 
@@ -95,7 +96,7 @@ namespace Store.Repositories.Identity
         {
             DateTime now = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserRefreshTokenSchema.Table}
                     WHERE {UserRefreshTokenSchema.Columns.DateExpiresUtc} < @{nameof(now)}",
@@ -107,7 +108,7 @@ namespace Store.Repositories.Identity
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     UPDATE {UserRefreshTokenSchema.Table} SET 
                         {UserRefreshTokenSchema.Columns.Value} = @{nameof(entity.Value)},

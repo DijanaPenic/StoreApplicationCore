@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AutoMapper;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
 using Store.Common.Helpers;
+using Store.Repository.Core;
+using Store.Repository.Common.Repositories.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using Store.Repository.Core.Dapper;
-using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
 {
-    internal class UserClaimRepository : DapperRepositoryBase, IUserClaimRepository
+    internal class UserClaimRepository : GenericRepository, IUserClaimRepository
     {
-        public UserClaimRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public UserClaimRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
 
@@ -24,7 +25,7 @@ namespace Store.Repositories.Identity
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {UserClaimSchema.Table}(
                         {UserClaimSchema.Columns.Id},
@@ -117,7 +118,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteByKeyAsync(Guid key)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserClaimSchema.Table}
                     WHERE {UserClaimSchema.Columns.Id} = @{nameof(key)}",
@@ -129,7 +130,7 @@ namespace Store.Repositories.Identity
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     UPDATE {UserClaimSchema.Table} SET 
                         {UserClaimSchema.Columns.ClaimType} = @{nameof(entity.ClaimType)},

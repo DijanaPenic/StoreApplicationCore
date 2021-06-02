@@ -26,17 +26,17 @@ namespace Store.Services
 
         public Task<bool> EmailTemplateExistsAsync(Guid emailTemplateId)
         {
-            return _unitOfWork.EmailTemplateRepository.ExistsAsync(emailTemplateId);
+            return _unitOfWork.EmailTemplateRepository.EmailTemplateExistsAsync(emailTemplateId);
         }
 
         public Task<bool> EmailTemplateExistsAsync(Guid clientId, EmailTemplateType emailTemplateType)
         {
-            return _unitOfWork.EmailTemplateRepository.ExistsAsync(clientId, emailTemplateType);
+            return _unitOfWork.EmailTemplateRepository.EmailTemplateExistsAsync(clientId, emailTemplateType);
         }
 
         public async Task<Stream> FindEmailTemplateByIdAsync(Guid emailTemplateId)
         {
-            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId, null);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindEmailTemplateByIdAsync(emailTemplateId, null);
             if (emailTemplate == null) return default;
 
             return await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
@@ -44,12 +44,12 @@ namespace Store.Services
 
         public Task<IEnumerable<IEmailTemplate>> FindEmailTemplatesByClientIdAsync(Guid clientId)
         {
-            return _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId);
+            return _unitOfWork.EmailTemplateRepository.FindEmailTemplateByClientIdAsync(clientId);
         }
 
         public async Task<Stream> FindEmailTemplateByClientIdAsync(Guid clientId, EmailTemplateType templateType)
         {
-            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId, templateType);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindEmailTemplateByClientIdAsync(clientId, templateType);
             if (emailTemplate == null) return default;
 
             return await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
@@ -57,11 +57,11 @@ namespace Store.Services
 
         public async Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream)
         {
-            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByIdAsync(emailTemplateId, null);
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindEmailTemplateByIdAsync(emailTemplateId, null);
 
             await _fileProvider.SaveFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name), templateStream);
 
-            ResponseStatus status = await _unitOfWork.EmailTemplateRepository.UpdateAsync(emailTemplate);
+            ResponseStatus status = await _unitOfWork.EmailTemplateRepository.UpdateEmailTemplateAsync(emailTemplate.Id, emailTemplate);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();
@@ -80,7 +80,7 @@ namespace Store.Services
                 Type = templateType
             };
 
-            ResponseStatus status = await _unitOfWork.EmailTemplateRepository.AddAsync(emailTemplate);
+            ResponseStatus status = await _unitOfWork.EmailTemplateRepository.AddEmailTemplateAsync(emailTemplate);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();
@@ -88,7 +88,7 @@ namespace Store.Services
 
         public async Task<ResponseStatus> DeleteEmailTemplateAsync(Guid emailTemplateId)
         {
-            ResponseStatus status = await _unitOfWork.EmailTemplateRepository.DeleteByIdAsync(emailTemplateId);
+            ResponseStatus status = await _unitOfWork.EmailTemplateRepository.DeleteEmailTemplateByIdAsync(emailTemplateId);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();

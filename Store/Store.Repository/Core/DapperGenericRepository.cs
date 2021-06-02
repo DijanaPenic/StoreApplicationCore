@@ -4,51 +4,44 @@ using System.Text;
 using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 using static Dapper.SqlMapper;
 
-using Store.DAL.Context;
-using Store.Repository.Common.Models;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
+using Store.Repository.Common.Models;
 
-namespace Store.Repository.Core.Dapper
+namespace Store.Repository.Core
 {
-    internal abstract class DapperRepositoryBase
+    internal abstract partial class GenericRepository
     {
-        private readonly ApplicationDbContext _dbContext;
-
-        public DapperRepositoryBase(ApplicationDbContext dbContext)
+        protected Task<T> ExecuteQueryScalarAsync<T>(string sql, object param = null)
         {
-            _dbContext = dbContext;
-        }
-
-        protected Task<T> ExecuteScalarAsync<T>(string sql, object param = null)
-        {
-            return _dbContext.Connection.ExecuteScalarAsync<T>(sql, param, _dbContext.Transaction);
+            return DbContext.Connection.ExecuteScalarAsync<T>(sql, param, DbContext.Transaction);
         }
 
         protected Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param = null)
         {
-            return _dbContext.Connection.QuerySingleOrDefaultAsync<T>(sql, param, _dbContext.Transaction);
+            return DbContext.Connection.QuerySingleOrDefaultAsync<T>(sql, param, DbContext.Transaction);
         }
 
         protected Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null)
         {
-            return _dbContext.Connection.QueryAsync<T>(sql, param, _dbContext.Transaction);
+            return DbContext.Connection.QueryAsync<T>(sql, param, DbContext.Transaction);
         }
 
-        protected Task<int> ExecuteAsync(string sql, object param = null)
+        protected Task<int> ExecuteQueryAsync(string sql, object param = null)
         {
-            return _dbContext.Connection.ExecuteAsync(sql, param, _dbContext.Transaction);
+            return DbContext.Connection.ExecuteAsync(sql, param, DbContext.Transaction);
         }
 
         protected Task<GridReader> QueryMultipleAsync(string sql, object param = null)
         {
-            return _dbContext.Connection.QueryMultipleAsync(sql, param);
+            return DbContext.Connection.QueryMultipleAsync(sql, param);
         }
 
-        protected async Task<GridReader> FindAsync(IQueryTableModel queryTableModel, IFilterModel filterModel, IPagingParameters paging, ISortingParameters sorting)
+        protected async Task<GridReader> FindQueryAsync(IQueryTableModel queryTableModel, IFilterModel filterModel, IPagingParameters paging, ISortingParameters sorting)
         {
             // Prepare query parameters
             dynamic parameters = filterModel.Parameters ?? new ExpandoObject();
@@ -64,7 +57,7 @@ namespace Store.Repository.Core.Dapper
                     sortParameters.Add($"{queryTableModel.TableAlias},{sort.GetQuerySortExpression()}");
                 }
                 order = new StringBuilder("ORDER BY ").AppendJoin(", ", sortParameters).ToString();
-            }     
+            }
 
             // Set query base
             StringBuilder sql = new StringBuilder();
@@ -89,7 +82,7 @@ namespace Store.Repository.Core.Dapper
             sql.Append(@$"SELECT COUNT(*) FROM {queryTableModel.TableName} {queryTableModel.TableAlias} {filterModel.Expression};");
 
             // Get results from the database and prepare response model
-            return await _dbContext.Connection.QueryMultipleAsync(sql.ToString(), (object)parameters);  
+            return await DbContext.Connection.QueryMultipleAsync(sql.ToString(), (object)parameters);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Store.Repository.Common.Core.Dapper
+namespace Store.Repository.Common
 {
-    public interface IDapperGenericRepository<TEntity, TKey> where TEntity : class
+    public interface IIdentityRepository<TEntity, TKey> where TEntity : class
     {
         Task<IEnumerable<TEntity>> GetAsync();
 

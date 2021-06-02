@@ -5,6 +5,7 @@ using System.Text;
 using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AutoMapper;
 
 using static Dapper.SqlMapper;
 
@@ -15,20 +16,20 @@ using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Common.Helpers;
+using Store.Repository.Core;
+using Store.Repository.Common.Models;
+using Store.Repository.Common.Repositories.Identity;
+using Store.Repository.Repositories.Models;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
-using Store.Repository.Core.Dapper;
-using Store.Repository.Common.Models;
-using Store.Repository.Common.Repositories.Identity;
-using Store.Repository.Repositories.Models;
 
 namespace Store.Repositories.Identity
 {
-    internal class UserRepository : DapperRepositoryBase, IUserRepository
+    internal class UserRepository : GenericRepository, IUserRepository
     {
-        public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public UserRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
 
@@ -38,7 +39,7 @@ namespace Store.Repositories.Identity
             entity.DateUpdatedUtc = DateTime.UtcNow;
             entity.Id = GuidHelper.NewSequentialGuid();
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {UserSchema.Table}(
                         {UserSchema.Columns.Id}, 
@@ -125,7 +126,7 @@ namespace Store.Repositories.Identity
                 IncludeStatement = IncludeQuery(options)
             };
 
-            using GridReader reader = await FindAsync(queryTableModel, filterModel, paging, sorting);
+            using GridReader reader = await FindQueryAsync(queryTableModel, filterModel, paging, sorting);
 
             IEnumerable<IUser> users = ReadUsers(reader);
             int totalCount = reader.ReadFirst<int>();
@@ -171,7 +172,7 @@ namespace Store.Repositories.Identity
 
         public Task DeleteByKeyAsync(Guid key)
         {
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $"DELETE FROM {UserSchema.Table} WHERE {UserSchema.Columns.Id} = @{nameof(key)}",
                 param: new { key }
             );
@@ -181,7 +182,7 @@ namespace Store.Repositories.Identity
         {
             entity.DateUpdatedUtc = DateTime.UtcNow;
 
-            return ExecuteAsync(
+            return ExecuteQueryAsync(
                 sql: $@"
                     UPDATE {UserSchema.Table} SET 
                         {UserSchema.Columns.FirstName} = @{nameof(entity.FirstName)},

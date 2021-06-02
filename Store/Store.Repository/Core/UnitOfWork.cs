@@ -60,23 +60,23 @@ namespace Store.Repository.Core
 
         #region IUnitOfWork Members
 
-        public IRoleRepository RoleRepository => _roleRepository ??= new RoleRepository(_dbContext);
+        public IRoleRepository RoleRepository => _roleRepository ??= new RoleRepository(_dbContext, _mapper);
 
-        public IRoleClaimRepository RoleClaimRepository => _roleClaimRepository ??= new RoleClaimRepository(_dbContext);
+        public IRoleClaimRepository RoleClaimRepository => _roleClaimRepository ??= new RoleClaimRepository(_dbContext, _mapper);
 
-        public IUserRepository UserRepository => _userRepository ??= new UserRepository(_dbContext);
+        public IUserRepository UserRepository => _userRepository ??= new UserRepository(_dbContext, _mapper);
 
-        public IUserClaimRepository UserClaimRepository => _userClaimRepository ??= new UserClaimRepository(_dbContext);
+        public IUserClaimRepository UserClaimRepository => _userClaimRepository ??= new UserClaimRepository(_dbContext, _mapper);
 
-        public IUserLoginRepository UserLoginRepository => _userLoginRepository ??= new UserLoginRepository(_dbContext);
+        public IUserLoginRepository UserLoginRepository => _userLoginRepository ??= new UserLoginRepository(_dbContext, _mapper);
 
-        public IUserTokenRepository UserTokenRepository => _userTokenRepository ??= new UserTokenRepository(_dbContext);
+        public IUserTokenRepository UserTokenRepository => _userTokenRepository ??= new UserTokenRepository(_dbContext, _mapper);
 
-        public IUserRoleRepository UserRoleRepository => _userRoleRepository ??= new UserRoleRepository(_dbContext);
+        public IUserRoleRepository UserRoleRepository => _userRoleRepository ??= new UserRoleRepository(_dbContext, _mapper);
 
-        public IUserRefreshTokenRepository UserRefreshTokenRepository => _userRefreshTokenRepository ??= new UserRefreshTokenRepository(_dbContext);
+        public IUserRefreshTokenRepository UserRefreshTokenRepository => _userRefreshTokenRepository ??= new UserRefreshTokenRepository(_dbContext, _mapper);
 
-        public IClientRepository ClientRepository => _clientRepository ??= new ClientRepository(_dbContext);
+        public IClientRepository ClientRepository => _clientRepository ??= new ClientRepository(_dbContext, _mapper);
 
         public IBookRepository BookRepository => _bookRepository ??= new BookRepository(_dbContext, _mapper);
 
