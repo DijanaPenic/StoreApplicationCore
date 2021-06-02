@@ -48,14 +48,9 @@ namespace Store.Services.Identity
             return true;
         }
 
-        public Task<int> GetUserCountByRoleAsync(IRole role)
+        public Task<int> GetCountByRoleNameAsync(IRole role)
         {
-            return _roleStore.GetUserCountByRoleNameAsync(role.NormalizedName, CancellationToken);
-        }
-
-        public Task<int> GetUserRoleCombinationCountAsync(IRole role)
-        {
-            return _roleStore.GetUserRoleCombinationCountByRoleNameAsync(role.NormalizedName, CancellationToken);
+            return _roleStore.GetCountByRoleNameAsync(role.NormalizedName, CancellationToken);
         }
 
         public Task<IRole> FindRoleByIdAsync(Guid id, IOptionsParameters options)

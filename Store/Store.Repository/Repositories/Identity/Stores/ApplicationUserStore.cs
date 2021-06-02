@@ -530,7 +530,7 @@ namespace Store.Repositories.Identity.Stores
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            IList<string> result = (await _unitOfWork.UserRoleRepository.GetRoleNamesByUserIdAsync(user.Id)).ToList();
+            IList<string> result = (await _unitOfWork.UserRoleRepository.FindRolesByUserIdAsync(user.Id)).ToList();
 
             return result;
         }
@@ -545,7 +545,7 @@ namespace Store.Repositories.Identity.Stores
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            bool result = (await _unitOfWork.UserRoleRepository.GetRoleNamesByUserIdAsync(user.Id)).Any(r => r == roleName);
+            bool result = (await _unitOfWork.UserRoleRepository.FindRolesByUserIdAsync(user.Id)).Any(r => r == roleName);
 
             return result;
         }
@@ -557,7 +557,7 @@ namespace Store.Repositories.Identity.Stores
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            IList<IUser> result = (await _unitOfWork.UserRoleRepository.GetUsersByRoleNameAsync(roleName)).ToList();
+            IList<IUser> result = (await _unitOfWork.UserRoleRepository.FindUsersByRoleNameAsync(roleName)).ToList();
 
             return result;
         }
@@ -598,7 +598,7 @@ namespace Store.Repositories.Identity.Stores
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            IList<Claim> result = (await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id)).Select(uc => new Claim(uc.ClaimType, uc.ClaimValue)).ToList();
+            IList<Claim> result = (await _unitOfWork.UserClaimRepository.FindByUserIdAsync(user.Id)).Select(uc => new Claim(uc.ClaimType, uc.ClaimValue)).ToList();
 
             return result;
         }
@@ -639,7 +639,7 @@ namespace Store.Repositories.Identity.Stores
             if (newClaim == null)
                 throw new ArgumentNullException(nameof(newClaim));
 
-            IUserClaim claimEntity = (await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id)).SingleOrDefault(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value);
+            IUserClaim claimEntity = (await _unitOfWork.UserClaimRepository.FindByUserIdAsync(user.Id)).SingleOrDefault(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value);
 
             if (claimEntity != null)
             {
@@ -661,7 +661,7 @@ namespace Store.Repositories.Identity.Stores
             if (claims == null)
                 throw new ArgumentNullException(nameof(claims));
 
-            IEnumerable<IUserClaim> userClaims = await _unitOfWork.UserClaimRepository.GetByUserIdAsync(user.Id);
+            IEnumerable<IUserClaim> userClaims = await _unitOfWork.UserClaimRepository.FindByUserIdAsync(user.Id);
 
             if (claims.Any())
             {
@@ -682,7 +682,7 @@ namespace Store.Repositories.Identity.Stores
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
 
-            IList<IUser> result = (await _unitOfWork.UserClaimRepository.GetUsersForClaimAsync(claim.Type, claim.Value)).ToList();
+            IList<IUser> result = (await _unitOfWork.UserClaimRepository.FindUsersByClaimAsync(claim.Type, claim.Value)).ToList();
 
             return result;
         }

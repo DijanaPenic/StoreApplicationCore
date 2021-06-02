@@ -266,24 +266,14 @@ namespace Store.Repositories.Identity.Stores
             return roles;
         }
 
-        public async Task<int> GetUserCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<int> GetCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrWhiteSpace(normalizedRoleName))
                 throw new ArgumentNullException(nameof(normalizedRoleName));
 
-            return await _unitOfWork.UserRoleRepository.GetUserCountByRoleNameAsync(normalizedRoleName);
-        }
-
-        public async Task<int> GetUserRoleCombinationCountByRoleNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (string.IsNullOrWhiteSpace(normalizedRoleName))
-                throw new ArgumentNullException(nameof(normalizedRoleName));
-
-            return await _unitOfWork.UserRoleRepository.GetUserRoleCombinationCountByRoleNameAsync(normalizedRoleName);
+            return await _unitOfWork.UserRoleRepository.GetCountByRoleNameAsync(normalizedRoleName);
         }
 
         public Task<IPagedEnumerable<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
@@ -297,7 +287,7 @@ namespace Store.Repositories.Identity.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleRepository.FindRolesWithPoliciesAsync(filter, paging, sorting);
+            return _unitOfWork.RoleRepository.FindWithPoliciesAsync(filter, paging, sorting);
         }
 
         #endregion

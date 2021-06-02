@@ -119,7 +119,7 @@ namespace Store.Repositories.Identity
             return result;
         }
 
-        public async Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
+        public async Task<IPagedEnumerable<IRole>> FindWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
             dynamic searchParameters = new ExpandoObject();
             searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";

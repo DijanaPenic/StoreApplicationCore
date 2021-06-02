@@ -72,7 +72,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IEnumerable<IUserClaim>> GetByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<IUserClaim>> FindByUserIdAsync(Guid userId)
         {
             return await QueryAsync<UserClaim>(
                 sql: $@"
@@ -86,7 +86,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IEnumerable<IUser>> GetUsersForClaimAsync(string claimType, string claimValue)
+        public async Task<IEnumerable<IUser>> FindUsersByClaimAsync(string claimType, string claimValue)
         {
             return await QueryAsync<User>(
                 sql: $@"

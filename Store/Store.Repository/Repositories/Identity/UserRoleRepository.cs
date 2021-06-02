@@ -38,7 +38,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IEnumerable<string>> GetRoleNamesByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<string>> FindRolesByUserIdAsync(Guid userId)
         {
             return await QueryAsync<string>(
                 sql: $@"
@@ -51,7 +51,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IEnumerable<IUser>> GetUsersByRoleNameAsync(string roleName)
+        public async Task<IEnumerable<IUser>> FindUsersByRoleNameAsync(string roleName)
         {
             return await QueryAsync<User>(
                 sql: $@"
@@ -63,7 +63,7 @@ namespace Store.Repositories.Identity
                 param: new { roleName });
         }
 
-        public async Task<int> GetUserCountByRoleNameAsync(string roleName)
+        public async Task<int> GetCountByRoleNameAsync(string roleName)
         {
             return await ExecuteQueryScalarAsync<int>(
                 sql: $@"
@@ -87,21 +87,6 @@ namespace Store.Repositories.Identity
                 ",
                 param: new { userId, roleName }
             );
-        }
-
-        public async Task<int> GetUserRoleCombinationCountByRoleNameAsync(string roleName)
-        {
-            return await ExecuteQueryScalarAsync<int>(
-                sql: $@"
-                    SELECT count(distinct(ur_outer.{UserRoleSchema.Columns.RoleId})) FROM {UserRoleSchema.Table} ur_outer 
-                    WHERE ur_outer.{UserRoleSchema.Columns.UserId} 
-                    IN(
-                        SELECT ur.{UserRoleSchema.Columns.UserId} FROM {UserRoleSchema.Table} ur 
-                            INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
-                        WHERE r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
-                    )
-                ",
-                param: new { roleName });
         }
     }
 }

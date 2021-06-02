@@ -8,8 +8,8 @@ namespace Store.Repository.Common.Repositories.Identity
 {
     public interface IUserClaimRepository : IIdentityRepository<IUserClaim, Guid>
     {
-        Task<IEnumerable<IUserClaim>> GetByUserIdAsync(Guid userId);
+        Task<IEnumerable<IUserClaim>> FindByUserIdAsync(Guid userId);
 
-        Task<IEnumerable<IUser>> GetUsersForClaimAsync(string claimType, string claimValue);
+        Task<IEnumerable<IUser>> FindUsersByClaimAsync(string claimType, string claimValue);
     }
 }
