@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using X.PagedList;
 
 using Store.Common.Enums;
@@ -13,7 +14,13 @@ namespace Store.Repository.Common.Repositories
 {
     public interface IBookstoreRepository
     {
-        Task<IPagedList<IBookstore>> FindBookstoresAsync<TDestination>(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+        Task<IPagedList<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+
+        Task<IEnumerable<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, ISortingParameters sorting, IOptionsParameters options);
+
+        Task<IEnumerable<IBookstore>> GetBookstoresAsync(IOptionsParameters options);
+
+        Task<IBookstore> FindBookstoreByIdAsync(Guid id, IOptionsParameters options);
 
         Task<ResponseStatus> UpdateBookstoreAsync(Guid id, IBookstore model);
 
