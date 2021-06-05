@@ -39,10 +39,10 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        protected async Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDomain, TEntity, TDestination>(IOptionsParameters options) where TEntity : class
+        protected async Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDomain, TEntity, TDTO>(IOptionsParameters options) where TEntity : class
         {
             string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
-            IList<TDestination> destItems = await DbContext.Set<TEntity>().ProjectTo<TEntity, TDestination>(Mapper, entityProperties).ToListAsync();
+            IList<TDTO> destItems = await DbContext.Set<TEntity>().ProjectTo<TEntity, TDTO>(Mapper, entityProperties).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
@@ -60,7 +60,7 @@ namespace Store.Repository.Core
             return entityPagedList.ToPagedList<TEntity, TDomain>(Mapper);
         }
 
-        protected async Task<IPagedList<TDomain>> FindWithProjectionAsync<TDomain, TEntity, TDestination>
+        protected async Task<IPagedList<TDomain>> FindWithProjectionAsync<TDomain, TEntity, TDTO>
         (
             Expression<Func<TDomain, bool>> filterExpression, 
             IPagingParameters paging, 
@@ -68,9 +68,9 @@ namespace Store.Repository.Core
             IOptionsParameters options
         ) where TEntity : class
         {
-            IPagedList<TDestination> destPagedList = await FindWithProjection<TDomain, TEntity, TDestination>(filterExpression, sorting, options).ToPagedListAsync(paging.PageNumber, paging.PageSize);
+            IPagedList<TDTO> destPagedList = await FindWithProjection<TDomain, TEntity, TDTO>(filterExpression, sorting, options).ToPagedListAsync(paging.PageNumber, paging.PageSize);
 
-            return destPagedList.ToPagedList<TDestination, TDomain>(Mapper);
+            return destPagedList.ToPagedList<TDTO, TDomain>(Mapper);
         }
 
         protected async Task<IEnumerable<TDomain>> FindAsync<TDomain, TEntity>
@@ -85,15 +85,14 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        // TODO - refactor
-        protected async Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDomain, TEntity, TDestination>
+        protected async Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDomain, TEntity, TDTO>
         (
             Expression<Func<TDomain, bool>> filterExpression, 
             ISortingParameters sorting, 
             IOptionsParameters options
         ) where TEntity : class
         {
-            IList<TDestination> destItems = await FindWithProjection<TDomain, TEntity, TDestination>(filterExpression, sorting, options).ToListAsync();
+            IList<TDTO> destItems = await FindWithProjection<TDomain, TEntity, TDTO>(filterExpression, sorting, options).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
@@ -110,14 +109,13 @@ namespace Store.Repository.Core
             return Mapper.Map<TDomain>(entity);
         }
 
-        // TODO - refactor
-        protected async Task<TDomain> FindByIdWithProjectionAsync<TDomain, TEntity, TDestination>
+        protected async Task<TDomain> FindByIdWithProjectionAsync<TDomain, TEntity, TDTO>
         (
             Guid id, 
             IOptionsParameters options
-        ) where TDestination : IPoco where TEntity : class, IDBPoco
+        ) where TDTO : IPoco where TEntity : class, IDBPoco
         {
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDestination, TEntity>(Mapper, options?.Properties);
+            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDTO, TEntity>(Mapper, options?.Properties);
 
             // TODO - Projection won't work if filter delegate is used in FirstOrDefaultAsync - getting exception
             TDestination destItem = await DbContext.Set<TEntity>()
@@ -205,7 +203,6 @@ namespace Store.Repository.Core
             return query;
         }
 
-        // TODO - refactor
         private IQueryable<TDestination> FindWithProjection<TDomain, TEntity, TDestination>
         (
             Expression<Func<TDomain, bool>> filterExpression, 

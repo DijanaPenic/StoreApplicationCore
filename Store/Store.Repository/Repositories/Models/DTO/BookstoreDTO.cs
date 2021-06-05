@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Store.Model.Common.Models.Core;
 
-namespace Store.Models
+namespace Store.Repository.Repositories.Models
 {
     public class BookstoreDTO : IPoco
     {

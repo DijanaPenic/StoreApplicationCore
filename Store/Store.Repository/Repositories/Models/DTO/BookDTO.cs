@@ -2,7 +2,7 @@
 
 using Store.Model.Common.Models.Core;
 
-namespace Store.Models
+namespace Store.Repository.Repositories.Models
 {
     public class BookDTO : IPoco
     {
