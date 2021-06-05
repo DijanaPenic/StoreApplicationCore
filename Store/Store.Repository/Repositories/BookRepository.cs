@@ -37,7 +37,7 @@ namespace Store.Repositories
             return FindAsync<IBook, BookEntity>(filterExpression, paging, sorting, options);
         }
 
-        public Task<IPagedList<IBook>> FindByBookIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             Expression<Func<IBook, bool>> filterExpression = b => b.BookstoreId == bookstoreId;
 
