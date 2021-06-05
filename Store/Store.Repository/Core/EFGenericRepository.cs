@@ -117,11 +117,9 @@ namespace Store.Repository.Core
         {
             string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDTO, TEntity>(Mapper, options?.Properties);
 
-            // TODO - Projection won't work if filter delegate is used in FirstOrDefaultAsync - getting exception
-            TDestination destItem = await DbContext.Set<TEntity>()
-                                                   .Where(e => e.Id == id)
-                                                   .ProjectTo<TEntity, TDestination>(Mapper, entityProperties)
-                                                   .FirstOrDefaultAsync();
+            TDTO destItem = await DbContext.Set<TEntity>()
+                                           .ProjectTo<TEntity, TDTO>(Mapper, entityProperties)
+                                           .FirstOrDefaultAsync(e => e.Id == id);
 
             return Mapper.Map<TDomain>(destItem);
         }
