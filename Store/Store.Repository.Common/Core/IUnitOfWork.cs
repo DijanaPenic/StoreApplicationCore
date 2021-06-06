@@ -32,6 +32,8 @@ namespace Store.Repository.Common.Core
 
         IEmailTemplateRepository EmailTemplateRepository { get; }
 
+        IGlobalSearchRepository GlobalSearchRepository { get; }
+
         Task<ResponseStatus> CommitAsync();
     }
 }

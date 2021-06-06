@@ -26,5 +26,27 @@ namespace Store.Repository.Queries
                 }          
            }
         }     
+        public static class GlobalSearch
+        {
+            public static partial class SearchAllModules
+            {
+                private static Lazy<string> _commandText = new Lazy<string>(() => GetSqlCommandText(@"SqlQueries\GlobalSearch\SearchAllModules.sql"));
+
+                public static string CommandText
+                {
+                    get
+                    {
+                        return _commandText.Value;
+                    }
+                }
+
+                public static class Parameters
+                {
+                    public static string HasBookstoreRead = "@hasBookstoreRead";
+                    public static string SearchPhrase = "@searchPhrase";
+                    public static string HasBookRead = "@hasBookRead";
+                }          
+           }
+        }     
     }
 }

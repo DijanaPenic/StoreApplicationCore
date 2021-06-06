@@ -44,6 +44,8 @@ namespace Store.Repository.Core
 
         private IEmailTemplateRepository _emailTemplateRepository;
 
+        private IGlobalSearchRepository _globalSearchRepository;
+
         #endregion
 
         public UnitOfWork(ApplicationDbContext dbContext, IMapper mapper)
@@ -83,6 +85,8 @@ namespace Store.Repository.Core
         public IBookstoreRepository BookstoreRepository => _bookstoreRepository ??= new BookstoreRepository(_dbContext, _mapper);
 
         public IEmailTemplateRepository EmailTemplateRepository => _emailTemplateRepository ??= new EmailTemplateRepository(_dbContext, _mapper);
+
+        public IGlobalSearchRepository GlobalSearchRepository => _globalSearchRepository ??= new GlobalSearchRepository(_dbContext, _mapper);
 
         public async Task<ResponseStatus> CommitAsync()
         {
