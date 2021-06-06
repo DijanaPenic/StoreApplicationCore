@@ -60,12 +60,16 @@ namespace Store.Generator
             await File.WriteAllTextAsync(Path.Combine(outputPath, "SqlQueries.generated.cs"), sqlQueriesResult);
         }
 
-        private static string[] GetSqlQueryParameters(string path)
+        private static SqlParameterModel[] GetSqlQueryParameters(string path)
         {
             string commandText = File.ReadAllText(path);
 
             Regex rgxExpression = new Regex(@"\@([^=<>\s\']+)");
-            string[] parameters = rgxExpression.Matches(commandText).Select(p => p.Value.TrimStart('(', '@').TrimEnd(')')).Distinct().ToArray();
+            SqlParameterModel[] parameters = rgxExpression.Matches(commandText)
+                                                          .Select(p => p.Value.TrimStart('(', '@').TrimEnd(')'))
+                                                          .Distinct()
+                                                          .Select(p => new SqlParameterModel { Name = p })
+                                                          .ToArray();
 
             return parameters;
         }

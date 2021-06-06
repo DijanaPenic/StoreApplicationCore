@@ -2,6 +2,6 @@
 {
     internal class SqlFileModel : FileModel 
     {
-        public string[] Parameters { get; set; }
+        public SqlParameterModel[] Parameters { get; set; }
     }
 }
