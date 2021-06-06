@@ -2,7 +2,9 @@
 
 using Store.Models;
 using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
 using Store.Entities;
+using Store.Entities.Identity;
 
 namespace Store.Repository.Mapper
 {
@@ -26,7 +28,14 @@ namespace Store.Repository.Mapper
                     .ForMember(dst => dst.Bookstore, opt => opt.ExplicitExpansion())
                     .ReverseMap();
 
-            // Identity mappings - not needed as Dapper is used for direct mapping to domain models
+            // Identity mappings 
+            CreateMap<IRoleClaim, RoleClaimEntity>().ReverseMap();
+            CreateMap<IUserToken, UserTokenEntity>().ReverseMap();
+            CreateMap<IUserRefreshToken, UserRefreshTokenEntity>().ReverseMap();
+            CreateMap<IUserLogin, UserLoginEntity>().ReverseMap();
+            CreateMap<IUser, UserEntity>().ReverseMap();
+            CreateMap<IRole, RoleEntity>().ReverseMap();
+            CreateMap<IClient, ClientEntity>().ReverseMap();
 
             // Email Template mappings
             CreateMap<IEmailTemplate, EmailTemplateEntity>().ReverseMap();
