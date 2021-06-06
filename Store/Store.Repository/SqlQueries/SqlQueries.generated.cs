@@ -42,9 +42,9 @@ namespace Store.Repository.Queries
 
                 public static class Parameters
                 {
-                    public static string HasBookstoreRead = "@hasBookstoreRead";
-                    public static string SearchPhrase = "@searchPhrase";
-                    public static string HasBookRead = "@hasBookRead";
+                    public static string HasBookstoreReadAccess = "@has_bookstore_read_access";
+                    public static string SearchPhrase = "@search_phrase";
+                    public static string HasBookReadAccess = "@has_book_read_access";
                 }          
            }
         }     

@@ -25,8 +25,8 @@ namespace Store.Repositories
             Dictionary<string, object> parameters = new Dictionary<string, object>
             {
                 { SqlQueries.GlobalSearch.SearchAllModules.Parameters.SearchPhrase, filter.SearchString },
-                { SqlQueries.GlobalSearch.SearchAllModules.Parameters.HasBookstoreRead, filter.SearchTypes.Contains(SectionType.Bookstore) },
-                { SqlQueries.GlobalSearch.SearchAllModules.Parameters.HasBookRead, filter.SearchTypes.Contains(SectionType.Book) }
+                { SqlQueries.GlobalSearch.SearchAllModules.Parameters.HasBookstoreReadAccess, filter.SearchTypes.Contains(SectionType.Bookstore) },
+                { SqlQueries.GlobalSearch.SearchAllModules.Parameters.HasBookReadAccess, filter.SearchTypes.Contains(SectionType.Book) }
             };
 
             return await QueryAsync<SearchItem>(
