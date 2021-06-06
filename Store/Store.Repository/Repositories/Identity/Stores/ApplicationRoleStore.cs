@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
+using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Models.Identity;
@@ -236,7 +237,7 @@ namespace Store.Repositories.Identity.Stores
             await _unitOfWork.CommitAsync();
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)
+        public Task<IPagedList<IRoleClaim>> FindClaimsAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

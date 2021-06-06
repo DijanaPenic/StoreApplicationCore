@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using X.PagedList;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 
@@ -86,7 +87,7 @@ namespace Store.Services.Identity
             return await UpdateRoleAsync(role);
         }
 
-        public Task<IPagedEnumerable<IRoleClaim>> FindClaimsAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
+        public Task<IPagedList<IRoleClaim>> FindClaimsAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
             IApplicationRoleClaimStore claimStore = GetClaimStore();
 

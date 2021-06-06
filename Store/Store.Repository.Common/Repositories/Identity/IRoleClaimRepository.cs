@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using X.PagedList;
 
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
@@ -14,7 +14,7 @@ namespace Store.Repository.Common.Repositories.Identity
     {
         Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId);
 
-        Task<IPagedEnumerable<IRoleClaim>> FindAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);
+        Task<IPagedList<IRoleClaim>> FindAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);
 
         Task DeleteAsync(IRoleClaimFilteringParameters filter);
     }
