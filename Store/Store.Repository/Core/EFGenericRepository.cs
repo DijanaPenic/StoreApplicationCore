@@ -3,12 +3,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 
 using Store.Entities;
-using Store.DAL.Context;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
@@ -21,16 +19,6 @@ namespace Store.Repository.Core
 {
     internal abstract partial class GenericRepository
     {
-        protected ApplicationDbContext DbContext;
-
-        protected IMapper Mapper { get; }
-
-        public GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
-        {
-            DbContext = dbContext;
-            Mapper = mapper;
-        }
-
         protected async Task<IEnumerable<TDomain>> GetAsync<TDomain, TEntity>(IOptionsParameters options) where TEntity : class
         {
             string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
