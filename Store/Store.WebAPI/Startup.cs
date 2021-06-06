@@ -54,7 +54,7 @@ namespace Store.WebAPI
             services.AddSwagger();
 
             // Hangfire configuration
-            services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("Database")));
+            //services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("Database")));
 
             // Messaging configuration (SMS, voice, email)
             services.AddMessaging(Configuration);
@@ -78,7 +78,8 @@ namespace Store.WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.AddHangfire();
+            // Disabled Hangfire for easier sql log troubleshooting.
+            //app.AddHangfire();
 
             app.AddSwagger();
 
