@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using X.PagedList;
 
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
@@ -18,6 +18,6 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options);
 
-        Task<IPagedEnumerable<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+        Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
     }
 }

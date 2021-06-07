@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using AutoMapper;
+using X.PagedList;
 
 using static Dapper.SqlMapper;
 
@@ -20,6 +22,8 @@ using Store.Repository.Core;
 using Store.Repository.Common.Models;
 using Store.Repository.Common.Repositories.Identity;
 using Store.Repository.Repositories.Models;
+using Store.Entities.Identity;
+using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
@@ -102,7 +106,7 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IPagedEnumerable<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public async Task<IPagedEnumerable<IUser>> FindAsync2(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             IList<string> filterConditions = new List<string>();
 
@@ -132,6 +136,22 @@ namespace Store.Repositories.Identity
             int totalCount = reader.ReadFirst<int>();
 
             return new PagedEnumerable<IUser>(users, totalCount, paging.PageSize, paging.PageNumber);
+        }
+
+        public Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        {
+            Expression<Func<IUser, bool>> filterExpression = null;
+
+            if (!filter.ShowInactive)
+            {
+                filterExpression = filterExpression.And(u => u.IsApproved == true);
+            }
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                filterExpression = filterExpression.And(u => u.FirstName.Contains(filter.SearchString) || u.LastName.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IUser, UserEntity>(filterExpression, paging, sorting, options);
         }
 
         public async Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options)

@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
+using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Models.Identity;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -934,7 +934,7 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationUserStore<IUser> Members
 
-        public Task<IPagedEnumerable<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
+        public Task<IPagedList<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

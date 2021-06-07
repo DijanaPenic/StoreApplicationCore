@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using X.PagedList;
 using NETCore.Encrypt;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,6 @@ using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Filtering;
 using Store.Service.Options;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity.Stores;
 
@@ -153,7 +153,7 @@ namespace Store.Services.Identity
             return result;
         }
 
-        public Task<IPagedEnumerable<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             return _userStore.FindUsersAsync(filter, paging, sorting, options, CancellationToken);
         }

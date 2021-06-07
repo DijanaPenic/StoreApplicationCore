@@ -592,7 +592,7 @@ namespace Store.WebAPI.Controllers
             IUserFilteringParameters filter = FilteringFactory.Create<IUserFilteringParameters>(searchString);
             filter.ShowInactive = showInactive;
 
-            IPagedEnumerable<IUser> users = await _userManager.FindUsersAsync
+            IPagedList<IUser> users = await _userManager.FindUsersAsync
             (
                 filter,
                 paging: PagingFactory.Create(pageNumber, pageSize),
