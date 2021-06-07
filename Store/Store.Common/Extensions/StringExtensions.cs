@@ -30,9 +30,12 @@ namespace Store.Common.Extensions
 
         public static string ToPascalCase(this string input)
         {
-            input = input.ToLower().Replace("_", " ");
+            if (!input.Contains(" "))
+            {
+                input = Regex.Replace(input, "(?<=[a-z])(?=[A-Z])", " ");
+            }
 
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input).Replace(" ", string.Empty);
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower()).Replace(" ", "").Replace("_", "");
         }
 
         public static string Base64ForUrlEncode(this string value)
