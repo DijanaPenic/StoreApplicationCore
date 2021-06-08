@@ -65,9 +65,7 @@ namespace Store.Repositories
 
         private static Expression<Func<IBookstore, bool>> GetFilterExpression(IFilteringParameters filter)
         {
-            return string.IsNullOrEmpty(filter.SearchString)
-                ? (Expression<Func<IBookstore, bool>>)null
-                : bs => bs.Name.Contains(filter.SearchString) || bs.Location.Contains(filter.SearchString);
+            return string.IsNullOrEmpty(filter.SearchString) ? null : bs => bs.Name.Contains(filter.SearchString) || bs.Location.Contains(filter.SearchString);
         }
     }
 }

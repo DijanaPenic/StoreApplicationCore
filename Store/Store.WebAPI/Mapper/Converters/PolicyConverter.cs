@@ -11,16 +11,16 @@ namespace Store.WebAPI.Mapper.Converters
         public RoleGetApiModel Convert(IRole source, RoleGetApiModel destination, ResolutionContext context)
         {
             PolicyGetApiModel[] dstPolicies = source.Policies.GroupBy(rc => rc.ClaimValue.Split('.')[0])
-                                                             .Select(rcg => new PolicyGetApiModel 
-                                                             { 
-                                                                 Section = rcg.Key, 
-                                                                 AccessActions = rcg.Select(a => new AccessActionGetApiModel 
-                                                                                    { 
-                                                                                        Id = a.Id, 
-                                                                                        DateCreatedUtc = a.DateCreatedUtc, 
-                                                                                        Name = a.ClaimValue.Split('.')[1] 
-                                                                                    }).ToArray() 
-                                                             }).ToArray();           
+                                                           .Select(rcg => new PolicyGetApiModel 
+                                                           { 
+                                                               Section = rcg.Key, 
+                                                               AccessActions = rcg.Select(a => new AccessActionGetApiModel 
+                                                                                  { 
+                                                                                      Id = a.Id, 
+                                                                                      DateCreatedUtc = a.DateCreatedUtc, 
+                                                                                      Name = a.ClaimValue.Split('.')[1] 
+                                                                                  }).ToArray() 
+                                                           }).ToArray();           
             
             return new RoleGetApiModel
             {

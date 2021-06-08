@@ -21,9 +21,8 @@ using Store.WebAPI.Constants;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.WebAPI.Infrastructure.Authorization.Extensions;
 using Store.Services.Identity;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.Messaging.Services.Common;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
 {

@@ -9,6 +9,7 @@ using Store.WebAPI.Infrastructure.Authorization.Requirements;
 namespace Store.WebAPI.Infrastructure.Authorization.Providers
 {
     public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider {
+
         const string SECTION_POLICY_PREFIX = "Section_";
 
         public DefaultAuthorizationPolicyProvider FallbackPolicyProvider { get; }

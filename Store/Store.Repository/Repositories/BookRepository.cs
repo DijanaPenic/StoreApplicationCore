@@ -30,9 +30,7 @@ namespace Store.Repositories
 
         public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString)
-                                                ? (Expression<Func<IBook, bool>>)null
-                                                : b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString) || b.Bookstore.Name.Contains(filter.SearchString);
+            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString) || b.Bookstore.Name.Contains(filter.SearchString);
 
             return FindAsync<IBook, BookEntity>(filterExpression, paging, sorting, options);
         }

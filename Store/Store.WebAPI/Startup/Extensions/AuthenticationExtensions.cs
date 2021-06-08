@@ -56,13 +56,13 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             // ApplicationSignInManager dependencies
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<ApplicationSignInManager>();
+            services.AddTransient<ApplicationSignInManager>(); // TODO - need to confirm
 
             // ApplicationAuthManager dependencies
-            services.AddTransient<ApplicationAuthManager>();
+            services.AddTransient<ApplicationAuthManager>();  // TODO - need to confirm
 
             // ApplicationPermissionsManager dependencies
-            services.AddTransient<ApplicationPermissionsManager>();
+            services.AddTransient<ApplicationPermissionsManager>(); // TODO - need to confirm
 
             // Cookies configuration
             // Caution: need to enable cookies because of SignInManager: "All the authentication logic is tied to sign in manager which is tied to cookies in general."

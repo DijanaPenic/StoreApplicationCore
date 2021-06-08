@@ -39,20 +39,17 @@ namespace Store.Services.Identity
 
             List<Claim> userRoleClaims = new List<Claim>();
 
-            if (_userManager.SupportsUserRole)
+            if (_userManager.SupportsUserRole && _roleManager.SupportsRoleClaims)
             {
                 IList<string> roles = await _userManager.GetRolesAsync(user);
 
                 foreach (string roleName in roles)
                 {
-                    if (_roleManager.SupportsRoleClaims)
+                    IRole role = await _roleManager.FindByNameAsync(roleName);
+                    if (role != null)
                     {
-                        IRole role = await _roleManager.FindByNameAsync(roleName);
-                        if (role != null)
-                        {
-                            IList<Claim> roleClaims = await _roleManager.GetClaimsAsync(role);
-                            userRoleClaims.AddRange(roleClaims.ToList());
-                        }
+                        IList<Claim> roleClaims = await _roleManager.GetClaimsAsync(role);
+                        userRoleClaims.AddRange(roleClaims.ToList());
                     }
 
                     userRoleClaims = userRoleClaims.Distinct(new ClaimsComparer()).ToList();
