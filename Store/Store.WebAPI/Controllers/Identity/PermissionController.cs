@@ -43,39 +43,42 @@ namespace Store.WebAPI.Controllers.Identity
             _logger = logger;
         }
 
-        /// <summary>Updates access policy.</summary>
-        /// <param name="roleId">The role identifier.</param>
-        /// <param name="policyModel">The policy model.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPost]
-        [Route("{roleId:guid}")]
-        [Consumes("application/json")]
-        [SectionAuthorization(SectionType.Role, AccessType.Full)]
-        public async Task<IActionResult> PostAsync([FromRoute] Guid roleId, [FromBody] PolicyPostApiModel policyModel)
-        {
-            if (roleId == Guid.Empty)
-                return BadRequest();
 
-            if (!ModelState.IsValid)
-                return BadRequest();
+        // CAUTION: removed POST method since policies are handled by migration data seed 
 
-            IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
-            if (role == null)
-            {
-                return NotFound();
-            }
+        ///// <summary>Updates access policy.</summary>
+        ///// <param name="roleId">The role identifier.</param>
+        ///// <param name="policyModel">The policy model.</param>
+        ///// <returns>
+        /////   <br />
+        ///// </returns>
+        //[HttpPost]
+        //[Route("{roleId:guid}")]
+        //[Consumes("application/json")]
+        //[SectionAuthorization(SectionType.Role, AccessType.Full)]
+        //public async Task<IActionResult> PostAsync([FromRoute] Guid roleId, [FromBody] PolicyPostApiModel policyModel)
+        //{
+        //    if (roleId == Guid.Empty)
+        //        return BadRequest();
 
-            IPolicy policy = _mapper.Map<IPolicy>(policyModel);
-            IdentityResult updatePolicyResult = await _permissionManager.UpdatePolicyAsync(role, policy);
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
 
-            if (!updatePolicyResult.Succeeded) return BadRequest(updatePolicyResult.Errors);
+        //    IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
+        //    if (role == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _logger.LogInformation("A new policy has been updated successfully.");
+        //    IPolicy policy = _mapper.Map<IPolicy>(policyModel);
+        //    IdentityResult updatePolicyResult = await _permissionManager.UpdatePolicyAsync(role, policy);
 
-            return Ok();
-        }
+        //    if (!updatePolicyResult.Succeeded) return BadRequest(updatePolicyResult.Errors);
+
+        //    _logger.LogInformation("A new policy has been updated successfully.");
+
+        //    return Ok();
+        //}
 
         /// <summary>Retrieves role with policies for a certain section by specified search criteria.</summary>
         /// <param name="section">The section.</param>
