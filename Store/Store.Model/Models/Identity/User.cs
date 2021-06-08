@@ -53,6 +53,8 @@ namespace Store.Models.Identity
 
         public ICollection<IUserLogin> Logins { get; set; }
 
-        public ICollection<IUserToken> Tokens { get; set; }
+        public ICollection<IUserToken> UserTokens { get; set; }
+
+        public ICollection<IUserRefreshToken> RefreshTokens { get; set; }
     }
 }

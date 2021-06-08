@@ -27,5 +27,13 @@ namespace Store.WebAPI.Models.Identity
         public DateTime? LockoutEndDateUtc { get; set; }
 
         public string[] Roles { get; set; }
+
+        public UserClaimGetApiModel[] Claims { get; set; }
+
+        public UserLoginGetApiModel[] Logins { get; set; }
+
+        public UserTokenGetApiModel[] UserTokens { get; set; }
+
+        public UserRefreshTokenGetApiModel[] RefreshTokens { get; set; }
     }
 }

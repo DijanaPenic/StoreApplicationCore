@@ -240,7 +240,7 @@ namespace Store.Repositories.Identity
                 includeRoles = includeProperties.Contains(nameof(IUser.Roles));
                 includeClaims = includeProperties.Contains(nameof(IUser.Claims));
                 includeLogins = includeProperties.Contains(nameof(IUser.Logins));
-                includetokens = includeProperties.Contains(nameof(IUser.Tokens));
+                includetokens = includeProperties.Contains(nameof(IUser.UserTokens));
             }
 
             StringBuilder sql = new StringBuilder();
@@ -270,7 +270,7 @@ namespace Store.Repositories.Identity
                 if (userRole != null) user.Roles = new List<IRole>() { userRole };
                 if (userClaim != null) user.Claims = new List<IUserClaim>() { userClaim };
                 if (userLogin != null) user.Logins = new List<IUserLogin>() { userLogin };
-                if (userToken != null) user.Tokens = new List<IUserToken>() { userToken };
+                if (userToken != null) user.UserTokens = new List<IUserToken>() { userToken };
 
                 return user;
             }, splitOn: $"{RoleSchema.Columns.Id}, {UserClaimSchema.Columns.Id}, {UserLoginSchema.Columns.LoginProvider}, {UserTokenSchema.Columns.UserId}");
@@ -282,7 +282,7 @@ namespace Store.Repositories.Identity
                 user.Roles = gu.Where(u => u.Roles != null).Select(u => u.Roles.Single()).ToList();
                 user.Claims = gu.Where(u => u.Claims != null).Select(u => u.Claims.Single()).ToList();
                 user.Logins = gu.Where(u => u.Logins != null).Select(u => u.Logins.Single()).ToList();
-                user.Tokens = gu.Where(u => u.Tokens != null).Select(u => u.Tokens.Single()).ToList();
+                user.UserTokens = gu.Where(u => u.UserTokens != null).Select(u => u.UserTokens.Single()).ToList();
 
                 return user;
             });

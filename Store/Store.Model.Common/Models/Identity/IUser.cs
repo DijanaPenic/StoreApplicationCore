@@ -47,6 +47,8 @@ namespace Store.Model.Common.Models.Identity
 
         ICollection<IUserLogin> Logins { get; set; }
 
-        ICollection<IUserToken> Tokens { get; set; }
+        ICollection<IUserToken> UserTokens { get; set; }
+
+        ICollection<IUserRefreshToken> RefreshTokens { get; set; }
     }
 }

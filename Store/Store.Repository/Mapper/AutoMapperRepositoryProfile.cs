@@ -33,6 +33,7 @@ namespace Store.Repository.Mapper
             CreateMap<IUserToken, UserTokenEntity>().ReverseMap();
             CreateMap<IUserRefreshToken, UserRefreshTokenEntity>().ReverseMap();
             CreateMap<IUserLogin, UserLoginEntity>().ReverseMap();
+            CreateMap<IUserClaim, UserClaimEntity>().ReverseMap();
             CreateMap<IUser, UserEntity>().ReverseMap();
             CreateMap<IRole, RoleEntity>().ReverseMap();
             CreateMap<IClient, ClientEntity>().ReverseMap();
