@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 using Store.Common.Enums;
@@ -14,7 +14,6 @@ using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.WebAPI.Constants;
 using Store.Services.Identity;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers.Identity
@@ -107,7 +106,7 @@ namespace Store.WebAPI.Controllers.Identity
             IPermissionFilteringParameters filter = FilteringFactory.Create<IPermissionFilteringParameters>(searchString);
             filter.SectionType = sectionType;
 
-            IPagedEnumerable<IRole> roles = await _roleManager.FindRolesWithPoliciesAsync
+            IPagedList<IRole> roles = await _roleManager.FindRolesBySectionAsync
             (
                 filter,
                 paging: PagingFactory.Create(pageNumber, pageSize),

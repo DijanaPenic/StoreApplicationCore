@@ -21,16 +21,14 @@ namespace Store.Repository.Core
     {
         protected async Task<IEnumerable<TDomain>> GetAsync<TDomain, TEntity>(IOptionsParameters options) where TEntity : class
         {
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
-            IEnumerable<TEntity> entities = await DbContext.Set<TEntity>().Include(entityProperties).ToListAsync();
+            IEnumerable<TEntity> entities = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options)).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
         protected async Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDomain, TEntity, TDTO>(IOptionsParameters options) where TEntity : class
         {
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
-            IList<TDTO> destItems = await DbContext.Set<TEntity>().ProjectTo<TEntity, TDTO>(Mapper, entityProperties).ToListAsync();
+            IList<TDTO> destItems = await DbContext.Set<TEntity>().ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDomain, TEntity>(options)).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
@@ -91,8 +89,7 @@ namespace Store.Repository.Core
             IOptionsParameters options
         ) where TEntity : class, IDBPoco
         {
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
-            TEntity entity = await DbContext.Set<TEntity>().Include(entityProperties).FirstOrDefaultAsync(e => e.Id == id);
+            TEntity entity = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options)).FirstOrDefaultAsync(e => e.Id == id);
 
             return Mapper.Map<TDomain>(entity);
         }
@@ -103,10 +100,8 @@ namespace Store.Repository.Core
             IOptionsParameters options
         ) where TDTO : IPoco where TEntity : class, IDBPoco
         {
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDTO, TEntity>(Mapper, options?.Properties);
-
             TDTO destItem = await DbContext.Set<TEntity>()
-                                           .ProjectTo<TEntity, TDTO>(Mapper, entityProperties)
+                                           .ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDomain, TEntity>(options))
                                            .FirstOrDefaultAsync(e => e.Id == id);
 
             return Mapper.Map<TDomain>(destItem);
@@ -173,6 +168,12 @@ namespace Store.Repository.Core
             return ResponseStatus.Success;
         }
 
+        protected ISortingParameters SortingMap<TDomain, TEntity>(ISortingParameters sorting) => ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
+
+        protected string[] OptionsMap<TDomain, TEntity>(IOptionsParameters options) => ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
+
+        private Expression<Func<TEntity, bool>> FilterMap<TDomain, TEntity>(Expression<Func<TDomain, bool>> filterExpression) => Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
+
         private IQueryable<TEntity> Find<TDomain, TEntity>
         (
             Expression<Func<TDomain, bool>> filterExpression, 
@@ -180,13 +181,10 @@ namespace Store.Repository.Core
             IOptionsParameters options
         ) where TEntity : class
         {
-            Expression<Func<TEntity, bool>> entityFiltering = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
-            ISortingParameters entitySorting = ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
-
-            IQueryable<TEntity> query = DbContext.Set<TEntity>().Filter(entityFiltering).Include(entityProperties).OrderBy(entitySorting);
-
-            return query;
+            return DbContext.Set<TEntity>()
+                            .Filter(FilterMap<TDomain, TEntity>(filterExpression))
+                            .Include(OptionsMap<TDomain, TEntity>(options))
+                            .OrderBy(SortingMap<TDomain, TEntity>(sorting));
         }
 
         private IQueryable<TDestination> FindWithProjection<TDomain, TEntity, TDestination>
@@ -196,16 +194,11 @@ namespace Store.Repository.Core
             IOptionsParameters options
         ) where TEntity : class
         {
-            Expression<Func<TEntity, bool>> entityFiltering = Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
-            ISortingParameters entitySorting = ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
-            string[] entityProperties = ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
 
-            IQueryable<TDestination> query = DbContext.Set<TEntity>()
-                                                      .Filter(entityFiltering)
-                                                      .OrderBy(entitySorting)
-                                                      .ProjectTo<TEntity, TDestination>(Mapper, entityProperties);
-
-            return query;
+            return DbContext.Set<TEntity>()
+                            .Filter(FilterMap<TDomain, TEntity>(filterExpression))
+                            .OrderBy(SortingMap<TDomain, TEntity>(sorting))
+                            .ProjectTo<TEntity, TDestination>(Mapper, OptionsMap<TDomain, TEntity>(options));
         }
     }
 }

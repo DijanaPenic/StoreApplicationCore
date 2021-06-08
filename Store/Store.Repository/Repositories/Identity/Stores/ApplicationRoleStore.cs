@@ -8,7 +8,6 @@ using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Models.Identity;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Core;
 using Store.Repository.Common.Repositories.Identity.Stores;
@@ -284,11 +283,11 @@ namespace Store.Repositories.Identity.Stores
             return _unitOfWork.RoleRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)
+        public Task<IPagedList<IRole>> FindRolesBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleRepository.FindWithPoliciesAsync(filter, paging, sorting);
+            return _unitOfWork.RoleRepository.FindBySectionAsync(filter, paging, sorting);
         }
 
         #endregion

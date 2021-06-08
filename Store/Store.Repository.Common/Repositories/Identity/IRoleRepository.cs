@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using X.PagedList;
 
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
@@ -22,6 +21,6 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
         
-        Task<IPagedEnumerable<IRole>> FindWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);
+        Task<IPagedList<IRole>> FindBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);
     }
 }

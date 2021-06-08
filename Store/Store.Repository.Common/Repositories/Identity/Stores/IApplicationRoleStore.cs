@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity.Stores
 {
@@ -24,6 +23,6 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 
         Task<IPagedList<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken);
 
-        Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken);
+        Task<IPagedList<IRole>> FindRolesBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken);
     }
 }

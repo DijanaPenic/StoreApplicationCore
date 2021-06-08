@@ -69,9 +69,9 @@ namespace Store.Services.Identity
             return _roleStore.FindRolesAsync(filter, paging, sorting, options, CancellationToken);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
+        public Task<IPagedList<IRole>> FindRolesBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
-            return _roleStore.FindRolesAndPoliciesAsync(filter, paging, sorting, CancellationToken);
+            return _roleStore.FindRolesBySectionAsync(filter, paging, sorting, CancellationToken);
         }
 
         public async Task<IdentityResult> RemoveClaimsAsync(IRole role, IRoleClaimFilteringParameters filter)

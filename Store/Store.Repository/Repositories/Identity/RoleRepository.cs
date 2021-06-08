@@ -2,38 +2,30 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Data;
-using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 
-using static Dapper.SqlMapper;
-
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
-using Store.Model.Models;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.Common.Helpers;
+using Store.Repository.Core;
+using Store.Repository.Common.Repositories.Identity;
+using Store.Models.Identity;
+using Store.Model.Common.Models.Identity;
+using Store.Entities.Identity;
+using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
-using Store.Models.Identity;
-using Store.Repository.Core;
-using Store.Repository.Common.Models;
-using Store.Repository.Common.Repositories.Identity;
-using Store.Repository.Repositories.Models;
-using Store.Entities.Identity;
 
 namespace Store.Repositories.Identity
 {
     internal class RoleRepository : GenericRepository, IRoleRepository
     {
-        public const string CLAIM_PERMISSION_KEY = "Permission";
-
         private DbSet<RoleEntity> _dbSet => DbContext.Set<RoleEntity>();
 
         public RoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
@@ -82,44 +74,22 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            Expression<Func<IRole, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : b => b.Name.Contains(filter.SearchString);
+            Expression<Func<IRole, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString);
 
             return FindAsync<IRole, RoleEntity>(filterExpression, paging, sorting, options);
         }
 
-        public async Task<IPagedEnumerable<IRole>> FindWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
+        public async Task<IPagedList<IRole>> FindBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)
         {
-            dynamic searchParameters = new ExpandoObject();
-            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
-            searchParameters.SectionType = $"{filter.SectionType}.%";
+            string sectionType = $"{filter.SectionType}.";
 
-            string includeExpression = $@"LEFT JOIN {RoleClaimSchema.Table} rc on
-                                                rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
-                                                AND rc.{RoleClaimSchema.Columns.ClaimType} = '{CLAIM_PERMISSION_KEY}'
-                                                AND rc.{RoleClaimSchema.Columns.ClaimValue} LIKE @{nameof(filter.SectionType)}";
+            IPagedList<RoleEntity> entityPagedList = await _dbSet.Filter(string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString))
+                                                                 .Filter(r => r.Claims.Any(rc => rc.ClaimValue.StartsWith(sectionType)))
+                                                                 .Include(r => r.Claims.Where(rc => rc.ClaimValue.StartsWith(sectionType)))
+                                                                 .OrderBy(SortingMap<IRole, RoleEntity>(sorting))
+                                                                 .ToPagedListAsync(paging.PageNumber, paging.PageSize);
 
-            IFilterModel filterModel = new FilterModel()
-            {
-                Expression = @$"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(filter.SectionType)})",
-                Parameters = searchParameters
-            };
-
-            IQueryTableModel queryTableModel = new QueryTableModel()
-            {
-                TableName = RoleSchema.Table,
-                TableAlias = "r",
-                SelectStatement = "r.*, rc.*",
-                IncludeStatement = includeExpression
-            };
-
-            using GridReader reader = await FindQueryAsync(queryTableModel, filterModel, paging, sorting);
-
-            IEnumerable<IRole> roles = ReadRoles(reader);
-            int totalCount = reader.ReadFirst<int>();
-
-            var result = new PagedEnumerable<IRole>(roles, totalCount, paging.PageSize, paging.PageNumber);
-
-            return result;
+            return entityPagedList.ToPagedList<RoleEntity, IRole>(Mapper);
         }
 
         public async Task<IRole> FindByKeyAsync(Guid key)
@@ -169,36 +139,6 @@ namespace Store.Repositories.Identity
                     WHERE {RoleSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity
             );
-        }
-
-        private static string IncludeQuery(IOptionsParameters options)
-        {
-            bool includePolicies = options.Properties.Contains(nameof(IRole.Policies));
-
-            return $@"LEFT JOIN {RoleClaimSchema.Table} rc on {(includePolicies ? 
-                            @$"rc.{RoleClaimSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
-                            {(includePolicies ? $"AND rc.{RoleClaimSchema.Columns.ClaimType} = '{CLAIM_PERMISSION_KEY}'" : string.Empty)}"
-                      : "FALSE")}";
-        }
-
-        private static IEnumerable<IRole> ReadRoles(GridReader reader)
-        {
-            IEnumerable<IRole> roles = reader.Read<Role, RoleClaim, Role>((role, roleClaim) =>
-            {
-                if (roleClaim?.ClaimType == CLAIM_PERMISSION_KEY) role.Policies = new List<IRoleClaim>() { roleClaim };
-
-                return role;
-            }, splitOn: $"{RoleClaimSchema.Columns.Id}");
-
-            IEnumerable<IRole> mergedRoles = roles.GroupBy(r => r.Id).Select(gr =>
-            {
-                IRole role = gr.First();
-                role.Policies = gr.Where(r => r.Policies != null).Select(r => r.Policies.Single()).ToList();
-
-                return role;
-            });
-
-            return mergedRoles;
         }
     }
 }
