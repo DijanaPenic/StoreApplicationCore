@@ -16,6 +16,9 @@ namespace Store.DAL.Configuration.Identity
             // Primary key
             builder.HasKey(rc => rc.Id);
 
+            // The relationship between Role and RoleClaim
+            builder.HasOne(rc => rc.Role).WithMany(r => r.Claims).HasForeignKey(rc => rc.RoleId).IsRequired();
+
             // Seed data
             builder.HasData
             (
@@ -27,8 +30,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -36,8 +39,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -45,8 +48,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -54,8 +57,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -63,8 +66,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Full",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -72,8 +75,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -81,8 +84,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -90,8 +93,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -99,8 +102,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -108,8 +111,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Full",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -117,8 +120,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "User.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -126,8 +129,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "User.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -135,8 +138,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "User.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -144,8 +147,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "User.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -153,8 +156,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "User.Full",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -162,8 +165,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Role.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -171,8 +174,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Role.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -180,8 +183,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Role.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -189,8 +192,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Role.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -198,8 +201,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Role.Full",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -207,8 +210,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "EmailTemplate.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -216,8 +219,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "EmailTemplate.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -225,8 +228,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "EmailTemplate.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -234,8 +237,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "EmailTemplate.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -243,8 +246,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d72ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "EmailTemplate.Full",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
 
                 // CUSTOMER
@@ -255,8 +258,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d82ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -264,8 +267,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d82ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
 
                 // STORE MANAGER
@@ -276,8 +279,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -285,8 +288,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -294,8 +297,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -303,8 +306,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Book.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -312,8 +315,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Read",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -321,8 +324,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Update",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -330,8 +333,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Create",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 },
                 new RoleClaimEntity
                 {
@@ -339,8 +342,8 @@ namespace Store.DAL.Configuration.Identity
                     RoleId = Guid.Parse("d92ef5e5-f08a-4173-b83a-74618893891b"),
                     ClaimType = "Permission",
                     ClaimValue = "Bookstore.Delete",
-                    DateCreatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM"),
-                    DateUpdatedUtc = DateTime.Parse("01-Mar-21 8:39:00 PM")
+                    DateCreatedUtc = DateTime.Parse("01-03-21"),
+                    DateUpdatedUtc = DateTime.Parse("01-03-21")
                 }
             );
         }

@@ -13,16 +13,16 @@ namespace Store.DAL.Configuration.Identity
             builder.ToTable("user_refresh_token", "identity");
 
             // Primary key
-            builder.HasKey(rt => rt.Id);
+            builder.HasKey(urt => urt.Id);
 
             // Limit the size of columns to use efficient database types
-            builder.Property(rt => rt.Value).IsRequired().HasMaxLength(256);
+            builder.Property(urt => urt.Value).IsRequired().HasMaxLength(256);
 
-            // Each RefreshToken must have one User
-            builder.HasOne<UserEntity>().WithMany().HasForeignKey(rt => rt.UserId).IsRequired();
+            // The relationship between User and UserRefreshToken
+            builder.HasOne(urt => urt.User).WithMany(u => u.RefreshTokens).HasForeignKey(urt => urt.UserId).IsRequired();
 
-            // Each RefreshToken must have one Client
-            builder.HasOne<ClientEntity>().WithMany().HasForeignKey(rt => rt.ClientId).IsRequired(); 
+            // The relationship between Client and UserRefreshToken
+            builder.HasOne(urt => urt.Client).WithMany(c => c.RefreshTokens).HasForeignKey(urt => urt.ClientId).IsRequired();
         }
     }
 }

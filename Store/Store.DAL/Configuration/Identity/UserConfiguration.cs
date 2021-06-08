@@ -30,20 +30,16 @@ namespace Store.DAL.Configuration.Identity
             builder.Property(u => u.Email).IsRequired().HasMaxLength(256);
             builder.Property(u => u.NormalizedEmail).IsRequired().HasMaxLength(256);
 
-            // The relationships between User and other entity types
-            // Note that these relationships are configured with no navigation properties
-
-            // Each User can have many UserClaims
-            builder.HasMany<UserClaimEntity>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
-
-            // Each User can have many UserLogins
-            builder.HasMany<UserLoginEntity>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
-
-            // Each User can have many UserTokens
-            builder.HasMany<UserTokenEntity>().WithOne().HasForeignKey(ut => ut.UserId).IsRequired();
-
-            // Each User can have many entries in the UserRole join table
-            builder.HasMany<UserRoleEntity>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
+            // The relationship between User and Role
+            builder.HasMany(u => u.Roles)
+                   .WithMany(r => r.Users)
+                   .UsingEntity<UserRoleEntity>
+                   (
+                       "user_role", 
+                       roleBuilder => roleBuilder.HasOne(ur => ur.Role).WithMany().HasForeignKey(ur => ur.RoleId),
+                       userBuilder => userBuilder.HasOne(ur => ur.User).WithMany().HasForeignKey(ur => ur.UserId),
+                       joinBuilder => joinBuilder.ToTable("user_role", "identity")
+                   );
         }
     }
 }

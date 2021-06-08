@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Store.Entities.Identity
 {
@@ -17,5 +18,9 @@ namespace Store.Entities.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
+
+        public ICollection<RoleClaimEntity> Claims { get; set; }
+
+        public ICollection<UserEntity> Users { get; set; }
     }
 }

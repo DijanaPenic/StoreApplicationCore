@@ -10,7 +10,11 @@ namespace Store.Entities.Identity
 
         public Guid UserId { get; set; }
 
+        public UserEntity User { get; set; }
+
         public Guid ClientId { get; set; }
+
+        public ClientEntity Client { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
 

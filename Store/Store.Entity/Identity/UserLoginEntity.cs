@@ -16,6 +16,8 @@ namespace Store.Entities.Identity
 
         public Guid UserId { get; set; }
 
+        public UserEntity User { get; set; }
+
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }

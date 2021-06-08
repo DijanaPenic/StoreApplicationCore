@@ -18,6 +18,9 @@ namespace Store.DAL.Configuration.Identity
             // Limit the size of the composite key columns due to common DB restrictions
             builder.Property(ut => ut.LoginProvider).IsRequired().HasMaxLength(128);
             builder.Property(ut => ut.Name).IsRequired().HasMaxLength(128);
+
+            // The relationship between User and UserToken
+            builder.HasOne(ut => ut.User).WithMany(u => u.UserTokens).HasForeignKey(ut => ut.UserId).IsRequired();
         }
     }
 }

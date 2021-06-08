@@ -7,6 +7,8 @@ namespace Store.Entities.Identity
     {
         public Guid UserId { get; set; }
 
+        public UserEntity User { get; set; }
+
         public string LoginProvider { get; set; }
 
         public string Name { get; set; }

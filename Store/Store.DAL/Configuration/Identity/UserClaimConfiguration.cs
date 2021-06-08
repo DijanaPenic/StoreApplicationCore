@@ -14,6 +14,9 @@ namespace Store.DAL.Configuration.Identity
 
             // Primary key
             builder.HasKey(uc => uc.Id);
+
+            // The relationship between User and UserClaim
+            builder.HasOne(uc => uc.User).WithMany(u => u.Claims).HasForeignKey(uc => uc.UserId).IsRequired();
         }
     }
 }

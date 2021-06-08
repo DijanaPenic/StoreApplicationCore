@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace Store.Entities.Identity
@@ -52,5 +53,15 @@ namespace Store.Entities.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
+
+        public ICollection<RoleEntity> Roles { get; set; }
+         
+        public ICollection<UserClaimEntity> Claims { get; set; }
+         
+        public ICollection<UserLoginEntity> Logins { get; set; }
+         
+        public ICollection<UserTokenEntity> UserTokens { get; set; }
+
+        public ICollection<UserRefreshTokenEntity> RefreshTokens { get; set; }
     }
 }

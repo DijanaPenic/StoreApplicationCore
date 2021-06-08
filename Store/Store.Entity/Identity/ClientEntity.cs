@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Store.Common.Enums;
 
@@ -27,5 +28,7 @@ namespace Store.Entities.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
+
+        public ICollection<UserRefreshTokenEntity> RefreshTokens { get; set; }
     }
 }

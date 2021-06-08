@@ -13,12 +13,15 @@ namespace Store.DAL.Configuration.Identity
             builder.ToTable("user_login", "identity");
 
             // Composite primary key consisting of the LoginProvider and the key to use with that provider
-            builder.HasKey(l => new { l.LoginProvider, l.ProviderKey });
+            builder.HasKey(ul => new { ul.LoginProvider, ul.ProviderKey });
 
             // Limit the size of the composite key columns due to common DB restrictions
-            builder.Property(l => l.LoginProvider).IsRequired().HasMaxLength(128);
-            builder.Property(l => l.ProviderKey).IsRequired().HasMaxLength(128);
-            builder.Property(l => l.Token).IsRequired(false).HasMaxLength(300);
+            builder.Property(ul => ul.LoginProvider).IsRequired().HasMaxLength(128);
+            builder.Property(ul => ul.ProviderKey).IsRequired().HasMaxLength(128);
+            builder.Property(ul => ul.Token).IsRequired(false).HasMaxLength(300);
+
+            // The relationship between User and UserLogin
+            builder.HasOne(ul => ul.User).WithMany(u => u.Logins).HasForeignKey(uc => uc.UserId).IsRequired();
         }
     }
 }

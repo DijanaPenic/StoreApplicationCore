@@ -45,13 +45,15 @@ namespace Store.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // Shared Type Entites
+            builder.SharedTypeEntity<UserRoleEntity>("user_role");
+
             // Identity configurations
             builder.ApplyConfiguration(new RoleClaimConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserClaimConfiguration());
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new UserLoginConfiguration());
-            builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new UserTokenConfiguration());
             builder.ApplyConfiguration(new UserRefreshTokenConfiguration());
             builder.ApplyConfiguration(new ClientConfiguration());

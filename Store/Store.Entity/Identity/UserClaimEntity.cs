@@ -8,6 +8,8 @@ namespace Store.Entities.Identity
 
         public Guid UserId { get; set; }
 
+        public UserEntity User { get; set; }
+
         public string ClaimType { get; set; }
 
         public string ClaimValue { get; set; }

@@ -6,7 +6,11 @@ namespace Store.Entities.Identity
     {
         public Guid UserId { get; set; }
 
+        public UserEntity User { get; set; }
+
         public Guid RoleId { get; set; }
+
+        public RoleEntity Role { get; set; }
 
         public DateTime DateCreatedUtc { get; set; }
     }

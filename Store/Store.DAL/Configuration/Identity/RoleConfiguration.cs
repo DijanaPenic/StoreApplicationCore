@@ -23,17 +23,8 @@ namespace Store.DAL.Configuration.Identity
             builder.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
 
             // Limit the size of columns to use efficient database types
-            builder.Property(u => u.Name).IsRequired().HasMaxLength(256);
-            builder.Property(u => u.NormalizedName).IsRequired().HasMaxLength(256);
-
-            // The relationships between Role and other entity types
-            // Note that these relationships are configured with no navigation properties
-
-            // Each Role can have many entries in the UserRole join table
-            builder.HasMany<UserRoleEntity>().WithOne().HasForeignKey(ur => ur.RoleId).IsRequired();
-
-            // Each Role can have many associated RoleClaims
-            builder.HasMany<RoleClaimEntity>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
+            builder.Property(r => r.Name).IsRequired().HasMaxLength(256);
+            builder.Property(r => r.NormalizedName).IsRequired().HasMaxLength(256);
 
             // Seed data
             builder.HasData
