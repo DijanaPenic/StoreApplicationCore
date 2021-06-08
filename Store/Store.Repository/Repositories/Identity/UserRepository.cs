@@ -1,27 +1,17 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Dynamic;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
 
-using static Dapper.SqlMapper;
-
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
-using Store.Model.Models;
-using Store.Models.Identity;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 using Store.Common.Helpers;
+using Store.Models.Identity;
+using Store.Model.Common.Models.Identity;
 using Store.Repository.Core;
-using Store.Repository.Common.Models;
 using Store.Repository.Common.Repositories.Identity;
-using Store.Repository.Repositories.Models;
 using Store.Entities.Identity;
 using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
@@ -106,38 +96,6 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IPagedEnumerable<IUser>> FindAsync2(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
-        {
-            IList<string> filterConditions = new List<string>();
-
-            if (!filter.ShowInactive) filterConditions.Add($"u.{UserSchema.Columns.IsApproved} = TRUE");
-            if (filter.SearchString != null) filterConditions.Add($"((LOWER(u.{UserSchema.Columns.FirstName}) LIKE @{nameof(filter.SearchString)}) OR (LOWER(u.{UserSchema.Columns.LastName}) LIKE @{nameof(filter.SearchString)}))");
-
-            dynamic searchParameters = new ExpandoObject();
-            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
-
-            IFilterModel filterModel = new FilterModel()
-            {
-                Expression = new StringBuilder("WHERE ").AppendJoin(" AND ", filterConditions).ToString(),
-                Parameters = searchParameters
-            };
-
-            IQueryTableModel queryTableModel = new QueryTableModel()
-            {
-                TableName = UserSchema.Table,
-                TableAlias = "u",
-                SelectStatement = "u.*, r.*, uc.*, ul.*, ut.*",
-                IncludeStatement = IncludeQuery(options)
-            };
-
-            using GridReader reader = await FindQueryAsync(queryTableModel, filterModel, paging, sorting);
-
-            IEnumerable<IUser> users = ReadUsers(reader);
-            int totalCount = reader.ReadFirst<int>();
-
-            return new PagedEnumerable<IUser>(users, totalCount, paging.PageSize, paging.PageNumber);
-        }
-
         public Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             Expression<Func<IUser, bool>> filterExpression = null;
@@ -154,24 +112,9 @@ namespace Store.Repositories.Identity
             return FindAsync<IUser, UserEntity>(filterExpression, paging, sorting, options);
         }
 
-        public async Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options)
+        public Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options)
         {
-            // Set query base
-            StringBuilder sql = new StringBuilder(@$"SELECT u.*, r.*, uc.*, ul.*, ut.* FROM {UserSchema.Table} u");
-            sql.Append(Environment.NewLine);
-
-            // Set prefetch
-            sql.Append(IncludeQuery(options));
-            sql.Append(Environment.NewLine);
-
-            // Set filter
-            sql.Append($@"WHERE u.{UserSchema.Columns.Id} = @{nameof(key)};");
-
-            // Execute query and read user
-            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
-            IUser user = ReadUsers(reader).SingleOrDefault();
-
-            return user;
+            return FindByIdAsync<IUser, UserEntity>(key, options);
         }
 
         public async Task<IUser> FindByNormalizedEmailAsync(string normalizedEmail)
@@ -226,68 +169,6 @@ namespace Store.Repositories.Identity
 
                     WHERE {UserSchema.Columns.Id} = @{nameof(entity.Id)}",
                 param: entity);
-        }
-
-        private static string IncludeQuery(IOptionsParameters options)
-        {        
-            string[] includeProperties = options?.Properties;
-
-            bool includeRoles, includeClaims, includeLogins, includetokens;
-            includeRoles = includeClaims = includeLogins = includetokens = false;
-
-            if (includeProperties?.Length > 0)
-            {
-                includeRoles = includeProperties.Contains(nameof(IUser.Roles));
-                includeClaims = includeProperties.Contains(nameof(IUser.Claims));
-                includeLogins = includeProperties.Contains(nameof(IUser.Logins));
-                includetokens = includeProperties.Contains(nameof(IUser.UserTokens));
-            }
-
-            StringBuilder sql = new StringBuilder();
-            if (includeRoles)
-            {
-                sql.Append($@"INNER JOIN {UserRoleSchema.Table} ur on ur.{UserRoleSchema.Columns.UserId} = u.{UserSchema.Columns.Id} 
-                                INNER JOIN {RoleSchema.Table} r on r.{RoleSchema.Columns.Id} = ur.{UserRoleSchema.Columns.RoleId}");
-            }
-            else
-            {
-                sql.Append($@"LEFT JOIN {RoleSchema.Table} r on FALSE");
-            }
-
-            sql.Append(Environment.NewLine);
-
-            sql.Append($@"LEFT JOIN {UserClaimSchema.Table} uc on {(includeClaims ? $"uc.{UserClaimSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
-                          LEFT JOIN {UserLoginSchema.Table} ul on {(includeLogins ? $"ul.{UserLoginSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}
-                          LEFT JOIN {UserTokenSchema.Table} ut on {(includetokens ? $"ut.{UserTokenSchema.Columns.UserId} = u.{UserSchema.Columns.Id}" : "FALSE")}");
-
-            return sql.ToString();
-        }
-
-        private static IEnumerable<IUser> ReadUsers(GridReader reader)
-        {
-            IEnumerable<IUser> users = reader.Read<User, Role, UserClaim, UserLogin, UserToken, User>((user, userRole, userClaim, userLogin, userToken) =>
-            {
-                if (userRole != null) user.Roles = new List<IRole>() { userRole };
-                if (userClaim != null) user.Claims = new List<IUserClaim>() { userClaim };
-                if (userLogin != null) user.Logins = new List<IUserLogin>() { userLogin };
-                if (userToken != null) user.UserTokens = new List<IUserToken>() { userToken };
-
-                return user;
-            }, splitOn: $"{RoleSchema.Columns.Id}, {UserClaimSchema.Columns.Id}, {UserLoginSchema.Columns.LoginProvider}, {UserTokenSchema.Columns.UserId}");
-
-            IEnumerable<IUser> mergedUsers = users.GroupBy(u => u.Id).Select(gu =>
-            {
-                IUser user = gu.First();
-
-                user.Roles = gu.Where(u => u.Roles != null).Select(u => u.Roles.Single()).ToList();
-                user.Claims = gu.Where(u => u.Claims != null).Select(u => u.Claims.Single()).ToList();
-                user.Logins = gu.Where(u => u.Logins != null).Select(u => u.Logins.Single()).ToList();
-                user.UserTokens = gu.Where(u => u.UserTokens != null).Select(u => u.UserTokens.Single()).ToList();
-
-                return user;
-            });
-
-            return mergedUsers;
         }
     }
 }
