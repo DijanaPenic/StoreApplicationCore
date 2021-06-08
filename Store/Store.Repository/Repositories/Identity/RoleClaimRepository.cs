@@ -1,28 +1,20 @@
 ﻿using System;
-using System.Text;
-using System.Dynamic;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
 
-using static Dapper.SqlMapper;
-
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
-using Store.Model.Models;
-using Store.Models.Identity;
 using Store.Common.Helpers;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Filtering;
-using Store.Repository.Core;
-using Store.Repository.Common.Models;
-using Store.Repository.Common.Repositories.Identity;
-using Store.Repository.Repositories.Models;
-using Store.Model.Common.Models;
+using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
-using System.Linq.Expressions;
+using Store.Repository.Core;
+using Store.Repository.Common.Repositories.Identity;
 using Store.Common.Extensions;
 using Store.Entities.Identity;
 
