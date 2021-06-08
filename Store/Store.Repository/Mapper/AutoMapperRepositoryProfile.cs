@@ -35,7 +35,9 @@ namespace Store.Repository.Mapper
             CreateMap<IUserLogin, UserLoginEntity>().ReverseMap();
             CreateMap<IUserClaim, UserClaimEntity>().ReverseMap();
             CreateMap<IUser, UserEntity>().ReverseMap();
-            CreateMap<IRole, RoleEntity>().ReverseMap();
+            CreateMap<IRole, RoleEntity>()
+                .ForMember(dst => dst.Claims, opt => opt.MapFrom(src => src.Policies))
+                .ReverseMap();
             CreateMap<IClient, ClientEntity>().ReverseMap();
 
             // Email Template mappings

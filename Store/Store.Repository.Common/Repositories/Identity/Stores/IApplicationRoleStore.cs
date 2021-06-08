@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 
 using Store.Model.Common.Models;
@@ -21,7 +22,7 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 
         Task<IRole> FindRoleByIdAsync(Guid id, IOptionsParameters options, CancellationToken cancellationToken);
 
-        Task<IPagedEnumerable<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken);
+        Task<IPagedList<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken);
 
         Task<IPagedEnumerable<IRole>> FindRolesAndPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, CancellationToken cancellationToken);
     }

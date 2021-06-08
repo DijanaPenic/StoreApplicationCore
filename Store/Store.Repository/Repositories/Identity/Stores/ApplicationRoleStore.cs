@@ -277,7 +277,7 @@ namespace Store.Repositories.Identity.Stores
             return await _unitOfWork.UserRoleRepository.GetCountByRoleNameAsync(normalizedRoleName);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
+        public Task<IPagedList<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

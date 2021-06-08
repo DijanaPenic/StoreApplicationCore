@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Data;
 using System.Dynamic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
+using X.PagedList;
+using Microsoft.EntityFrameworkCore;
 
 using static Dapper.SqlMapper;
 
@@ -24,12 +26,15 @@ using Store.Repository.Core;
 using Store.Repository.Common.Models;
 using Store.Repository.Common.Repositories.Identity;
 using Store.Repository.Repositories.Models;
+using Store.Entities.Identity;
 
 namespace Store.Repositories.Identity
 {
     internal class RoleRepository : GenericRepository, IRoleRepository
     {
         public const string CLAIM_PERMISSION_KEY = "Permission";
+
+        private DbSet<RoleEntity> _dbSet => DbContext.Set<RoleEntity>();
 
         public RoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
@@ -70,53 +75,16 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options)
+        public Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options)
         {
-            // Set query base
-            StringBuilder sql = new StringBuilder(@$"SELECT r.*, rc.* FROM {RoleSchema.Table} r");
-            sql.Append(Environment.NewLine);
-
-            // Set prefetch
-            sql.Append(IncludeQuery(options));
-            sql.Append(Environment.NewLine);
-
-            // Set filter
-            sql.Append($@"WHERE r.{RoleSchema.Columns.Id} = @{nameof(key)};");
-
-            // Execute query and read user
-            using GridReader reader = await QueryMultipleAsync(sql.ToString(), param: new { key });
-            IRole role = ReadRoles(reader).SingleOrDefault();
-
-            return role;
+            return FindByIdAsync<IRole, RoleEntity>(key, options);
         }
 
-        public async Task<IPagedEnumerable<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            dynamic searchParameters = new ExpandoObject();
-            searchParameters.SearchString = $"%{filter.SearchString?.ToLowerInvariant()}%";
+            Expression<Func<IRole, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : b => b.Name.Contains(filter.SearchString);
 
-            IFilterModel filterModel = new FilterModel()
-            {
-                Expression = $"WHERE (LOWER(r.{RoleSchema.Columns.Name}) LIKE @{nameof(filter.SearchString)})",
-                Parameters = searchParameters
-            };
-
-            IQueryTableModel queryTableModel = new QueryTableModel()
-            {
-                TableName = RoleSchema.Table,
-                TableAlias = "r",
-                SelectStatement = "r.*, rc.*",
-                IncludeStatement = IncludeQuery(options)
-            };
-
-            using GridReader reader = await FindQueryAsync(queryTableModel, filterModel, paging, sorting);
-
-            IEnumerable<IRole> roles = ReadRoles(reader);
-            int totalCount = reader.ReadFirst<int>();
-
-            var result = new PagedEnumerable<IRole>(roles, totalCount, paging.PageSize, paging.PageNumber);
-
-            return result;
+            return FindAsync<IRole, RoleEntity>(filterExpression, paging, sorting, options);
         }
 
         public async Task<IPagedEnumerable<IRole>> FindWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)

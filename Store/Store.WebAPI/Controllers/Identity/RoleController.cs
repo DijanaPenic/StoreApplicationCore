@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,6 @@ using Store.WebAPI.Constants;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.Services.Identity;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Controllers
@@ -81,7 +81,7 @@ namespace Store.WebAPI.Controllers
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize,
                                                   [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
-            IPagedEnumerable<IRole> roles = await _roleManager.FindRolesAsync
+            IPagedList<IRole> roles = await _roleManager.FindRolesAsync
             (
                 filter: FilteringFactory.Create<IFilteringParameters>(searchString),
                 paging: PagingFactory.Create(pageNumber, pageSize),

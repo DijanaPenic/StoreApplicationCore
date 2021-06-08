@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using X.PagedList;
 
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
@@ -19,7 +20,7 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options);
 
-        Task<IPagedEnumerable<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+        Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
         
         Task<IPagedEnumerable<IRole>> FindWithPoliciesAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);
     }

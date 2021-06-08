@@ -64,7 +64,7 @@ namespace Store.Services.Identity
             return _roleStore.FindRoleByIdAsync(id, options, CancellationToken);
         }
 
-        public Task<IPagedEnumerable<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
             return _roleStore.FindRolesAsync(filter, paging, sorting, options, CancellationToken);
         }
