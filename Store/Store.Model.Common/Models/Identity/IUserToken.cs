@@ -1,14 +1,12 @@
 ﻿using System;
 
+using Store.Model.Common.Models.Core;
+
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IUserToken : IUserTokenKey
+    public interface IUserToken : IUserTokenKey, IBaseEntity, IChangable
     {
         string Value { get; set; }
-
-        DateTime DateCreatedUtc { get; set; }
-
-        DateTime DateUpdatedUtc { get; set; }
     }
 
     public interface IUserTokenKey

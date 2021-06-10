@@ -47,14 +47,14 @@ namespace Store.Repositories
             return _dbSet.AnyAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
         }
 
-        public Task<IEmailTemplate> FindEmailTemplateByIdAsync(Guid id, IOptionsParameters options)
+        public Task<IEmailTemplate> FindEmailTemplateByKeyAsync(Guid key, IOptionsParameters options)
         {
-            return FindByIdAsync<IEmailTemplate, EmailTemplateEntity>(id, options);
+            return FindByKeyAsync<IEmailTemplate, EmailTemplateEntity>(options, key);
         }
 
-        public Task<ResponseStatus> UpdateEmailTemplateAsync(Guid id, IEmailTemplate model)
+        public Task<ResponseStatus> UpdateEmailTemplateAsync(Guid key, IEmailTemplate model)
         {
-            return UpdateAsync<IEmailTemplate, EmailTemplateEntity>(id, model);
+            return UpdateAsync<IEmailTemplate, EmailTemplateEntity>(model, key);
         }
 
         public Task<ResponseStatus> AddEmailTemplateAsync(IEmailTemplate model)
@@ -62,9 +62,9 @@ namespace Store.Repositories
             return AddAsync<IEmailTemplate, EmailTemplateEntity>(model);
         }
 
-        public Task<ResponseStatus> DeleteEmailTemplateByIdAsync(Guid id)
+        public Task<ResponseStatus> DeleteEmailTemplateByKeyAsync(Guid key)
         {
-            return DeleteByIdAsync<IEmailTemplate, EmailTemplateEntity>(id);
+            return DeleteByKeyAsync<IEmailTemplate, EmailTemplateEntity>(key);
         }
     }
 }

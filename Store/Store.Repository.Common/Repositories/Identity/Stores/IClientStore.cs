@@ -7,7 +7,7 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 {
     public interface IClientStore
     {
-        Task<IClient> FindClientByIdAsync(Guid clientId);
+        Task<IClient> FindClientByKeyAsync(Guid clientId);
 
         Task<IClient> FindClientByNameAsync(string name);
     }

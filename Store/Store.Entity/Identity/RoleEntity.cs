@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Store.Entities.Identity
 {
-    public class RoleEntity : IDBPoco
+    public class RoleEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

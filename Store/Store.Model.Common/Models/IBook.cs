@@ -4,8 +4,10 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models
 {
-    public interface IBook : IPoco
+    public interface IBook : IBaseEntity, IChangable
     {
+        Guid Id { get; set; }
+
         Guid BookstoreId { get; set; }
 
         IBookstore Bookstore { get; set; }

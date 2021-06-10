@@ -5,7 +5,7 @@ using Store.Common.Enums;
 
 namespace Store.Entities.Identity
 {
-    public class ClientEntity : IDBPoco
+    public class ClientEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

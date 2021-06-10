@@ -59,7 +59,7 @@ namespace Store.Repositories.Identity.Stores
             await _unitOfWork.CommitAsync();
         }
 
-        public Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId)
+        public Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(Guid refreshTokenId)
         {
             if (GuidHelper.IsNullOrEmpty(refreshTokenId))
                 throw new ArgumentNullException(nameof(refreshTokenId));
@@ -79,7 +79,7 @@ namespace Store.Repositories.Identity.Stores
 
         #region IClientStore Members
 
-        public Task<IClient> FindClientByIdAsync(Guid clientId)
+        public Task<IClient> FindClientByKeyAsync(Guid clientId)
         {
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));

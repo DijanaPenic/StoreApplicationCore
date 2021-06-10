@@ -15,7 +15,7 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
 
         Task RemoveExpiredRefreshTokensAsync();
 
-        Task<IUserRefreshToken> FindRefreshTokenByIdAsync(Guid refreshTokenId);
+        Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(Guid refreshTokenId);
 
         Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue);
     }

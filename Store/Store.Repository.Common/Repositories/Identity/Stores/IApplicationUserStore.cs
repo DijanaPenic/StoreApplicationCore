@@ -16,7 +16,7 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
     {
         Task<IPagedList<IUser>> FindUsersAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options, CancellationToken cancellationToken);
 
-        Task<IUser> FindUserByIdAsync(Guid id, IOptionsParameters options, CancellationToken cancellationToken);
+        Task<IUser> FindUserByKeyAsync(Guid key, IOptionsParameters options, CancellationToken cancellationToken);
 
         Task ApproveUserAsync(IUser user, CancellationToken cancellationToken);
 

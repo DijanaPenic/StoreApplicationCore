@@ -2,13 +2,17 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
+using Store.DAL.Context;
 using Store.Common.Parameters.Sorting;
 
-namespace Store.Common.Extensions
+namespace Store.Repository.Extensions
 {
     public static class IQueryableExtensions
     {
@@ -67,6 +71,36 @@ namespace Store.Common.Extensions
         public static IQueryable<T> OrderByDescending<T>(this IQueryable<T> source, string orderBy, bool isFirstParam)
         {
             return OrderBy(source, orderBy, true, isFirstParam);
+        }
+
+        public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source, ApplicationDbContext dbContext, params object[] keyValues)
+        {
+            return source.FirstOrDefaultAsync(GetPrimaryKeyPredicate<TSource>(dbContext, keyValues));
+        }
+
+        public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source, ApplicationDbContext dbContext, params object[] keyValues)
+        {
+            return source.SingleOrDefaultAsync(GetPrimaryKeyPredicate<TSource>(dbContext, keyValues));
+        }
+
+        private static Expression<Func<TSource, bool>> GetPrimaryKeyPredicate<TSource>(ApplicationDbContext dbContext, params object[] keyValues)
+        {
+            string[] keyNames = dbContext.Model.FindEntityType(typeof(TSource)).FindPrimaryKey().Properties.Select(p => p.Name).ToArray();
+            IEnumerable<(string Name, object Value)> keys = keyValues.Zip(keyNames, (v, n) => (Name: n, Value: v));
+
+            ExpressionStarter<TSource> predicate = PredicateBuilder.New<TSource>();
+            ParameterExpression parameter = Expression.Parameter(typeof(TSource), "e");
+
+            foreach ((string Name, object Value) in keys)
+            {
+                //create the lambda expression
+                MemberExpression predicateLeft = Expression.PropertyOrField(parameter, Name);
+                ConstantExpression predicateRight = Expression.Constant(Value);
+
+                predicate = predicate.And(Expression.Lambda<Func<TSource, bool>>(Expression.Equal(predicateLeft, predicateRight), parameter));
+            }
+
+            return predicate;
         }
 
         private static IQueryable<T> OrderBy<T>(IQueryable<T> source, string orderBy, bool descending, bool isFirstParam)

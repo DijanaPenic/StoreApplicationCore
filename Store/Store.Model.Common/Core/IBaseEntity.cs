@@ -2,12 +2,8 @@
 
 namespace Store.Model.Common.Models.Core
 {
-    public interface IPoco
+    public interface IBaseEntity
     {
-        Guid Id { get; set; }
-
         DateTime DateCreatedUtc { get; set; }
-
-        DateTime DateUpdatedUtc { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Store.Service.Common.Services
 {
     public interface IBookstoreService
     {
-        Task<IBookstore> FindBookstoreByIdAsync(Guid bookstoreId, IOptionsParameters options);
+        Task<IBookstore> FindBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options);
 
         Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 

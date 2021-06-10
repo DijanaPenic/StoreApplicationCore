@@ -5,7 +5,7 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models
 {
-    public interface IEmailTemplate : IPoco
+    public interface IEmailTemplate : IBaseEntity, IChangable
     {
         Guid ClientId { get; set; }
 

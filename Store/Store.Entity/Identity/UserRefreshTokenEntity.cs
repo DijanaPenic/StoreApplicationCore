@@ -2,7 +2,7 @@
 
 namespace Store.Entities.Identity
 {
-    public class UserRefreshTokenEntity : IDBPoco
+    public class UserRefreshTokenEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

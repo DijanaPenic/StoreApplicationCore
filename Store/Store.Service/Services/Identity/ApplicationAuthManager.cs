@@ -70,7 +70,7 @@ namespace Store.Services.Identity
             AddRolesToClaims(claims, roles);
 
             // Find client by name
-            IClient client = await _authStore.FindClientByIdAsync(clientId);
+            IClient client = await _authStore.FindClientByKeyAsync(clientId);
 
             // Set jwt security token
             // Web API has a role of the authentication server - audience and issuer need to be set in JWT token. 
@@ -186,9 +186,9 @@ namespace Store.Services.Identity
             return _authStore.RemoveExpiredRefreshTokensAsync();
         }
 
-        public Task<IClient> GetClientByIdAsync(Guid clientId)
+        public Task<IClient> GetClientByKeyAsync(Guid key)
         {
-            return _authStore.FindClientByIdAsync(clientId);
+            return _authStore.FindClientByKeyAsync(key);
         }
 
         public async Task<string> AuthenticateClientAsync(Guid clientId, string clientSecret)
@@ -198,7 +198,7 @@ namespace Store.Services.Identity
                 return "Client is required.";
             }
 
-            IClient client = await _authStore.FindClientByIdAsync(clientId);
+            IClient client = await _authStore.FindClientByKeyAsync(clientId);
 
             if(client == null)
             {
@@ -237,7 +237,7 @@ namespace Store.Services.Identity
                 return $"URL '{url}' is not valid.";
             }
 
-            IClient client = await _authStore.FindClientByIdAsync(clientId);
+            IClient client = await _authStore.FindClientByKeyAsync(clientId);
             if (client == null)
             {
                 return $"Client '{clientId}' is not registered in the system.";

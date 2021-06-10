@@ -4,8 +4,10 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IUserRefreshToken : IPoco
+    public interface IUserRefreshToken : IBaseEntity, IChangable
     {
+        Guid Id { get; set; }
+
         string Value { get; set; }
 
         Guid UserId { get; set; }

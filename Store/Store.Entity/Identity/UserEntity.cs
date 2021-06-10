@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Store.Entities.Identity
 {
-    public class UserEntity : IDBPoco
+    public class UserEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

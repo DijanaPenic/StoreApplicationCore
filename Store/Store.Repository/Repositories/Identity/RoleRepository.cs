@@ -12,6 +12,7 @@ using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
 using Store.Common.Helpers;
 using Store.Repository.Core;
+using Store.Repository.Extensions;
 using Store.Repository.Common.Repositories.Identity;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
@@ -69,7 +70,7 @@ namespace Store.Repositories.Identity
 
         public Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options)
         {
-            return FindByIdAsync<IRole, RoleEntity>(key, options);
+            return FindByKeyAsync<IRole, RoleEntity>(options, key);
         }
 
         public Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)

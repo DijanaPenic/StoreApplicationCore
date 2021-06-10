@@ -2,7 +2,7 @@
 
 namespace Store.Entities.Identity
 {
-    public class UserRoleEntity 
+    public class UserRoleEntity : IDBBaseEntity
     {
         public Guid UserId { get; set; }
 

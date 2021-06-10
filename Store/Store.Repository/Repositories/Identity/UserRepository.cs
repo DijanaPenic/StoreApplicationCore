@@ -114,7 +114,7 @@ namespace Store.Repositories.Identity
 
         public Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options)
         {
-            return FindByIdAsync<IUser, UserEntity>(key, options);
+            return FindByKeyAsync<IUser, UserEntity>(options, key);
         }
 
         public async Task<IUser> FindByNormalizedEmailAsync(string normalizedEmail)

@@ -1,8 +1,10 @@
 ﻿using System;
 
+using Store.Model.Common.Models.Core;
+
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IUserLogin : IUserLoginKey
+    public interface IUserLogin : IUserLoginKey, IBaseEntity, IChangable
     {
         string ProviderDisplayName { get; set; }
 
@@ -11,10 +13,6 @@ namespace Store.Model.Common.Models.Identity
         bool IsConfirmed { get; set; }
 
         Guid UserId { get; set; }
-
-        DateTime DateCreatedUtc { get; set; }
-
-        DateTime DateUpdatedUtc { get; set; }
     }
 
     public interface IUserLoginKey

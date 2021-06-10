@@ -20,12 +20,12 @@ namespace Store.Repository.Common.Repositories
 
         Task<IEnumerable<IBook>> GetBooksAsync(IOptionsParameters options);
 
-        public Task<IBook> FindBookByIdAsync(Guid id, IOptionsParameters options);
+        public Task<IBook> FindBookByKeyAsync(Guid key, IOptionsParameters options);
 
-        Task<ResponseStatus> UpdateBookAsync(Guid id, IBook model);
+        Task<ResponseStatus> UpdateBookAsync(Guid key, IBook model);
 
         Task<ResponseStatus> AddBookAsync(IBook model);
 
-        Task<ResponseStatus> DeleteBookByIdAsync(Guid id);
+        Task<ResponseStatus> DeleteBookByKeyAsync(Guid key);
     }
 }

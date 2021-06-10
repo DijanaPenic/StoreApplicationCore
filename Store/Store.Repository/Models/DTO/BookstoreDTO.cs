@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using Store.Model.Common.Models.Core;
 
-namespace Store.Repository.Repositories.Models
+namespace Store.Repository.Models
 {
-    public class BookstoreDTO : IPoco
+    public class BookstoreDTO : IBaseEntity, IChangable
     {
         public Guid Id { get; set; }
 

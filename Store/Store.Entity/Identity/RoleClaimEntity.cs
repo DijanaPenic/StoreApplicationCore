@@ -2,7 +2,7 @@
 
 namespace Store.Entities.Identity
 {
-    public class RoleClaimEntity : IDBPoco
+    public class RoleClaimEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

@@ -2,9 +2,9 @@
 
 using Store.Model.Common.Models.Core;
 
-namespace Store.Repository.Repositories.Models
+namespace Store.Repository.Models
 {
-    public class BookDTO : IPoco
+    public class BookDTO : IBaseEntity, IChangable
     {
         public Guid Id { get; set; }
 

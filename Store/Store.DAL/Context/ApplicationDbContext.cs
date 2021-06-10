@@ -1,9 +1,16 @@
-﻿using System.Data;
+﻿using System;
+using System.Linq;
+using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 using Store.Entities;
 using Store.Entities.Identity;
+using Store.Common.Helpers;
 using Store.DAL.Configuration;
 using Store.DAL.Configuration.Identity;
 
@@ -62,6 +69,33 @@ namespace Store.DAL.Context
             builder.ApplyConfiguration(new BookstoreConfiguration());
             builder.ApplyConfiguration(new BookConfiguration());
             builder.ApplyConfiguration(new EmailTemplateConfiguration());
-        }   
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (EntityEntry entry in entries)
+            {
+                object entity = entry.Entity;
+
+                switch (entry.State)
+                {
+                    case EntityState.Modified:
+                        if (entity is IDBChangable)
+                        {
+                            (entity as IDBChangable).DateUpdatedUtc = DateTime.UtcNow;
+                        }
+                        break;
+                    case EntityState.Added:
+                        if (entity is IDBBaseEntity) (entity as IDBBaseEntity).DateCreatedUtc = DateTime.UtcNow;
+                        if (entry.Metadata.FindProperty("Id") != null) entry.Property("Id").CurrentValue = GuidHelper.NewSequentialGuid();
+
+                        break;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

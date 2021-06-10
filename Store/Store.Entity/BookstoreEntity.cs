@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Store.Entities
 {
-    public class BookstoreEntity : IDBPoco
+    public class BookstoreEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

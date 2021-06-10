@@ -426,7 +426,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -482,7 +482,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -543,7 +543,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();

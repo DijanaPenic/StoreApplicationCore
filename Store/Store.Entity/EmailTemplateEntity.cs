@@ -4,7 +4,7 @@ using Store.Common.Enums;
 
 namespace Store.Entities
 {
-    public class EmailTemplateEntity : IDBPoco
+    public class EmailTemplateEntity : IDBBaseEntity, IDBChangable
     {
         public Guid Id { get; set; }
 

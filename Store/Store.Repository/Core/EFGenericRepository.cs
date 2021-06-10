@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 
-using Store.Entities;
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
-using Store.Model.Common.Models.Core;
+using Store.Repository.Extensions;
 
 namespace Store.Repository.Core
 {
@@ -26,7 +25,7 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        protected async Task<IEnumerable<TDomain>> GetWithProjectionAsync<TDomain, TEntity, TDTO>(IOptionsParameters options) where TEntity : class
+        protected async Task<IEnumerable<TDomain>> GetUsingProjectionAsync<TDomain, TEntity, TDTO>(IOptionsParameters options) where TEntity : class
         {
             IList<TDTO> destItems = await DbContext.Set<TEntity>().ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDomain, TEntity>(options)).ToListAsync();
 
@@ -54,7 +53,7 @@ namespace Store.Repository.Core
             IOptionsParameters options
         ) where TEntity : class
         {
-            IPagedList<TDTO> destPagedList = await FindWithProjection<TDomain, TEntity, TDTO>(filterExpression, sorting, options).ToPagedListAsync(paging.PageNumber, paging.PageSize);
+            IPagedList<TDTO> destPagedList = await FindUsingProjection<TDomain, TEntity, TDTO>(filterExpression, sorting, options).ToPagedListAsync(paging.PageNumber, paging.PageSize);
 
             return destPagedList.ToPagedList<TDTO, TDomain>(Mapper);
         }
@@ -71,63 +70,57 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        protected async Task<IEnumerable<TDomain>> FindWithProjectionAsync<TDomain, TEntity, TDTO>
+        protected async Task<IEnumerable<TDomain>> FindUsingProjectionAsync<TDomain, TEntity, TDTO>
         (
             Expression<Func<TDomain, bool>> filterExpression, 
             ISortingParameters sorting, 
             IOptionsParameters options
         ) where TEntity : class
         {
-            IList<TDTO> destItems = await FindWithProjection<TDomain, TEntity, TDTO>(filterExpression, sorting, options).ToListAsync();
+            IList<TDTO> destItems = await FindUsingProjection<TDomain, TEntity, TDTO>(filterExpression, sorting, options).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }
 
-        protected async Task<TDomain> FindByIdAsync<TDomain, TEntity>
+        protected async Task<TDomain> FindByKeyAsync<TDomain, TEntity>
         (
-            Guid id, 
-            IOptionsParameters options
-        ) where TEntity : class, IDBPoco
+            IOptionsParameters options,
+            params object[] keyValues
+        ) where TEntity : class
         {
-            TEntity entity = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options)).FirstOrDefaultAsync(e => e.Id == id);
+            TEntity entity = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options)).FirstOrDefaultAsync(DbContext, keyValues); 
 
             return Mapper.Map<TDomain>(entity);
         }
 
-        protected async Task<TDomain> FindByIdWithProjectionAsync<TDomain, TEntity, TDTO>
-        (
-            Guid id, 
-            IOptionsParameters options
-        ) where TDTO : IPoco where TEntity : class, IDBPoco
+        protected async Task<TDomain> FindByKeyUsingProjectionAsync<TDomain, TEntity, TDTO>
+        ( 
+            IOptionsParameters options,
+            params object[] keyValues
+        ) where TEntity : class
         {
             TDTO destItem = await DbContext.Set<TEntity>()
                                            .ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDomain, TEntity>(options))
-                                           .FirstOrDefaultAsync(e => e.Id == id);
+                                           .FirstOrDefaultAsync(DbContext, keyValues); 
 
             return Mapper.Map<TDomain>(destItem);
         }
 
-        protected Task<ResponseStatus> AddAsync<TDomain, TEntity>(TDomain model)
-        where TDomain : class, IPoco
-        where TEntity : class, IDBPoco
+        protected Task<ResponseStatus> AddAsync<TDomain, TEntity>(TDomain model) where TEntity : class
         {
             if (model == null)
                 Task.FromResult(ResponseStatus.Error);
 
             TEntity entity = Mapper.Map<TEntity>(model);
 
-            entity.Id = GuidHelper.NewSequentialGuid();
-            entity.DateCreatedUtc = DateTime.UtcNow;
-            entity.DateUpdatedUtc = DateTime.UtcNow;
-
             DbContext.Set<TEntity>().Add(entity);
 
             return Task.FromResult(ResponseStatus.Success);
         }
 
-        protected async Task<ResponseStatus> DeleteByIdAsync<TDomain, TEntity>(Guid id) where TEntity : class, IDBPoco
+        protected async Task<ResponseStatus> DeleteByKeyAsync<TDomain, TEntity>(params object[] keyValues) where TEntity : class
         {
-            TEntity entity = await DbContext.Set<TEntity>().FindAsync(id);
+            TEntity entity = await DbContext.Set<TEntity>().FindAsync(keyValues);
 
             if (entity == null)
                 return ResponseStatus.NotFound;
@@ -139,9 +132,9 @@ namespace Store.Repository.Core
 
         protected async Task<ResponseStatus> UpdateAsync<TDomain, TEntity>
         (
-            Guid id, 
-            TDomain model
-        ) where TDomain : class, IPoco where TEntity : class, IDBPoco
+            TDomain model,
+            params object[] keyValues
+        ) where TEntity : class
         {
             if (model == null)
                 return ResponseStatus.Error;
@@ -149,15 +142,10 @@ namespace Store.Repository.Core
             // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
             // Need to search context or the store because AutoMapper creates a new instance of the object during domain->entity mapping and sometimes
             // the newly created instance cannot be attached to the context (if we're already tracking the original instance)
-            TEntity entity = await DbContext.Set<TEntity>().FindAsync(id);
+            TEntity entity = await DbContext.Set<TEntity>().FindAsync(keyValues);
 
             if (entity == null)
                 return ResponseStatus.NotFound;
-
-            // DateCreatedUtc and Id properties need to be mapped from entity. Otherwise, they'll be overriden with default values.
-            model.DateUpdatedUtc = DateTime.UtcNow;
-            model.DateCreatedUtc = entity.DateCreatedUtc;
-            model.Id = entity.Id;
 
             // This works only for scalar property updates. The navigation property mapping is out of the scope for AutoMapper.
             // Also, the author is highly suggesting against the domain->entity mappings.
@@ -187,7 +175,7 @@ namespace Store.Repository.Core
                             .OrderBy(SortingMap<TDomain, TEntity>(sorting));
         }
 
-        private IQueryable<TDestination> FindWithProjection<TDomain, TEntity, TDestination>
+        private IQueryable<TDestination> FindUsingProjection<TDomain, TEntity, TDestination>
         (
             Expression<Func<TDomain, bool>> filterExpression, 
             ISortingParameters sorting, 

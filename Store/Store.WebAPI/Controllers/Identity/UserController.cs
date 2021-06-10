@@ -81,7 +81,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -133,7 +133,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -191,7 +191,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -235,7 +235,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -302,7 +302,7 @@ namespace Store.WebAPI.Controllers
             }
 
             // Find the user we want to update
-            IUser user = await _userManager.FindUserByIdAsync(userId, OptionsFactory.Create(new string[] { nameof(IUser.Roles) }));
+            IUser user = await _userManager.FindUserByKeyAsync(userId, OptionsFactory.Create(new string[] { nameof(IUser.Roles) }));
             if (user == null)
             {
                 return NotFound();
@@ -352,7 +352,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -378,7 +378,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -404,7 +404,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -430,7 +430,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -456,7 +456,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -556,7 +556,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -624,7 +624,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)));
+            IUser user = await _userManager.FindUserByKeyAsync(userId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)));
 
             if (user != null)
                 return Ok(_mapper.Map<UserGetApiModel>(user));
@@ -698,7 +698,7 @@ namespace Store.WebAPI.Controllers
                 return Forbid();
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();

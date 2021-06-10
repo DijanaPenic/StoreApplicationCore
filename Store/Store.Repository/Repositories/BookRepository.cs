@@ -52,14 +52,14 @@ namespace Store.Repositories
             return GetAsync<IBook, BookEntity>(options);
         }
 
-        public Task<IBook> FindBookByIdAsync(Guid id, IOptionsParameters options) 
+        public Task<IBook> FindBookByKeyAsync(Guid key, IOptionsParameters options) 
         {
-            return FindByIdAsync<IBook, BookEntity>(id, options);
+            return FindByKeyAsync<IBook, BookEntity>(options, key);
         }
 
-        public Task<ResponseStatus> UpdateBookAsync(Guid id, IBook model)
+        public Task<ResponseStatus> UpdateBookAsync(Guid key, IBook model)
         {
-            return UpdateAsync<IBook, BookEntity>(id, model);
+            return UpdateAsync<IBook, BookEntity>(model, key);
         }
 
         public Task<ResponseStatus> AddBookAsync(IBook model)
@@ -67,9 +67,9 @@ namespace Store.Repositories
             return AddAsync<IBook, BookEntity>(model);
         }
 
-        public Task<ResponseStatus> DeleteBookByIdAsync(Guid id)
+        public Task<ResponseStatus> DeleteBookByKeyAsync(Guid key)
         {
-            return DeleteByIdAsync<IBook, BookEntity>(id);
+            return DeleteByKeyAsync<IBook, BookEntity>(key);
         }
     }
 }

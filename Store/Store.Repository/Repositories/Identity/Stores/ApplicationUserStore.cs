@@ -941,11 +941,11 @@ namespace Store.Repositories.Identity.Stores
             return _unitOfWork.UserRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public Task<IUser> FindUserByIdAsync(Guid id, IOptionsParameters options, CancellationToken cancellationToken)
+        public Task<IUser> FindUserByKeyAsync(Guid key, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.UserRepository.FindByKeyAsync(id, options); 
+            return _unitOfWork.UserRepository.FindByKeyAsync(key, options); 
         }
 
         public Task ApproveUserAsync(IUser user, CancellationToken cancellationToken)

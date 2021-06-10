@@ -16,7 +16,7 @@ namespace Store.Service.Common.Services
     {
         Task<IEnumerable<IBook>> GetBooksAsync(IOptionsParameters options);
 
-        Task<IBook> FindBookByIdAsync(Guid bookId, IOptionsParameters options);
+        Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options);
 
         Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 

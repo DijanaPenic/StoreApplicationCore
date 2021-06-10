@@ -56,7 +56,7 @@ namespace Store.WebAPI.Controllers
             if (bookstoreId == Guid.Empty)
                 return BadRequest();
 
-            IBookstore bookstore = await _bookstoreService.FindBookstoreByIdAsync
+            IBookstore bookstore = await _bookstoreService.FindBookstoreByKeyAsync
             (
                 bookstoreId,
                 options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, IBookstore>(_mapper, includeProperties))

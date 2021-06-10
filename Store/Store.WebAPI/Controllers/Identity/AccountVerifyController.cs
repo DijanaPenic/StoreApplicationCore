@@ -87,7 +87,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -211,7 +211,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -280,7 +280,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            IUser user = await _userManager.FindUserByIdAsync(userId);
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
                 return NotFound();

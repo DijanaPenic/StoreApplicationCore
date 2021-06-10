@@ -6,16 +6,16 @@ using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 
-using Store.Models;
-using Store.Model.Common.Models;
 using Store.Entities;
 using Store.DAL.Context;
 using Store.Common.Enums;
+using Store.Model.Common.Models;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
 using Store.Repository.Core;
+using Store.Repository.Models;
 using Store.Repository.Common.Repositories;
 
 namespace Store.Repositories
@@ -35,22 +35,22 @@ namespace Store.Repositories
 
         public Task<IEnumerable<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, ISortingParameters sorting, IOptionsParameters options)
         {
-            return FindWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(GetFilterExpression(filter), sorting, options);
+            return FindUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(GetFilterExpression(filter), sorting, options);
         }
 
         public Task<IEnumerable<IBookstore>> GetBookstoresAsync(IOptionsParameters options)
         {
-            return GetWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(options);
+            return GetUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(options);
         }
 
-        public Task<IBookstore> FindBookstoreByIdAsync(Guid id, IOptionsParameters options)
+        public Task<IBookstore> FindBookstoreByKeyAsync(Guid key, IOptionsParameters options)
         {
-            return FindByIdWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(id, options);
+            return FindByKeyUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(options, key);
         }
 
-        public Task<ResponseStatus> UpdateBookstoreAsync(Guid id, IBookstore model)
+        public Task<ResponseStatus> UpdateBookstoreAsync(Guid key, IBookstore model)
         {
-            return UpdateAsync<IBookstore, BookstoreEntity>(id, model);
+            return UpdateAsync<IBookstore, BookstoreEntity>(model, key);
         }
 
         public Task<ResponseStatus> AddBookstoreAsync(IBookstore model)
@@ -58,9 +58,9 @@ namespace Store.Repositories
             return AddAsync<IBookstore, BookstoreEntity>(model);
         }
 
-        public Task<ResponseStatus> DeleteBookstoreByIdAsync(Guid id)
+        public Task<ResponseStatus> DeleteBookstoreByKeyAsync(Guid key)
         {
-            return DeleteByIdAsync<IBookstore, BookstoreEntity>(id);
+            return DeleteByKeyAsync<IBookstore, BookstoreEntity>(key);
         }
 
         private static Expression<Func<IBookstore, bool>> GetFilterExpression(IFilteringParameters filter)

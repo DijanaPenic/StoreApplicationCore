@@ -18,12 +18,12 @@ namespace Store.Repository.Common.Repositories
 
         Task<bool> EmailTemplateExistsAsync(Guid clientId, EmailTemplateType emailTemplateType);
 
-        Task<IEmailTemplate> FindEmailTemplateByIdAsync(Guid id, IOptionsParameters options);
+        Task<IEmailTemplate> FindEmailTemplateByKeyAsync(Guid key, IOptionsParameters options);
 
-        Task<ResponseStatus> UpdateEmailTemplateAsync(Guid id, IEmailTemplate model);
+        Task<ResponseStatus> UpdateEmailTemplateAsync(Guid key, IEmailTemplate model);
 
         Task<ResponseStatus> AddEmailTemplateAsync(IEmailTemplate model);
 
-        Task<ResponseStatus> DeleteEmailTemplateByIdAsync(Guid id);
+        Task<ResponseStatus> DeleteEmailTemplateByKeyAsync(Guid keykey);
     }
 }

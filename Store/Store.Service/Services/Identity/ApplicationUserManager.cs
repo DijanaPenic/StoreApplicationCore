@@ -158,14 +158,14 @@ namespace Store.Services.Identity
             return _userStore.FindUsersAsync(filter, paging, sorting, options, CancellationToken);
         }
 
-        public Task<IUser> FindUserByIdAsync(Guid id, IOptionsParameters options = null)
+        public Task<IUser> FindUserByKeyAsync(Guid key, IOptionsParameters options = null)
         {
-            if (GuidHelper.IsNullOrEmpty(id))
+            if (GuidHelper.IsNullOrEmpty(key))
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(key));
             }
 
-            return _userStore.FindUserByIdAsync(id, options, CancellationToken);
+            return _userStore.FindUserByKeyAsync(key, options, CancellationToken);
         }
 
         public async Task<IdentityResult> ApproveUserAsync(IUser user)

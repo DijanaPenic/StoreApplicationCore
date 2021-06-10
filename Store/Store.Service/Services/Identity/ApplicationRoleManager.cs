@@ -61,7 +61,7 @@ namespace Store.Services.Identity
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _roleStore.FindRoleByIdAsync(id, options, CancellationToken);
+            return _roleStore.FindRoleByKeyAsync(id, options, CancellationToken);
         }
 
         public Task<IPagedList<IRole>> FindRolesAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)

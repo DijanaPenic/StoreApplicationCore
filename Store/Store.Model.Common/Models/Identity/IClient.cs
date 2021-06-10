@@ -1,10 +1,15 @@
-﻿using Store.Common.Enums;
+﻿using System;
+using System.Collections.Generic;
+
+using Store.Common.Enums;
 using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IClient : IPoco
+    public interface IClient : IBaseEntity, IChangable
     {
+        Guid Id { get; set; }
+
         string Name { get; set; }
 
         string Secret { get; set; }

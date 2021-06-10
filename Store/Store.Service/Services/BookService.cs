@@ -28,9 +28,9 @@ namespace Store.Services
             return _unitOfWork.BookRepository.GetBooksAsync(options);
         }
 
-        public Task<IBook> FindBookByIdAsync(Guid bookId, IOptionsParameters options)
+        public Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.FindBookByIdAsync(bookId, options);
+            return _unitOfWork.BookRepository.FindBookByKeyAsync(bookId, options);
         }
 
         public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
@@ -56,7 +56,7 @@ namespace Store.Services
 
         public async Task<ResponseStatus> DeleteBookAsync(Guid bookId)
         {
-            ResponseStatus status = await _unitOfWork.BookRepository.DeleteBookByIdAsync(bookId);
+            ResponseStatus status = await _unitOfWork.BookRepository.DeleteBookByKeyAsync(bookId);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();

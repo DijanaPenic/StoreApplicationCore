@@ -123,7 +123,7 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            Stream templateStream = await _emailTemplateService.FindEmailTemplateByIdAsync(emailTemplateId);
+            Stream templateStream = await _emailTemplateService.FindEmailTemplateByKeyAsync(emailTemplateId);
 
             return File(templateStream, "application/octet-stream");
         }

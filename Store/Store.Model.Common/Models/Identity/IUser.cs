@@ -5,8 +5,10 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IUser : IPoco
+    public interface IUser : IBaseEntity, IChangable
     {
+        Guid Id { get; set; }
+
         string UserName { get; set; }
 
         string NormalizedUserName { get; set; }

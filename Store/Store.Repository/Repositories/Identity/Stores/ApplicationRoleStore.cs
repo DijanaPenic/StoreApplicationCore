@@ -247,11 +247,11 @@ namespace Store.Repositories.Identity.Stores
 
         #region IApplicationRoleStore<IRole> Members
 
-        public Task<IRole> FindRoleByIdAsync(Guid id, IOptionsParameters options, CancellationToken cancellationToken)
+        public Task<IRole> FindRoleByKeyAsync(Guid key, IOptionsParameters options, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _unitOfWork.RoleRepository.FindByKeyAsync(id, options);
+            return _unitOfWork.RoleRepository.FindByKeyAsync(key, options);
         }
 
         public async Task<IEnumerable<IRole>> FindByNameAsync(string[] normalizedRoleNames, CancellationToken cancellationToken)
