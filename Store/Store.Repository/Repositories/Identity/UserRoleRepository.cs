@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
-using Store.Models.Identity;
-using Store.Model.Common.Models.Identity;
 using Store.Repository.Core;
 using Store.Repository.Common.Repositories.Identity;
+using Store.Entities.Identity;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repositories.Identity
 {
     internal class UserRoleRepository : GenericRepository, IUserRoleRepository
     {
+        private DbSet<UserRoleEntity> _dbSet => DbContext.Set<UserRoleEntity>();
+
         public UserRoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
@@ -40,38 +44,19 @@ namespace Store.Repositories.Identity
 
         public async Task<IEnumerable<string>> FindRolesByUserIdAsync(Guid userId)
         {
-            return await QueryAsync<string>(
-                sql: $@"
-                    SELECT r.{RoleSchema.Columns.NormalizedName}
-                    FROM {UserRoleSchema.Table} ur 
-                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id}
-                    WHERE ur.{UserRoleSchema.Columns.UserId} = @{nameof(userId)}
-                ",
-                param: new { userId }
-            );
+            return await _dbSet.Where(ur => ur.UserId == userId).Select(ur => ur.Role.NormalizedName).ToListAsync();
         }
 
         public async Task<IEnumerable<IUser>> FindUsersByRoleNameAsync(string roleName)
         {
-            return await QueryAsync<User>(
-                sql: $@"
-                    SELECT u.* FROM {UserRoleSchema.Table} ur 
-                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
-                        INNER JOIN {UserSchema.Table} u ON ur.{UserRoleSchema.Columns.UserId} = u.{UserSchema.Columns.Id}
-                    WHERE r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
-                ",
-                param: new { roleName });
+            List<UserEntity> entities = await _dbSet.Where(ur => ur.Role.NormalizedName == roleName).Select(ur => ur.User).ToListAsync();
+
+            return Mapper.Map<IEnumerable<IUser>>(entities);
         }
 
-        public async Task<int> GetCountByRoleNameAsync(string roleName)
+        public Task<int> GetCountByRoleNameAsync(string roleName)
         {
-            return await ExecuteQueryScalarAsync<int>(
-                sql: $@"
-                    SELECT count(*) FROM {UserRoleSchema.Table} ur 
-                        INNER JOIN {RoleSchema.Table} r ON ur.{UserRoleSchema.Columns.RoleId} = r.{RoleSchema.Columns.Id} 
-                    WHERE r.{RoleSchema.Columns.NormalizedName} = @{nameof(roleName)}
-                ",
-                param: new { roleName });
+            return _dbSet.Where(ur => ur.Role.NormalizedName == roleName).CountAsync();
         }
 
         public Task DeleteAsync(Guid userId, string roleName)
