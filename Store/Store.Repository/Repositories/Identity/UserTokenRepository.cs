@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using AutoMapper;
+using X.PagedList;
 
 using Store.DAL.Context;
-using Store.DAL.Schema.Identity;
-using Store.Models.Identity;
-using Store.Model.Common.Models.Identity;
+using Store.Common.Enums;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Repository.Core;
+using Store.Entities.Identity;
+using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
@@ -18,79 +24,36 @@ namespace Store.Repositories.Identity
         { 
         }
 
-        public Task AddAsync(IUserToken entity)
+        public Task<IPagedList<IUserToken>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            entity.DateCreatedUtc = DateTime.UtcNow;
-            entity.DateUpdatedUtc = DateTime.UtcNow;
+            Expression<Func<IUserToken, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : ut => ut.Name.Contains(filter.SearchString) || ut.LoginProvider.Contains(filter.SearchString);
 
-            return ExecuteQueryAsync(
-                sql: $@"
-                    INSERT INTO {UserTokenSchema.Table}(
-                        {UserTokenSchema.Columns.UserId}, 
-                        {UserTokenSchema.Columns.LoginProvider}, 
-                        {UserTokenSchema.Columns.Name}, 
-                        {UserTokenSchema.Columns.Value},
-                        {UserTokenSchema.Columns.DateCreatedUtc},
-                        {UserTokenSchema.Columns.DateUpdatedUtc})
-                    VALUES(
-                        @{nameof(entity.UserId)}, 
-                        @{nameof(entity.LoginProvider)}, 
-                        @{nameof(entity.Name)}, 
-                        @{nameof(entity.Value)},
-                        @{nameof(entity.DateCreatedUtc)},
-                        @{nameof(entity.DateUpdatedUtc)})",
-                param: entity
-            );
+            return FindAsync<IUserToken, UserTokenEntity>(filterExpression, paging, sorting, options);
         }
 
-        public async Task<IEnumerable<IUserToken>> GetAsync()
+        public Task<IEnumerable<IUserToken>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return await QueryAsync<UserToken>(
-                sql: $"SELECT * FROM {UserTokenSchema.Table}"
-            );
+            return GetAsync<IUserToken, UserTokenEntity>(sorting, options);
         }
 
-        public async Task<IUserToken> FindByKeyAsync(IUserTokenKey key)
+        public Task<IUserToken> FindByKeyAsync(IUserTokenKey key, IOptionsParameters options = null)
         {
-            return await QuerySingleOrDefaultAsync<UserToken>(
-                sql: $@"
-                    SELECT * FROM {UserTokenSchema.Table}
-                    WHERE 
-                        {UserTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND 
-                        {UserTokenSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        {UserTokenSchema.Columns.Name} = @{nameof(key.Name)}",
-                param: key
-            );
+            return FindByKeyAsync<IUserToken, UserTokenEntity>(options, key);
         }
 
-        public Task DeleteByKeyAsync(IUserTokenKey key)
+        public Task<ResponseStatus> UpdateAsync(IUserToken model)
         {
-            return ExecuteQueryAsync(
-                sql: $@"
-                    DELETE FROM {UserTokenSchema.Table}
-                    WHERE 
-                        {UserTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND 
-                        {UserTokenSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        {UserTokenSchema.Columns.Name} = @{nameof(key.Name)}",
-                param: key
-            );
+            return UpdateAsync<IUserToken, UserTokenEntity>(model, model.UserId, model.LoginProvider, model.Name);
         }
 
-        public Task UpdateAsync(IUserToken entity)
+        public Task<ResponseStatus> AddAsync(IUserToken model)
         {
-            entity.DateUpdatedUtc = DateTime.UtcNow;
+            return AddAsync<IUserToken, UserTokenEntity>(model);
+        }
 
-            return ExecuteQueryAsync(
-                sql: $@"
-                    UPDATE {UserTokenSchema.Table} SET 
-                        {UserTokenSchema.Columns.Value} = @{nameof(entity.Value)},
-                        {UserTokenSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
-                    WHERE 
-                        {UserTokenSchema.Columns.UserId} = @{nameof(entity.UserId)} AND 
-                        {UserTokenSchema.Columns.LoginProvider} = @{nameof(entity.LoginProvider)} AND 
-                        {UserTokenSchema.Columns.Name} = @{nameof(entity.Name)}",
-                param: entity
-            );
+        public Task<ResponseStatus> DeleteByKeyAsync(IUserTokenKey key)
+        {
+            return DeleteByKeyAsync<IUserToken, UserTokenEntity>(key);
         }
     }
 }
