@@ -28,44 +28,36 @@ namespace Store.Repositories
         {
         }
 
-        public Task<IPagedList<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IBookstore>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return FindWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(GetFilterExpression(filter), paging, sorting, options);
+            Expression<Func<IBookstore, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : bs => bs.Name.Contains(filter.SearchString) || bs.Location.Contains(filter.SearchString);
+
+            return FindWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(filterExpression, paging, sorting, options);
         }
 
-        public Task<IEnumerable<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IEnumerable<IBookstore>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return FindUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(GetFilterExpression(filter), sorting, options);
+            return GetUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(sorting, options);
         }
 
-        public Task<IEnumerable<IBookstore>> GetBookstoresAsync(IOptionsParameters options)
-        {
-            return GetUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(options);
-        }
-
-        public Task<IBookstore> FindBookstoreByKeyAsync(Guid key, IOptionsParameters options)
+        public Task<IBookstore> FindByKeyAsync(Guid key, IOptionsParameters options = null)
         {
             return FindByKeyUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(options, key);
         }
 
-        public Task<ResponseStatus> UpdateBookstoreAsync(Guid key, IBookstore model)
+        public Task<ResponseStatus> UpdateAsync(IBookstore model)
         {
-            return UpdateAsync<IBookstore, BookstoreEntity>(model, key);
+            return UpdateAsync<IBookstore, BookstoreEntity>(model, model.Id);
         }
 
-        public Task<ResponseStatus> AddBookstoreAsync(IBookstore model)
+        public Task<ResponseStatus> AddAsync(IBookstore model)
         {
             return AddAsync<IBookstore, BookstoreEntity>(model);
         }
 
-        public Task<ResponseStatus> DeleteBookstoreByKeyAsync(Guid key)
+        public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
             return DeleteByKeyAsync<IBookstore, BookstoreEntity>(key);
-        }
-
-        private static Expression<Func<IBookstore, bool>> GetFilterExpression(IFilteringParameters filter)
-        {
-            return string.IsNullOrEmpty(filter.SearchString) ? null : bs => bs.Name.Contains(filter.SearchString) || bs.Location.Contains(filter.SearchString);
         }
     }
 }

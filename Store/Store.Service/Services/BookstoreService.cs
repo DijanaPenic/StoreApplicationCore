@@ -25,7 +25,7 @@ namespace Store.Services
 
         public Task<IBookstore> FindBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options)
         {
-            return _unitOfWork.BookstoreRepository.FindBookstoreByKeyAsync(bookstoreId, options);
+            return _unitOfWork.BookstoreRepository.FindByKeyAsync(bookstoreId, options);
         }
 
         public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
@@ -33,19 +33,19 @@ namespace Store.Services
             return _unitOfWork.BookRepository.FindByBookstoreIdAsync(bookstoreId, filter, paging, sorting, options);
         }
 
-        public Task<IEnumerable<IBookstore>> GetBookstoresAsync(IOptionsParameters options)
+        public Task<IEnumerable<IBookstore>> GetBookstoresAsync(ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookstoreRepository.GetBookstoresAsync(options);
+            return _unitOfWork.BookstoreRepository.GetAsync(sorting, options);
         }
 
         public Task<IPagedList<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookstoreRepository.FindBookstoresAsync(filter, paging, sorting, options);
+            return _unitOfWork.BookstoreRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public async Task<ResponseStatus> UpdateBookstoreAsync(Guid bookstoreId, IBookstore bookstore)
+        public async Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)
         {
-            ResponseStatus status = await _unitOfWork.BookstoreRepository.UpdateBookstoreAsync(bookstoreId, bookstore);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.UpdateAsync(bookstore);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();
@@ -53,7 +53,7 @@ namespace Store.Services
 
         public async Task<ResponseStatus> InsertBookstoreAsync(IBookstore bookstore)
         {
-            ResponseStatus status = await _unitOfWork.BookstoreRepository.AddBookstoreAsync(bookstore);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.AddAsync(bookstore);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();
@@ -61,7 +61,7 @@ namespace Store.Services
 
         public async Task<ResponseStatus> DeleteBookstoreAsync(Guid bookstoreId)
         {
-            ResponseStatus status = await _unitOfWork.BookstoreRepository.DeleteBookstoreByKeyAsync(bookstoreId);
+            ResponseStatus status = await _unitOfWork.BookstoreRepository.DeleteByKeyAsync(bookstoreId);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();

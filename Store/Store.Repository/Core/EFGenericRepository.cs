@@ -32,9 +32,16 @@ namespace Store.Repository.Core
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        protected async Task<IEnumerable<TDomain>> GetUsingProjectionAsync<TDomain, TEntity, TDTO>(IOptionsParameters options) where TEntity : class
+        protected async Task<IEnumerable<TDomain>> GetUsingProjectionAsync<TDomain, TEntity, TDTO>
+        (
+            ISortingParameters sorting,
+            IOptionsParameters options
+        ) where TEntity : class
         {
-            IList<TDTO> destItems = await DbContext.Set<TEntity>().ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDomain, TEntity>(options)).ToListAsync();
+            IList<TDTO> destItems = await DbContext.Set<TEntity>()
+                                                   .ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDomain, TEntity>(options))
+                                                   .OrderBy(SortingMap<TDomain, TEntity>(sorting))
+                                                   .ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(destItems);
         }

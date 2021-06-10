@@ -18,11 +18,11 @@ namespace Store.Service.Common.Services
 
         Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
-        Task<IEnumerable<IBookstore>> GetBookstoresAsync(IOptionsParameters options);
+        Task<IEnumerable<IBookstore>> GetBookstoresAsync(ISortingParameters sorting, IOptionsParameters options);
 
         Task<IPagedList<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
-        Task<ResponseStatus> UpdateBookstoreAsync(Guid bookstoreId, IBookstore bookstore);
+        Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore);
 
         Task<ResponseStatus> InsertBookstoreAsync(IBookstore bookstore);
 

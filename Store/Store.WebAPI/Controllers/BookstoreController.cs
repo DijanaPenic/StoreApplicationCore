@@ -122,7 +122,11 @@ namespace Store.WebAPI.Controllers
         {
             Task<IEnumerable<IBookstore>> GetBookstoresFuncAsync()
             {
-                return _bookstoreService.GetBookstoresAsync(OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, IBookstore>(_mapper, includeProperties)));
+                return _bookstoreService.GetBookstoresAsync
+                (
+                    sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookGetApiModel, IBook>(_mapper, DefaultParameters.SortOrder)),
+                    options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, IBookstore>(_mapper, includeProperties))
+                );
             }
 
             IEnumerable<IBookstore> bookstores;
@@ -225,7 +229,10 @@ namespace Store.WebAPI.Controllers
             if (bookstoreId == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(bookstoreId, _mapper.Map<IBookstore>(bookstoreModel));
+            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
+            bookstore.Id = bookstoreId;
+
+            ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(bookstore);
 
             switch (result)
             {
