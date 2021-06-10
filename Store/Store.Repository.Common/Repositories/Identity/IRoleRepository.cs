@@ -17,8 +17,6 @@ namespace Store.Repository.Common.Repositories.Identity
 
         Task<IEnumerable<IRole>> FindByNameAsync(string[] roleNames);
 
-        Task<IRole> FindByKeyAsync(Guid key, IOptionsParameters options);
-
         Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
         
         Task<IPagedList<IRole>> FindBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting);

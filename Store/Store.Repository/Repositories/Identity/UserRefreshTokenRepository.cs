@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
@@ -11,13 +12,10 @@ using Store.Common.Enums;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
-using Store.Common.Parameters.Filtering;
-using Store.Models.Identity;
-using Store.Model.Common.Models.Identity;
 using Store.Repository.Core;
 using Store.Entities.Identity;
 using Store.Repository.Common.Repositories.Identity;
-using System.Linq;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Repositories.Identity
 {
@@ -34,9 +32,9 @@ namespace Store.Repositories.Identity
             return GetAsync<IUserRefreshToken, UserRefreshTokenEntity>(sorting, options);
         }
 
-        public Task<IPagedList<IUserRefreshToken>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
+        public Task<IPagedList<IUserRefreshToken>> FindAsync(IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return FindAsync<IUserRefreshToken, UserRefreshTokenEntity>(null, paging, sorting, options);    // Nothing to search by searchString
+            return FindAsync<IUserRefreshToken, UserRefreshTokenEntity>(null, paging, sorting, options);
         }
 
         public Task<IUserRefreshToken> FindByKeyAsync(IUserRefreshTokenKey key, IOptionsParameters options = null)

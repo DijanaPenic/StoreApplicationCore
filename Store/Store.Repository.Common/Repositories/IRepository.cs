@@ -14,8 +14,6 @@ namespace Store.Repository.Common
     {
         Task<IEnumerable<TModel>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null);
 
-        Task<IPagedList<TModel>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
-
         Task<TModel> FindByKeyAsync(TKey key, IOptionsParameters options = null);
 
         Task<ResponseStatus> AddAsync(TModel model);
