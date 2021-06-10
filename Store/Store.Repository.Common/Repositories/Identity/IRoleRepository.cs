@@ -11,7 +11,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
-    public interface IRoleRepository : IIdentityRepository<IRole, Guid>
+    public interface IRoleRepository : IRepository<IRole, Guid>
     {
         Task<IRole> FindByNameAsync(string roleName);
 
