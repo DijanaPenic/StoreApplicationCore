@@ -10,14 +10,12 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
-    public interface IUserRepository : IIdentityRepository<IUser, Guid>
+    public interface IUserRepository : IRepository<IUser, Guid>
     {
         Task<IUser> FindByNormalizedUserNameAsync(string normalizedUserName);
 
         Task<IUser> FindByNormalizedEmailAsync(string normalizedEmail);
 
-        Task<IUser> FindByKeyAsync(Guid key, IOptionsParameters options);
-
-        Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+        Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
     }
 }
