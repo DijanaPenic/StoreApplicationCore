@@ -4,8 +4,6 @@ namespace Store.Entities.Identity
 {
     public class UserRefreshTokenEntity : IDBBaseEntity, IDBChangable
     {
-        public Guid Id { get; set; }
-
         public string Value { get; set; }
 
         public Guid UserId { get; set; }

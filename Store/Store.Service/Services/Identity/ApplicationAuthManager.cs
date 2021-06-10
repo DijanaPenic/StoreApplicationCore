@@ -99,7 +99,12 @@ namespace Store.Services.Identity
             };
 
             // Delete the existing refresh token from the database (if found)
-            await _authStore.RemoveRefreshTokenAsync(user.Id, client.Id);
+            IUserRefreshTokenKey userRefreshTokenKey = new UserRefreshTokenKey() 
+            { 
+                ClientId = client.Id,
+                UserId = user.Id
+            };
+            await _authStore.RemoveRefreshTokenByKeyAsync(userRefreshTokenKey);
 
             // Save refresh token in the database
             await _authStore.AddRefreshTokenAsync(refreshToken);
@@ -168,17 +173,6 @@ namespace Store.Services.Identity
             ClaimsPrincipal claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
 
             return Task.FromResult((claimsPrincipal, validatedToken as JwtSecurityToken));
-        }
-
-        public Task RemoveRefreshTokenAsync(Guid userId, Guid clientId)
-        {
-            if (GuidHelper.IsNullOrEmpty(userId))
-                throw new ArgumentNullException(nameof(userId));
-
-            if (GuidHelper.IsNullOrEmpty(clientId))
-                throw new ArgumentNullException(nameof(clientId));
-
-            return _authStore.RemoveRefreshTokenAsync(userId, clientId);
         }
 
         public Task RemoveExpiredRefreshTokensAsync()

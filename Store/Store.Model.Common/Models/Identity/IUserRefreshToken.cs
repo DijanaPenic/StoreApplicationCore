@@ -4,18 +4,21 @@ using Store.Model.Common.Models.Core;
 
 namespace Store.Model.Common.Models.Identity
 {
-    public interface IUserRefreshToken : IBaseEntity, IChangable
+    public interface IUserRefreshToken : IUserRefreshTokenKey, IBaseEntity, IChangable
     {
-        Guid Id { get; set; }
-
         string Value { get; set; }
 
-        Guid UserId { get; set; }
-
-        Guid ClientId { get; set; }
+        IUser User { get; set; }
 
         IClient Client { get; set; }
 
         DateTime DateExpiresUtc { get; set; }
+    }
+
+    public interface IUserRefreshTokenKey
+    {
+        Guid UserId { get; set; }
+
+        Guid ClientId { get; set; }
     }
 }

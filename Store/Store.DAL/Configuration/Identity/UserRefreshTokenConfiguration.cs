@@ -13,7 +13,7 @@ namespace Store.DAL.Configuration.Identity
             builder.ToTable("user_refresh_token", "identity");
 
             // Primary key
-            builder.HasKey(urt => urt.Id);
+            builder.HasKey(urt => new { urt.UserId, urt.ClientId });
 
             // Limit the size of columns to use efficient database types
             builder.Property(urt => urt.Value).IsRequired().HasMaxLength(256);

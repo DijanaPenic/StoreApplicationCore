@@ -9,13 +9,11 @@ namespace Store.Repository.Common.Repositories.Identity.Stores
     {
         Task AddRefreshTokenAsync(IUserRefreshToken refreshToken);
 
-        Task RemoveRefreshTokenAsync(Guid refreshTokenId);
-
-        Task RemoveRefreshTokenAsync(Guid userId, Guid clientId);
+        Task RemoveRefreshTokenByKeyAsync(IUserRefreshTokenKey key);
 
         Task RemoveExpiredRefreshTokensAsync();
 
-        Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(Guid refreshTokenId);
+        Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(IUserRefreshTokenKey key);
 
         Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue);
     }

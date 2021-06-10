@@ -1,16 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
-    public interface IUserRefreshTokenRepository : IIdentityRepository<IUserRefreshToken, Guid>
+    public interface IUserRefreshTokenRepository : IIdentityRepository<IUserRefreshToken, IUserRefreshTokenKey>
     {
         Task DeleteExpiredAsync();
 
         Task<IUserRefreshToken> FindByValueAsync(string value);
-
-        Task DeleteAsync(Guid userId, Guid clientId);
     }
 }

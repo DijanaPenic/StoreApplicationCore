@@ -5,7 +5,6 @@ using AutoMapper;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
-using Store.Common.Helpers;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core;
@@ -23,20 +22,17 @@ namespace Store.Repositories.Identity
         {
             entity.DateCreatedUtc = DateTime.UtcNow;
             entity.DateUpdatedUtc = DateTime.UtcNow;
-            entity.Id = GuidHelper.NewSequentialGuid();
 
             return ExecuteQueryAsync(
                 sql: $@"
                     INSERT INTO {UserRefreshTokenSchema.Table}(
-                        {UserRefreshTokenSchema.Columns.Id},
                         {UserRefreshTokenSchema.Columns.Value}, 
                         {UserRefreshTokenSchema.Columns.UserId}, 
                         {UserRefreshTokenSchema.Columns.ClientId}, 
                         {UserRefreshTokenSchema.Columns.DateExpiresUtc},
                         {UserRefreshTokenSchema.Columns.DateCreatedUtc},
                         {UserRefreshTokenSchema.Columns.DateUpdatedUtc})
-                    VALUES(
-                        @{nameof(entity.Id)}, 
+                    VALUES(s
                         @{nameof(entity.Value)}, 
                         @{nameof(entity.UserId)}, 
                         @{nameof(entity.ClientId)}, 
@@ -54,10 +50,10 @@ namespace Store.Repositories.Identity
             );
         }
 
-        public async Task<IUserRefreshToken> FindByKeyAsync(Guid key)
+        public async Task<IUserRefreshToken> FindByKeyAsync(IUserRefreshTokenKey key)
         {
             return await QuerySingleOrDefaultAsync<UserRefreshToken>(
-                            sql: $"SELECT * FROM {UserRefreshTokenSchema.Table} WHERE {UserRefreshTokenSchema.Columns.Id} = @{nameof(key)}",
+                            sql: $"SELECT * FROM {UserRefreshTokenSchema.Table} WHERE {UserRefreshTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(key.ClientId)}",
                             param: new { key }
                          );
         }
@@ -70,25 +66,15 @@ namespace Store.Repositories.Identity
                          );
         }
 
-        public Task DeleteByKeyAsync(Guid key)
-        {
-            return ExecuteQueryAsync(
-                sql: $@"
-                    DELETE FROM {UserRefreshTokenSchema.Table}
-                    WHERE {UserRefreshTokenSchema.Columns.Id} = @{nameof(key)}",
-                param: key
-            );
-        }
-
-        public Task DeleteAsync(Guid userId, Guid clientId)
+        public Task DeleteByKeyAsync(IUserRefreshTokenKey key)
         {
             return ExecuteQueryAsync(
                 sql: $@"
                     DELETE FROM {UserRefreshTokenSchema.Table}
                     WHERE 
-                        {UserRefreshTokenSchema.Columns.UserId} = @{nameof(userId)} AND
-                        {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(clientId)}",
-                param: new { userId, clientId }
+                        {UserRefreshTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND
+                        {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(key.ClientId)}",
+                param: new { key }
             );
         }
 
@@ -113,7 +99,7 @@ namespace Store.Repositories.Identity
                     UPDATE {UserRefreshTokenSchema.Table} SET 
                         {UserRefreshTokenSchema.Columns.Value} = @{nameof(entity.Value)},
                         {UserRefreshTokenSchema.Columns.DateUpdatedUtc} = {nameof(entity.DateUpdatedUtc)}
-                    WHERE {UserRefreshTokenSchema.Columns.Id} = @{nameof(entity.Id)}",
+                    WHERE {UserRefreshTokenSchema.Columns.UserId} = @{nameof(entity.ClientId)} AND {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(entity.ClientId)}",
                 param: entity
             );
         }

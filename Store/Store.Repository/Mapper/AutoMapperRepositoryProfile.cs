@@ -50,7 +50,8 @@ namespace Store.Repository.Mapper
                 .ReverseMap();
 
             CreateMap<IUserRefreshToken, UserRefreshTokenEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
+                .ForMember(dst => dst.UserId, opt => opt.Ignore())
+                .ForMember(dst => dst.ClientId, opt => opt.Ignore())
                 .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
                 .ReverseMap();
 

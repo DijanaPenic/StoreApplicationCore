@@ -9,7 +9,6 @@ namespace Store.DAL.Schema.Identity
 
         public static class Columns
         {
-            public static string Id { get; } = nameof(UserRefreshTokenEntity.Id).ToSnakeCase();
             public static string Value { get; } = nameof(UserRefreshTokenEntity.Value).ToSnakeCase();
             public static string UserId { get; } = nameof(UserRefreshTokenEntity.UserId).ToSnakeCase();
             public static string ClientId { get; } = nameof(UserRefreshTokenEntity.ClientId).ToSnakeCase();

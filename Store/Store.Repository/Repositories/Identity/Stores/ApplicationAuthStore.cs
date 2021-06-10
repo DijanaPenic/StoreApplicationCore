@@ -29,25 +29,12 @@ namespace Store.Repositories.Identity.Stores
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task RemoveRefreshTokenAsync(Guid refreshTokenId)
+        public async Task RemoveRefreshTokenByKeyAsync(IUserRefreshTokenKey key)
         {
-            if (GuidHelper.IsNullOrEmpty(refreshTokenId))
-                throw new ArgumentNullException(nameof(refreshTokenId));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
 
-            await _unitOfWork.UserRefreshTokenRepository.DeleteByKeyAsync(refreshTokenId);
-
-            await _unitOfWork.CommitAsync();
-        }
-
-        public async Task RemoveRefreshTokenAsync(Guid userId, Guid clientId)
-        {
-            if (GuidHelper.IsNullOrEmpty(userId))
-                throw new ArgumentNullException(nameof(userId));
-
-            if (GuidHelper.IsNullOrEmpty(clientId))
-                throw new ArgumentNullException(nameof(clientId));
-
-            await _unitOfWork.UserRefreshTokenRepository.DeleteAsync(userId, clientId);
+            await _unitOfWork.UserRefreshTokenRepository.DeleteByKeyAsync(key);
 
             await _unitOfWork.CommitAsync();
         }
@@ -59,12 +46,12 @@ namespace Store.Repositories.Identity.Stores
             await _unitOfWork.CommitAsync();
         }
 
-        public Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(Guid refreshTokenId)
+        public Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(IUserRefreshTokenKey key)
         {
-            if (GuidHelper.IsNullOrEmpty(refreshTokenId))
-                throw new ArgumentNullException(nameof(refreshTokenId));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
 
-            return _unitOfWork.UserRefreshTokenRepository.FindByKeyAsync(refreshTokenId);
+            return _unitOfWork.UserRefreshTokenRepository.FindByKeyAsync(key);
         }
 
         public Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue)

@@ -4,15 +4,11 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
 {
-    public class UserRefreshToken : IUserRefreshToken
+    public class UserRefreshToken : UserRefreshTokenKey, IUserRefreshToken
     {
-        public Guid Id { get; set; }
-
         public string Value { get; set; }
 
-        public Guid UserId { get; set; }
-
-        public Guid ClientId { get; set; }
+        public IUser User { get; set; }
 
         public IClient Client { get; set; }
 
@@ -21,5 +17,12 @@ namespace Store.Models.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
+    }
+
+    public class UserRefreshTokenKey : IUserRefreshTokenKey
+    {
+        public Guid UserId { get; set; }
+
+        public Guid ClientId { get; set; }
     }
 }
