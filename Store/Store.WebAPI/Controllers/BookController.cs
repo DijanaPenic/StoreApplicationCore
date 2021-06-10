@@ -136,7 +136,10 @@ namespace Store.WebAPI.Controllers
             if (bookId == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            ResponseStatus result = await _bookService.UpdateBookAsync(bookId, _mapper.Map<IBook>(bookModel));
+            IBook book = _mapper.Map<IBook>(bookModel);
+            book.Id = bookId;
+
+            ResponseStatus result = await _bookService.UpdateBookAsync(book);
 
             switch (result)
             {
@@ -162,7 +165,7 @@ namespace Store.WebAPI.Controllers
             if (bookId == Guid.Empty)
                 return BadRequest();
 
-            ResponseStatus result = await _bookService.DeleteBookAsync(bookId);
+            ResponseStatus result = await _bookService.DeleteBookByKeyAsync(bookId);
 
             switch (result)
             {

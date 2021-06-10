@@ -28,14 +28,14 @@ namespace Store.Repositories
         {
         }
 
-        public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IBook>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
             Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString) || b.Bookstore.Name.Contains(filter.SearchString);
 
             return FindAsync<IBook, BookEntity>(filterExpression, paging, sorting, options);
         }
 
-        public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IBook>> FindByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
             Expression<Func<IBook, bool>> filterExpression = b => b.BookstoreId == bookstoreId;
 
@@ -47,27 +47,27 @@ namespace Store.Repositories
             return FindAsync<IBook, BookEntity>(filterExpression, paging, sorting, options);
         }
 
-        public Task<IEnumerable<IBook>> GetBooksAsync(IOptionsParameters options)
+        public Task<IEnumerable<IBook>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return GetAsync<IBook, BookEntity>(options);
+            return GetAsync<IBook, BookEntity>(sorting, options);
         }
 
-        public Task<IBook> FindBookByKeyAsync(Guid key, IOptionsParameters options) 
+        public Task<IBook> FindByKeyAsync(Guid key, IOptionsParameters options = null) 
         {
             return FindByKeyAsync<IBook, BookEntity>(options, key);
         }
 
-        public Task<ResponseStatus> UpdateBookAsync(Guid key, IBook model)
+        public Task<ResponseStatus> UpdateAsync(IBook model)
         {
-            return UpdateAsync<IBook, BookEntity>(model, key);
+            return UpdateAsync<IBook, BookEntity>(model, model.Id);
         }
 
-        public Task<ResponseStatus> AddBookAsync(IBook model)
+        public Task<ResponseStatus> AddAsync(IBook model)
         {
             return AddAsync<IBook, BookEntity>(model);
         }
 
-        public Task<ResponseStatus> DeleteBookByKeyAsync(Guid key)
+        public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
             return DeleteByKeyAsync<IBook, BookEntity>(key);
         }

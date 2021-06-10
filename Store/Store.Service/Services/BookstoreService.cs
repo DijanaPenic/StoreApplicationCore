@@ -30,7 +30,7 @@ namespace Store.Services
 
         public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.FindBooksByBookstoreIdAsync(bookstoreId, filter, paging, sorting, options);
+            return _unitOfWork.BookRepository.FindByBookstoreIdAsync(bookstoreId, filter, paging, sorting, options);
         }
 
         public Task<IEnumerable<IBookstore>> GetBookstoresAsync(IOptionsParameters options)

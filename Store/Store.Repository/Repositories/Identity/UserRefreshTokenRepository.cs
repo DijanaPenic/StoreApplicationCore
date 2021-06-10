@@ -2,80 +2,61 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
+using X.PagedList;
+using Microsoft.EntityFrameworkCore;
 
 using Store.DAL.Context;
 using Store.DAL.Schema.Identity;
+using Store.Common.Enums;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Models.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core;
+using Store.Entities.Identity;
 using Store.Repository.Common.Repositories.Identity;
+using System.Linq;
 
 namespace Store.Repositories.Identity
 {
     internal class UserRefreshTokenRepository : GenericRepository, IUserRefreshTokenRepository
     {
+        private DbSet<UserRefreshTokenEntity> _dbSet => DbContext.Set<UserRefreshTokenEntity>();
+
         public UserRefreshTokenRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
 
-        public Task AddAsync(IUserRefreshToken entity)
+        public Task<IEnumerable<IUserRefreshToken>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            entity.DateCreatedUtc = DateTime.UtcNow;
-            entity.DateUpdatedUtc = DateTime.UtcNow;
-
-            return ExecuteQueryAsync(
-                sql: $@"
-                    INSERT INTO {UserRefreshTokenSchema.Table}(
-                        {UserRefreshTokenSchema.Columns.Value}, 
-                        {UserRefreshTokenSchema.Columns.UserId}, 
-                        {UserRefreshTokenSchema.Columns.ClientId}, 
-                        {UserRefreshTokenSchema.Columns.DateExpiresUtc},
-                        {UserRefreshTokenSchema.Columns.DateCreatedUtc},
-                        {UserRefreshTokenSchema.Columns.DateUpdatedUtc})
-                    VALUES(s
-                        @{nameof(entity.Value)}, 
-                        @{nameof(entity.UserId)}, 
-                        @{nameof(entity.ClientId)}, 
-                        @{nameof(entity.DateExpiresUtc)},
-                        @{nameof(entity.DateCreatedUtc)},
-                        @{nameof(entity.DateUpdatedUtc)})",
-                param: entity
-            );
+            return GetAsync<IUserRefreshToken, UserRefreshTokenEntity>(sorting, options);
         }
 
-        public async Task<IEnumerable<IUserRefreshToken>> GetAsync()
+        public Task<IPagedList<IUserRefreshToken>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return await QueryAsync<UserRefreshToken>(
-                sql: $"SELECT * FROM {UserRefreshTokenSchema.Table}"
-            );
+            return FindAsync<IUserRefreshToken, UserRefreshTokenEntity>(null, paging, sorting, options);    // Nothing to search by searchString
         }
 
-        public async Task<IUserRefreshToken> FindByKeyAsync(IUserRefreshTokenKey key)
+        public Task<IUserRefreshToken> FindByKeyAsync(IUserRefreshTokenKey key, IOptionsParameters options = null)
         {
-            return await QuerySingleOrDefaultAsync<UserRefreshToken>(
-                            sql: $"SELECT * FROM {UserRefreshTokenSchema.Table} WHERE {UserRefreshTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(key.ClientId)}",
-                            param: new { key }
-                         );
+            return FindByKeyAsync<IUserRefreshToken, UserRefreshTokenEntity>(options, key.UserId, key.ClientId);
         }
 
-        public async Task<IUserRefreshToken> FindByValueAsync(string value)
+        public Task<ResponseStatus> AddAsync(IUserRefreshToken model)
         {
-            return await QuerySingleOrDefaultAsync<UserRefreshToken>(
-                            sql: $"SELECT * FROM {UserRefreshTokenSchema.Table} WHERE {UserRefreshTokenSchema.Columns.Value} = @{nameof(value)}",
-                            param: new { value }
-                         );
+            return AddAsync<IUserRefreshToken, UserRefreshTokenEntity>(model);
         }
 
-        public Task DeleteByKeyAsync(IUserRefreshTokenKey key)
+        public Task<ResponseStatus> UpdateAsync(IUserRefreshToken model)
         {
-            return ExecuteQueryAsync(
-                sql: $@"
-                    DELETE FROM {UserRefreshTokenSchema.Table}
-                    WHERE 
-                        {UserRefreshTokenSchema.Columns.UserId} = @{nameof(key.UserId)} AND
-                        {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(key.ClientId)}",
-                param: new { key }
-            );
+            return UpdateAsync<IUserRefreshToken, UserRefreshTokenEntity>(model, model.UserId, model.ClientId);
+        }
+
+        public Task<ResponseStatus> DeleteByKeyAsync(IUserRefreshTokenKey key)
+        {
+            return DeleteByKeyAsync<IUserRefreshToken, UserRefreshTokenEntity>(key.UserId, key.ClientId);
         }
 
         public Task DeleteExpiredAsync()
@@ -89,19 +70,11 @@ namespace Store.Repositories.Identity
                 param: new { now }  // Datetime must be sent as dynamic object (instead of parameter: "The JIT compiler encountered invalid IL code or an internal limitation"). 
             );
         }
-
-        public Task UpdateAsync(IUserRefreshToken entity)
+        public async Task<IUserRefreshToken> FindByValueAsync(string value)
         {
-            entity.DateUpdatedUtc = DateTime.UtcNow;
+            UserRefreshTokenEntity entity = await _dbSet.Where(urt => urt.Value == value).SingleOrDefaultAsync();
 
-            return ExecuteQueryAsync(
-                sql: $@"
-                    UPDATE {UserRefreshTokenSchema.Table} SET 
-                        {UserRefreshTokenSchema.Columns.Value} = @{nameof(entity.Value)},
-                        {UserRefreshTokenSchema.Columns.DateUpdatedUtc} = {nameof(entity.DateUpdatedUtc)}
-                    WHERE {UserRefreshTokenSchema.Columns.UserId} = @{nameof(entity.ClientId)} AND {UserRefreshTokenSchema.Columns.ClientId} = @{nameof(entity.ClientId)}",
-                param: entity
-            );
+            return Mapper.Map<IUserRefreshToken>(entity);
         }
     }
 }

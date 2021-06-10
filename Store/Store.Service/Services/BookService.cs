@@ -23,24 +23,24 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<IBook>> GetBooksAsync(IOptionsParameters options)
+        public Task<IEnumerable<IBook>> GetBooksAsync(ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.GetBooksAsync(options);
+            return _unitOfWork.BookRepository.GetAsync(sorting, options);
         }
 
         public Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.FindBookByKeyAsync(bookId, options);
+            return _unitOfWork.BookRepository.FindByKeyAsync(bookId, options);
         }
 
         public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.FindBooksAsync(filter, paging, sorting, options);
+            return _unitOfWork.BookRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public async Task<ResponseStatus> UpdateBookAsync(Guid bookId, IBook book)
+        public async Task<ResponseStatus> UpdateBookAsync(IBook book)
         {
-            ResponseStatus status = await _unitOfWork.BookRepository.UpdateBookAsync(bookId, book);
+            ResponseStatus status = await _unitOfWork.BookRepository.UpdateAsync(book);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();
@@ -48,15 +48,15 @@ namespace Store.Services
 
         public async Task<ResponseStatus> AddBookAsync(IBook book)
         {
-            ResponseStatus status = await _unitOfWork.BookRepository.AddBookAsync(book);
+            ResponseStatus status = await _unitOfWork.BookRepository.AddAsync(book);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();
         }
 
-        public async Task<ResponseStatus> DeleteBookAsync(Guid bookId)
+        public async Task<ResponseStatus> DeleteBookByKeyAsync(Guid bookId)
         {
-            ResponseStatus status = await _unitOfWork.BookRepository.DeleteBookByKeyAsync(bookId);
+            ResponseStatus status = await _unitOfWork.BookRepository.DeleteByKeyAsync(bookId);
             if (status != ResponseStatus.Success) return status;
 
             return await _unitOfWork.CommitAsync();

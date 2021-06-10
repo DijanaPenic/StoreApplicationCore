@@ -6,14 +6,12 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Repository.Common.Repositories.Identity
 {
-    public interface IUserLoginRepository : IIdentityRepository<IUserLogin, IUserLoginKey>
+    public interface IUserLoginRepository : IRepository<IUserLogin, IUserLoginKey>
     {
         Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId);
 
-        Task<IUserLogin> FindAsync(IUserLoginKey key, bool isConfirmed);
-
-        Task<IUserLogin> FindAsync(Guid userId, string token);
-
         Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId, bool isConfirmed);
+
+        Task<IUserLogin> FindByUserIdAsync(Guid userId, string token);
     }
 }

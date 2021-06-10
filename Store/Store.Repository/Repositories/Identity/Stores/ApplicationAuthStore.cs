@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Store.Common.Helpers;
+using Store.Common.Parameters.Options;
 using Store.Repository.Common.Core;
 using Store.Repository.Common.Repositories.Identity.Stores;
 using Store.Model.Common.Models.Identity;
@@ -46,12 +47,12 @@ namespace Store.Repositories.Identity.Stores
             await _unitOfWork.CommitAsync();
         }
 
-        public Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(IUserRefreshTokenKey key)
+        public Task<IUserRefreshToken> FindRefreshTokenByKeyAsync(IUserRefreshTokenKey key, IOptionsParameters options)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            return _unitOfWork.UserRefreshTokenRepository.FindByKeyAsync(key);
+            return _unitOfWork.UserRefreshTokenRepository.FindByKeyAsync(key, options);
         }
 
         public Task<IUserRefreshToken> FindRefreshTokenByValueAsync(string refreshTokenValue)

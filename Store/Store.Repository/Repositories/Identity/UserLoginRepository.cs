@@ -1,144 +1,87 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using AutoMapper;
+using X.PagedList;
+using Microsoft.EntityFrameworkCore;
 
 using Store.DAL.Context;
-using Store.DAL.Schema.Identity;
-using Store.Models.Identity;
-using Store.Model.Common.Models.Identity;
+using Store.Common.Enums;
+using Store.Common.Parameters.Paging;
+using Store.Common.Parameters.Sorting;
+using Store.Common.Parameters.Options;
+using Store.Common.Parameters.Filtering;
 using Store.Repository.Core;
+using Store.Entities.Identity;
+using Store.Model.Common.Models.Identity;
 using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repositories.Identity
 {
     internal class UserLoginRepository : GenericRepository, IUserLoginRepository
     {
+        private DbSet<UserLoginEntity> _dbSet => DbContext.Set<UserLoginEntity>();
+
         public UserLoginRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
 
-        public Task AddAsync(IUserLogin entity)
+        public Task<IEnumerable<IUserLogin>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            entity.DateCreatedUtc = DateTime.UtcNow;
-            entity.DateUpdatedUtc = DateTime.UtcNow;
-
-            return ExecuteQueryAsync(
-                sql: $@"
-                    INSERT INTO {UserLoginSchema.Table}(
-                        {UserLoginSchema.Columns.LoginProvider}, 
-                        {UserLoginSchema.Columns.ProviderKey},
-                        {UserLoginSchema.Columns.ProviderDisplayName}, 
-                        {UserLoginSchema.Columns.Token}, 
-                        {UserLoginSchema.Columns.IsConfirmed}, 
-                        {UserLoginSchema.Columns.UserId},
-                        {UserLoginSchema.Columns.DateCreatedUtc},
-                        {UserLoginSchema.Columns.DateUpdatedUtc})
-                    VALUES(
-                        @{nameof(entity.LoginProvider)}, 
-                        @{nameof(entity.ProviderKey)}, 
-                        @{nameof(entity.ProviderDisplayName)}, 
-                        @{nameof(entity.Token)}, 
-                        @{nameof(entity.IsConfirmed)}, 
-                        @{nameof(entity.UserId)},
-                        @{nameof(entity.DateCreatedUtc)},
-                        @{nameof(entity.DateUpdatedUtc)})",
-                param: entity
-            );
+            return GetAsync<IUserLogin, UserLoginEntity>(sorting, options);
         }
 
-        public async Task<IEnumerable<IUserLogin>> GetAsync()
+        public Task<IPagedList<IUserLogin>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return await QueryAsync<UserLogin>(
-                sql: $"SELECT * FROM {UserLoginSchema.Table}"
-            );
+            Expression<Func<IUserLogin, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : 
+                ul => ul.LoginProvider.Contains(filter.SearchString) || 
+                ul.ProviderDisplayName.Contains(filter.SearchString) || 
+                ul.ProviderKey.Contains(filter.SearchString);
+
+            return FindAsync<IUserLogin, UserLoginEntity>(null, paging, sorting, options);  
         }
 
-        public async Task<IUserLogin> FindByKeyAsync(IUserLoginKey key)
+        public Task<IUserLogin> FindByKeyAsync(IUserLoginKey key, IOptionsParameters options = null)
         {
-            return await QuerySingleOrDefaultAsync<UserLogin>(
-                sql: $@"
-                    SELECT * FROM {UserLoginSchema.Table}
-                    WHERE 
-                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)}",
-                param: key
-            );
+            return FindByKeyAsync<IUserLogin, UserLoginEntity>(options, key.LoginProvider, key.ProviderKey);
         }
 
-        public async Task<IUserLogin> FindAsync(IUserLoginKey key, bool isConfirmed)
+        public Task<ResponseStatus> AddAsync(IUserLogin model)
         {
-            return await QuerySingleOrDefaultAsync<UserLogin>(
-                sql: $@"
-                    SELECT * FROM {UserLoginSchema.Table}
-                    WHERE 
-                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)} AND
-                        {UserLoginSchema.Columns.IsConfirmed} = {(isConfirmed ? "TRUE": "FALSE")}",       
-                param: key // NOTE: key must be sent as raw param; it won't work as dynamic object -> param: new { key }
-            );
+            return AddAsync<IUserLogin, UserLoginEntity>(model);
         }
 
-        public async Task<IUserLogin> FindAsync(Guid userId, string token)
+        public Task<ResponseStatus> UpdateAsync(IUserLogin model)
         {
-            return await QuerySingleOrDefaultAsync<UserLogin>(
-                sql: $@"
-                    SELECT * FROM {UserLoginSchema.Table}
-                    WHERE 
-                        {UserLoginSchema.Columns.UserId} = @{nameof(userId)} AND 
-                        {UserLoginSchema.Columns.Token} = @{nameof(token)}",
-                param: new { userId, token }
-            );
+            return UpdateAsync<IUserLogin, UserLoginEntity>(model, model.LoginProvider, model.ProviderKey);
+        }
+
+        public Task<ResponseStatus> DeleteByKeyAsync(IUserLoginKey key)
+        {
+            return DeleteByKeyAsync<IUserLogin, UserLoginEntity>(key.LoginProvider, key.ProviderKey);
         }
 
         public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId)
         {
-            return await QueryAsync<UserLogin>(
-                sql: $"SELECT * FROM {UserLoginSchema.Table} WHERE {UserLoginSchema.Columns.UserId} = @{nameof(userId)}",
-                param: new { userId }
-            );
+            IEnumerable<UserLoginEntity> entities = await _dbSet.Where(ul => ul.UserId == userId).ToListAsync();
+
+            return Mapper.Map<IEnumerable<IUserLogin>>(entities);
         }
 
         public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId, bool isConfirmed)
         {
-            return await QueryAsync<UserLogin>(
-                sql: $@"SELECT * FROM {UserLoginSchema.Table} 
-                        WHERE 
-                            {UserLoginSchema.Columns.UserId} = @{nameof(userId)} AND
-                            {UserLoginSchema.Columns.IsConfirmed} = {(isConfirmed ? "TRUE" : "FALSE")}",
-                param: new { userId }
-            );
+            IEnumerable<UserLoginEntity> entities = await _dbSet.Where(ul => ul.UserId == userId && ul.IsConfirmed == isConfirmed).ToListAsync();
+
+            return Mapper.Map<IEnumerable<IUserLogin>>(entities);
         }
 
-        public Task DeleteByKeyAsync(IUserLoginKey key)
+        public async Task<IUserLogin> FindByUserIdAsync(Guid userId, string token)
         {
-            return ExecuteQueryAsync(
-                sql: $@"
-                    DELETE FROM {UserLoginSchema.Table}
-                    WHERE 
-                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(key.LoginProvider)} AND 
-                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(key.ProviderKey)}",
-                param: key
-            );
-        }
+            UserLoginEntity entities = await _dbSet.Where(ul => ul.UserId == userId && ul.Token == token).SingleOrDefaultAsync();
 
-        public Task UpdateAsync(IUserLogin entity)
-        {
-            entity.DateUpdatedUtc = DateTime.UtcNow;
-
-            return ExecuteQueryAsync(
-                sql: $@"
-                    UPDATE {UserLoginSchema.Table} SET 
-                        {UserLoginSchema.Columns.ProviderDisplayName} = @{nameof(entity.ProviderDisplayName)},
-                        {UserLoginSchema.Columns.Token} = @{nameof(entity.Token)},
-                        {UserLoginSchema.Columns.IsConfirmed} = @{nameof(entity.IsConfirmed)},
-                        {UserLoginSchema.Columns.UserId} = @{nameof(entity.UserId)},
-                        {UserLoginSchema.Columns.DateUpdatedUtc} = @{nameof(entity.DateUpdatedUtc)}
-                    WHERE 
-                        {UserLoginSchema.Columns.LoginProvider} = @{nameof(entity.LoginProvider)} AND 
-                        {UserLoginSchema.Columns.ProviderKey} = @{nameof(entity.ProviderKey)}",
-                param: entity
-            );
+            return Mapper.Map<IUserLogin>(entities);
         }
     }
 }

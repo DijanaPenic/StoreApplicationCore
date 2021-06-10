@@ -18,9 +18,16 @@ namespace Store.Repository.Core
 {
     internal abstract partial class GenericRepository
     {
-        protected async Task<IEnumerable<TDomain>> GetAsync<TDomain, TEntity>(IOptionsParameters options) where TEntity : class
+        protected async Task<IEnumerable<TDomain>> GetAsync<TDomain, TEntity>
+        (
+            ISortingParameters sorting,
+            IOptionsParameters options
+        ) where TEntity : class
         {
-            IEnumerable<TEntity> entities = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options)).ToListAsync();
+            IEnumerable<TEntity> entities = await DbContext.Set<TEntity>()
+                                                           .Include(OptionsMap<TDomain, TEntity>(options))
+                                                           .OrderBy(SortingMap<TDomain, TEntity>(sorting))
+                                                           .ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }

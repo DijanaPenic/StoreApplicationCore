@@ -443,7 +443,7 @@ namespace Store.Repositories.Identity.Stores
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentNullException(nameof(token));
 
-            IUserLogin result = await _unitOfWork.UserLoginRepository.FindAsync(user.Id, token);
+            IUserLogin result = await _unitOfWork.UserLoginRepository.FindByUserIdAsync(user.Id, token);
 
             return result;
         }
@@ -455,8 +455,8 @@ namespace Store.Repositories.Identity.Stores
             if (login == null)
                 throw new ArgumentNullException(nameof(login));
 
-            IUserLogin loginEntity = await _unitOfWork.UserLoginRepository.FindAsync(new UserLoginKey { LoginProvider = login.LoginProvider, ProviderKey = login.ProviderKey }, loginConfirmed);
-            if (loginEntity == null)
+            IUserLogin loginEntity = await _unitOfWork.UserLoginRepository.FindByKeyAsync(new UserLoginKey { LoginProvider = login.LoginProvider, ProviderKey = login.ProviderKey });
+            if (loginEntity == null || loginEntity.IsConfirmed != loginConfirmed)
                 return default;
 
             IUser result = await _unitOfWork.UserRepository.FindByKeyAsync(loginEntity.UserId);
