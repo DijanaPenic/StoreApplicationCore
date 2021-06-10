@@ -25,5 +25,9 @@ namespace Store.Model.Common.Models.Identity
         int RefreshTokenLifeTime { get; set; }
 
         string AllowedOrigin { get; set; }
+
+        ICollection<IUserRefreshToken> RefreshTokens { get; set; }
+
+        ICollection<IEmailTemplate> EmailTemplates { get; set; }
     }
 }

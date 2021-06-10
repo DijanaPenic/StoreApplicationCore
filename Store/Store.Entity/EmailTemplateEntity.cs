@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Store.Common.Enums;
+using Store.Entities.Identity;
 
 namespace Store.Entities
 {
@@ -13,6 +14,8 @@ namespace Store.Entities
         public DateTime DateUpdatedUtc { get; set; }
 
         public Guid ClientId { get; set; }
+
+        public ClientEntity Client { get; set; }
 
         public EmailTemplateType Type { get; set; }
 

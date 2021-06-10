@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Store.Entities;
-using Store.Entities.Identity;
 
 namespace Store.DAL.Configuration
 {
@@ -21,7 +20,7 @@ namespace Store.DAL.Configuration
             builder.Property(et => et.Name).IsRequired().HasMaxLength(50);
 
             // Each EmailTemplate must have one Client
-            builder.HasOne<ClientEntity>().WithMany().HasForeignKey(et => et.ClientId).IsRequired();
+            builder.HasOne(et => et.Client).WithMany(c => c.EmailTemplates).HasForeignKey(et => et.ClientId).IsRequired();
         }
     }
 }

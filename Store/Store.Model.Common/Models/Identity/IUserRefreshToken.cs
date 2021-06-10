@@ -14,6 +14,8 @@ namespace Store.Model.Common.Models.Identity
 
         Guid ClientId { get; set; }
 
+        IClient Client { get; set; }
+
         DateTime DateExpiresUtc { get; set; }
     }
 }

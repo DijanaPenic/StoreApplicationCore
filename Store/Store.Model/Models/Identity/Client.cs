@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Store.Common.Enums;
+using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 
 namespace Store.Models.Identity
@@ -28,5 +30,9 @@ namespace Store.Models.Identity
         public DateTime DateCreatedUtc { get; set; }
 
         public DateTime DateUpdatedUtc { get; set; }
+
+        public ICollection<IUserRefreshToken> RefreshTokens { get; set; }
+
+        public ICollection<IEmailTemplate> EmailTemplates { get; set; }
     }
 }

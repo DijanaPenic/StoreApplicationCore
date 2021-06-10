@@ -30,5 +30,7 @@ namespace Store.Entities.Identity
         public DateTime DateUpdatedUtc { get; set; }
 
         public ICollection<UserRefreshTokenEntity> RefreshTokens { get; set; }
+
+        public ICollection<EmailTemplateEntity> EmailTemplates { get; set; }
     }
 }

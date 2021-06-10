@@ -2,6 +2,7 @@
 
 using Store.Common.Enums;
 using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
 
 namespace Store.Models
 {
@@ -14,6 +15,8 @@ namespace Store.Models
         public DateTime DateUpdatedUtc { get; set; }
 
         public Guid ClientId { get; set; }
+
+        public IClient Client { get; set; }
 
         public EmailTemplateType Type { get; set; }
 
