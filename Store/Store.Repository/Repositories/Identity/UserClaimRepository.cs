@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +30,14 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IUserClaim>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IUserClaim, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : uc => uc.ClaimValue.Contains(filter.SearchString);
+            ExpressionStarter<IUserClaim> predicate = PredicateBuilder.New<IUserClaim>();
 
-            return FindAsync<IUserClaim, UserClaimEntity>(filterExpression, paging, sorting, options);
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(uc => uc.ClaimValue.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IUserClaim, UserClaimEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IUserClaim>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

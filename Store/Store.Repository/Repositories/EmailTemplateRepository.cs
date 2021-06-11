@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +31,14 @@ namespace Store.Repositories
 
         public Task<IPagedList<IEmailTemplate>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IEmailTemplate, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : et => et.Name.Contains(filter.SearchString);
+            ExpressionStarter<IEmailTemplate> predicate = PredicateBuilder.New<IEmailTemplate>();
 
-            return FindAsync<IEmailTemplate, EmailTemplateEntity>(filterExpression, paging, sorting, options);
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(et => et.Name.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IEmailTemplate, EmailTemplateEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IEmailTemplate>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
-using System.Collections.Generic;
+﻿using LinqKit;
 using AutoMapper;
 using X.PagedList;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Store.DAL.Context;
 using Store.Common.Enums;
@@ -26,9 +25,14 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IUserToken>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IUserToken, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : ut => ut.Name.Contains(filter.SearchString) || ut.LoginProvider.Contains(filter.SearchString);
+            ExpressionStarter<IUserToken> predicate = PredicateBuilder.New<IUserToken>();
 
-            return FindAsync<IUserToken, UserTokenEntity>(filterExpression, paging, sorting, options);
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(ut => ut.Name.Contains(filter.SearchString) || ut.LoginProvider.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IUserToken, UserTokenEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IUserToken>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

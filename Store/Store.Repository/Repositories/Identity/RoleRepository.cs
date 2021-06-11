@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +33,14 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IRole, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString);
+            ExpressionStarter<IRole> predicate = PredicateBuilder.New<IRole>();
 
-            return FindAsync<IRole, RoleEntity>(filterExpression, paging, sorting, options);
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(r => r.Name.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IRole, RoleEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IRole>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

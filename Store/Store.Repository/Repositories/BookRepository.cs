@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Store.Entities;
 using Store.DAL.Context;
 using Store.Common.Enums;
-using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
@@ -30,21 +29,28 @@ namespace Store.Repositories
 
         public Task<IPagedList<IBook>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IBook, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString) || b.Bookstore.Name.Contains(filter.SearchString);
+            ExpressionStarter<IBook> predicate = PredicateBuilder.New<IBook>();
 
-            return FindAsync<IBook, BookEntity>(filterExpression, paging, sorting, options);
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(b => b.Name.Contains(filter.SearchString) || 
+                                   b.Author.Contains(filter.SearchString) || 
+                                   b.Bookstore.Name.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IBook, BookEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IPagedList<IBook>> FindByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IBook, bool>> filterExpression = b => b.BookstoreId == bookstoreId;
+            ExpressionStarter<IBook> predicate = PredicateBuilder.New<IBook>(b => b.BookstoreId == bookstoreId);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
-                filterExpression = filterExpression.And(b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString));
+                predicate.And(b => b.Name.Contains(filter.SearchString) || b.Author.Contains(filter.SearchString));
             }
 
-            return FindAsync<IBook, BookEntity>(filterExpression, paging, sorting, options);
+            return FindAsync<IBook, BookEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IBook>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

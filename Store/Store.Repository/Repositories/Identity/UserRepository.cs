@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 
 using Store.DAL.Context;
 using Store.Common.Enums;
-using Store.Common.Extensions;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
@@ -31,18 +30,18 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IUser, bool>> filterExpression = null;
+            ExpressionStarter<IUser> predicate = PredicateBuilder.New<IUser>();
 
             if (!filter.ShowInactive)
             {
-                filterExpression = filterExpression.And(u => u.IsApproved == true);
+                predicate.And(u => u.IsApproved == true);
             }
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
-                filterExpression = filterExpression.And(u => u.FirstName.Contains(filter.SearchString) || u.LastName.Contains(filter.SearchString));
+                predicate.And(u => u.FirstName.Contains(filter.SearchString) || u.LastName.Contains(filter.SearchString));
             }
 
-            return FindAsync<IUser, UserEntity>(filterExpression, paging, sorting, options);
+            return FindAsync<IUser, UserEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IUser>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

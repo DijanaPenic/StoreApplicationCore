@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +31,14 @@ namespace Store.Repositories
 
         public Task<IPagedList<IBookstore>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IBookstore, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : bs => bs.Name.Contains(filter.SearchString) || bs.Location.Contains(filter.SearchString);
+            ExpressionStarter<IBookstore> predicate = PredicateBuilder.New<IBookstore>();
 
-            return FindWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(filterExpression, paging, sorting, options);
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(b => b.Name.Contains(filter.SearchString) || b.Location.Contains(filter.SearchString));
+            }
+
+            return FindWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IBookstore>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

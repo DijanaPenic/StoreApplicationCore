@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,6 @@ using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models.Identity;
 using Store.Repository.Core;
 using Store.Repository.Common.Repositories.Identity;
-using Store.Common.Extensions;
 using Store.Entities.Identity;
 
 namespace Store.Repositories.Identity
@@ -33,18 +32,18 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IRoleClaim>> FindAsync(IRoleClaimFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IRoleClaim, bool>> filterExpression = rc => rc.ClaimType == filter.Type;
+            ExpressionStarter<IRoleClaim> predicate = PredicateBuilder.New<IRoleClaim>(rc => rc.ClaimType == filter.Type);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
-                filterExpression = filterExpression.And(rc => rc.ClaimValue.Contains(filter.SearchString));
+                predicate.And(rc => rc.ClaimValue.Contains(filter.SearchString));
             }
             if (!GuidHelper.IsNullOrEmpty(filter.RoleId))
             {
-                filterExpression = filterExpression.And(rc => rc.RoleId == filter.RoleId);
+                predicate.And(rc => rc.RoleId == filter.RoleId);
             }
 
-            return FindAsync<IRoleClaim, RoleClaimEntity>(filterExpression, paging, sorting, options);
+            return FindAsync<IRoleClaim, RoleClaimEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IRoleClaim>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using LinqKit;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
@@ -35,12 +36,16 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IUserLogin>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            Expression<Func<IUserLogin, bool>> filterExpression = string.IsNullOrEmpty(filter.SearchString) ? null : 
-                ul => ul.LoginProvider.Contains(filter.SearchString) || 
-                ul.ProviderDisplayName.Contains(filter.SearchString) || 
-                ul.ProviderKey.Contains(filter.SearchString);
+            ExpressionStarter<IUserLogin> predicate = PredicateBuilder.New<IUserLogin>();
 
-            return FindAsync<IUserLogin, UserLoginEntity>(null, paging, sorting, options);  
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                predicate.And(ul => ul.LoginProvider.Contains(filter.SearchString) ||
+                                    ul.ProviderDisplayName.Contains(filter.SearchString) ||
+                                    ul.ProviderKey.Contains(filter.SearchString));
+            }
+
+            return FindAsync<IUserLogin, UserLoginEntity>(predicate, paging, sorting, options);  
         }
 
         public Task<IUserLogin> FindByKeyAsync(IUserLoginKey key, IOptionsParameters options = null)
