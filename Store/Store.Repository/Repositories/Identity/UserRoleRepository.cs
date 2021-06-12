@@ -16,7 +16,8 @@ namespace Store.Repositories.Identity
 {
     internal class UserRoleRepository : GenericRepository, IUserRoleRepository
     {
-        private DbSet<UserRoleEntity> _dbSet => DbContext.Set<UserRoleEntity>();
+        // NOTE - UserRole is configured as shared entity type so we must provide an entity type name.
+        private DbSet<UserRoleEntity> _dbSet => DbContext.Set<UserRoleEntity>("user_role"); 
 
         public UserRoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
