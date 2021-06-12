@@ -31,7 +31,7 @@ namespace Store.Repositories
 
         public Task<IPagedList<IEmailTemplate>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IEmailTemplate> predicate = PredicateBuilder.New<IEmailTemplate>();
+            ExpressionStarter<IEmailTemplate> predicate = PredicateBuilder.New<IEmailTemplate>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {

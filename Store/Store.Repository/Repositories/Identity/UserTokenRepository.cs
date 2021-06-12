@@ -25,7 +25,7 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IUserToken>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IUserToken> predicate = PredicateBuilder.New<IUserToken>();
+            ExpressionStarter<IUserToken> predicate = PredicateBuilder.New<IUserToken>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {

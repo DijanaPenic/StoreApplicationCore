@@ -31,7 +31,7 @@ namespace Store.Repositories
 
         public Task<IPagedList<IBookstore>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IBookstore> predicate = PredicateBuilder.New<IBookstore>();
+            ExpressionStarter<IBookstore> predicate = PredicateBuilder.New<IBookstore>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {

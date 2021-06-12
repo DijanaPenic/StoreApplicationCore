@@ -30,7 +30,7 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IUser>> FindAsync(IUserFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IUser> predicate = PredicateBuilder.New<IUser>();
+            ExpressionStarter<IUser> predicate = PredicateBuilder.New<IUser>(true);
 
             if (!filter.ShowInactive)
             {

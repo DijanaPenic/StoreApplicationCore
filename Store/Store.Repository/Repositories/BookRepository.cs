@@ -29,7 +29,7 @@ namespace Store.Repositories
 
         public Task<IPagedList<IBook>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IBook> predicate = PredicateBuilder.New<IBook>();
+            ExpressionStarter<IBook> predicate = PredicateBuilder.New<IBook>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {

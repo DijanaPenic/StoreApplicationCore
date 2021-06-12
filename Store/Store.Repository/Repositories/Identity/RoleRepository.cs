@@ -33,7 +33,7 @@ namespace Store.Repositories.Identity
 
         public Task<IPagedList<IRole>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IRole> predicate = PredicateBuilder.New<IRole>();
+            ExpressionStarter<IRole> predicate = PredicateBuilder.New<IRole>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
