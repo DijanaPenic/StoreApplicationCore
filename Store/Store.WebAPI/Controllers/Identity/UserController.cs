@@ -270,6 +270,9 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("User created a new account with password.");
 
+            // Need to retrieve user to get the updated identifier field
+            user = await _userManager.FindByEmailAsync(user.Email);
+
             IdentityResult roleResult = await _userManager.AddToRolesAsync(user, createUserModel.Roles);
 
             if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
