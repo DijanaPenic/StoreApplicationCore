@@ -1,3 +1,6 @@
+insert into bookstore (id, date_created_utc, date_updated_utc, name, location) values ('61c048ca-028d-4466-b7fd-4a05f0dad647', '2020-07-06', '2020-07-06', 'Strand Book Store', '2526 E Colfax Ave, Denver, WA');
+insert into bookstore (id, date_created_utc, date_updated_utc, name, location) values ('a4b57c3c-4c09-4b8c-b2f8-e88ce049f30c', '2020-07-21', '2020-07-21', 'Powells City of Books', '18325 Campus Way NE, Bothell, WA');
+insert into bookstore (id, date_created_utc, date_updated_utc, name, location) values ('fa588725-0c60-4554-8eb9-20520038ee87', '2020-12-09', '2020-12-09', 'Shakespeare & Co', '3415 SW Cedar Hills Blvd, Beaverton, OR');
 insert into bookstore (id, date_created_utc, date_updated_utc, name, location) values ('2c12f0f8-d146-4e95-94e6-9622e212aae0', '2021-03-05', '2021-03-05', 'Flashdog', '471 Farwell Place');
 insert into bookstore (id, date_created_utc, date_updated_utc, name, location) values ('8f7372a5-3922-441d-8dfd-e91bfda5c868', '2020-06-14', '2020-06-14', 'Gabcube', '1 Vernon Junction');
 insert into bookstore (id, date_created_utc, date_updated_utc, name, location) values ('e10bb276-2f0e-42d0-890d-22563109ccac', '2021-01-08', '2021-01-08', 'Topdrive', '984 Lakewood Street');
