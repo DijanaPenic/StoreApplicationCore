@@ -87,7 +87,7 @@ namespace Store.Repositories
 
         public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
-            return DeleteByKeyAsync<IEmailTemplate, EmailTemplateEntity>(key);
+            return DeleteByKeyAsync<EmailTemplateEntity>(key);
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
-            return DeleteByKeyAsync<IRole, RoleEntity>(key);
+            return DeleteByKeyAsync<RoleEntity>(key);
         }
 
         public async Task<IPagedList<IRole>> FindBySectionAsync(IPermissionFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting)

@@ -65,7 +65,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(IUserLoginKey key)
         {
-            return DeleteByKeyAsync<IUserLogin, UserLoginEntity>(key.LoginProvider, key.ProviderKey);
+            return DeleteByKeyAsync<UserLoginEntity>(key.LoginProvider, key.ProviderKey);
         }
 
         public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId)

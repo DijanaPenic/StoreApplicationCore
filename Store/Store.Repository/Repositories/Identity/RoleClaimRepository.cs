@@ -68,7 +68,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
-            return DeleteByKeyAsync<IRoleClaim, RoleClaimEntity>(key);
+            return DeleteByKeyAsync<RoleClaimEntity>(key);
         }
 
         public async Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId)

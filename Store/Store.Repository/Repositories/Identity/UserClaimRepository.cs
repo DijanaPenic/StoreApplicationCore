@@ -62,7 +62,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
-            return DeleteByKeyAsync<IUserClaim, UserClaimEntity>(key);
+            return DeleteByKeyAsync<UserClaimEntity>(key);
         }
 
         public async Task<IEnumerable<IUserClaim>> FindByUserIdAsync(Guid userId)

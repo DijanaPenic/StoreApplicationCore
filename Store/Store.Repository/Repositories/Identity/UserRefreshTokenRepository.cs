@@ -54,7 +54,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(IUserRefreshTokenKey key)
         {
-            return DeleteByKeyAsync<IUserRefreshToken, UserRefreshTokenEntity>(key.UserId, key.ClientId);
+            return DeleteByKeyAsync<UserRefreshTokenEntity>(key.UserId, key.ClientId);
         }
 
         public Task DeleteExpiredAsync()

@@ -75,7 +75,7 @@ namespace Store.Repositories
 
         public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
-            return DeleteByKeyAsync<IBook, BookEntity>(key);
+            return DeleteByKeyAsync<BookEntity>(key);
         }
     }
 }

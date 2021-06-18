@@ -57,7 +57,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(IUserTokenKey key)
         {
-            return DeleteByKeyAsync<IUserToken, UserTokenEntity>(key);
+            return DeleteByKeyAsync<UserTokenEntity>(key);
         }
     }
 }

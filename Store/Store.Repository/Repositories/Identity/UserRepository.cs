@@ -66,7 +66,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(Guid key)
         {
-            return DeleteByKeyAsync<IUser, UserEntity>(key);
+            return DeleteByKeyAsync<UserEntity>(key);
         }
 
 
