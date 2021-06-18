@@ -39,7 +39,7 @@ namespace Store.Repositories.Identity
 
         public Task<IUserRefreshToken> FindByKeyAsync(IUserRefreshTokenKey key, IOptionsParameters options = null)
         {
-            return FindByKeyAsync<IUserRefreshToken, UserRefreshTokenEntity>(options, key.UserId, key.ClientId);
+            return FindByKeyAsync<IUserRefreshToken, UserRefreshTokenEntity>(options, key.ToArray());
         }
 
         public Task<ResponseStatus> AddAsync(IUserRefreshToken model)
@@ -54,7 +54,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(IUserRefreshTokenKey key)
         {
-            return DeleteByKeyAsync<UserRefreshTokenEntity>(key.UserId, key.ClientId);
+            return DeleteByKeyAsync<UserRefreshTokenEntity>(key.ToArray());
         }
 
         public Task DeleteExpiredAsync()

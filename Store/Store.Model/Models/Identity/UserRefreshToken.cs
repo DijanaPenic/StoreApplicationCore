@@ -24,5 +24,7 @@ namespace Store.Models.Identity
         public Guid UserId { get; set; }
 
         public Guid ClientId { get; set; }
+
+        public object[] ToArray() => new object[] { UserId, ClientId };
     }
 }

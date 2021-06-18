@@ -42,7 +42,7 @@ namespace Store.Repositories.Identity
 
         public Task<IUserToken> FindByKeyAsync(IUserTokenKey key, IOptionsParameters options = null)
         {
-            return FindByKeyAsync<IUserToken, UserTokenEntity>(options, key);
+            return FindByKeyAsync<IUserToken, UserTokenEntity>(options, key.ToArray());
         }
 
         public Task<ResponseStatus> UpdateAsync(IUserToken model)
@@ -57,7 +57,7 @@ namespace Store.Repositories.Identity
 
         public Task<ResponseStatus> DeleteByKeyAsync(IUserTokenKey key)
         {
-            return DeleteByKeyAsync<UserTokenEntity>(key);
+            return DeleteByKeyAsync<UserTokenEntity>(key.ToArray());
         }
     }
 }

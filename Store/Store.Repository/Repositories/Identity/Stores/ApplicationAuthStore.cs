@@ -35,7 +35,7 @@ namespace Store.Repositories.Identity.Stores
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            await _unitOfWork.UserRefreshTokenRepository.DeleteByKeyAsync(key);
+            await _unitOfWork.UserRefreshTokenRepository.DeleteByKeyAsync(key.ToArray());
 
             await _unitOfWork.CommitAsync();
         }

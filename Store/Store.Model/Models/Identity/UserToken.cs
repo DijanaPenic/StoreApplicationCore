@@ -20,5 +20,7 @@ namespace Store.Models.Identity
         public string LoginProvider { get; set; }
 
         public string Name { get; set; }
+
+        public object[] ToArray() => new object[] { UserId, LoginProvider, Name };
     }
 }

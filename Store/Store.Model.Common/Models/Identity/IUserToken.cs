@@ -16,5 +16,7 @@ namespace Store.Model.Common.Models.Identity
         string LoginProvider { get; set; }
 
         string Name { get; set; }
+
+        public object[] ToArray();
     }
 }
