@@ -123,15 +123,14 @@ namespace Store.Repository.Core
         (
             TDomain model,
             params object[] keyValues
-        ) where TEntity : class
+        ) where TDomain : class where TEntity : class
         {
             if (model == null)
                 return ResponseStatus.Error;
 
             // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
-            // Need to search context or the store because AutoMapper creates a new instance of the object during domain->entity mapping and sometimes
-            // the newly created instance cannot be attached to the context (if we're already tracking the original instance)
-            TEntity entity = await DbContext.Set<TEntity>().FindAsync(keyValues);
+            // Need to search the database (NOT DbContext -> Find(keyValues)) because AutoMapper can't handle navigation property mappings
+            TEntity entity = await DbContext.Set<TEntity>().FirstOrDefaultAsync(DbContext, keyValues);
 
             if (entity == null)
                 return ResponseStatus.NotFound;
@@ -139,7 +138,7 @@ namespace Store.Repository.Core
             // This works only for scalar property updates. The navigation property mapping is out of the scope for AutoMapper.
             // Also, the author is highly suggesting against the domain->entity mappings.
             Mapper.Map(model, entity);
-            
+
             DbContext.Entry(entity).State = EntityState.Modified;
 
             return ResponseStatus.Success;
