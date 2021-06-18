@@ -20,6 +20,8 @@ namespace Store.Service.Common.Services
 
         Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
 
+        Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+
         Task<ResponseStatus> UpdateBookAsync(IBook book);
 
         Task<ResponseStatus> AddBookAsync(IBook book);

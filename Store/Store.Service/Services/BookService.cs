@@ -38,6 +38,11 @@ namespace Store.Services
             return _unitOfWork.BookRepository.FindAsync(filter, paging, sorting, options);
         }
 
+        public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        {
+            return _unitOfWork.BookRepository.FindByBookstoreIdAsync(bookstoreId, filter, paging, sorting, options);
+        }
+
         public async Task<ResponseStatus> UpdateBookAsync(IBook book)
         {
             ResponseStatus status = await _unitOfWork.BookRepository.UpdateAsync(book);

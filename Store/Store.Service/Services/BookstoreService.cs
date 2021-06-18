@@ -24,12 +24,6 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IBookstore> FindBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options)
-        {
-            return _unitOfWork.BookstoreRepository.FindByKeyAsync(bookstoreId, options);
-        }
-
-        public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         public Task<BookstoreExtendedDTO> FindBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options)
         {
             return _unitOfWork.BookstoreRepository.FindExtendedByKeyAsync(bookstoreId, options);
