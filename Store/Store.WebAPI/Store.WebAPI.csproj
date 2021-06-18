@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Store.Cache\Store.Cache.csproj" />
-    <ProjectReference Include="..\Store.DAL\Store.DAL.csproj" />
     <ProjectReference Include="..\Store.FileProvider.Common\Store.FileProvider.Common.csproj" />
     <ProjectReference Include="..\Store.FileProvider\Store.FileProvider.csproj" />
     <ProjectReference Include="..\Store.Messaging.Common\Store.Messaging.Common.csproj" />

@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using AutoMapper.Extensions.ExpressionMapping;
+﻿using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.Extensions.DependencyInjection;
 
-using Store.DAL.Context;
 using Store.Repository.Mapper;
 using Store.WebAPI.Mapper.Profiles;
 
@@ -17,10 +15,10 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 automapper.AddExpressionMapping();
 
                 // Configure Profiles
-                automapper.AddProfile<AutoMapperWebApiProfile>();
                 automapper.AddProfile<AutoMapperRepositoryProfile>();
+                automapper.AddProfile<AutoMapperWebApiProfile>();
 
-            }, typeof(ApplicationDbContext).Assembly);
+            }, typeof(AutoMapperRepositoryProfile).Assembly, typeof(AutoMapperWebApiProfile).Assembly);
         }
     }
 }
