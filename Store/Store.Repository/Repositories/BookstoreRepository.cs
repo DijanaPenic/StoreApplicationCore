@@ -6,16 +6,17 @@ using AutoMapper;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 
+using Store.Models;
+using Store.Model.Common.Models;
 using Store.Entities;
 using Store.DAL.Context;
 using Store.Common.Enums;
-using Store.Model.Common.Models;
 using Store.Common.Parameters.Paging;
 using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
 using Store.Repository.Core;
-using Store.Repository.Models;
+using Store.Repository.Extensions;
 using Store.Repository.Common.Repositories;
 
 namespace Store.Repositories
@@ -28,26 +29,37 @@ namespace Store.Repositories
         {
         }
 
-        public Task<IPagedList<IBookstore>> FindAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
+        public Task<IPagedList<BookstoreExtendedDTO>> FindExtendedAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<IBookstore> predicate = PredicateBuilder.New<IBookstore>(true);
+            ExpressionStarter<BookstoreExtendedDTO> predicate = PredicateBuilder.New<BookstoreExtendedDTO>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
                 predicate.And(b => b.Name.Contains(filter.SearchString) || b.Location.Contains(filter.SearchString));
             }
 
-            return FindWithProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(predicate, paging, sorting, options);
+            return FindWithProjectionAsync<BookstoreExtendedDTO, BookstoreEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IBookstore>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return GetUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(sorting, options);
+            return GetAsync<IBookstore, BookstoreEntity>(sorting, options);
+        }
+
+        public Task<IEnumerable<BookstoreExtendedDTO>> GetExtendedAsync(ISortingParameters sorting, IOptionsParameters options = null)
+        {
+            return GetUsingProjectionAsync<BookstoreExtendedDTO, BookstoreEntity>(sorting, options);
         }
 
         public Task<IBookstore> FindByKeyAsync(Guid key, IOptionsParameters options = null)
         {
-            return FindByKeyUsingProjectionAsync<IBookstore, BookstoreEntity, BookstoreDTO>(options, key);
+            return FindByKeyAsync<IBookstore, BookstoreEntity>(options, key);
+        }
+
+        public Task<BookstoreExtendedDTO> FindExtendedByKeyAsync(Guid key, IOptionsParameters options = null)
+        {
+            return _dbSet.ProjectTo<BookstoreEntity, BookstoreExtendedDTO>(Mapper, OptionsMap<BookstoreEntity, BookstoreExtendedDTO>(options))
+                         .FirstOrDefaultAsync(b => b.Id == key);
         }
 
         public Task<ResponseStatus> UpdateAsync(IBookstore model)

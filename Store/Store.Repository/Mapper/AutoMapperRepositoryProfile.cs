@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 
-using Store.Entities;
-using Store.Entities.Identity;
-using Store.Repository.Models;
+using Store.Models;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
+using Store.Entities;
+using Store.Entities.Identity;
 
 namespace Store.Repository.Mapper
 {
@@ -19,11 +19,9 @@ namespace Store.Repository.Mapper
                 .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
                 .ReverseMap();
 
-            CreateMap<BookstoreEntity, BookstoreDTO>()
+            CreateMap<BookstoreEntity, BookstoreExtendedDTO>()
                     .ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
                     .ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
-
-            CreateMap<BookstoreDTO, IBookstore>();
 
             // Book mappings
             CreateMap<IBook, BookEntity>()
@@ -31,10 +29,7 @@ namespace Store.Repository.Mapper
                 .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
                 .ReverseMap();
 
-            CreateMap<BookEntity, BookDTO>()
-                .ForMember(dst => dst.Bookstore, opt => opt.ExplicitExpansion());
-
-            CreateMap<BookDTO, IBook>();
+            CreateMap<BookEntity, BookDTO>();
 
             // Identity mappings 
             CreateMap<IRoleClaim, RoleClaimEntity>()

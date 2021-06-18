@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Store.Repository.Models
+namespace Store.Models
 {
-    public class BookstoreDTO
+    public class BookstoreExtendedDTO
     {
         public Guid Id { get; set; }
 
@@ -18,5 +18,20 @@ namespace Store.Repository.Models
         public ICollection<BookDTO> Books { get; set; } 
 
         public int BooksCount { get; set; }
+    }
+
+    public class BookDTO
+    {
+        public Guid Id { get; set; }
+
+        public DateTime DateCreatedUtc { get; set; }
+
+        public DateTime DateUpdatedUtc { get; set; }
+
+        public Guid BookstoreId { get; set; }
+
+        public string Name { get; set; }
+
+        public string Author { get; set; }
     }
 }

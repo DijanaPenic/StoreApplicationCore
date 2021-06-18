@@ -14,7 +14,5 @@ namespace Store.Model.Common.Models
         string Location { get; set; }
 
         ICollection<IBook> Books { get; set; }
-
-        int BooksCount { get; set; }
     }
 }

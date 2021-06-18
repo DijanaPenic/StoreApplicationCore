@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using X.PagedList;
 
-using Store.Common.Enums;
+using Store.Models;
 using Store.Model.Common.Models;
+using Store.Common.Enums;
 using Store.Repository.Common.Core;
 using Store.Service.Common.Services;
 using Store.Common.Parameters.Paging;
@@ -29,18 +30,19 @@ namespace Store.Services
         }
 
         public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<BookstoreExtendedDTO> FindBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options)
         {
-            return _unitOfWork.BookRepository.FindByBookstoreIdAsync(bookstoreId, filter, paging, sorting, options);
+            return _unitOfWork.BookstoreRepository.FindExtendedByKeyAsync(bookstoreId, options);
         }
 
-        public Task<IEnumerable<IBookstore>> GetBookstoresAsync(ISortingParameters sorting, IOptionsParameters options)
+        public Task<IEnumerable<BookstoreExtendedDTO>> GetBookstoresAsync(ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookstoreRepository.GetAsync(sorting, options);
+            return _unitOfWork.BookstoreRepository.GetExtendedAsync(sorting, options);
         }
 
-        public Task<IPagedList<IBookstore>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<BookstoreExtendedDTO>> FindBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
         {
-            return _unitOfWork.BookstoreRepository.FindAsync(filter, paging, sorting, options);
+            return _unitOfWork.BookstoreRepository.FindExtendedAsync(filter, paging, sorting, options);
         }
 
         public async Task<ResponseStatus> UpdateBookstoreAsync(IBookstore bookstore)

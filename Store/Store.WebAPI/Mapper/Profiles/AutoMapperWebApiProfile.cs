@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AutoMapper;
 using System.Linq;
-using AutoMapper;
 using X.PagedList;
-using Microsoft.AspNetCore.Identity;
 
-using Store.Common.Enums;
+using Store.Models;
+using Store.Model.Common.Models;
+using Store.Model.Common.Models.Identity;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.Book;
 using Store.WebAPI.Models.Settings;
@@ -12,8 +12,6 @@ using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Models.Bookstore;
 using Store.WebAPI.Models.GlobalSearch;
 using Store.WebAPI.Mapper.Converters;
-using Store.Model.Common.Models;
-using Store.Model.Common.Models.Identity;
 
 namespace Store.WebAPI.Mapper.Profiles
 {
@@ -23,12 +21,13 @@ namespace Store.WebAPI.Mapper.Profiles
         public AutoMapperWebApiProfile()
         {
             // Create maps for bookstore models
-            CreateMap<BookstoreGetApiModel, IBookstore>().ReverseMap();
+            CreateMap<BookstoreGetApiModel, BookstoreExtendedDTO>().ReverseMap();
             CreateMap<BookstorePostApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstorePatchApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstoreApiModel, IBookstore>().ReverseMap();
 
             // Create maps for book models
+            CreateMap<BookGetApiModel, BookDTO>().ReverseMap();
             CreateMap<BookGetApiModel, IBook>().ReverseMap();
             CreateMap<BookPostApiModel, IBook>().ReverseMap();
             CreateMap<BookPatchApiModel, IBook>().ReverseMap();
