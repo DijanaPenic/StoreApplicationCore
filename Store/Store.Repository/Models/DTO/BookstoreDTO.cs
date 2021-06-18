@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Store.Model.Common.Models.Core;
-
 namespace Store.Repository.Models
 {
-    public class BookstoreDTO : IBaseEntity, IChangable
+    public class BookstoreDTO
     {
         public Guid Id { get; set; }
 
