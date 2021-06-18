@@ -24,6 +24,7 @@ namespace Store.Services.Identity
         private readonly IApplicationUserStore _userStore;
         private readonly IApplicationLoginUserStore _loginStore;
         private readonly IUserPasswordStore<IUser> _passwordStore;
+        private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly TwoFactorAuthOptions _twoFactorAuthConfig;
 
         public ApplicationUserManager(
@@ -42,7 +43,29 @@ namespace Store.Services.Identity
             _userStore = (IApplicationUserStore)userStore;
             _loginStore = (IApplicationLoginUserStore)userStore;
             _passwordStore = (IUserPasswordStore<IUser>)userStore;
+            _userRoleStore = (IUserRoleStore<IUser>)userStore;
             _twoFactorAuthConfig = twoFactorAuthOptions.Value;
+        }
+
+        public async Task<IdentityResult> AddToRoleAsync(string normalizedUserName, string role)
+        {
+            IUser user = await _userStore.FindByNameAsync(normalizedUserName, CancellationToken);
+            if (user == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "User Update", Description = "User not found." });
+            }
+
+            string normalizedRole = NormalizeName(role);
+            if (await _userRoleStore.IsInRoleAsync(user, normalizedRole, CancellationToken))
+            {
+                Logger.LogWarning(5, "User {userId} is already in role {role}.", await GetUserIdAsync(user), role);
+
+                return IdentityResult.Failed(ErrorDescriber.UserAlreadyInRole(role));
+            }
+
+            await _userRoleStore.AddToRoleAsync(user, normalizedRole, CancellationToken);
+
+            return await UpdateUserAsync(user);
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(IUser user, string newPassword)
