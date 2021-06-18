@@ -2,6 +2,7 @@
 using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.Extensions.DependencyInjection;
 
+using Store.DAL.Context;
 using Store.Repository.Mapper;
 using Store.WebAPI.Mapper.Profiles;
 
@@ -11,17 +12,15 @@ namespace Store.WebAPI.Application.Startup.Extensions
     {
         public static void AddAutoMapper(this IServiceCollection services)
         {
-            MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
+            services.AddAutoMapper((serviceProvider, automapper) =>
             {
-                cfg.AddProfile<AutoMapperWebApiProfile>();
-                cfg.AddProfile<AutoMapperRepositoryProfile>();
+                automapper.AddExpressionMapping();
 
-                cfg.AddExpressionMapping();
-            });
+                // Configure Profiles
+                automapper.AddProfile<AutoMapperWebApiProfile>();
+                automapper.AddProfile<AutoMapperRepositoryProfile>();
 
-            IMapper mapper = mapperConfiguration.CreateMapper();
-
-            services.AddSingleton(mapper);
+            }, typeof(ApplicationDbContext).Assembly);
         }
     }
 }
