@@ -63,8 +63,6 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<UserPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore());  // ignore roles as they will be saved separately
             CreateMap<RegisterPostApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
 
-            CreateMap<SearchItemGetApiModel, ISearchItem>().ReverseMap();
-
             CreateMap<IUserRefreshToken, UserRefreshTokenGetApiModel>();
             CreateMap<IUserClaim, UserClaimGetApiModel>();
             CreateMap<IUserLogin, UserLoginGetApiModel>();
