@@ -310,7 +310,7 @@ namespace Store.WebAPI.Controllers
             {
                 return NotFound();
             }
-
+            
             bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(userModel.Roles);
             if (!isRoleSelectionValid)
             {
@@ -361,7 +361,8 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, null);
+            DateTime lockoutDate = DateTime.Now.AddYears(50);
+            IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, lockoutDate);
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
