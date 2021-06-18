@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System.Linq;
 using X.PagedList;
+using Microsoft.AspNetCore.Identity;
 
 using Store.Models;
 using Store.Model.Common.Models;
@@ -53,6 +54,8 @@ namespace Store.WebAPI.Mapper.Profiles
             // Create maps for user models
             CreateMap<UserPatchApiModel, IUser>().ForMember(dst => dst.Roles, opt => opt.Ignore()); // ignore roles as they will be saved separately
             CreateMap<UserProfilePatchApiModel, IUser>().ReverseMap();
+
+            CreateMap<UserLoginInfo, ExternalLoginGetApiModel>();
 
             CreateMap<UserGetApiModel, IUser>();
             CreateMap<IUser, UserGetApiModel>().ForMember(dst => dst.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name).ToArray()));
