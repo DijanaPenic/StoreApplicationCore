@@ -646,7 +646,7 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/roles")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.User, AccessType.Update)]
-        public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, [FromQuery] string[] rolesToAssign)
+        public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, [FromBody] string[] rolesToAssign)
         {
             if (rolesToAssign?.Length == 0 || userId == Guid.Empty)
             {
