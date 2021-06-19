@@ -72,8 +72,11 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation($"User [{user.UserName}] has been registered.");
 
-            // Assign user to the Guest role (cannot update by user.id because we don't have id on user object)
-            IdentityResult roleResult = await _userManager.AddToRoleAsync(user.NormalizedUserName, RoleHelper.Guest);
+            // Retrieve generated user (need to fetch user.id)
+            user = await _userManager.FindByEmailAsync(user.NormalizedEmail);
+
+            // Assign user to the Guest role
+            IdentityResult roleResult = await _userManager.AddToRoleAsync(user, RoleHelper.Guest);
 
             if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
