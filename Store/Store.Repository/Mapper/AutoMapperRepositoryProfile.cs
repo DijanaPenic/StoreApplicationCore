@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 
 using Store.Models;
+using Store.Models.Identity;
 using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
 using Store.Entities;
@@ -28,9 +29,16 @@ namespace Store.Repository.Mapper
             // Identity mappings 
             CreateMap<IRoleClaim, RoleClaimEntity>().ReverseMap();
 
-            CreateMap<IUserToken, UserTokenEntity>().ReverseMap();
+            // NOTE: If using an interface as a destination type AutoMapper will dynamically create an implementation (proxy) type.
+            // However, the proxy generation only supports properties. As a workaround we can explicitly specify how the destination objects 
+            // should be constructed with using one of the ConstructUsing overloads. In that case AutoMapper does not generate proxies.
+            CreateMap<UserTokenEntity, IUserToken>()
+                .ConstructUsing(entity => new UserToken())
+                .ReverseMap();
 
-            CreateMap<IUserRefreshToken, UserRefreshTokenEntity>().ReverseMap();
+            CreateMap<UserRefreshTokenEntity, IUserRefreshToken>()
+                .ConstructUsing(entity => new UserRefreshToken())
+                .ReverseMap();
 
             CreateMap<IUserLogin, UserLoginEntity>().ReverseMap();
 
