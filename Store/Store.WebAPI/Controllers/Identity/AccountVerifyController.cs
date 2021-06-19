@@ -77,7 +77,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("{userId:guid}/email")]
-        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] EmailConfirmationPostApiModel emailConfirmationModel)
+        public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] EmailConfirmationPostApiModel emailConfirmationModel) // userId - need to provide so that admins can issue email confirmation mails to other users
         {
             AuthenticateResult authResult = await AuthenticateUserAsync(userId);
             if (authResult.Action != null) return authResult.Action;
@@ -201,7 +201,7 @@ namespace Store.WebAPI.Controllers
         [AllowAnonymous]
         [Route("{userId:guid}/phone-number")]
         [Consumes("application/json")]
-        public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] PhoneNumberVerifyPostApiModel phoneNumberVerifyModel)
+        public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] PhoneNumberVerifyPostApiModel phoneNumberVerifyModel) // userId - need to send so that admins can issue email confirmation mails to other users
         {
             AuthenticateResult authResult = await AuthenticateUserAsync(userId);
             if (authResult.Action != null) return authResult.Action;
@@ -312,6 +312,7 @@ namespace Store.WebAPI.Controllers
                 }
                 else
                 {
+                    // Check if currently logged in user or admin
                     bool hasPermissions = IsUser(userId, claimsPrincipal) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
                     if (!hasPermissions)
                     {
