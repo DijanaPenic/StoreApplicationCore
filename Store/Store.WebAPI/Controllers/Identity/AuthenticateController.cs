@@ -179,7 +179,7 @@ namespace Store.WebAPI.Controllers
             }
             catch (SecurityTokenException ex)
             {
-                return Unauthorized(ex.Message); 
+                return BadRequest(ex.Message); 
             }
         }
 
