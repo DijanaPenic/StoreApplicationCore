@@ -136,8 +136,11 @@ namespace Store.WebAPI.Controllers
             if (bookId == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            IBook book = _mapper.Map<IBook>(bookModel);
-            book.Id = bookId;
+            IBook book = await _bookService.FindBookByKeyAsync(bookId);
+            if (book == null)
+                return NotFound();
+
+            _mapper.Map(bookModel, book);
 
             ResponseStatus result = await _bookService.UpdateBookAsync(book);
 

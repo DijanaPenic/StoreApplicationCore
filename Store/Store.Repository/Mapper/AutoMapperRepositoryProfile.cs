@@ -14,74 +14,38 @@ namespace Store.Repository.Mapper
         public AutoMapperRepositoryProfile()
         {
             // Bookstore mappings
-            CreateMap<IBookstore, BookstoreEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IBookstore, BookstoreEntity>().ReverseMap();
 
             CreateMap<BookstoreEntity, BookstoreExtendedDTO>()
                     .ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
                     .ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
 
             // Book mappings
-            CreateMap<IBook, BookEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IBook, BookEntity>().ReverseMap();
 
             CreateMap<BookEntity, BookDTO>();
 
             // Identity mappings 
-            CreateMap<IRoleClaim, RoleClaimEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IRoleClaim, RoleClaimEntity>().ReverseMap();
 
-            CreateMap<IUserToken, UserTokenEntity>()
-                .ForMember(dst => dst.UserId, opt => opt.Ignore())
-                .ForMember(dst => dst.LoginProvider, opt => opt.Ignore())
-                .ForMember(dst => dst.Name, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IUserToken, UserTokenEntity>().ReverseMap();
 
-            CreateMap<IUserRefreshToken, UserRefreshTokenEntity>()
-                .ForMember(dst => dst.UserId, opt => opt.Ignore())
-                .ForMember(dst => dst.ClientId, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IUserRefreshToken, UserRefreshTokenEntity>().ReverseMap();
 
-            CreateMap<IUserLogin, UserLoginEntity>()
-                .ForMember(dst => dst.LoginProvider, opt => opt.Ignore())
-                .ForMember(dst => dst.ProviderKey, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IUserLogin, UserLoginEntity>().ReverseMap();
 
-            CreateMap<IUserClaim, UserClaimEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IUserClaim, UserClaimEntity>().ReverseMap();
 
-            CreateMap<IUser, UserEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IUser, UserEntity>().ReverseMap();
 
             CreateMap<IRole, RoleEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
                 .ForMember(dst => dst.Claims, opt => opt.MapFrom(src => src.Policies))
                 .ReverseMap();
 
-            CreateMap<IClient, ClientEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IClient, ClientEntity>().ReverseMap();
 
             // Email Template mappings
-            CreateMap<IEmailTemplate, EmailTemplateEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.DateCreatedUtc, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<IEmailTemplate, EmailTemplateEntity>().ReverseMap();
         }
     }
 }

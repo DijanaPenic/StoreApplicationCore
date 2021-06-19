@@ -14,13 +14,13 @@ namespace Store.Service.Common.Services
 {
     public interface IBookService
     {
-        Task<IEnumerable<IBook>> GetBooksAsync(ISortingParameters sorting, IOptionsParameters options);
+        Task<IEnumerable<IBook>> GetBooksAsync(ISortingParameters sorting, IOptionsParameters options = null);
 
-        Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options);
+        Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options = null);
 
-        Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+        Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
 
-        Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options);
+        Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
 
         Task<ResponseStatus> UpdateBookAsync(IBook book);
 

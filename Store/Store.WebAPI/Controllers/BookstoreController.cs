@@ -60,7 +60,7 @@ namespace Store.WebAPI.Controllers
             if (bookstoreId == Guid.Empty)
                 return BadRequest();
 
-            BookstoreExtendedDTO bookstore = await _bookstoreService.FindBookstoreByKeyAsync
+            BookstoreExtendedDTO bookstore = await _bookstoreService.FindExtendedBookstoreByKeyAsync
             (
                 bookstoreId,
                 options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, includeProperties))
@@ -126,7 +126,7 @@ namespace Store.WebAPI.Controllers
         {
             Task<IEnumerable<BookstoreExtendedDTO>> GetBookstoresFuncAsync()
             {
-                return _bookstoreService.GetBookstoresAsync
+                return _bookstoreService.GetExtendedBookstoresAsync
                 (
                     sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, DefaultParameters.SortOrder)),
                     options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, includeProperties))
@@ -175,7 +175,7 @@ namespace Store.WebAPI.Controllers
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize,
                                                   [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
-            IPagedList<BookstoreExtendedDTO> bookstores = await _bookstoreService.FindBookstoresAsync
+            IPagedList<BookstoreExtendedDTO> bookstores = await _bookstoreService.FindExtendedBookstoresAsync
             (
                 filter: FilteringFactory.Create<IFilteringParameters>(searchString),
                 paging: PagingFactory.Create(pageNumber, pageSize),
@@ -233,8 +233,11 @@ namespace Store.WebAPI.Controllers
             if (bookstoreId == Guid.Empty || !ModelState.IsValid)
                 return BadRequest();
 
-            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
-            bookstore.Id = bookstoreId;
+            IBookstore bookstore = await _bookstoreService.FindBookstoreByKeyAsync(bookstoreId);
+            if (bookstore == null)
+                return NotFound();
+
+            _mapper.Map(bookstoreModel, bookstore);
 
             ResponseStatus result = await _bookstoreService.UpdateBookstoreAsync(bookstore);
 

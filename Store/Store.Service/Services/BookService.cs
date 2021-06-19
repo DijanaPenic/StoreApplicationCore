@@ -23,22 +23,22 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<IBook>> GetBooksAsync(ISortingParameters sorting, IOptionsParameters options)
+        public Task<IEnumerable<IBook>> GetBooksAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
             return _unitOfWork.BookRepository.GetAsync(sorting, options);
         }
 
-        public Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options)
+        public Task<IBook> FindBookByKeyAsync(Guid bookId, IOptionsParameters options = null)
         {
             return _unitOfWork.BookRepository.FindByKeyAsync(bookId, options);
         }
 
-        public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IBook>> FindBooksAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
             return _unitOfWork.BookRepository.FindAsync(filter, paging, sorting, options);
         }
 
-        public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options)
+        public Task<IPagedList<IBook>> FindBooksByBookstoreIdAsync(Guid bookstoreId, IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
             return _unitOfWork.BookRepository.FindByBookstoreIdAsync(bookstoreId, filter, paging, sorting, options);
         }
