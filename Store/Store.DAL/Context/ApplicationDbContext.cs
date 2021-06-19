@@ -73,26 +73,20 @@ namespace Store.DAL.Context
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);           
+            DateTime utcNow = DateTime.UtcNow;
 
             foreach (EntityEntry entry in entries)
             {
                 object entity = entry.Entity;
 
-                switch (entry.State)
+                if (entry.State == EntityState.Added)
                 {
-                    case EntityState.Modified:
-                        if (entity is IDBChangable)
-                        {
-                            (entity as IDBChangable).DateUpdatedUtc = DateTime.UtcNow;
-                        }
-                        break;
-                    case EntityState.Added:
-                        if (entity is IDBBaseEntity) (entity as IDBBaseEntity).DateCreatedUtc = DateTime.UtcNow;
-                        if (entry.Metadata.FindProperty("Id") != null) entry.Property("Id").CurrentValue = GuidHelper.NewSequentialGuid();
-
-                        break;
+                    if (entity is IDBBaseEntity) (entity as IDBBaseEntity).DateCreatedUtc = utcNow;
+                    if (entry.Metadata.FindProperty("Id") != null) entry.Property("Id").CurrentValue = GuidHelper.NewSequentialGuid();
                 }
+
+                if (entity is IDBChangable) (entity as IDBChangable).DateUpdatedUtc = utcNow;
             }
 
             return base.SaveChangesAsync(cancellationToken);
