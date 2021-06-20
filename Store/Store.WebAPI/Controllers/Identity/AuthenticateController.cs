@@ -165,7 +165,7 @@ namespace Store.WebAPI.Controllers
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken, accessToken, GetCurrentUserClientId());
+                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken.Base64Decode(), accessToken, GetCurrentUserClientId());
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 
