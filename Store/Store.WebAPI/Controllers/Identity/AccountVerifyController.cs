@@ -106,7 +106,7 @@ namespace Store.WebAPI.Controllers
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },
-                { "token", token.Base64ForUrlEncode() }
+                { "token", token.Base64Encode() }
             });
 
             _logger.LogInformation("Sending email confirmation email.");
@@ -142,7 +142,7 @@ namespace Store.WebAPI.Controllers
                 NotFound();
             }
 
-            IdentityResult result = await _userManager.ConfirmEmailAsync(user, token.Base64ForUrlDecode());
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, token.Base64Decode());
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
@@ -173,7 +173,7 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            string decodedToken = token.Base64ForUrlDecode();
+            string decodedToken = token.Base64Decode();
 
             if (!user.EmailConfirmed)
             {

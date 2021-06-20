@@ -331,7 +331,7 @@ namespace Store.WebAPI.Controllers
                     string callbackUrl = template.Resolve(new Dictionary<string, object>
                     {
                         { "userId", user.Id.ToString() },
-                        { "token", token.Base64ForUrlEncode() }
+                        { "token", token.Base64Encode() }
                     });
 
                     _logger.LogInformation($"Sending email confirmation token to confirm association of {externalLoginInfo.ProviderDisplayName} external login account.");

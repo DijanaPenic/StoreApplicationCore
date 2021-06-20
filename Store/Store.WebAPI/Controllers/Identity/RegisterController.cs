@@ -97,7 +97,7 @@ namespace Store.WebAPI.Controllers
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },
-                { "token", token.Base64ForUrlEncode() }
+                { "token", token.Base64Encode() }
             });
 
             _logger.LogInformation("Sending account activation email to activate account.");
@@ -233,7 +233,7 @@ namespace Store.WebAPI.Controllers
                 string callbackUrl = template.Resolve(new Dictionary<string, object>
                 {
                     { "userId", existingUser.Id.ToString() },
-                    { "token", token.Base64ForUrlEncode() }
+                    { "token", token.Base64Encode() }
                 });
 
                 _logger.LogInformation($"Sending email confirmation token to confirm association with {externalLoginInfo.ProviderDisplayName} external login account.");

@@ -38,14 +38,14 @@ namespace Store.Common.Extensions
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower()).Replace(" ", "").Replace("_", "");
         }
 
-        public static string Base64ForUrlEncode(this string value)
+        public static string Base64Encode(this string value)
         {
             byte[] encodedBytes = Encoding.UTF8.GetBytes(value);
 
             return Convert.ToBase64String(encodedBytes);
         }
 
-        public static string Base64ForUrlDecode(this string value)
+        public static string Base64Decode(this string value)
         {
             byte[] decodedBytes = Convert.FromBase64String(value);
 

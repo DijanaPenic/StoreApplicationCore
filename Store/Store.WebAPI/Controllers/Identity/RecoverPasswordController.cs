@@ -69,7 +69,7 @@ namespace Store.WebAPI.Controllers
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },
-                { "token", token.Base64ForUrlEncode() }
+                { "token", token.Base64Encode() }
             });
 
             _logger.LogInformation("Sending password recovery email.");
@@ -107,7 +107,7 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            IdentityResult result = await _userManager.ResetPasswordAsync(user, passwordRecoveryModel.PasswordRecoveryToken.Base64ForUrlDecode(), passwordRecoveryModel.NewPassword);
+            IdentityResult result = await _userManager.ResetPasswordAsync(user, passwordRecoveryModel.PasswordRecoveryToken.Base64Decode(), passwordRecoveryModel.NewPassword);
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
         }
