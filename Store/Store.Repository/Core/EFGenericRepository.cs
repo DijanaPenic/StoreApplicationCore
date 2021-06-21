@@ -119,21 +119,21 @@ namespace Store.Repository.Core
             return ResponseStatus.Success;
         }
 
-        protected async Task<ResponseStatus> UpdateAsync<TDomain, TEntity>
+        protected Task<ResponseStatus> UpdateAsync<TDomain, TEntity>
         (
             TDomain model,
             params object[] keyValues
         ) where TDomain : class where TEntity : class
         {
             if (model == null)
-                return ResponseStatus.Error;
+                return Task.FromResult(ResponseStatus.Error);
 
-            // TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
-            // Need to search the database (NOT DbContext -> Find(keyValues)) because AutoMapper can't handle navigation property mappings
-            TEntity entity = await DbContext.Set<TEntity>().FirstOrDefaultAsync(DbContext, keyValues);
+            // CAUTION: TEntity entity = Mapper.Map<TEntity>(model); -> can't use this for model updates
+
+            TEntity entity = DbContext.Set<TEntity>().Find(keyValues);
 
             if (entity == null)
-                return ResponseStatus.NotFound;
+                return Task.FromResult(ResponseStatus.NotFound);
 
             // This works only for scalar property updates. The navigation property mapping is out of the scope for AutoMapper.
             // Also, the author is highly suggesting against the domain->entity mappings.
@@ -141,7 +141,7 @@ namespace Store.Repository.Core
 
             DbContext.Entry(entity).State = EntityState.Modified;
 
-            return ResponseStatus.Success;
+            return Task.FromResult(ResponseStatus.Success);
         }
 
         protected ISortingParameters SortingMap<TDomain, TEntity>(ISortingParameters sorting) => ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
