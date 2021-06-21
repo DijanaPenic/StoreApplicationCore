@@ -436,7 +436,12 @@ namespace Store.WebAPI.Controllers
             if (string.IsNullOrEmpty(authenticatorKey))
             {
                 await _userManager.ResetAuthenticatorKeyAsync(user);                    // This will set a new AuthenticatorKey
+
                 authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);   // Now we can retrieve the new key
+                if(string.IsNullOrEmpty(authenticatorKey))
+                {
+                    return InternalServerError();
+                }
 
                 _logger.LogInformation("A new authenticator key is generated.");
             }
