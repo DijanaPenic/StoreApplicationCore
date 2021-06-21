@@ -22,7 +22,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             .AddFacebook(GetExternalLoginAuthOptions(configuration, ExternalLoginProviders.Facebook));
         }
 
-        static Action<OAuthOptions> GetExternalLoginAuthOptions(IConfiguration configuration, string providerName)
+        private static Action<OAuthOptions> GetExternalLoginAuthOptions(IConfiguration configuration, string providerName)
         {
             ExternalLoginOptions config = configuration.GetSection($"{ExternalLoginOptions.SectionName}:{providerName}").Get<ExternalLoginOptions>();
 
