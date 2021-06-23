@@ -122,12 +122,10 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
             }
-
             if (!IsCurrentUser(userId))
             {
                 return Forbid();
@@ -298,7 +296,6 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("User Id cannot be empty.");
             }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -487,7 +484,6 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("User Id cannot be empty.");
             }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -548,7 +544,6 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
@@ -650,7 +645,7 @@ namespace Store.WebAPI.Controllers
         {
             if (rolesToAssign?.Length == 0 || userId == Guid.Empty)
             {
-                return BadRequest();
+                return BadRequest("User id and roles cannot be empty.");
             }
 
             // Find the user we want to assign roles to

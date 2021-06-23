@@ -83,10 +83,9 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("Email template is missing.");
             }
-
             if (emailTemplateId == Guid.Empty)
             {
-                return BadRequest();
+                return BadRequest("Email Template Id cannot be empty.");
             }
 
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
@@ -114,7 +113,7 @@ namespace Store.WebAPI.Controllers
         {
             if (emailTemplateId == Guid.Empty)
             {
-                return BadRequest();
+                return BadRequest("Email Template Id cannot be empty.");
             }
 
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
@@ -162,7 +161,7 @@ namespace Store.WebAPI.Controllers
         {
             if (emailTemplateId == Guid.Empty)
             {
-                return BadRequest();
+                return BadRequest("Email Template Id cannot be empty.");
             }
 
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);

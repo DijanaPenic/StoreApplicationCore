@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 
 using Store.Models;
 using Store.Model.Common.Models;
@@ -56,9 +57,11 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid bookstoreId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
-        {        
+        {
             if (bookstoreId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Bookstore Id cannot be empty.");
+            }
 
             BookstoreExtendedDTO bookstore = await _bookstoreService.FindExtendedBookstoreByKeyAsync
             (
@@ -94,7 +97,9 @@ namespace Store.WebAPI.Controllers
                                                   [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
             if (bookstoreId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Bookstore Id cannot be empty.");
+            }
 
             IPagedList<IBook> bookstores = await _bookService.FindBooksByBookstoreIdAsync
             (
@@ -203,7 +208,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> PostAsync([FromBody] BookstorePostApiModel bookstoreModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+            {
+                return BadRequest(ModelState);
+            }
 
             IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
             ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
@@ -230,12 +237,20 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Bookstore, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid bookstoreId, [FromBody] BookstorePatchApiModel bookstoreModel)
         {
-            if (bookstoreId == Guid.Empty || !ModelState.IsValid)
-                return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (bookstoreId == Guid.Empty)
+            {
+                return BadRequest("Book Id cannot be empty.");
+            }
 
             IBookstore bookstore = await _bookstoreService.FindBookstoreByKeyAsync(bookstoreId);
             if (bookstore == null)
+            {
                 return NotFound();
+            }
 
             _mapper.Map(bookstoreModel, bookstore);
 
@@ -264,7 +279,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid bookstoreId)
         {
             if (bookstoreId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Bookstore Id cannot be empty.");
+            }
 
             ResponseStatus result = await _bookstoreService.DeleteBookstoreAsync(bookstoreId);
 

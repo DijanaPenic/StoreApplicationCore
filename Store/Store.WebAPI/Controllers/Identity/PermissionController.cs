@@ -56,10 +56,14 @@ namespace Store.WebAPI.Controllers.Identity
         public async Task<IActionResult> PostAsync([FromRoute] Guid roleId, [FromBody] PolicyPostApiModel policyModel)
         {
             if (roleId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Role id cannot be empty.");
+            }
 
             if (!ModelState.IsValid)
-                return BadRequest();
+            {
+                return BadRequest(ModelState);
+            }
 
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)

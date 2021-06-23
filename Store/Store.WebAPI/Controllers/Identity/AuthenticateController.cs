@@ -475,7 +475,6 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("Verification Code is missing.");
             }
-
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");

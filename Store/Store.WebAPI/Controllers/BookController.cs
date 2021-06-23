@@ -48,7 +48,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> GetAsync([FromRoute] Guid bookId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
             if (bookId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Book Id cannot be empty.");
+            }
 
             IBook book = await _bookService.FindBookByKeyAsync
             (
@@ -107,7 +109,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> PostAsync([FromBody] BookPostApiModel bookModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+            {
+                return BadRequest(ModelState);
+            }
 
             IBook book = _mapper.Map<IBook>(bookModel);
             ResponseStatus result = await _bookService.AddBookAsync(book);
@@ -133,12 +137,20 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Book, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid bookId, [FromBody] BookPatchApiModel bookModel)
         {
-            if (bookId == Guid.Empty || !ModelState.IsValid)
-                return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (bookId == Guid.Empty)
+            {
+                return BadRequest("Book Id cannot be empty.");
+            }
 
             IBook book = await _bookService.FindBookByKeyAsync(bookId);
             if (book == null)
+            {
                 return NotFound();
+            }
 
             _mapper.Map(bookModel, book);
 
@@ -166,7 +178,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid bookId)
         {
             if (bookId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Book Id cannot be empty.");
+            }
 
             ResponseStatus result = await _bookService.DeleteBookByKeyAsync(bookId);
 

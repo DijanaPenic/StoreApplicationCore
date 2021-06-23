@@ -53,7 +53,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> GetAsync([FromRoute] Guid roleId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
             if (roleId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Role Id cannot be empty.");
+            }
 
             IRole role = await _roleManager.FindRoleByIdAsync(roleId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<RoleGetApiModel, IRole>(_mapper, includeProperties)));
 
@@ -108,7 +110,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> PostAsync([FromBody] RolePostApiModel roleModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+            {
+                return BadRequest(ModelState);
+            }
 
             IRole role = _mapper.Map<IRole>(roleModel);
 
@@ -133,13 +137,14 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Role, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid roleId, [FromBody] RolePatchApiModel roleModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             if (roleId == Guid.Empty)
             {
-                return BadRequest("User Id cannot be empty.");
+                return BadRequest("Role Id cannot be empty.");
             }
-
-            if (!ModelState.IsValid)
-                return BadRequest();
 
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
@@ -179,7 +184,9 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid roleId)
         {
             if (roleId == Guid.Empty)
-                return BadRequest();
+            {
+                return BadRequest("Role Id cannot be empty.");
+            }
 
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
