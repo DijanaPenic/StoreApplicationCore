@@ -22,7 +22,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/bookstores/{{bookstore_id}}",
+					"raw": "{{base_url}}/api/bookstores/{{bookstore_id}}?include_properties=books",
 					"host": [
 						"{{base_url}}"
 					],
@@ -34,8 +34,7 @@
 					"query": [
 						{
 							"key": "include_properties",
-							"value": "books",
-							"disabled": true
+							"value": "books"
 						}
 					]
 				}
@@ -302,7 +301,7 @@
 	"variable": [
 		{
 			"key": "bookstore_id",
-			"value": "06579623-0e80-4dec-2b4b-08d88cc5023c"
+			"value": "61c048ca-028d-4466-b7fd-4a05f0dad647"
 		}
 	]
 }

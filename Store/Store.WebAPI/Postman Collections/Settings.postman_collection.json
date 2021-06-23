@@ -54,7 +54,7 @@
 								},
 								{
 									"key": "type",
-									"value": "0",
+									"value": "ConfirmAccount",
 									"type": "text"
 								}
 							]

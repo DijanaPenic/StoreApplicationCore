@@ -185,13 +185,6 @@
 								"api",
 								"roles",
 								""
-							],
-							"query": [
-								{
-									"key": "",
-									"value": null,
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -481,7 +474,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/users?sort_order=user_name|desc&search_string=dijana&page_size=2&page_number=1&include_properties=roles",
+							"raw": "{{base_url}}/api/users?sort_order=user_name|desc&search_string=Dijana&page_size=3&page_number=1&include_properties=roles&showInactive=false",
 							"host": [
 								"{{base_url}}"
 							],
@@ -496,11 +489,11 @@
 								},
 								{
 									"key": "search_string",
-									"value": "dijana"
+									"value": "Dijana"
 								},
 								{
 									"key": "page_size",
-									"value": "2"
+									"value": "3"
 								},
 								{
 									"key": "page_number",
@@ -509,6 +502,10 @@
 								{
 									"key": "include_properties",
 									"value": "roles"
+								},
+								{
+									"key": "showInactive",
+									"value": "false"
 								}
 							]
 						}
@@ -755,7 +752,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic-mono\",\r\n    \"email\": \"dijana@mono.hr\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register",
@@ -814,7 +811,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    \"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    //\"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    //\"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register/external",
@@ -886,17 +883,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_new_password\": \"aB123456,\",\r\n    \"password_recovery_token\": \"Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNKelVkTjFtdkJ2dmwvNW1VQkZUdjlpZGhlUnAyZktjdFBpSHVuMDRFMk96YWgyRGJqV25JUkpQT0ZNUFMwd2NlRE5ZckVNb2Q5RkxXRjdMcEhRelNTRXJEcXNwVDcvSFNYeGE5KzA2SHF1Q1JrV0dTeGl3SUhqZEhZaHV2amdrVFQwbjRvSVNHWXBZc0pWdFpadVREbjFzZ0xyNVdZTmpLbkhweWhPYkdXSGF2MTZXSkNPNkpSbHAvekJyOE04bG0wV2Y4OVB2aFVlL3owQjQyU2Y5dmVn\"\r\n}"
+							"raw": "{\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_new_password\": \"aB123456,\",\r\n    \"password_recovery_token\": \"Q2ZESjhIVzZqaXdJY1psSm5GK3RSdDFmUjA2ckJkYlM4bFh0MHhpYmdtWVlidERvc29QMUIwb3ZrYWJPL2drWU5ZbTZRSkFQbHRlb0tCcElpR2tpQVZoZFpaRmQ1cEo3b1lPZkIrd2dzSlhVMVlWdGJ2Q1VGWnR5SmgzRkNkT0pTQUdJcnlhbWxsOUxud3BuME5XcVFwaHZRem0zZmFHaHNYWXJMUUJQejBvRjlBNURNdkl5RG8xMTBGVExyZDRVQkEybFFkdzVEczBwb2FKR3dnSFFYNFYya0tsL2xWYTRJTDZhVmFMb0FlWVpZMGh3\"\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/recover-password/03b4ed7a-b4f2-4ecd-4853-08d87f731a78",
+							"raw": "{{base_url}}/api/recover-password/{{user_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"recover-password",
-								"03b4ed7a-b4f2-4ecd-4853-08d87f731a78"
+								"{{user_id}}"
 							]
 						}
 					},
@@ -944,7 +941,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic-mono\",\r\n    \"password\": \"aB123456,\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"password\": \"aB123456,\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authenticate",
@@ -1397,7 +1394,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"return_ulr\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"return_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/account-verify/{{user_id}}/email",
@@ -1638,7 +1635,7 @@
 	"variable": [
 		{
 			"key": "user_id",
-			"value": "16d36da4-bbbf-4861-d7c9-08d89aee3eeb"
+			"value": "139d5713-01bf-4d05-8b92-08d9277f001d"
 		},
 		{
 			"key": "role_id",

@@ -17,7 +17,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/books/{{book_id}}",
+					"raw": "{{base_url}}/api/books/{{book_id}}?include_properties=bookstore",
 					"host": [
 						"{{base_url}}"
 					],
@@ -29,8 +29,7 @@
 					"query": [
 						{
 							"key": "include_properties",
-							"value": "bookstore",
-							"disabled": true
+							"value": "bookstore"
 						}
 					]
 				}
@@ -188,13 +187,6 @@
 						"api",
 						"books",
 						""
-					],
-					"query": [
-						{
-							"key": "",
-							"value": null,
-							"disabled": true
-						}
 					]
 				}
 			},
@@ -224,7 +216,7 @@
 	"variable": [
 		{
 			"key": "book_id",
-			"value": "1eaab6f8-3c50-42ed-0d73-08d8616cf887"
+			"value": "fef19d36-3e8e-4665-9239-ba7c1da65a56"
 		}
 	]
 }
