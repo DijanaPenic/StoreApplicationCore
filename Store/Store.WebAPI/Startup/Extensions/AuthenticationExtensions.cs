@@ -37,6 +37,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
                 identityOptions.Password.RequiredLength = 8;
                 identityOptions.Password.RequireDigit = true;
                 identityOptions.Password.RequireUppercase = true;
+                identityOptions.Password.RequireLowercase = true;
                 identityOptions.Password.RequireNonAlphanumeric = true;
 
                 identityOptions.Lockout.AllowedForNewUsers = true;
