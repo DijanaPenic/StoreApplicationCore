@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotLiquid" Version="2.1.436" />
+    <PackageReference Include="DotLiquid" Version="2.1.457" />
   </ItemGroup>
 
   <ItemGroup>
