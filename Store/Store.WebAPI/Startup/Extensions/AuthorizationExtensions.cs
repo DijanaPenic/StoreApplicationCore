@@ -9,7 +9,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class AuthorizationExtensions
     {
-        public static void AddAuthorization(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthorizationServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Authorization policy provider
             services.AddTransient<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();

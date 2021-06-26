@@ -8,7 +8,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class FileProviderExtensions
     {
-        public static void AddFileProvider(this IServiceCollection services, IConfiguration configuration)
+        public static void AddFileProviderServices(this IServiceCollection services, IConfiguration configuration)
         {
             bool localStorageEnabled = configuration.GetValue<bool>("LocalStorageEnabled");
 

@@ -9,7 +9,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class SwaggerExtensions
     {
-        public static void AddSwagger(this IServiceCollection services)
+        public static void AddSwaggerServices(this IServiceCollection services)
         {
             services.AddSwaggerGen(swaggerOptions =>
             {

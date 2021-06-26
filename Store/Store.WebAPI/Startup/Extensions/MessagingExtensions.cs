@@ -10,7 +10,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class MessagingExtensions
     {
-        public static void AddMessaging(this IServiceCollection services, IConfiguration configuration)
+        public static void AddMessagingServices(this IServiceCollection services, IConfiguration configuration)
         {
             // SMS & Voice
             services.AddTransient<ISmsService, SmsService>();

@@ -8,7 +8,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class AutoMapperExtensions
     {
-        public static void AddAutoMapper(this IServiceCollection services)
+        public static void AddAutoMapperServices(this IServiceCollection services)
         {
             services.AddAutoMapper((serviceProvider, automapper) =>
             {

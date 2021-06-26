@@ -20,7 +20,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class AuthenticationExtensions
     {
-        public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure token lifespan
             // Note: Token example - token for password reset
@@ -70,7 +70,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             // Source: https://github.com/openiddict/openiddict-core/issues/578
 
             // Set cookie authentication options
-            static void cookieAuthOptions(CookieAuthenticationOptions options)
+            static void CookieAuthOptions(CookieAuthenticationOptions options)
             {
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SameSite = SameSiteMode.Strict;
@@ -87,10 +87,10 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             // Set cookies
             services.AddAuthentication()
-            .AddCookie(ApplicationIdentityConstants.AccountVerificationScheme, cookieAuthOptions)
-            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, cookieAuthOptions)
-            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, cookieAuthOptions)
-            .AddCookie(IdentityConstants.ExternalScheme, cookieAuthOptions);
+            .AddCookie(ApplicationIdentityConstants.AccountVerificationScheme, CookieAuthOptions)
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, CookieAuthOptions)
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, CookieAuthOptions)
+            .AddCookie(IdentityConstants.ExternalScheme, CookieAuthOptions);
 
             // Two-factor configuration
             services.Configure<TwoFactorAuthOptions>(configuration.GetSection(TwoFactorAuthOptions.Position));
@@ -131,7 +131,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, ClientAuthenticationHandler>("ClientAuthenticationScheme", options => { });
 
             // External Login configuration
-            services.ConfigureExternalProviders(configuration);
+            services.ConfigureExternalProvidersServices(configuration);
         }
     }
 }

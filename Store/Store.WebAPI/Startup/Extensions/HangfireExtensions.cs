@@ -11,7 +11,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class HangfireExtensions
     {
-        public static void AddHangfire(this IApplicationBuilder app)
+        public static void AddHangfireServices(this IApplicationBuilder app)
         {
             // Configure hangfire dashboard and server
             TokenValidationParameters tokenValidationParameters = (TokenValidationParameters)app.ApplicationServices.GetService(typeof(TokenValidationParameters));

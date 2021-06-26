@@ -18,48 +18,48 @@ namespace Store.WebAPI
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Auto Mapper configuration
-            services.AddAutoMapper();
+            services.AddAutoMapperServices();
 
             // Common configuration
             services.AddCommonComponents();
 
             // Repository configuration
-            services.AddRepositoryComponents(Configuration);
+            services.AddRepositoryComponents(_configuration);
 
             // Service configuration
             services.AddServiceComponents();
             
             // Cache configuration
-            services.AddCacheComponents(Configuration);
+            services.AddCacheComponents(_configuration);
 
             // Authentication configuration
-            services.AddAuthentication(Configuration);
+            services.AddAuthenticationServices(_configuration);
 
             // Authorization configuration
-            services.AddAuthorization(Configuration);
+            services.AddAuthorizationServices(_configuration);
 
             // Swagger configuration
-            services.AddSwagger();
+            services.AddSwaggerServices();
 
             // Hangfire configuration
-            //services.AddHangfire(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("Database")));
+            //services.AddHangfireServices(config => config.UsePostgreSqlStorage(Configuration.GetConnectionString("Database")));
 
             // Messaging configuration (SMS, voice, email)
-            services.AddMessaging(Configuration);
+            services.AddMessagingServices(_configuration);
 
             // File provider configuration
-            services.AddFileProvider(Configuration);
+            services.AddFileProviderServices(_configuration);
 
             // Controller configuration
             services.AddControllers(options =>
@@ -78,7 +78,7 @@ namespace Store.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Disabled Hangfire for easier sql log troubleshooting.
             //app.AddHangfire();

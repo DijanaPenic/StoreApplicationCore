@@ -15,7 +15,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
     // * Facebook - must be "https".
     public static class ExternalLoginProviderExtensions
     {
-        public static void ConfigureExternalProviders(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureExternalProvidersServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication()
             .AddGoogle(GetExternalLoginAuthOptions(configuration, ExternalLoginProviders.Google))
