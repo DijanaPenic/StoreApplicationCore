@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
 
 namespace Store.WebAPI.Models.Identity
 {
@@ -8,10 +8,17 @@ namespace Store.WebAPI.Models.Identity
 
         public string AssociateEmail { get; set; }
 
-        [Required]
         public bool AssociateExistingAccount { get; set; }
 
-        [Required]
         public string ConfirmationUrl { get; set; }         
+    }
+
+    public class RegisterExternalPostApiModelValidator : AbstractValidator<RegisterExternalPostApiModel>
+    {
+        public RegisterExternalPostApiModelValidator()
+        {
+            RuleFor(registerExternal => registerExternal.AssociateExistingAccount).NotEmpty();
+            RuleFor(registerExternal => registerExternal.ConfirmationUrl).NotEmpty();
+        }
     }
 }

@@ -1,6 +1,5 @@
 using Hangfire;
 using Hangfire.PostgreSql;
-using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -73,6 +72,9 @@ namespace Store.WebAPI
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+
+            // FluentValidation configuration
+            services.AddFluentValidationServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

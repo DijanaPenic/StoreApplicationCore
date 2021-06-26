@@ -1,34 +1,42 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
+using Microsoft.Extensions.Configuration;
+
+using Store.WebAPI.Models.Extensions;
 
 namespace Store.WebAPI.Models.Identity
 {
     public class RegisterPostApiModel : GoogleReCaptchaModelApiBase
     {
-        [Required]
         public string UserName { get; set; }
-
-        [Required]
-        [EmailAddress]
+        
         public string Email { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "First Name cannot be longer than 50 characters.")]
         public string FirstName { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "Last Name cannot be longer than 50 characters.")]
         public string LastName { get; set; }
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [DataType(DataType.Password)]
-        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
         public string ActivationUrl { get; set; }
+    }
+    
+    public class RegisterPostApiModelValidator : GoogleReCaptchaModelApiBaseValidator<RegisterPostApiModel>
+    {
+        public RegisterPostApiModelValidator(IConfiguration configuration) : base(configuration)
+        {
+            RuleFor(register => register.UserName).NotEmpty();
+            RuleFor(register => register.Email).NotEmpty().EmailAddress();
+            RuleFor(register => register.FirstName).NotEmpty().MaximumLength(50);
+            RuleFor(register => register.LastName).NotEmpty().MaximumLength(50);
+            RuleFor(register => register.Password).NotEmpty().Password();
+        
+            RuleFor(register => register.ConfirmPassword)
+                .NotEmpty()
+                .Equal(register => register.Password).WithMessage("The new password and confirmation password must match.");
+            
+            RuleFor(register => register.ActivationUrl).NotEmpty();
+        }
     }
 }

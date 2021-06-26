@@ -1,19 +1,24 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
+using System;
 
 namespace Store.WebAPI.Models.Book
 {
     public class BookPatchApiModel
     {
-        [Required]
-        [StringLength(50, ErrorMessage = "Name cannot be longer than 50 characters.")]
         public string Name { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "Author cannot be longer than 50 characters.")]
         public string Author { get; set; }
 
-        [Required]
         public Guid BookstoreId { get; set; }
+    }
+
+    public class BookPatchApiModelValidator : AbstractValidator<BookPatchApiModel>
+    {
+        public BookPatchApiModelValidator()
+        {
+            RuleFor(book => book.Name).NotEmpty().MaximumLength(50);
+            RuleFor(book => book.Author).NotEmpty().MaximumLength(50);
+            RuleFor(book => book.BookstoreId).NotEmpty();
+        }
     }
 }

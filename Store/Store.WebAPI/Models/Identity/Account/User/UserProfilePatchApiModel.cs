@@ -1,21 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
 
 namespace Store.WebAPI.Models.Identity
 {
     public class UserProfilePatchApiModel
     {
-        [Required]
         public string Email { get; set; }
 
-        [Required]
         public string ConfirmationUrl { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "First Name cannot be longer than 50 characters.")]
         public string FirstName { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "Last Name cannot be longer than 50 characters.")]
         public string LastName { get; set; }
+    }
+
+    public class UserProfilePatchApiModelValidator : AbstractValidator<UserProfilePatchApiModel>
+    {
+        public UserProfilePatchApiModelValidator()
+        {
+            RuleFor(userProfile => userProfile.Email).NotEmpty().EmailAddress();
+            RuleFor(userProfile => userProfile.ConfirmationUrl).NotEmpty();
+            RuleFor(userProfile => userProfile.FirstName).NotEmpty().MaximumLength(50);
+            RuleFor(userProfile => userProfile.LastName).NotEmpty().MaximumLength(50);
+        }
     }
 }

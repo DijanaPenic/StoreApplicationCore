@@ -1,12 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
 
 namespace Store.WebAPI.Models.Identity
 {
     public class RolePostApiModel
     {
-        [Required]
         public string Name { get; set; }
 
         public bool Stackable { get; set; }
+    }
+    
+    public class RolePostApiModelValidator : AbstractValidator<RolePostApiModel>
+    {
+        public RolePostApiModelValidator()
+        {
+            RuleFor(role => role.Name).NotEmpty();
+        }
     }
 }

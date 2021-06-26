@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
 
 using Store.Common.Enums;
 
@@ -6,7 +6,6 @@ namespace Store.WebAPI.Models.Identity
 {
     public class PolicyPostApiModel
     {
-        [Required]
         public SectionType Section { get; set; }
 
         public AccessActionModel[] Actions { get; set; }
@@ -14,9 +13,20 @@ namespace Store.WebAPI.Models.Identity
 
     public class AccessActionModel
     {
-        [Required]
         public AccessType Type { get; set; }
 
         public bool IsEnabled { get; set; }
+    }
+
+    public class PolicyPostApiModelValidator : AbstractValidator<PolicyPostApiModel>
+    {
+        public PolicyPostApiModelValidator()
+        {
+            RuleFor(policy => policy.Section).IsInEnum();
+            
+            RuleForEach(policy => policy.Actions).ChildRules(inlineValidator => {
+                inlineValidator.RuleFor(action => action.Type).IsInEnum();
+            });
+        }
     }
 }

@@ -1,10 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
 
 namespace Store.WebAPI.Models.Identity
 {
     public class EmailConfirmationPostApiModel
     {
-        [Required]
         public string ReturnUrl { get; set; }
+    }
+
+    public class EmailConfirmationPostApiModelValidator : AbstractValidator<EmailConfirmationPostApiModel>
+    {
+        public EmailConfirmationPostApiModelValidator()
+        {
+            RuleFor(emailConfirmation => emailConfirmation.ReturnUrl).NotEmpty();
+        }
     }
 }

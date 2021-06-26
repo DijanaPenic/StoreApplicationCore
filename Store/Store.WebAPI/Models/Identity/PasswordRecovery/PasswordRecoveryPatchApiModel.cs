@@ -1,19 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
+
+using Store.WebAPI.Models.Extensions;
 
 namespace Store.WebAPI.Models.Identity
 {
     public class PasswordRecoveryPatchApiModel
     {
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
-        [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 
-        [DataType(DataType.Password)]
-        [Compare(nameof(NewPassword), ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmNewPassword { get; set; }
 
-        [Required]
         public string PasswordRecoveryToken { get; set; }
+    }
+
+    public class PasswordRecoveryPatchApiModelValidator : AbstractValidator<PasswordRecoveryPatchApiModel>
+    {
+        public PasswordRecoveryPatchApiModelValidator()
+        {
+            RuleFor(passwordRecovery => passwordRecovery.NewPassword).NotEmpty().Password();
+
+            RuleFor(passwordRecovery => passwordRecovery.ConfirmNewPassword)
+                .NotEmpty()
+                .Equal(passwordRecovery => passwordRecovery.NewPassword).WithMessage("The new password and confirmation password must match.");
+
+            RuleFor(passwordRecovery => passwordRecovery.PasswordRecoveryToken).NotEmpty();
+        }
     }
 }

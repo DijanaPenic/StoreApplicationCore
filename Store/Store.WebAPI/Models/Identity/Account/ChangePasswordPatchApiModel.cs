@@ -1,21 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
+
+using Store.WebAPI.Models.Extensions;
 
 namespace Store.WebAPI.Models.Identity
 {
     public class ChangePasswordPatchApiModel
     {
-        [DataType(DataType.Password)]
         public string OldPassword { get; set; }
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 8)]
-        [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 
-        [DataType(DataType.Password)]
-        [Compare(nameof(NewPassword), ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
         public bool SendMailNotification { get; set; }
+    }
+
+    public class ChangePasswordPatchApiModelValidator : AbstractValidator<ChangePasswordPatchApiModel>
+    {
+        public ChangePasswordPatchApiModelValidator()
+        {
+            RuleFor(changePassword => changePassword.OldPassword);
+            RuleFor(changePassword => changePassword.NewPassword).NotEmpty().Password();
+
+            RuleFor(changePassword => changePassword.ConfirmPassword)
+                .NotEmpty()
+                .Equal(changePassword => changePassword.NewPassword).WithMessage("The new password and confirmation password must match.");
+        }
     }
 }
