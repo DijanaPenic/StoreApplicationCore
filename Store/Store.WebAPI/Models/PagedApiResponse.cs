@@ -2,6 +2,13 @@
 
 namespace Store.WebAPI.Models
 {
+    public class PagedApiResponse<T>
+    {
+        public IEnumerable<T> Items { get; set; }
+
+        public PagedResponseMetaData MetaData { get; set; }
+    }
+
     public class PagedResponseMetaData
     {
         public bool HasNextPage => PageNumber < PageCount;
@@ -19,17 +26,5 @@ namespace Store.WebAPI.Models
         public int PageSize { get; set; }
 
         public int TotalItemCount { get; set; }
-    }
-
-    public class PagedApiResponse<T>
-    {
-        public PagedApiResponse()
-        {
-            Items = new List<T>(); // TODO - change intialization
-        }
-
-        public IEnumerable<T> Items { get; set; }
-
-        public PagedResponseMetaData MetaData { get; set; }
     }
 }

@@ -19,8 +19,7 @@ namespace Store.WebAPI.Controllers
         private IPagingFactory _pagingFactory = null;
         private ISortingFactory _sortingFactory = null;
         private IFilteringFactory _filteringFactory = null;
-
-        protected IQueryUtilityFacade QueryUtilityFacade { get; }
+        private readonly IQueryUtilityFacade _queryUtilityFacade;
 
         protected IOptionsFactory OptionsFactory
         {
@@ -28,7 +27,7 @@ namespace Store.WebAPI.Controllers
             {
                 if (_optionsFactory == null)
                 {
-                    _optionsFactory = QueryUtilityFacade.CreateOptionsFactory();
+                    _optionsFactory = _queryUtilityFacade.CreateOptionsFactory();
                 }
                 return _optionsFactory;
             }
@@ -40,7 +39,7 @@ namespace Store.WebAPI.Controllers
             {
                 if (_filteringFactory == null)
                 {
-                    _filteringFactory = QueryUtilityFacade.CreateFilteringFactory();
+                    _filteringFactory = _queryUtilityFacade.CreateFilteringFactory();
                 }
                 return _filteringFactory;
             }
@@ -52,7 +51,7 @@ namespace Store.WebAPI.Controllers
             {
                 if (_pagingFactory == null)
                 {
-                    _pagingFactory = QueryUtilityFacade.CreatePagingFactory();
+                    _pagingFactory = _queryUtilityFacade.CreatePagingFactory();
                 }
                 return _pagingFactory;
             }
@@ -64,7 +63,7 @@ namespace Store.WebAPI.Controllers
             {
                 if (_sortingFactory == null)
                 {
-                    _sortingFactory = QueryUtilityFacade.CreateSortingFactory();
+                    _sortingFactory = _queryUtilityFacade.CreateSortingFactory();
                 }
                 return _sortingFactory;
             }
@@ -72,7 +71,7 @@ namespace Store.WebAPI.Controllers
 
         public ApplicationControllerBase(IQueryUtilityFacade queryUtilityFacade)
         {
-            QueryUtilityFacade = queryUtilityFacade;
+            _queryUtilityFacade = queryUtilityFacade;
         }
 
         protected IActionResult InternalServerError() => StatusCode(StatusCodes.Status500InternalServerError);

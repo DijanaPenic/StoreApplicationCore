@@ -85,7 +85,7 @@ namespace Store.WebAPI.Controllers
             // Retrieve client_id
             Guid clientId = GetCurrentUserClientId();
 
-            // Save the registration cookie - if the cookie is present in the browser, the user can be automaticalled signed in. Otherwise, the user must be redirected to the Login page.
+            // Save the registration cookie - if the cookie is present in the browser, the user can be automatically signed in. Otherwise, the user must be redirected to the Login page.
             await _signInManager.RegisterAsync(clientId, user);
 
             // Get email confirmation token
