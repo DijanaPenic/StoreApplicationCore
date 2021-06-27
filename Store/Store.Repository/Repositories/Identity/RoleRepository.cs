@@ -25,7 +25,7 @@ namespace Store.Repositories.Identity
 {
     internal class RoleRepository : GenericRepository, IRoleRepository
     {
-        private DbSet<RoleEntity> _dbSet => DbContext.Set<RoleEntity>();
+        private DbSet<RoleEntity> DbSet => DbContext.Set<RoleEntity>();
 
         public RoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
@@ -72,7 +72,7 @@ namespace Store.Repositories.Identity
         {
             string sectionType = $"{filter.SectionType}.";
 
-            IPagedList<RoleEntity> entityPagedList = await _dbSet.Filter(string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString))
+            IPagedList<RoleEntity> entityPagedList = await DbSet.Filter(string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString))
                                                                  .Filter(r => r.Claims.Any(rc => rc.ClaimValue.StartsWith(sectionType)))
                                                                  .Include(r => r.Claims.Where(rc => rc.ClaimValue.StartsWith(sectionType)))
                                                                  .OrderBy(SortingMap<IRole, RoleEntity>(sorting))
@@ -83,14 +83,14 @@ namespace Store.Repositories.Identity
 
         public async Task<IRole> FindByNameAsync(string roleName)
         {
-            RoleEntity entity = await _dbSet.Where(r => r.NormalizedName == roleName).SingleOrDefaultAsync();
+            RoleEntity entity = await DbSet.Where(r => r.NormalizedName == roleName).SingleOrDefaultAsync();
 
             return Mapper.Map<IRole>(entity);
         }
 
         public async Task<IEnumerable<IRole>> FindByNameAsync(string[] roleNames)
         {
-            IEnumerable<RoleEntity> entities = await _dbSet.Where(r => roleNames.Contains(r.NormalizedName)).ToListAsync();
+            IEnumerable<RoleEntity> entities = await DbSet.Where(r => roleNames.Contains(r.NormalizedName)).ToListAsync();
 
             return Mapper.Map<IEnumerable<IRole>>(entities);
         }

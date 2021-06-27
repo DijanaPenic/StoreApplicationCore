@@ -57,12 +57,7 @@ namespace Store.WebAPI.Controllers
                 CacheParameters.Groups.Settings
             );
 
-            if(countries == null)
-            {
-                return InternalServerError();
-            }
-
-            return Ok(_mapper.Map<IList<CountryGetApiModel>>(countries));
+            return countries == null ? InternalServerError() : Ok(_mapper.Map<IList<CountryGetApiModel>>(countries));
         }
     }
 }

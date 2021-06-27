@@ -1,6 +1,6 @@
 ﻿namespace Store.WebAPI.Constants
 {
-    public static class DefaultParameters
+    internal static class DefaultParameters
     {
         public const int PageSize = 3;
         public const int PageNumber = 1;

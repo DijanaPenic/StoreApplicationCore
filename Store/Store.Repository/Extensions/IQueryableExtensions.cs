@@ -14,7 +14,7 @@ using Store.Common.Parameters.Sorting;
 
 namespace Store.Repository.Extensions
 {
-    public static class IQueryableExtensions
+    public static class QueryableExtensions
     {
         public static IQueryable<TSource> Include<TSource>(this IQueryable<TSource> source, string[] includeParameters) where TSource : class
         {
@@ -42,7 +42,7 @@ namespace Store.Repository.Extensions
             return source.ProjectTo<TDestination>(mapper.ConfigurationProvider, null, includeParameters);
         }
 
-        public static IQueryable<T> OrderBy<T>(this IQueryable<T> source, string orderBy, bool isFirstParam)
+        private static IQueryable<T> OrderBy<T>(this IQueryable<T> source, string orderBy, bool isFirstParam)
         {
             return OrderBy(source, orderBy, false, isFirstParam);
         }
@@ -59,16 +59,13 @@ namespace Store.Repository.Extensions
             {
                 ISortingPair item = sortingParameters.Sorters[i];
 
-                if (item.Ascending)
-                    query = query.OrderBy(item.OrderBy, i == 0);
-                else
-                    query = query.OrderByDescending(item.OrderBy, i == 0);
+                query = item.Ascending ? query.OrderBy(item.OrderBy, i == 0) : query.OrderByDescending(item.OrderBy, i == 0);
             }
 
             return query;
         }
 
-        public static IQueryable<T> OrderByDescending<T>(this IQueryable<T> source, string orderBy, bool isFirstParam)
+        private static IQueryable<T> OrderByDescending<T>(this IQueryable<T> source, string orderBy, bool isFirstParam)
         {
             return OrderBy(source, orderBy, true, isFirstParam);
         }
@@ -91,11 +88,11 @@ namespace Store.Repository.Extensions
             ExpressionStarter<TSource> predicate = PredicateBuilder.New<TSource>();
             ParameterExpression parameter = Expression.Parameter(typeof(TSource), "e");
 
-            foreach ((string Name, object Value) in keys)
+            foreach ((string name, object value) in keys)
             {
                 //create the lambda expression
-                MemberExpression predicateLeft = Expression.PropertyOrField(parameter, Name);
-                ConstantExpression predicateRight = Expression.Constant(Value);
+                MemberExpression predicateLeft = Expression.PropertyOrField(parameter, name);
+                ConstantExpression predicateRight = Expression.Constant(value);
 
                 predicate = predicate.And(Expression.Lambda<Func<TSource, bool>>(Expression.Equal(predicateLeft, predicateRight), parameter));
             }
@@ -124,19 +121,13 @@ namespace Store.Repository.Extensions
                 {
                     PropertyInfo property = propertyType.GetProperty(props[i]);
 
-                    if (previousPropertyAccess == null)
-                        propertyAccess = Expression.MakeMemberAccess(firstPropertyAccess, property);
-                    else
-                        propertyAccess = Expression.MakeMemberAccess(previousPropertyAccess, property);
+                    propertyAccess = Expression.MakeMemberAccess(previousPropertyAccess ?? firstPropertyAccess, property);
 
                     propertyType = property.PropertyType;
                     previousPropertyAccess = propertyAccess;
                 }
 
-                if (propertyAccess == null)
-                {
-                    propertyAccess = firstPropertyAccess;
-                }
+                propertyAccess ??= firstPropertyAccess;
 
                 LambdaExpression orderByExp = Expression.Lambda(propertyAccess, parameter);
                 MethodCallExpression resultExp = Expression.Call(typeof(Queryable), method, new Type[] { type, propertyType }, source.Expression, Expression.Quote(orderByExp));
@@ -145,7 +136,7 @@ namespace Store.Repository.Extensions
             }
             catch (Exception ex)
             {
-                throw new ArgumentException(string.Format("Invalid sort expression [{0}].", orderBy), ex);
+                throw new ArgumentException($"Invalid sort expression [{orderBy}].", ex);
             }
         }
     }

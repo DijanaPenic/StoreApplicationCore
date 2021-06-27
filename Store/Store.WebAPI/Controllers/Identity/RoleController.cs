@@ -155,10 +155,10 @@ namespace Store.WebAPI.Controllers
             // Changing role to "not stackable" so need to verify if some users are associated with more than one role
             if(!roleModel.Stackable && role.Stackable)
             {
-                int userCound = await _roleManager.GetCountByRoleNameAsync(role);
-                if(userCound > 1)
+                int userCount = await _roleManager.GetCountByRoleNameAsync(role);
+                if(userCount > 1)
                 {
-                    return BadRequest("Cannot change role to 'unstackable' as there are some users that use this role combined with other roles.");
+                    return BadRequest("Role cannot be stacked as there are some users that use this role combined with other roles.");
                 }
             }
 

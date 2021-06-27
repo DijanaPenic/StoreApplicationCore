@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
@@ -13,7 +14,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Extensions
         {
             SectionAuthorizationAttribute sectionAuthorizationAttribute = new SectionAuthorizationAttribute(sectionType, accessAction);
             
-            return service.AuthorizeAsync(user, sectionAuthorizationAttribute.Policy);
+            return service.AuthorizeAsync(user, sectionAuthorizationAttribute.Policy ?? throw new InvalidOperationException());
         }
     }
 }

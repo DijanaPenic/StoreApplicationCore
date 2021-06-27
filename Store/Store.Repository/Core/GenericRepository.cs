@@ -10,7 +10,7 @@ namespace Store.Repository.Core
 
         protected IMapper Mapper { get; }
 
-        public GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
+        protected GenericRepository(ApplicationDbContext dbContext, IMapper mapper)
         {
             DbContext = dbContext;
             Mapper = mapper;

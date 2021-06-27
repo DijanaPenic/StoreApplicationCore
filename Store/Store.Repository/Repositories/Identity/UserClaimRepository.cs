@@ -22,7 +22,7 @@ namespace Store.Repositories.Identity
 {
     internal class UserClaimRepository : GenericRepository, IUserClaimRepository
     {
-        private DbSet<UserClaimEntity> _dbSet => DbContext.Set<UserClaimEntity>();
+        private DbSet<UserClaimEntity> DbSet => DbContext.Set<UserClaimEntity>();
 
         public UserClaimRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
@@ -67,14 +67,14 @@ namespace Store.Repositories.Identity
 
         public async Task<IEnumerable<IUserClaim>> FindByUserIdAsync(Guid userId)
         {
-            List<UserClaimEntity> entities = await _dbSet.Where(uc => uc.UserId == userId).ToListAsync();
+            List<UserClaimEntity> entities = await DbSet.Where(uc => uc.UserId == userId).ToListAsync();
 
             return Mapper.Map<IEnumerable<IUserClaim>>(entities);
         }
 
         public async Task<IEnumerable<IUser>> FindUsersByClaimAsync(string claimType, string claimValue)
         {
-            var entities = await _dbSet.Where(uc => uc.ClaimType == claimType && uc.ClaimValue == claimValue).Select(uc => uc.User).ToListAsync();
+            List<UserEntity> entities = await DbSet.Where(uc => uc.ClaimType == claimType && uc.ClaimValue == claimValue).Select(uc => uc.User).ToListAsync();
 
             return Mapper.Map<IEnumerable<IUser>>(entities);
         }

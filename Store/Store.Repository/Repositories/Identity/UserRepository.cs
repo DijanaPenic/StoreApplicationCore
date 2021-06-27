@@ -22,7 +22,7 @@ namespace Store.Repositories.Identity
 {
     internal class UserRepository : GenericRepository, IUserRepository
     {
-        private DbSet<UserEntity> _dbSet => DbContext.Set<UserEntity>();
+        private DbSet<UserEntity> DbSet => DbContext.Set<UserEntity>();
 
         public UserRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
@@ -72,14 +72,14 @@ namespace Store.Repositories.Identity
 
         public async Task<IUser> FindByNormalizedEmailAsync(string normalizedEmail)
         {
-            UserEntity entity = await _dbSet.Where(r => r.NormalizedEmail == normalizedEmail).SingleOrDefaultAsync();
+            UserEntity entity = await DbSet.Where(r => r.NormalizedEmail == normalizedEmail).SingleOrDefaultAsync();
 
             return Mapper.Map<IUser>(entity);
         }
 
         public async Task<IUser> FindByNormalizedUserNameAsync(string normalizedUserName)
         {
-            UserEntity entity = await _dbSet.Where(r => r.NormalizedUserName == normalizedUserName).SingleOrDefaultAsync();
+            UserEntity entity = await DbSet.Where(r => r.NormalizedUserName == normalizedUserName).SingleOrDefaultAsync();
 
             return Mapper.Map<IUser>(entity);
         }

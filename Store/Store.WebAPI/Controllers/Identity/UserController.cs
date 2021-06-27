@@ -143,26 +143,25 @@ namespace Store.WebAPI.Controllers
             IdentityResult userProfileResult = await _userManager.UpdateAsync(user);
 
             if (!userProfileResult.Succeeded) return BadRequest(userProfileResult.Errors);
-
+            
             // Need to send email confirmation if email is not confirmed
-            if (!user.EmailConfirmed)
+            if (user.EmailConfirmed) return Ok();
+            
+            // Get email confirmation token
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            _logger.LogInformation("Email confirmation token has been generated.");
+
+            UriTemplate template = new UriTemplate(userProfileModel.ConfirmationUrl);
+            string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
-                // Get email confirmation token
-                string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                { "userId", user.Id.ToString() },
+                { "token", token.Base64Encode() }
+            });
 
-                _logger.LogInformation("Email confirmation token has been generated.");
+            _logger.LogInformation("Sending email confirmation email.");
 
-                UriTemplate template = new UriTemplate(userProfileModel.ConfirmationUrl);
-                string callbackUrl = template.Resolve(new Dictionary<string, object>
-                {
-                    { "userId", user.Id.ToString() },
-                    { "token", token.Base64Encode() }
-                });
-
-                _logger.LogInformation("Sending email confirmation email.");
-
-                await _emailService.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
-            }
+            await _emailService.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
 
             return Ok();
         }

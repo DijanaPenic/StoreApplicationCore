@@ -1,6 +1,6 @@
 ﻿namespace Store.WebAPI.Infrastructure.Options
 {
-    public class ExternalLoginProviders
+    public static class ExternalLoginProviders
     {
         public const string Google = "Google";
 

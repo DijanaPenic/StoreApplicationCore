@@ -13,7 +13,7 @@ using Store.Common.Parameters.Filtering;
 
 namespace Store.WebAPI.Controllers
 {
-    abstract public class ApplicationControllerBase : ControllerBase
+    public abstract class ApplicationControllerBase : ControllerBase
     {
         private IOptionsFactory _optionsFactory = null;
         private IPagingFactory _pagingFactory = null;
@@ -21,55 +21,15 @@ namespace Store.WebAPI.Controllers
         private IFilteringFactory _filteringFactory = null;
         private readonly IQueryUtilityFacade _queryUtilityFacade;
 
-        protected IOptionsFactory OptionsFactory
-        {
-            get
-            {
-                if (_optionsFactory == null)
-                {
-                    _optionsFactory = _queryUtilityFacade.CreateOptionsFactory();
-                }
-                return _optionsFactory;
-            }
-        }
+        protected IOptionsFactory OptionsFactory => _optionsFactory ??= _queryUtilityFacade.CreateOptionsFactory();
 
-        protected IFilteringFactory FilteringFactory
-        {
-            get
-            {
-                if (_filteringFactory == null)
-                {
-                    _filteringFactory = _queryUtilityFacade.CreateFilteringFactory();
-                }
-                return _filteringFactory;
-            }
-        }
+        protected IFilteringFactory FilteringFactory => _filteringFactory ??= _queryUtilityFacade.CreateFilteringFactory();
 
-        protected IPagingFactory PagingFactory
-        {
-            get
-            {
-                if (_pagingFactory == null)
-                {
-                    _pagingFactory = _queryUtilityFacade.CreatePagingFactory();
-                }
-                return _pagingFactory;
-            }
-        }
+        protected IPagingFactory PagingFactory => _pagingFactory ??= _queryUtilityFacade.CreatePagingFactory();
 
-        protected ISortingFactory SortingFactory
-        {
-            get
-            {
-                if (_sortingFactory == null)
-                {
-                    _sortingFactory = _queryUtilityFacade.CreateSortingFactory();
-                }
-                return _sortingFactory;
-            }
-        }
+        protected ISortingFactory SortingFactory => _sortingFactory ??= _queryUtilityFacade.CreateSortingFactory();
 
-        public ApplicationControllerBase(IQueryUtilityFacade queryUtilityFacade)
+        protected ApplicationControllerBase(IQueryUtilityFacade queryUtilityFacade)
         {
             _queryUtilityFacade = queryUtilityFacade;
         }
@@ -82,11 +42,11 @@ namespace Store.WebAPI.Controllers
 
         protected Guid GetCurrentUserClientId() => GetClientId(User);
 
-        protected bool IsUser(Guid userId, ClaimsPrincipal claimsPrincipal) => GetUserId(claimsPrincipal) == userId;
+        protected static bool IsUser(Guid userId, ClaimsPrincipal claimsPrincipal) => GetUserId(claimsPrincipal) == userId;
 
-        protected Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
+        protected static Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
 
-        protected Guid GetClientId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
+        protected static Guid GetClientId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
         
         protected Uri GetAbsoluteUri(string relativeUrl) => new Uri($"{Request.Scheme}://{Request.Host}{relativeUrl}", UriKind.Absolute);
     }

@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
@@ -24,7 +23,6 @@ using Store.WebAPI.Infrastructure.Authorization.Attributes;
 using Store.WebAPI.Infrastructure.Authorization.Extensions;
 using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
-
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Store.WebAPI.Controllers
@@ -57,7 +55,7 @@ namespace Store.WebAPI.Controllers
             _authorizationService = authorizationService;
             _logger = logger;
             _emailService = emailService;
-        }    
+        }
 
         /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
         /// <returns>
@@ -69,12 +67,16 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateInfoAsync()
         {
+            bool isUserAuthenticated = User.Identity is {IsAuthenticated: true};
+
             AuthenticateInfoGetApiModel authInfoModel = new AuthenticateInfoGetApiModel
             {
-                IsAuthenticated = User.Identity.IsAuthenticated,
-                Username = User.Identity.IsAuthenticated ? User.Identity.Name : string.Empty,
-                ExternalLoginProvider = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
-                DisplaySetPassword = User.Identity.IsAuthenticated && !(await _userManager.HasPasswordAsync((await _userManager.GetUserAsync(User))))
+                IsAuthenticated = isUserAuthenticated,
+                Username = isUserAuthenticated ? User.Identity.Name : string.Empty,
+                ExternalLoginProvider =
+                    User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
+                DisplaySetPassword = isUserAuthenticated &&
+                                     !(await _userManager.HasPasswordAsync((await _userManager.GetUserAsync(User))))
             };
 
             return Ok(authInfoModel);
@@ -91,7 +93,7 @@ namespace Store.WebAPI.Controllers
         public async Task<IActionResult> AuthenticateAsync()
         {
             // Retrieve user account information from cookie
-            AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync(); 
+            AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
             if (accountVerificationInfo == null)
             {
                 return BadRequest("Account Verification information not found.");
@@ -124,14 +126,16 @@ namespace Store.WebAPI.Controllers
         [ClientAuthorization]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordPostApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync(
+            [FromBody] AuthenticatePasswordPostApiModel authenticateModel)
         {
             // Check user's status
             IUser user = await _userManager.FindByNameAsync(authenticateModel.UserName);
-            if(user == null)
+            if (user == null)
             {
                 return Unauthorized($"Failed to log in - invalid username and/or password.");
             }
+
             if (!user.IsApproved)
             {
                 return Unauthorized($"User [{user.UserName}] is not approved.");
@@ -140,8 +144,9 @@ namespace Store.WebAPI.Controllers
             Guid clientId = GetCurrentUserClientId();
 
             // Attempt to sign in
-            SignInResult signInResult = await _signInManager.PasswordSignInAsync(clientId, user, authenticateModel.Password, lockoutOnFailure: true); 
-            
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(clientId, user,
+                authenticateModel.Password, lockoutOnFailure: true);
+
             return await AuthenticateAsync(signInResult, user, clientId);
         }
 
@@ -160,7 +165,8 @@ namespace Store.WebAPI.Controllers
             {
                 // Generate new tokens
                 string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken.Base64Decode(), accessToken, GetCurrentUserClientId());
+                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken.Base64Decode(), accessToken,
+                    GetCurrentUserClientId());
 
                 _logger.LogInformation("New access and refresh tokens are generated for the user.");
 
@@ -174,7 +180,7 @@ namespace Store.WebAPI.Controllers
             }
             catch (SecurityTokenException ex)
             {
-                return BadRequest(ex.Message); 
+                return BadRequest(ex.Message);
             }
         }
 
@@ -229,17 +235,20 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("external/initiate/{provider}")]
-        public async Task<IActionResult> InitiateAuthenticationAsync([FromRoute] string provider, [FromQuery] string returnUrl)
+        public async Task<IActionResult> InitiateAuthenticationAsync([FromRoute] string provider,
+            [FromQuery] string returnUrl)
         {
             IEnumerable<AuthenticationScheme> schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            AuthenticationScheme authScheme = schemes.Where(el => el.Name.ToUpper().Equals(provider.ToUpper())).FirstOrDefault();
+            AuthenticationScheme authScheme =
+                schemes.FirstOrDefault(el => el.Name.ToUpper().Equals(provider.ToUpper()));
 
             if (authScheme == null)
             {
                 return BadRequest("Not supported external login provider.");
             }
 
-            AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(authScheme.Name, returnUrl);
+            AuthenticationProperties properties =
+                _signInManager.ConfigureExternalAuthenticationProperties(authScheme.Name, returnUrl);
 
             return Challenge(properties, authScheme.Name);
         }
@@ -255,9 +264,10 @@ namespace Store.WebAPI.Controllers
         [Route("external")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateExternalPostApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync(
+            [FromBody] AuthenticateExternalPostApiModel authenticateModel)
         {
-            ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();     
+            ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (externalLoginInfo == null)
             {
                 return BadRequest("External login information is missing.");
@@ -270,18 +280,22 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByLoginAsync(externalLoginInfo, loginConfirmed: true);
             if (user != null)
             {
-                _logger.LogInformation($"Trying to sign in user {user.Email} with the existing external login provider.");
+                _logger.LogInformation(
+                    $"Trying to sign in user {user.Email} with the existing external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(clientId, externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(clientId,
+                    externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.FoundExistingExternalLogin, externalLoginInfo.LoginProvider);
+                return await AuthenticateAsync(signInResult, user, clientId,
+                    ExternalAuthStep.FoundExistingExternalLogin, externalLoginInfo.LoginProvider);
             }
 
             string userEmail = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
 
             if (string.IsNullOrEmpty(userEmail))
             {
-                return BadRequest($"Email scope access is required to add {externalLoginInfo.ProviderDisplayName} provider.");
+                return BadRequest(
+                    $"Email scope access is required to add {externalLoginInfo.ProviderDisplayName} provider.");
             }
 
             user = await _userManager.FindByEmailAsync(userEmail);
@@ -294,10 +308,11 @@ namespace Store.WebAPI.Controllers
                 {
                     _logger.LogInformation("User is deleted or not approved.");
 
-                    return Ok(new AuthenticateGetApiModel { ExternalAuthStep = ExternalAuthStep.UserNotAllowed });
+                    return Ok(new AuthenticateGetApiModel {ExternalAuthStep = ExternalAuthStep.UserNotAllowed});
                 }
 
-                _logger.LogInformation($"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
+                _logger.LogInformation(
+                    $"Email {userEmail} is {(user.EmailConfirmed ? "confirmed" : "not confirmed")}.");
 
                 IdentityResult createLoginResult;
 
@@ -315,15 +330,21 @@ namespace Store.WebAPI.Controllers
                     UriTemplate template = new UriTemplate(authenticateModel.ConfirmationUrl);
                     string callbackUrl = template.Resolve(new Dictionary<string, object>
                     {
-                        { "userId", user.Id.ToString() },
-                        { "token", token.Base64Encode() }
+                        {"userId", user.Id.ToString()},
+                        {"token", token.Base64Encode()}
                     });
 
-                    _logger.LogInformation($"Sending email confirmation token to confirm association of {externalLoginInfo.ProviderDisplayName} external login account.");
+                    _logger.LogInformation(
+                        $"Sending email confirmation token to confirm association of {externalLoginInfo.ProviderDisplayName} external login account.");
 
-                    await _emailService.SendConfirmExternalAccountAsync(clientId, user.Email, callbackUrl, externalLoginInfo.ProviderDisplayName);
+                    await _emailService.SendConfirmExternalAccountAsync(clientId, user.Email, callbackUrl,
+                        externalLoginInfo.ProviderDisplayName);
 
-                    return Ok(new AuthenticateGetApiModel { ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation, VerificationStep = VerificationStep.Email });
+                    return Ok(new AuthenticateGetApiModel
+                    {
+                        ExternalAuthStep = ExternalAuthStep.PendingExternalLoginCreation,
+                        VerificationStep = VerificationStep.Email
+                    });
                 }
 
                 // Add the external provider (confirmed = true)
@@ -333,15 +354,18 @@ namespace Store.WebAPI.Controllers
 
                 _logger.LogInformation($"Trying to sign in user {user.Email} with new external login provider.");
 
-                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(clientId, externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
-             
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.AddedNewExternalLogin, externalLoginInfo.LoginProvider);
+                SignInResult signInResult = await _signInManager.ExternalLoginSignInAsync(clientId,
+                    externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, bypassTwoFactor: true);
+
+                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.AddedNewExternalLogin,
+                    externalLoginInfo.LoginProvider);
             }
 
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
-            _logger.LogInformation($"A new user account must be created or external login must be associated with different email address.");
+            _logger.LogInformation(
+                $"A new user account must be created or external login must be associated with different email address.");
 
-            return Ok(new AuthenticateGetApiModel { ExternalAuthStep = ExternalAuthStep.UserNotFound });
+            return Ok(new AuthenticateGetApiModel {ExternalAuthStep = ExternalAuthStep.UserNotFound});
         }
 
         /// <summary>Authenticates the user using the two factor authentication code.</summary>
@@ -354,7 +378,8 @@ namespace Store.WebAPI.Controllers
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateTwoFactorPostApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync(
+            [FromBody] AuthenticateTwoFactorPostApiModel authenticateModel)
         {
             TwoFactorAuthenticationInfo twoFactorInfo = await _signInManager.GetTwoFactorInfoAsync();
             if (twoFactorInfo == null)
@@ -377,8 +402,10 @@ namespace Store.WebAPI.Controllers
             }
             else
             {
-                //Note: rememberClient: false - don't want to surpress future two-factor auth requests.
-                signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(clientId, authenticateModel.Code, rememberClient: false);
+                //Note: rememberClient: false - don't want to suppress future two-factor auth requests.
+                signInResult =
+                    await _signInManager.TwoFactorAuthenticatorSignInAsync(clientId, authenticateModel.Code,
+                        rememberClient: false);
             }
 
             return await AuthenticateAsync(signInResult, user, clientId);
@@ -415,10 +442,10 @@ namespace Store.WebAPI.Controllers
             string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(authenticatorKey))
             {
-                await _userManager.ResetAuthenticatorKeyAsync(user);                    // This will set a new AuthenticatorKey
+                await _userManager.ResetAuthenticatorKeyAsync(user); // This will set a new AuthenticatorKey
 
-                authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);   // Now we can retrieve the new key
-                if(string.IsNullOrEmpty(authenticatorKey))
+                authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user); // Now we can retrieve the new key
+                if (string.IsNullOrEmpty(authenticatorKey))
                 {
                     return InternalServerError();
                 }
@@ -449,7 +476,8 @@ namespace Store.WebAPI.Controllers
         [Authorize]
         [Route("two-factor/{userId:guid}/authenticator")]
         [Produces("application/json")]
-        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid userId, [FromQuery] string code)
+        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid userId,
+            [FromQuery] string code)
         {
             if (string.IsNullOrEmpty(code))
             {
@@ -460,7 +488,9 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
+            bool hasPermissions = IsCurrentUser(userId) ||
+                                  (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full))
+                                  .Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -472,7 +502,8 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
+            bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user,
+                _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
 
             if (isTwoFactorTokenValid)
             {
@@ -485,21 +516,19 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Verification Code is invalid.");
             }
 
-            if (await _userManager.CountRecoveryCodesAsync(user) == 0)
+            if (await _userManager.CountRecoveryCodesAsync(user) != 0) return NoContent();
+            
+            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+
+            _logger.LogInformation("Ten two factor recovery codes are generated for the user.");
+
+            TwoFactorRecoveryResponseApiModel response = new TwoFactorRecoveryResponseApiModel
             {
-                IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+                RecoveryCodes = recoveryCodes.ToArray()
+            };
 
-                _logger.LogInformation("Ten two factor recovery codes are generatied for the user.");
+            return Ok(response);
 
-                TwoFactorRecoveryResponseApiModel response = new TwoFactorRecoveryResponseApiModel
-                {
-                    RecoveryCodes = recoveryCodes.ToArray()
-                };
-
-                return Ok(response);
-            }
-
-            return NoContent();
         }
 
         /// <summary>
@@ -521,7 +550,9 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("User Id cannot be empty.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
+            bool hasPermissions = IsCurrentUser(userId) ||
+                                  (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full))
+                                  .Succeeded;
             if (!hasPermissions)
             {
                 return Forbid();
@@ -552,11 +583,11 @@ namespace Store.WebAPI.Controllers
 
         private static string GenerateAuthenticatorUri(string email, string authenticatorKey)
         {
-            const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+            const string authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
             return string.Format
             (
-                AuthenticatorUriFormat,
+                authenticatorUriFormat,
                 HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
                 HttpUtility.UrlPathEncode(email),
                 authenticatorKey
@@ -565,11 +596,11 @@ namespace Store.WebAPI.Controllers
 
         private async Task<IActionResult> AuthenticateAsync
         (
-           SignInResult signInResult,
-           IUser user,
-           Guid clientId,
-           ExternalAuthStep externalLoginStep = ExternalAuthStep.None,
-           string externalLoginProvider = null
+            SignInResult signInResult,
+            IUser user,
+            Guid clientId,
+            ExternalAuthStep externalLoginStep = ExternalAuthStep.None,
+            string externalLoginProvider = null
         )
         {
             if (signInResult == null)
@@ -593,9 +624,10 @@ namespace Store.WebAPI.Controllers
             if (!signInResult.Succeeded)
             {
                 if (signInResult.IsLockedOut)
-                { 
+                {
                     return Unauthorized($"User [{user.UserName}] has been locked out.");
                 }
+
                 if (signInResult.IsNotAllowed)
                 {
                     if (!user.EmailConfirmed) authResponse.VerificationStep = VerificationStep.Email;
@@ -604,14 +636,12 @@ namespace Store.WebAPI.Controllers
 
                     return Ok(authResponse);
                 }
-                if (signInResult.RequiresTwoFactor)
-                {
-                    authResponse.VerificationStep = VerificationStep.TwoFactor;
 
-                    return Ok(authResponse);
-                }
+                if (!signInResult.RequiresTwoFactor) return Unauthorized($"Failed to log in [{user.UserName}].");
 
-                return Unauthorized($"Failed to log in [{user.UserName}].");
+                authResponse.VerificationStep = VerificationStep.TwoFactor;
+
+                return Ok(authResponse);
             }
 
             _logger.LogInformation($"User [{user.UserName}] has logged in the system.");

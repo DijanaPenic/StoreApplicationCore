@@ -18,7 +18,7 @@ using Store.Common.Parameters.Sorting;
 
 namespace Store.Repositories.Identity.Stores
 {
-    internal class ApplicationRoleStore :
+    internal sealed class ApplicationRoleStore :
             IApplicationRoleClaimStore,
             IApplicationRoleStore
     {

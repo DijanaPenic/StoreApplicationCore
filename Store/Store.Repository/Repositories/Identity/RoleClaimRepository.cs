@@ -24,7 +24,7 @@ namespace Store.Repositories.Identity
 {
     internal class RoleClaimRepository : GenericRepository, IRoleClaimRepository
     {
-        private DbSet<RoleClaimEntity> _dbSet => DbContext.Set<RoleClaimEntity>();
+        private DbSet<RoleClaimEntity> DbSet => DbContext.Set<RoleClaimEntity>();
 
         public RoleClaimRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
@@ -73,7 +73,7 @@ namespace Store.Repositories.Identity
 
         public async Task<IEnumerable<IRoleClaim>> FindByRoleIdAsync(Guid roleId)
         {
-            List<RoleClaimEntity> entities = await _dbSet.Where(rc => rc.RoleId == roleId).ToListAsync();
+            List<RoleClaimEntity> entities = await DbSet.Where(rc => rc.RoleId == roleId).ToListAsync();
 
             return Mapper.Map<IEnumerable<IRoleClaim>>(entities);
         }

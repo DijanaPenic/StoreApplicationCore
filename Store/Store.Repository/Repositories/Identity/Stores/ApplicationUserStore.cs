@@ -18,7 +18,7 @@ using Store.Common.Parameters.Filtering;
 
 namespace Store.Repositories.Identity.Stores
 {
-    internal class ApplicationUserStore :
+    internal sealed class ApplicationUserStore :
             IUserPasswordStore<IUser>,
             IUserEmailStore<IUser>,
             IUserRoleStore<IUser>,
@@ -613,11 +613,11 @@ namespace Store.Repositories.Identity.Stores
             if (claims == null)
                 throw new ArgumentNullException(nameof(claims));
 
-            IEnumerable<IUserClaim> userClaims = claims.Select(c => GetUserClaimEntity(c, user.Id));
+            List<IUserClaim> userClaims = claims.Select(c => GetUserClaimEntity(c, user.Id)).ToList();
 
             if (userClaims.Any())
             {
-                userClaims.ToList().ForEach(async userClaim =>
+                userClaims.ForEach(async userClaim =>
                 {
                     await _unitOfWork.UserClaimRepository.AddAsync(userClaim);
                 });
@@ -871,7 +871,7 @@ namespace Store.Repositories.Identity.Stores
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            user.LockoutEndDateUtc = lockoutEnd.HasValue ? lockoutEnd.Value.DateTime : (DateTime?)null;
+            user.LockoutEndDateUtc = lockoutEnd?.DateTime;
 
             return Task.CompletedTask;
         }
@@ -999,7 +999,7 @@ namespace Store.Repositories.Identity.Stores
 
         #region IUserTwoFactorRecoveryCodeStore<IUser> Members
 
-        public virtual async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
+        public async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -1009,15 +1009,11 @@ namespace Store.Repositories.Identity.Stores
             }
 
             string mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken) ?? string.Empty;
-            if (mergedCodes.Length > 0)
-            {
-                return mergedCodes.Split(';').Length;
-            }
-
-            return 0;
+            
+            return mergedCodes.Length > 0 ? mergedCodes.Split(';').Length : 0;
         }
 
-        public virtual async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
+        public async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -1035,7 +1031,7 @@ namespace Store.Repositories.Identity.Stores
 
             if (splitCodes.Contains(code))
             {
-                var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
+                IList<string> updatedCodes = new List<string>(splitCodes.Where(s => s != code));
                 await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
                 
                 return true;
@@ -1044,7 +1040,7 @@ namespace Store.Repositories.Identity.Stores
             return false;
         }
 
-        public virtual Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        public Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
             string mergedCodes = string.Join(";", recoveryCodes);
 

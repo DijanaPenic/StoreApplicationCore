@@ -6,9 +6,9 @@ namespace Store.WebAPI.Infrastructure.Authorization.Requirements
 {
     public class SectionPolicyRequirement : IAuthorizationRequirement
     {
-        public SectionType SectionType { get; set; }
+        public SectionType SectionType { get; }
 
-        public AccessType AccessAction { get; set; }
+        public AccessType AccessAction { get; }
 
         public SectionPolicyRequirement(SectionType sectionType, AccessType accessAction)
         {

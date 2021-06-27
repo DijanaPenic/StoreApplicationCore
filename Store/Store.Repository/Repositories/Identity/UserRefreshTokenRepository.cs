@@ -21,7 +21,7 @@ namespace Store.Repositories.Identity
 {
     internal class UserRefreshTokenRepository : GenericRepository, IUserRefreshTokenRepository
     {
-        private DbSet<UserRefreshTokenEntity> _dbSet => DbContext.Set<UserRefreshTokenEntity>();
+        private DbSet<UserRefreshTokenEntity> DbSet => DbContext.Set<UserRefreshTokenEntity>();
 
         public UserRefreshTokenRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
@@ -70,7 +70,7 @@ namespace Store.Repositories.Identity
         }
         public async Task<IUserRefreshToken> FindByValueAsync(string value)
         {
-            UserRefreshTokenEntity entity = await _dbSet.Where(urt => urt.Value == value).SingleOrDefaultAsync();
+            UserRefreshTokenEntity entity = await DbSet.Where(urt => urt.Value == value).SingleOrDefaultAsync();
 
             return Mapper.Map<IUserRefreshToken>(entity);
         }

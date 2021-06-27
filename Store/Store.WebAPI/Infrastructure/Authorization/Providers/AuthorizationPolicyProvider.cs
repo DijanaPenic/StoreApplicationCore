@@ -9,10 +9,9 @@ using Store.WebAPI.Infrastructure.Authorization.Requirements;
 namespace Store.WebAPI.Infrastructure.Authorization.Providers
 {
     public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider {
+        private const string SECTION_POLICY_PREFIX = "Section_";
 
-        const string SECTION_POLICY_PREFIX = "Section_";
-
-        public DefaultAuthorizationPolicyProvider FallbackPolicyProvider { get; }
+        private DefaultAuthorizationPolicyProvider FallbackPolicyProvider { get; }
 
         public AuthorizationPolicyProvider(IOptions<AuthorizationOptions> options) {
             // ASP.NET Core only uses one authorization policy provider, so if the custom implementation

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
-
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
@@ -25,61 +24,63 @@ namespace Store.Repository.Core
         ) where TEntity : class
         {
             IEnumerable<TEntity> entities = await DbContext.Set<TEntity>()
-                                                           .Include(OptionsMap<TDomain, TEntity>(options))
-                                                           .OrderBy(SortingMap<TDomain, TEntity>(sorting))
-                                                           .ToListAsync();
+                .Include(OptionsMap<TDomain, TEntity>(options))
+                .OrderBy(SortingMap<TDomain, TEntity>(sorting))
+                .ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
 
-        protected async Task<IEnumerable<TDTO>> GetUsingProjectionAsync<TDTO, TEntity>
+        protected async Task<IEnumerable<TDto>> GetUsingProjectionAsync<TDto, TEntity>
         (
             ISortingParameters sorting,
             IOptionsParameters options
         ) where TEntity : class
         {
             return await DbContext.Set<TEntity>()
-                                  .ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDTO, TEntity>(options))
-                                  .OrderBy(SortingMap<TDTO, TEntity>(sorting))
-                                  .ToListAsync();
+                .ProjectTo<TEntity, TDto>(Mapper, OptionsMap<TDto, TEntity>(options))
+                .OrderBy(SortingMap<TDto, TEntity>(sorting))
+                .ToListAsync();
         }
 
         protected async Task<IPagedList<TDomain>> FindAsync<TDomain, TEntity>
         (
-            Expression<Func<TDomain, bool>> filterExpression, 
-            IPagingParameters paging, 
-            ISortingParameters sorting, 
+            Expression<Func<TDomain, bool>> filterExpression,
+            IPagingParameters paging,
+            ISortingParameters sorting,
             IOptionsParameters options
         ) where TEntity : class
         {
-            IPagedList<TEntity> entityPagedList = await Find<TDomain, TEntity>(filterExpression, sorting, options).ToPagedListAsync(paging.PageNumber, paging.PageSize);
+            IPagedList<TEntity> entityPagedList = await Find<TDomain, TEntity>(filterExpression, sorting, options)
+                .ToPagedListAsync(paging.PageNumber, paging.PageSize);
 
             return entityPagedList.ToPagedList<TEntity, TDomain>(Mapper);
         }
 
-        protected Task<IPagedList<TDTO>> FindWithProjectionAsync<TDTO, TEntity>
+        protected Task<IPagedList<TDto>> FindWithProjectionAsync<TDto, TEntity>
         (
-            Expression<Func<TDTO, bool>> filterExpression, 
-            IPagingParameters paging, 
-            ISortingParameters sorting, 
+            Expression<Func<TDto, bool>> filterExpression,
+            IPagingParameters paging,
+            ISortingParameters sorting,
             IOptionsParameters options
         ) where TEntity : class
         {
             return DbContext.Set<TEntity>()
-                            .Filter(FilterMap<TDTO, TEntity>(filterExpression))
-                            .OrderBy(SortingMap<TDTO, TEntity>(sorting))
-                            .ProjectTo<TEntity, TDTO>(Mapper, OptionsMap<TDTO, TEntity>(options))
-                            .ToPagedListAsync(paging.PageNumber, paging.PageSize);
+                .Filter(FilterMap<TDto, TEntity>(filterExpression))
+                .OrderBy(SortingMap<TDto, TEntity>(sorting))
+                .ProjectTo<TEntity, TDto>(Mapper, OptionsMap<TDto, TEntity>(options))
+                .ToPagedListAsync(paging.PageNumber, paging.PageSize);
         }
 
         protected async Task<IEnumerable<TDomain>> FindAsync<TDomain, TEntity>
         (
-            Expression<Func<TDomain, bool>> filterExpression, 
-            ISortingParameters sorting, 
+            Expression<Func<TDomain, bool>> filterExpression,
+            ISortingParameters sorting,
             IOptionsParameters options
         ) where TEntity : class
         {
-            IEnumerable<TEntity> entities = await Find<TDomain, TEntity>(filterExpression, sorting, options).ToListAsync();
+            IEnumerable<TEntity> entities =
+                await Find<TDomain, TEntity>(filterExpression, sorting, options).ToListAsync();
 
             return Mapper.Map<IEnumerable<TDomain>>(entities);
         }
@@ -90,7 +91,8 @@ namespace Store.Repository.Core
             params object[] keyValues
         ) where TEntity : class
         {
-            TEntity entity = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options)).FirstOrDefaultAsync(DbContext, keyValues); 
+            TEntity entity = await DbContext.Set<TEntity>().Include(OptionsMap<TDomain, TEntity>(options))
+                .FirstOrDefaultAsync(DbContext, keyValues);
 
             return Mapper.Map<TDomain>(entity);
         }
@@ -144,23 +146,27 @@ namespace Store.Repository.Core
             return Task.FromResult(ResponseStatus.Success);
         }
 
-        protected ISortingParameters SortingMap<TDomain, TEntity>(ISortingParameters sorting) => ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
+        protected ISortingParameters SortingMap<TDomain, TEntity>(ISortingParameters sorting) =>
+            ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
 
-        protected string[] OptionsMap<TDomain, TEntity>(IOptionsParameters options) => ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
+        protected string[] OptionsMap<TDomain, TEntity>(IOptionsParameters options) =>
+            ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
 
-        protected Expression<Func<TEntity, bool>> FilterMap<TDomain, TEntity>(Expression<Func<TDomain, bool>> filterExpression) => Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
+        protected Expression<Func<TEntity, bool>>
+            FilterMap<TDomain, TEntity>(Expression<Func<TDomain, bool>> filterExpression) =>
+            Mapper.Map<Expression<Func<TEntity, bool>>>(filterExpression);
 
         private IQueryable<TEntity> Find<TDomain, TEntity>
         (
-            Expression<Func<TDomain, bool>> filterExpression, 
-            ISortingParameters sorting, 
+            Expression<Func<TDomain, bool>> filterExpression,
+            ISortingParameters sorting,
             IOptionsParameters options
         ) where TEntity : class
         {
             return DbContext.Set<TEntity>()
-                            .Filter(FilterMap<TDomain, TEntity>(filterExpression))
-                            .Include(OptionsMap<TDomain, TEntity>(options))
-                            .OrderBy(SortingMap<TDomain, TEntity>(sorting));
+                .Filter(FilterMap<TDomain, TEntity>(filterExpression))
+                .Include(OptionsMap<TDomain, TEntity>(options))
+                .OrderBy(SortingMap<TDomain, TEntity>(sorting));
         }
     }
 }

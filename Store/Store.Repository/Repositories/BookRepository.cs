@@ -21,7 +21,7 @@ namespace Store.Repositories
 {
     internal class BookRepository : GenericRepository, IBookRepository
     {
-        private DbSet<BookEntity> _dbSet => DbContext.Set<BookEntity>();
+        private DbSet<BookEntity> DbSet => DbContext.Set<BookEntity>();
 
         public BookRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {

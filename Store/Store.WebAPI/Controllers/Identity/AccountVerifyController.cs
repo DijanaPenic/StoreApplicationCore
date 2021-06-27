@@ -221,11 +221,11 @@ namespace Store.WebAPI.Controllers
                 return InternalServerError();
             }
 
-            ICountry country = countries.Where
+            ICountry country = countries.SingleOrDefault
             (c => 
                 c.AlphaThreeCode == phoneNumberVerifyModel.IsoCountryCode && 
                 c.CallingCodes.Contains(phoneNumberVerifyModel.CountryCodeNumber.Trim('+'))
-            ).SingleOrDefault();
+            );
 
             if (country == null)
             {
@@ -334,7 +334,7 @@ namespace Store.WebAPI.Controllers
             return result;
         }
 
-        public class AuthenticateResult
+        private class AuthenticateResult
         {
             public IActionResult Action { get; set; }
 

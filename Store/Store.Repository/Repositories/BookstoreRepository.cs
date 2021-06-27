@@ -23,7 +23,7 @@ namespace Store.Repositories
 {
     internal class BookstoreRepository : GenericRepository, IBookstoreRepository
     {
-        private DbSet<BookstoreEntity> _dbSet => DbContext.Set<BookstoreEntity>();
+        private DbSet<BookstoreEntity> DbSet => DbContext.Set<BookstoreEntity>();
 
         public BookstoreRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
@@ -58,7 +58,7 @@ namespace Store.Repositories
 
         public Task<BookstoreExtendedDTO> FindExtendedByKeyAsync(Guid key, IOptionsParameters options = null)
         {
-            return _dbSet.ProjectTo<BookstoreEntity, BookstoreExtendedDTO>(Mapper, OptionsMap<BookstoreEntity, BookstoreExtendedDTO>(options))
+            return DbSet.ProjectTo<BookstoreEntity, BookstoreExtendedDTO>(Mapper, OptionsMap<BookstoreEntity, BookstoreExtendedDTO>(options))
                          .FirstOrDefaultAsync(b => b.Id == key);
         }
 

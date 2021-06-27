@@ -25,11 +25,6 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SectionPolicyRequirement requirement)
         {
-            if (context.User == null)
-            {
-                return;
-            }
-
             IUser user = await _userManager.GetUserAsync(context.User);
             if (user == null)
             {
@@ -38,7 +33,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
 
             IList<Claim> roleClaims = await _permissionsManager.BuildRoleClaimsAsync(user);
 
-            bool roleClaimPredicate(Claim rc)
+            bool RoleClaimPredicate(Claim rc)
             {
                 string[] sectionData = rc.Value.Split('.');
 
@@ -46,7 +41,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
                        Enum.Parse<AccessType>(sectionData[1]) == requirement.AccessAction;
             }
 
-            if (roleClaims.FirstOrDefault(roleClaimPredicate) != null)
+            if (roleClaims.FirstOrDefault(RoleClaimPredicate) != null)
             {
                 context.Succeed(requirement);
             }

@@ -116,13 +116,11 @@ namespace Store.WebAPI.Controllers
             IBook book = _mapper.Map<IBook>(bookModel);
             ResponseStatus result = await _bookService.AddBookAsync(book);
 
-            switch (result)
+            return result switch
             {
-                case ResponseStatus.Success:
-                    return Created();
-                default:
-                    return InternalServerError();
-            }
+                ResponseStatus.Success => Created(),
+                _ => InternalServerError()
+            };
         }
 
         /// <summary>Updates the book.</summary>
@@ -156,15 +154,12 @@ namespace Store.WebAPI.Controllers
 
             ResponseStatus result = await _bookService.UpdateBookAsync(book);
 
-            switch (result)
+            return result switch
             {
-                case ResponseStatus.NotFound:
-                    return NotFound();
-                case ResponseStatus.Success:
-                    return NoContent();
-                default:
-                    return InternalServerError();
-            }
+                ResponseStatus.NotFound => NotFound(),
+                ResponseStatus.Success => NoContent(),
+                _ => InternalServerError()
+            };
         }
 
         /// <summary>Deletes the book.</summary>
@@ -184,15 +179,12 @@ namespace Store.WebAPI.Controllers
 
             ResponseStatus result = await _bookService.DeleteBookByKeyAsync(bookId);
 
-            switch (result)
+            return result switch
             {
-                case ResponseStatus.NotFound:
-                    return NotFound();
-                case ResponseStatus.Success:
-                    return NoContent();
-                default:
-                    return InternalServerError();
-            }
+                ResponseStatus.NotFound => NotFound(),
+                ResponseStatus.Success => NoContent(),
+                _ => InternalServerError()
+            };
         }
     }
 }

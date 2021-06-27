@@ -26,14 +26,14 @@ namespace Store.WebAPI.Application.Startup.Extensions
         {
             ExternalLoginOptions config = configuration.GetSection($"{ExternalLoginOptions.SectionName}:{providerName}").Get<ExternalLoginOptions>();
 
-            void externalLoginAuthOptions(OAuthOptions options)
+            void ExternalLoginAuthOptions(OAuthOptions options)
             {
                 options.ClientId = config.ClientId;
                 options.ClientSecret = config.ClientSecret;
                 options.SignInScheme = IdentityConstants.ExternalScheme;
             }
 
-            return externalLoginAuthOptions;
+            return ExternalLoginAuthOptions;
         }
     }
 }

@@ -94,7 +94,7 @@ namespace Store.Repository.Core
             {
                 // Transactions explained: https://docs.microsoft.com/en-us/ef/ef6/saving/transactions
                 // If we don't start a transaction, SaveChangesAsync is implicit. Meaning, all updates will be available in the database immediately after the SaveChangesAsync call.
-                // If we start a transaction, SaveChgesAsync still performs the updates, but the data is not available to other connections until a commit is called.
+                // If we start a transaction, SaveChangesAsync still performs the updates, but the data is not available to other connections until a commit is called.
                 await _dbContext.SaveChangesAsync();
                 await _dbContext.Database.CommitTransactionAsync();
 

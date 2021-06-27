@@ -16,7 +16,7 @@ namespace Store.Repositories.Identity
 {
     internal class ClientRepository : GenericRepository, IClientRepository
     {
-        private DbSet<ClientEntity> _dbSet => DbContext.Set<ClientEntity>();
+        private DbSet<ClientEntity> DbSet => DbContext.Set<ClientEntity>();
 
         public ClientRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
@@ -34,7 +34,7 @@ namespace Store.Repositories.Identity
 
         public async Task<IClient> FindByNameAsync(string name)
         {
-            ClientEntity entity = await _dbSet.FirstOrDefaultAsync(c => c.Name == name);
+            ClientEntity entity = await DbSet.FirstOrDefaultAsync(c => c.Name == name);
 
             return Mapper.Map<IClient>(entity);
         }
