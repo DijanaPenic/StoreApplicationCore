@@ -61,7 +61,7 @@ namespace Store.FileProvider.Providers
                 Directory.CreateDirectory(dirPath);
             }
 
-            using FileStream file = new FileStream(filePath, FileMode.Create);
+            await using FileStream file = new FileStream(filePath, FileMode.Create);
             await fileStream.CopyToAsync(file).ConfigureAwait(false);
 
             return filePath;

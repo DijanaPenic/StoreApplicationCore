@@ -16,7 +16,7 @@ using Store.WebAPI.Infrastructure.Authorization.Attributes;
 
 namespace Store.WebAPI.Controllers
 {
-    // NOTE: authrized users must login to administer their client templates. Client information will be retrieved from the auth cookie.
+    // NOTE: authorized users must login to administer their client templates. Client information will be retrieved from the auth cookie.
     [ApiController]
     [Route("api/email-templates")]
     public class EmailTemplateController : ApplicationControllerBase
@@ -62,7 +62,7 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Email template already exists.");
             }
 
-            using Stream templateStream = file.OpenReadStream();
+            await using Stream templateStream = file.OpenReadStream();
             await _emailTemplateService.AddEmailTemplateAsync(clientId, type, templateStream);
 
             return Ok();
@@ -93,8 +93,8 @@ namespace Store.WebAPI.Controllers
             {
                 return NotFound();
             }
-
-            using Stream templateStream = file.OpenReadStream();
+            
+            await using Stream templateStream = file.OpenReadStream();
             await _emailTemplateService.UpdateEmailTemplateAsync(emailTemplateId, templateStream);
 
             return Ok();
