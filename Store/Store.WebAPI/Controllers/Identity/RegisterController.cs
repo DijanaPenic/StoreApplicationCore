@@ -58,11 +58,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterPostApiModel registerModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IUser user = _mapper.Map<IUser>(registerModel);
             user.IsApproved = true;
 
@@ -119,11 +114,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterExternalPostApiModel registerModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (externalLoginInfo == null)
             {

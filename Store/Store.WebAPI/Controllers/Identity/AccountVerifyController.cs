@@ -82,11 +82,6 @@ namespace Store.WebAPI.Controllers
             AuthenticateResult authResult = await AuthenticateUserAsync(userId);
             if (authResult.Action != null) return authResult.Action;
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
@@ -205,11 +200,6 @@ namespace Store.WebAPI.Controllers
         {
             AuthenticateResult authResult = await AuthenticateUserAsync(userId);
             if (authResult.Action != null) return authResult.Action;
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)

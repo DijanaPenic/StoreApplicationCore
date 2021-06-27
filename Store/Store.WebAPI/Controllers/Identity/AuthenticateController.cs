@@ -126,11 +126,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordPostApiModel authenticateModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             // Check user's status
             IUser user = await _userManager.FindByNameAsync(authenticateModel.UserName);
             if(user == null)
@@ -234,13 +229,8 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("external/initiate/{provider}")]
-        public async Task<IActionResult> InitiateAuthentictionAsync([FromRoute] string provider, [FromQuery] string returnUrl)
+        public async Task<IActionResult> InitiateAuthenticationAsync([FromRoute] string provider, [FromQuery] string returnUrl)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IEnumerable<AuthenticationScheme> schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
             AuthenticationScheme authScheme = schemes.Where(el => el.Name.ToUpper().Equals(provider.ToUpper())).FirstOrDefault();
 
@@ -267,11 +257,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateExternalPostApiModel authenticateModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();     
             if (externalLoginInfo == null)
             {
@@ -371,11 +356,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateTwoFactorPostApiModel authenticateModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             TwoFactorAuthenticationInfo twoFactorInfo = await _signInManager.GetTwoFactorInfoAsync();
             if (twoFactorInfo == null)
             {

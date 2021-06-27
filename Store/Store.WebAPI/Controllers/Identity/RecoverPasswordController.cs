@@ -47,11 +47,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> InitiatePasswordRecoveryAsync([FromBody] PasswordRecoveryPostApiModel passwordRecoveryModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IUser user = await _userManager.FindByEmailAsync(passwordRecoveryModel.Email);
 
             // User with verified email cannot be found, so return NotFound
@@ -94,11 +89,6 @@ namespace Store.WebAPI.Controllers
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
