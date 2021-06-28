@@ -266,7 +266,7 @@ namespace Store.WebAPI.Controllers
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (externalLoginInfo == null)
             {
-                return BadRequest("External login information is missing.");
+                return Unauthorized("External login information is missing."); 
             }
 
             // Retrieve client_id
