@@ -25,7 +25,7 @@ External login doesn't exist:
           The same email address is not found - user can choose to register a new account or to associate external login with the existing account (different email)
               * register a new account - the system will create a new user and authenticate
               * associate with the existing account:
-                  * email is confirmed - send token to the email
+                  * email is confirmed - send token to the email of the existing account
                   * email is not confirmed - return an error
 
 ## Two-Factor Authentication
