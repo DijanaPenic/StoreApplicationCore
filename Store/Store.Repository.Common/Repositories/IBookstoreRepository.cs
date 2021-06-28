@@ -14,10 +14,10 @@ namespace Store.Repository.Common.Repositories
 {
     public interface IBookstoreRepository : IRepository<IBookstore, Guid>
     {
-        Task<IPagedList<BookstoreExtendedDTO>> FindExtendedAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
+        Task<IPagedList<BookstoreExtendedDto>> FindExtendedAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
 
-        Task<BookstoreExtendedDTO> FindExtendedByKeyAsync(Guid key, IOptionsParameters options = null);
+        Task<BookstoreExtendedDto> FindExtendedByKeyAsync(Guid key, IOptionsParameters options = null);
 
-        Task<IEnumerable<BookstoreExtendedDTO>> GetExtendedAsync(ISortingParameters sorting, IOptionsParameters options = null);
+        Task<IEnumerable<BookstoreExtendedDto>> GetExtendedAsync(ISortingParameters sorting, IOptionsParameters options = null);
     }
 }

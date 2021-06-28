@@ -29,16 +29,16 @@ namespace Store.Repositories
         {
         }
 
-        public Task<IPagedList<BookstoreExtendedDTO>> FindExtendedAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
+        public Task<IPagedList<BookstoreExtendedDto>> FindExtendedAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
-            ExpressionStarter<BookstoreExtendedDTO> predicate = PredicateBuilder.New<BookstoreExtendedDTO>(true);
+            ExpressionStarter<BookstoreExtendedDto> predicate = PredicateBuilder.New<BookstoreExtendedDto>(true);
 
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
                 predicate.And(b => b.Name.Contains(filter.SearchString) || b.Location.Contains(filter.SearchString));
             }
 
-            return FindWithProjectionAsync<BookstoreExtendedDTO, BookstoreEntity>(predicate, paging, sorting, options);
+            return FindWithProjectionAsync<BookstoreExtendedDto, BookstoreEntity>(predicate, paging, sorting, options);
         }
 
         public Task<IEnumerable<IBookstore>> GetAsync(ISortingParameters sorting, IOptionsParameters options = null)
@@ -46,9 +46,9 @@ namespace Store.Repositories
             return GetAsync<IBookstore, BookstoreEntity>(sorting, options);
         }
 
-        public Task<IEnumerable<BookstoreExtendedDTO>> GetExtendedAsync(ISortingParameters sorting, IOptionsParameters options = null)
+        public Task<IEnumerable<BookstoreExtendedDto>> GetExtendedAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
-            return GetUsingProjectionAsync<BookstoreExtendedDTO, BookstoreEntity>(sorting, options);
+            return GetUsingProjectionAsync<BookstoreExtendedDto, BookstoreEntity>(sorting, options);
         }
 
         public Task<IBookstore> FindByKeyAsync(Guid key, IOptionsParameters options = null)
@@ -56,9 +56,9 @@ namespace Store.Repositories
             return FindByKeyAsync<IBookstore, BookstoreEntity>(options, key);
         }
 
-        public Task<BookstoreExtendedDTO> FindExtendedByKeyAsync(Guid key, IOptionsParameters options = null)
+        public Task<BookstoreExtendedDto> FindExtendedByKeyAsync(Guid key, IOptionsParameters options = null)
         {
-            return DbSet.ProjectTo<BookstoreEntity, BookstoreExtendedDTO>(Mapper, OptionsMap<BookstoreEntity, BookstoreExtendedDTO>(options))
+            return DbSet.ProjectTo<BookstoreEntity, BookstoreExtendedDto>(Mapper, OptionsMap<BookstoreEntity, BookstoreExtendedDto>(options))
                          .FirstOrDefaultAsync(b => b.Id == key);
         }
 

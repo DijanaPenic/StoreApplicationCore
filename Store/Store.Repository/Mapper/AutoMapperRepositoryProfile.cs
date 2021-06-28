@@ -19,7 +19,7 @@ namespace Store.Repository.Mapper
                 .ForMember(dst => dst.Books, opt => opt.Ignore())
                 .ReverseMap();
 
-            CreateMap<BookstoreEntity, BookstoreExtendedDTO>()
+            CreateMap<BookstoreEntity, BookstoreExtendedDto>()
                     .ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
                     .ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
 
@@ -28,7 +28,7 @@ namespace Store.Repository.Mapper
                 .ForMember(dst => dst.Bookstore, opt => opt.Ignore())
                 .ReverseMap();
 
-            CreateMap<BookEntity, BookDTO>();
+            CreateMap<BookEntity, BookDto>();
 
             // Identity mappings 
             CreateMap<IRoleClaim, RoleClaimEntity>()

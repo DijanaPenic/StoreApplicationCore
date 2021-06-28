@@ -63,10 +63,10 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Bookstore Id cannot be empty.");
             }
 
-            BookstoreExtendedDTO bookstore = await _bookstoreService.FindExtendedBookstoreByKeyAsync
+            BookstoreExtendedDto bookstore = await _bookstoreService.FindExtendedBookstoreByKeyAsync
             (
                 bookstoreId,
-                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, includeProperties))
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, includeProperties))
             );
 
             if (bookstore != null)
@@ -129,16 +129,16 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
-            Task<IEnumerable<BookstoreExtendedDTO>> GetBookstoresFuncAsync()
+            Task<IEnumerable<BookstoreExtendedDto>> GetBookstoresFuncAsync()
             {
                 return _bookstoreService.GetExtendedBookstoresAsync
                 (
-                    sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, DefaultParameters.SortOrder)),
-                    options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, includeProperties))
+                    sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, DefaultParameters.SortOrder)),
+                    options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, includeProperties))
                 );
             }
 
-            IEnumerable<BookstoreExtendedDTO> bookstores;
+            IEnumerable<BookstoreExtendedDto> bookstores;
 
             // Need to fetch from the database as we're not storing bookstore prefetch data in cache
             if (includeProperties?.Length == 0)
@@ -180,12 +180,12 @@ namespace Store.WebAPI.Controllers
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize,
                                                   [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
-            IPagedList<BookstoreExtendedDTO> bookstores = await _bookstoreService.FindExtendedBookstoresAsync
+            IPagedList<BookstoreExtendedDto> bookstores = await _bookstoreService.FindExtendedBookstoresAsync
             (
                 filter: FilteringFactory.Create<IFilteringParameters>(searchString),
                 paging: PagingFactory.Create(pageNumber, pageSize),
-                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, sortOrder)),
-                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDTO>(_mapper, includeProperties))
+                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, sortOrder)),
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, includeProperties))
             );
 
             if (bookstores != null)

@@ -15,11 +15,11 @@ namespace Store.Service.Common.Services
 {
     public interface IBookstoreService
     {
-        Task<BookstoreExtendedDTO> FindExtendedBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options = null);
+        Task<BookstoreExtendedDto> FindExtendedBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options = null);
 
-        Task<IEnumerable<BookstoreExtendedDTO>> GetExtendedBookstoresAsync(ISortingParameters sorting, IOptionsParameters options = null);
+        Task<IEnumerable<BookstoreExtendedDto>> GetExtendedBookstoresAsync(ISortingParameters sorting, IOptionsParameters options = null);
 
-        Task<IPagedList<BookstoreExtendedDTO>> FindExtendedBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
+        Task<IPagedList<BookstoreExtendedDto>> FindExtendedBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null);
 
         Task<IBookstore> FindBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options = null);
 

@@ -24,17 +24,17 @@ namespace Store.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<BookstoreExtendedDTO> FindExtendedBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options = null)
+        public Task<BookstoreExtendedDto> FindExtendedBookstoreByKeyAsync(Guid bookstoreId, IOptionsParameters options = null)
         {
             return _unitOfWork.BookstoreRepository.FindExtendedByKeyAsync(bookstoreId, options);
         }
 
-        public Task<IEnumerable<BookstoreExtendedDTO>> GetExtendedBookstoresAsync(ISortingParameters sorting, IOptionsParameters options = null)
+        public Task<IEnumerable<BookstoreExtendedDto>> GetExtendedBookstoresAsync(ISortingParameters sorting, IOptionsParameters options = null)
         {
             return _unitOfWork.BookstoreRepository.GetExtendedAsync(sorting, options);
         }
 
-        public Task<IPagedList<BookstoreExtendedDTO>> FindExtendedBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
+        public Task<IPagedList<BookstoreExtendedDto>> FindExtendedBookstoresAsync(IFilteringParameters filter, IPagingParameters paging, ISortingParameters sorting, IOptionsParameters options = null)
         {
             return _unitOfWork.BookstoreRepository.FindExtendedAsync(filter, paging, sorting, options);
         }

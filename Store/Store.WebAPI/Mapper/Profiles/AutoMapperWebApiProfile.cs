@@ -22,13 +22,13 @@ namespace Store.WebAPI.Mapper.Profiles
         public AutoMapperWebApiProfile()
         {
             // Create maps for bookstore models
-            CreateMap<BookstoreGetApiModel, BookstoreExtendedDTO>().ReverseMap();
+            CreateMap<BookstoreGetApiModel, BookstoreExtendedDto>().ReverseMap();
             CreateMap<BookstorePostApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstorePatchApiModel, IBookstore>().ReverseMap();
             CreateMap<BookstoreApiModel, IBookstore>().ReverseMap();
 
             // Create maps for book models
-            CreateMap<BookGetApiModel, BookDTO>().ReverseMap();
+            CreateMap<BookGetApiModel, BookDto>().ReverseMap();
             CreateMap<BookGetApiModel, IBook>().ReverseMap();
             CreateMap<BookPostApiModel, IBook>().ReverseMap();
             CreateMap<BookPatchApiModel, IBook>().ReverseMap();
