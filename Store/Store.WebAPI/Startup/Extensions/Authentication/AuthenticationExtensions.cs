@@ -128,7 +128,11 @@ namespace Store.WebAPI.Application.Startup.Extensions
             });
 
             // Add custom authentication scheme
-            services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, ClientAuthenticationHandler>("ClientAuthenticationScheme", options => { });
+            services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, ClientAuthenticationHandler>
+            (
+                authenticationScheme: "ClientAuthenticationScheme", 
+                configureOptions: _ => { }
+            );
 
             // External Login configuration
             services.ConfigureExternalProvidersServices(configuration);

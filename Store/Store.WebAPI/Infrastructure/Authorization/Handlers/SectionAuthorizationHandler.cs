@@ -41,7 +41,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Handlers
                        Enum.Parse<AccessType>(sectionData[1]) == requirement.AccessAction;
             }
 
-            if (roleClaims.FirstOrDefault(RoleClaimPredicate) != null)
+            if (roleClaims.Any(RoleClaimPredicate))
             {
                 context.Succeed(requirement);
             }

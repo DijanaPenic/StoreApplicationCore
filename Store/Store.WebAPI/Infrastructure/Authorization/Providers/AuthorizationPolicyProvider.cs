@@ -9,7 +9,7 @@ using Store.WebAPI.Infrastructure.Authorization.Requirements;
 namespace Store.WebAPI.Infrastructure.Authorization.Providers
 {
     public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider {
-        private const string SECTION_POLICY_PREFIX = "Section_";
+        private const string SectionPolicyPrefix = "Section_";
 
         private DefaultAuthorizationPolicyProvider FallbackPolicyProvider { get; }
 
@@ -33,22 +33,24 @@ namespace Store.WebAPI.Infrastructure.Authorization.Providers
             //});
 
             // Requirement authorization
-            //options.Value.AddPolicy("PolicyName", policy =>
-            //    {
-            //        policy.Requirements.Add(new Requirement());
-            //    }
-            //); 
+            //options.Value.AddPolicy("PolicyName", policy => {
+            //    policy.Requirements.Add(new Requirement());
+            //});
 
-            options.Value.AddPolicy("ClientAuthentication", new AuthorizationPolicyBuilder("ClientAuthenticationScheme").RequireAuthenticatedUser().Build());
+            options.Value.AddPolicy
+            (
+            "ClientAuthentication",
+            new AuthorizationPolicyBuilder("ClientAuthenticationScheme").RequireAuthenticatedUser().Build()
+            );
 
             FallbackPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
         }
 
         public Task<AuthorizationPolicy> GetPolicyAsync(string policyName) 
         {
-            if (policyName.StartsWith(SECTION_POLICY_PREFIX, StringComparison.OrdinalIgnoreCase)) 
+            if (policyName.StartsWith(SectionPolicyPrefix, StringComparison.OrdinalIgnoreCase)) 
             {
-                string[] policyData = policyName[SECTION_POLICY_PREFIX.Length..].Split('.');
+                string[] policyData = policyName[SectionPolicyPrefix.Length..].Split('.');
 
                 SectionType sectionType = Enum.Parse<SectionType>(policyData[0]);
                 AccessType accessAction = Enum.Parse<AccessType>(policyData[1]);
