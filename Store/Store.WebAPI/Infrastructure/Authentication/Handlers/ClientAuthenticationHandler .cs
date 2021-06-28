@@ -41,16 +41,22 @@ namespace Store.WebAPI.Infrastructure.Authentication.Handlers
                 return AuthenticateResult.Fail("Authorization header missing.");
             }
 
-            // Get authorization key
+            // Get authorization header
             string authorizationHeader = Request.Headers["Authorization"].ToString();
             Regex authHeaderRegex = new Regex(@"Basic (.*)");
 
             if (!authHeaderRegex.IsMatch(authorizationHeader))
             {
-                return AuthenticateResult.Fail("Authorization code not formatted properly.");
+                return AuthenticateResult.Fail("Authorization header not formatted properly.");
+            }
+            
+            string base64Value = authHeaderRegex.Replace(authorizationHeader, "$1");
+            if (!IsBase64String(base64Value))
+            {
+                return AuthenticateResult.Fail("Authorization header not formatted properly.");
             }
 
-            string authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(authHeaderRegex.Replace(authorizationHeader, "$1"))); 
+            string authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(base64Value)); 
             string[] authSplit = authBase64.Split(':', 2);
             string authClientId = authSplit[0];
             string authClientSecret = authSplit.Length > 1 ? authSplit[1] : string.Empty;
@@ -72,6 +78,13 @@ namespace Store.WebAPI.Infrastructure.Authentication.Handlers
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
             return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name));
+        }
+        
+        private static bool IsBase64String(string value)
+        {
+            Span<byte> buffer = new Span<byte>(new byte[value.Length]);
+            
+            return Convert.TryFromBase64String(value, buffer, out int bytesParsed);
         }
     }
 }
