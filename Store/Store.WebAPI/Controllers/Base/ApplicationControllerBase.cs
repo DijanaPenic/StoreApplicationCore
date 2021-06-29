@@ -15,10 +15,10 @@ namespace Store.WebAPI.Controllers
 {
     public abstract class ApplicationControllerBase : ControllerBase
     {
-        private IOptionsFactory _optionsFactory = null;
-        private IPagingFactory _pagingFactory = null;
-        private ISortingFactory _sortingFactory = null;
-        private IFilteringFactory _filteringFactory = null;
+        private IOptionsFactory _optionsFactory;
+        private IPagingFactory _pagingFactory;
+        private ISortingFactory _sortingFactory;
+        private IFilteringFactory _filteringFactory;
         private readonly IQueryUtilityFacade _queryUtilityFacade;
 
         protected IOptionsFactory OptionsFactory => _optionsFactory ??= _queryUtilityFacade.CreateOptionsFactory();
@@ -44,7 +44,7 @@ namespace Store.WebAPI.Controllers
 
         protected static bool IsUser(Guid userId, ClaimsPrincipal claimsPrincipal) => GetUserId(claimsPrincipal) == userId;
 
-        protected static Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value);
+        protected static Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.Name)?.Value);
 
         protected static Guid GetClientId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
         
