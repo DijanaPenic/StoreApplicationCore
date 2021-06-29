@@ -7,6 +7,6 @@
             ConfirmUrl = confirmUrl;
         }
 
-        public string ConfirmUrl { get; set; }
+        public string ConfirmUrl { get; }
     }
 }

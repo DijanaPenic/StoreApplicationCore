@@ -8,8 +8,8 @@
             UserName = userName;
         }
 
-        public string ConfirmUrl { get; set; }
+        public string ConfirmUrl { get; }
 
-        public string UserName { get; set; }
+        public string UserName { get; }
     }
 }

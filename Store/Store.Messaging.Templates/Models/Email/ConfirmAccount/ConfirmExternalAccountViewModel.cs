@@ -8,8 +8,8 @@
             ProviderDisplayName = providerDisplayName;
         }
 
-        public string ConfirmUrl { get; set; }
+        public string ConfirmUrl { get; }
 
-        public string ProviderDisplayName { get; set; }
+        public string ProviderDisplayName { get; }
     }
 }
