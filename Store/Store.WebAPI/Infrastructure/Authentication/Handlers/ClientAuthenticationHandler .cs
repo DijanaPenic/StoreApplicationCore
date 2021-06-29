@@ -43,7 +43,7 @@ namespace Store.WebAPI.Infrastructure.Authentication.Handlers
 
             // Get authorization header
             string authorizationHeader = Request.Headers["Authorization"].ToString();
-            Regex authHeaderRegex = new Regex(@"Basic (.*)");
+            Regex authHeaderRegex = new(@"Basic (.*)");
 
             if (!authHeaderRegex.IsMatch(authorizationHeader))
             {
@@ -72,17 +72,17 @@ namespace Store.WebAPI.Infrastructure.Authentication.Handlers
                 return AuthenticateResult.Fail(clientAuthResult);
             }
 
-            ClaimsIdentity identity = new ClaimsIdentity("ClientAuthentication");
+            ClaimsIdentity identity = new("ClientAuthentication");
             identity.AddClaim(new Claim(ApplicationClaimTypes.ClientIdentifier, authClientId));
 
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
             return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name));
         }
         
         private static bool IsBase64String(string value)
         {
-            Span<byte> buffer = new Span<byte>(new byte[value.Length]);
+            Span<byte> buffer = new(new byte[value.Length]);
             
             return Convert.TryFromBase64String(value, buffer, out int bytesParsed);
         }

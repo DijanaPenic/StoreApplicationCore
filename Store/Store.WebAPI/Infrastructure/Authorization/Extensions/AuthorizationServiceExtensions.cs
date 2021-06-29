@@ -12,7 +12,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Extensions
     {
         public static Task<AuthorizationResult> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, SectionType sectionType, AccessType accessAction)
         {
-            SectionAuthorizationAttribute sectionAuthorizationAttribute = new SectionAuthorizationAttribute(sectionType, accessAction);
+            SectionAuthorizationAttribute sectionAuthorizationAttribute = new(sectionType, accessAction);
             
             return service.AuthorizeAsync(user, sectionAuthorizationAttribute.Policy ?? throw new InvalidOperationException());
         }

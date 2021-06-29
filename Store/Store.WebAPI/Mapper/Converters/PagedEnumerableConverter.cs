@@ -11,7 +11,7 @@ namespace Store.WebAPI.Mapper.Converters
     {
         public PagedApiResponse<TDestination> Convert(IPagedEnumerable<TSource> source, PagedApiResponse<TDestination> destination, ResolutionContext context)
         {
-            return new PagedApiResponse<TDestination>()
+            return new()
             {
                 Items = context.Mapper.Map<IEnumerable<TDestination>>(source.AsEnumerable()),
                 MetaData = new PagedResponseMetaData

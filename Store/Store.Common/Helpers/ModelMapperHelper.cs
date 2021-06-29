@@ -12,8 +12,8 @@ namespace Store.Common.Helpers
 {
     public static class ModelMapperHelper
     {
-        private static readonly ConcurrentDictionary<string, string> SorterModelMappings = new ConcurrentDictionary<string, string>();
-        private static readonly ConcurrentDictionary<string, string> PropertyModelMappings = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> SorterModelMappings = new();
+        private static readonly ConcurrentDictionary<string, string> PropertyModelMappings = new();
 
         public static string[] GetSortPropertyMappings<TDestination, TSource>(IMapper mapper, string sortExpression)
         {

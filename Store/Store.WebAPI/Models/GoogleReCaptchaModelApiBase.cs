@@ -28,7 +28,7 @@ namespace Store.WebAPI.Models
         {
             const string errorMessage = "'Google Captcha' is not valid.";
 
-            HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = new();
             string reCaptchaSecret = _configuration.GetValue<string>("GoogleReCaptcha:SecretKey");
             
             HttpResponseMessage httpResponse = httpClient.GetAsync($"https://www.google.com/recaptcha/api/siteverify?secret={reCaptchaSecret}&response={value}").Result;

@@ -52,7 +52,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Attributes
 
             try
             {
-                JwtSecurityTokenHandler jwtHandler = new JwtSecurityTokenHandler();
+                JwtSecurityTokenHandler jwtHandler = new();
                 ClaimsPrincipal claims = jwtHandler.ValidateToken(access_token, _tokenValidationParameters, out SecurityToken validatedToken);
 
                 if (!claims.IsInRole(RoleHelper.Admin))

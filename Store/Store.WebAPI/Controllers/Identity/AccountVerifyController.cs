@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Claims;
 using System.Collections.Generic;
 using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
 using Store.Cache.Common;
@@ -101,7 +99,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Email confirmation token has been generated.");
 
-            UriTemplate template = new UriTemplate(emailConfirmationModel.ReturnUrl);
+            UriTemplate template = new(emailConfirmationModel.ReturnUrl);
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },

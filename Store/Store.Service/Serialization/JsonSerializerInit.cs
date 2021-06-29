@@ -10,7 +10,7 @@ namespace Store.Service.Serialization
     {
         public static JsonSerializerOptions GetJsonSerializerOptions()
         {
-            return new JsonSerializerOptions
+            return new()
             {
                 Converters =
                 {

@@ -14,8 +14,7 @@ namespace Store.WebAPI.Application.Startup
                 throw new ArgumentNullException(nameof(context));
             }
 
-            SnakeCaseQueryValueProvider valueProvider = new SnakeCaseQueryValueProvider
-            (
+            SnakeCaseQueryValueProvider valueProvider = new(
                 BindingSource.Query,
                 context.ActionContext.HttpContext.Request.Query,
                 CultureInfo.CurrentCulture

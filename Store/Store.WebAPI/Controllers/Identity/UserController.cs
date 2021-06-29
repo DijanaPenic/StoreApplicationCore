@@ -89,7 +89,7 @@ namespace Store.WebAPI.Controllers
 
             IList<UserLoginInfo> logins = await _userManager.FindLoginsAsync(user, true);
 
-            UserProfileGetApiModel userProfileResponse = new UserProfileGetApiModel
+            UserProfileGetApiModel userProfileResponse = new()
             {
                 Username = user.UserName,
                 Email = user.Email,
@@ -152,7 +152,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Email confirmation token has been generated.");
 
-            UriTemplate template = new UriTemplate(userProfileModel.ConfirmationUrl);
+            UriTemplate template = new(userProfileModel.ConfirmationUrl);
             string callbackUrl = template.Resolve(new Dictionary<string, object>
             {
                 { "userId", user.Id.ToString() },

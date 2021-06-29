@@ -10,18 +10,12 @@ namespace Store.Cache
         private readonly Lazy<ICacheProvider> _cacheProvider;
         private readonly ICacheProviderFactory _cacheProviderFactory;
 
-        public ICacheProvider CacheProvider
-        {
-            get
-            {
-                return _cacheProvider.Value;
-            }
-        }
+        public ICacheProvider CacheProvider => _cacheProvider.Value;
 
         public CacheManager(ICacheProviderFactory cacheProviderFactory)
         {
             _cacheProviderFactory = cacheProviderFactory;
-            _cacheProvider = new Lazy<ICacheProvider>(() => ResolveProvider(), true);
+            _cacheProvider = new Lazy<ICacheProvider>(ResolveProvider, true);
         }
 
         private ICacheProvider ResolveProvider()
