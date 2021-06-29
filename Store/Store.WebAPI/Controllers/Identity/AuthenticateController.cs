@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
-using X.PagedList;
 using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
@@ -73,10 +73,8 @@ namespace Store.WebAPI.Controllers
             {
                 IsAuthenticated = isUserAuthenticated,
                 Username = isUserAuthenticated ? User.Identity.Name : string.Empty,
-                ExternalLoginProvider =
-                    User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
-                DisplaySetPassword = isUserAuthenticated &&
-                                     !(await _userManager.HasPasswordAsync((await _userManager.GetUserAsync(User))))
+                ExternalLoginProvider = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod)?.Value,
+                DisplaySetPassword = isUserAuthenticated && !(await _userManager.HasPasswordAsync((await _userManager.GetUserAsync(User))))
             };
 
             return Ok(authInfoModel);
@@ -257,7 +255,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [ClientAuthorization]
-        [Authorize(AuthenticationSchemes = "Identity.External")]
+        //[Authorize(AuthenticationSchemes = "Identity.External")] -> Cannot combine with the ClientAuthorization scheme
         [Route("external")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -266,7 +264,7 @@ namespace Store.WebAPI.Controllers
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (externalLoginInfo == null)
             {
-                return Unauthorized("External login information is missing."); 
+                return Unauthorized("External authentication has failed."); 
             }
 
             // Retrieve client_id
@@ -572,11 +570,9 @@ namespace Store.WebAPI.Controllers
 
         private static string GenerateAuthenticatorUri(string email, string authenticatorKey)
         {
-            const string authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
-
             return string.Format
             (
-                authenticatorUriFormat,
+                "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
                 HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
                 HttpUtility.UrlPathEncode(email),
                 authenticatorKey
@@ -588,7 +584,7 @@ namespace Store.WebAPI.Controllers
             SignInResult signInResult,
             IUser user,
             Guid clientId,
-            ExternalAuthStep externalLoginStep = ExternalAuthStep.None,
+            ExternalAuthStep externalAuthStep = ExternalAuthStep.None,
             string externalLoginProvider = null
         )
         {
@@ -607,7 +603,7 @@ namespace Store.WebAPI.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 VerificationStep = VerificationStep.None,
-                ExternalAuthStep = externalLoginStep
+                ExternalAuthStep = externalAuthStep
             };
 
             if (!signInResult.Succeeded)
@@ -626,11 +622,14 @@ namespace Store.WebAPI.Controllers
                     return Ok(authResponse);
                 }
 
-                if (!signInResult.RequiresTwoFactor) return Unauthorized($"Failed to log in [{user.UserName}].");
+                if (signInResult.RequiresTwoFactor)
+                {
+                    authResponse.VerificationStep = VerificationStep.TwoFactor;
 
-                authResponse.VerificationStep = VerificationStep.TwoFactor;
+                    return Ok(authResponse);
+                }
 
-                return Ok(authResponse);
+                return Unauthorized($"Failed to log in [{user.UserName}].");
             }
 
             _logger.LogInformation($"User [{user.UserName}] has logged in the system.");

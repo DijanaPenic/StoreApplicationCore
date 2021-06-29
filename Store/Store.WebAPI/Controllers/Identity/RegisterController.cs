@@ -109,7 +109,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPost]
         [ClientAuthorization]
-        [Authorize(AuthenticationSchemes = "Identity.External")]
+        //[Authorize(AuthenticationSchemes = "Identity.External")] -> Cannot combine with the ClientAuthorization scheme
         [Route("external")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterExternalPostApiModel registerModel)
@@ -117,7 +117,7 @@ namespace Store.WebAPI.Controllers
             ExternalLoginInfo externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (externalLoginInfo == null)
             {
-                return BadRequest("External login information is missing.");
+                return Unauthorized("External authentication has failed."); 
             }
 
             // Create a new account
