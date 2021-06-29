@@ -85,22 +85,16 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Identity.AccountVerification")]
         [Route("account-verification")]
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync()
         {
             // Retrieve user account information from cookie
             AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
-            if (accountVerificationInfo == null)
+            if (accountVerificationInfo == null || string.IsNullOrEmpty(accountVerificationInfo.UserId))
             {
-                return BadRequest("Account Verification information not found.");
-            }
-
-            // Verify user information
-            if (string.IsNullOrEmpty(accountVerificationInfo.UserId))
-            {
-                return BadRequest("User Id cannot be empty.");
+                return Unauthorized("Account authentication has failed.");
             }
 
             IUser user = await _userManager.FindByIdAsync(accountVerificationInfo.UserId);
@@ -370,7 +364,7 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Identity.TwoFactorUserId, Identity.TwoFactorRememberMe")]
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -379,7 +373,7 @@ namespace Store.WebAPI.Controllers
             TwoFactorAuthenticationInfo twoFactorInfo = await _signInManager.GetTwoFactorInfoAsync();
             if (twoFactorInfo == null)
             {
-                return BadRequest("Two Factor authentication info not found.");
+                return Unauthorized("Two Factor authentication has failed.");
             }
 
             IUser user = await _signInManager.GetTwoFactorAuthenticationUserAsync();

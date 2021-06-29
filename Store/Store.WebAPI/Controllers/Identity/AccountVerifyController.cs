@@ -75,12 +75,16 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Identity.AccountVerification, Bearer")]
         [Route("{userId:guid}/email")]
+        [Consumes("application/json")]
         public async Task<IActionResult> SendEmailConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] EmailConfirmationPostApiModel emailConfirmationModel) // userId - need to provide so that admins can issue email confirmation mails to other users
         {
-            AuthenticateResult authResult = await AuthenticateUserAsync(userId);
-            if (authResult.Action != null) return authResult.Action;
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
 
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
@@ -106,7 +110,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Sending email confirmation email.");
 
-            await _emailService.SendConfirmEmailAsync(authResult.ClientId, user.Email, callbackUrl, user.UserName); 
+            await _emailService.SendConfirmEmailAsync(GetClientId(User), user.Email, callbackUrl, user.UserName); 
 
             return Ok();
         }
@@ -193,13 +197,16 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Identity.AccountVerification, Bearer")]
         [Route("{userId:guid}/phone-number")]
         [Consumes("application/json")]
         public async Task<IActionResult> SendPhoneNumberConfirmationTokenAsync([FromRoute] Guid userId, [FromBody] PhoneNumberVerifyPostApiModel phoneNumberVerifyModel) // userId - need to send so that admins can issue email confirmation mails to other users
         {
-            AuthenticateResult authResult = await AuthenticateUserAsync(userId);
-            if (authResult.Action != null) return authResult.Action;
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
 
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
@@ -279,66 +286,6 @@ namespace Store.WebAPI.Controllers
             IdentityResult result = await _userManager.ChangePhoneNumberAsync(user, phoneNumber.GetDigits(), token);
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
-        }
-
-        /// <summary>Checks if user is logged in (current user or authorized user) OR pending verification on login.</summary>
-        private async Task<AuthenticateResult> AuthenticateUserAsync(Guid userId)
-        {
-            AuthenticateResult result = new AuthenticateResult();
-
-            if (userId == Guid.Empty)
-            {
-                result.Action = BadRequest("User Id cannot be empty.");
-            }
-
-            string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-            if (!string.IsNullOrEmpty(accessToken))
-            {
-                // Retrieve user account information from token
-                ClaimsPrincipal claimsPrincipal = await _authManager.ValidateAccessTokenAsync(accessToken);
-                if (claimsPrincipal == null)
-                {
-                    result.Action = Unauthorized("Invalid access token!");
-                }
-                else
-                {
-                    // Check if currently logged in user or admin
-                    bool hasPermissions = IsUser(userId, claimsPrincipal) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
-                    if (!hasPermissions)
-                    {
-                        result.Action = Forbid();
-                    }
-
-                    result.ClientId = GetClientId(claimsPrincipal);
-                }
-            }
-            else
-            {
-                // Retrieve user account information from cookie
-                AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
-                if (accountVerificationInfo == null)
-                {
-                    result.Action = Unauthorized("Account information not found.");
-                }
-                else
-                {
-                    if (Guid.Parse(accountVerificationInfo.UserId) != userId)
-                    {
-                        result.Action = Forbid();
-                    }
-
-                    result.ClientId = Guid.Parse(accountVerificationInfo.ClientId);
-                }
-            }
-
-            return result;
-        }
-
-        private class AuthenticateResult
-        {
-            public IActionResult Action { get; set; }
-
-            public Guid ClientId { get; set; }
         }
     }
 }
