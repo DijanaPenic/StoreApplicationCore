@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
 
 using Store.Cache.Common;
 using Store.WebAPI.Constants;
@@ -44,9 +44,9 @@ namespace Store.WebAPI.Controllers
         ///   <br />
         /// </returns>
         [HttpGet]
-        [Route("countries/all")]
+        [Authorize]
+        [Route("countries")]
         [Produces("application/json")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetCountriesAsync()
         {
             IList<ICountry> countries = await _cacheProvider.GetOrAddAsync
