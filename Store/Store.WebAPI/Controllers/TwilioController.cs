@@ -13,11 +13,6 @@ namespace Store.WebAPI.Controllers
     [Route("api/twilio")]
     public class TwilioController : ControllerBase
     {
-        public TwilioController()
-        {
-
-        }
-
         [HttpGet]
         [Route("phone-number/token/{token}", Name = RouteNames.TwilioPhoneNumberVerificationToken)]
         public IActionResult PhoneNumberVerificationToken([FromRoute] string token)
