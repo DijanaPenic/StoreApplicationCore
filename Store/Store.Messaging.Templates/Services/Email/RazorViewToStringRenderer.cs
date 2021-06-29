@@ -36,7 +36,7 @@ namespace Store.Messaging.Templates.Services.Email
             ActionContext actionContext = GetActionContext();
             IView view = FindView(actionContext, viewName);
 
-            using StringWriter output = new StringWriter();
+            await using StringWriter output = new StringWriter();
 
             ViewContext viewContext = new ViewContext
             (

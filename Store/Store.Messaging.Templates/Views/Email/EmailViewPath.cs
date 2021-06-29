@@ -6,15 +6,11 @@ namespace Store.Messaging.Templates.Views.Email
 {
     public static class EmailViewPath
     {
-        public const string ConfirmAccount = "/Views/Email/ConfirmAccount/ConfirmAccount.cshtml";
-
-        public const string ConfirmExternalAccount = "/Views/Email/ConfirmAccount/ConfirmExternalAccount.cshtml";
-
-        public const string ConfirmEmail = "/Views/Email/ConfirmAccount/ConfirmEmail.cshtml";
-
-        public const string ResetPassword = "/Views/Email/Password/ResetPassword.cshtml";
-
-        public const string ChangePassword = "/Views/Email/Password/ChangePassword.cshtml";
+        private const string ConfirmAccount = "/Views/Email/ConfirmAccount/ConfirmAccount.cshtml";
+        private const string ConfirmExternalAccount = "/Views/Email/ConfirmAccount/ConfirmExternalAccount.cshtml";
+        private const string ConfirmEmail = "/Views/Email/ConfirmAccount/ConfirmEmail.cshtml";
+        private const string ResetPassword = "/Views/Email/Password/ResetPassword.cshtml";
+        private const string ChangePassword = "/Views/Email/Password/ChangePassword.cshtml";
 
         public static string GetViewPath(EmailTemplateType type)
         {
