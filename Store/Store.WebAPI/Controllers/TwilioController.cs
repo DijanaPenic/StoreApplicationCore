@@ -14,11 +14,11 @@ namespace Store.WebAPI.Controllers
     public class TwilioController : ControllerBase
     {
         [HttpGet]
-        [Route("phone-number/token/{token}", Name = RouteNames.TwilioPhoneNumberVerificationToken)]
-        public IActionResult PhoneNumberVerificationToken([FromRoute] string token)
+        [Route("calls/token", Name = RouteNames.TwilioPhoneNumberVerificationToken)]
+        public IActionResult PhoneNumberVerificationToken([FromQuery] string code)
         {
-            VoiceResponse voiceResponse = new VoiceResponse();
-            voiceResponse.Say($"Your phone number verification token is {token}", VoiceEnum.Alice, 3);
+            VoiceResponse voiceResponse = new();
+            voiceResponse.Say($"Your phone number verification token is {code}", VoiceEnum.Alice, 3);
 
             return Ok(voiceResponse.ToString());
         }
