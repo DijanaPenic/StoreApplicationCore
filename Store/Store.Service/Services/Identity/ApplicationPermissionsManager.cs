@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
+using Store.Common.Enums;
 using Store.Common.Parameters.Filtering;
 using Store.Model.Common.Models.Identity;
 
@@ -12,7 +13,7 @@ namespace Store.Services.Identity
 {
     public class ApplicationPermissionsManager
     {
-        public const string CLAIM_KEY = "Permission";
+        private const string ClaimKey = "Permission";
 
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
@@ -59,31 +60,27 @@ namespace Store.Services.Identity
             return userRoleClaims;
         }
 
-        public async Task<IdentityResult> UpdatePolicyAsync(IRole role, IPolicy policy)
+        public async Task<IdentityResult> UpdatePolicyAsync(IRole role, SectionType section, IAccessAction[] accessActions)
         {
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
-            if (policy == null)
-            {
-                throw new ArgumentNullException(nameof(policy));
-            }
-
+            
             try
             {
                 if (_roleManager.SupportsRoleClaims)
                 {
-                    IRoleClaimFilteringParameters filter = _filteringFactory.Create<IRoleClaimFilteringParameters>(searchString: $"{policy.Section}.");
+                    IRoleClaimFilteringParameters filter = _filteringFactory.Create<IRoleClaimFilteringParameters>(searchString: $"{section}.");
                     filter.RoleId = role.Id;
-                    filter.Type = CLAIM_KEY;
+                    filter.Type = ClaimKey;
 
                     // Delete all role claims for section
                     await _roleManager.RemoveClaimsAsync(role, filter);
 
-                    foreach (IAccessAction accessAction in policy.Actions.Where(a => a.IsEnabled))
+                    foreach (IAccessAction accessAction in accessActions.Where(a => a.IsEnabled))
                     {
-                        Claim roleClaim = new Claim(CLAIM_KEY, $"{policy.Section}.{accessAction.Type}");
+                        Claim roleClaim = new Claim(ClaimKey, $"{section}.{accessAction.Type}");
                         await _roleManager.AddClaimAsync(role, roleClaim);
                     }
 

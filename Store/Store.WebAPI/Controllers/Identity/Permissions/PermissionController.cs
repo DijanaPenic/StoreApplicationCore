@@ -43,17 +43,18 @@ namespace Store.WebAPI.Controllers.Identity
             _logger = logger;
         }
 
-        /// <summary>Updates access policy.</summary>
+        /// <summary>Updates role's section policy.</summary>
+        /// <param name="section">The section.</param>
         /// <param name="roleId">The role identifier.</param>
-        /// <param name="policyModel">The policy model.</param>
+        /// <param name="accessActions">The access actions.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPost]
-        [Route("{roleId:guid}")]
+        [HttpPut]
+        [Route("sections/{section}/roles/{roleId:guid}")]
         [Consumes("application/json")]
         [SectionAuthorization(SectionType.Role, AccessType.Full)]
-        public async Task<IActionResult> PostAsync([FromRoute] Guid roleId, [FromBody] PolicyPostApiModel policyModel)
+        public async Task<IActionResult> PutAsync([FromRoute] SectionType section, [FromRoute] Guid roleId, [FromBody] AccessActionPostModel[] accessActions)
         {
             if (roleId == Guid.Empty)
             {
@@ -70,10 +71,8 @@ namespace Store.WebAPI.Controllers.Identity
             {
                 return NotFound();
             }
-
-            IPolicy policy = _mapper.Map<IPolicy>(policyModel);
-            IdentityResult updatePolicyResult = await _permissionManager.UpdatePolicyAsync(role, policy);
-
+            
+            IdentityResult updatePolicyResult = await _permissionManager.UpdatePolicyAsync(role, section, _mapper.Map<IAccessAction[]>(accessActions));
             if (!updatePolicyResult.Succeeded) return BadRequest(updatePolicyResult.Errors);
 
             _logger.LogInformation("A new policy has been updated successfully.");
@@ -81,7 +80,7 @@ namespace Store.WebAPI.Controllers.Identity
             return Ok();
         }
 
-        /// <summary>Retrieves role with policies for a certain section by specified search criteria.</summary>
+        /// <summary>Retrieves roles (with specific section policy prefetch) that match the specified search criteria.</summary>
         /// <param name="section">The section.</param>
         /// <param name="searchString">The search string.</param>
         /// <param name="pageNumber">The page number.</param>
@@ -91,22 +90,17 @@ namespace Store.WebAPI.Controllers.Identity
         ///   <br />
         /// </returns>
         [HttpGet]
-        [Route("{section}")]
+        [Route("sections/{section}/roles")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Role, AccessType.Full)]
-        public async Task<IActionResult> GetAsync([FromRoute] string section,
+        public async Task<IActionResult> GetAsync([FromRoute] SectionType section,
                                                   [FromQuery] string searchString = DefaultParameters.SearchString,
                                                   [FromQuery] int pageNumber = DefaultParameters.PageNumber,
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize,
                                                   [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
-            if(!Enum.TryParse(section, out SectionType sectionType))
-            {
-                return BadRequest("Section not supported.");
-            }
-
             IPermissionFilteringParameters filter = FilteringFactory.Create<IPermissionFilteringParameters>(searchString);
-            filter.SectionType = sectionType;
+            filter.SectionType = section;
 
             IPagedList<IRole> roles = await _roleManager.FindRolesBySectionAsync
             (

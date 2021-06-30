@@ -74,8 +74,7 @@ namespace Store.WebAPI.Mapper.Profiles
             CreateMap<RolePatchApiModel, IRole>();
 
             // Create maps for permissions
-            CreateMap<PolicyPostApiModel, IPolicy>();
-            CreateMap<AccessActionModel, IAccessAction>();
+            CreateMap<AccessActionPostModel, IAccessAction>();
 
             // Create maps for paging
             CreateMap<IPagedList, PagedResponseMetaData>();
