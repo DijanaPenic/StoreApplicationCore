@@ -10,7 +10,7 @@ namespace Store.WebAPI.Mapper.Converters
     {
         public RoleGetApiModel Convert(IRole source, RoleGetApiModel destination, ResolutionContext context)
         {
-            PolicyGetApiModel[] dstPolicies = source.Policies.GroupBy(rc => rc.ClaimValue.Split('.')[0])
+            PolicyGetApiModel[] dstPolicies = source.Claims.GroupBy(rc => rc.ClaimValue.Split('.')[0])
                                                            .Select(rcg => new PolicyGetApiModel 
                                                            { 
                                                                Section = rcg.Key, 

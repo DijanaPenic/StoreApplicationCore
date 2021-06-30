@@ -68,8 +68,7 @@ namespace Store.Repository.Mapper
             CreateMap<IRole, RoleEntity>()
                 .ForMember(dst => dst.Claims, opt => opt.Ignore())
                 .ForMember(dst => dst.Users, opt => opt.Ignore());
-            CreateMap<RoleEntity, IRole>()
-                .ForMember(dst => dst.Policies, opt => opt.MapFrom(src => src.Claims));
+            CreateMap<RoleEntity, IRole>();
 
             CreateMap<IClient, ClientEntity>().ReverseMap();
 

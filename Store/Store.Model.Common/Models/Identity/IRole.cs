@@ -17,6 +17,6 @@ namespace Store.Model.Common.Models.Identity
 
         bool Stackable { get; set; }
 
-        ICollection<IRoleClaim> Policies { get; set; }
+        ICollection<IRoleClaim> Claims { get; set; }
     }
 }
