@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Resta.UriTemplates;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Resta.UriTemplates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -17,18 +16,18 @@ using Store.Model.Common.Models.Identity;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/recover-password")]
-    public class RecoverPasswordController : ApplicationControllerBase
+    [Route("api/password-recovery")]
+    public class PasswordRecoveryController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IEmailService _emailService;
         private readonly ILogger _logger;
 
-        public RecoverPasswordController
+        public PasswordRecoveryController
         (
             ApplicationUserManager userManager,
             IEmailService emailService,
-            ILogger<RegisterController> logger,
+            ILogger<PasswordRecoveryController> logger,
             IQueryUtilityFacade queryUtilityFacade
         ) : base(queryUtilityFacade)
         {
@@ -75,23 +74,16 @@ namespace Store.WebAPI.Controllers
         }
 
         /// <summary>Updates the user's password.</summary>
-        /// <param name="userId">The user identifier.</param>
         /// <param name="passwordRecoveryModel">The forgot password model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPatch]
+        [HttpPut]
         [ClientAuthorization]
-        [Route("{userId:guid}")]
         [Consumes("application/json")]
-        public async Task<IActionResult> ResetUserPasswordAsync([FromRoute]Guid userId, [FromBody] PasswordRecoveryPatchApiModel passwordRecoveryModel)
+        public async Task<IActionResult> ResetUserPasswordAsync([FromBody] PasswordRecoveryPutApiModel passwordRecoveryModel)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
-            IUser user = await _userManager.FindByIdAsync(userId.ToString());
+            IUser user = await _userManager.FindByIdAsync(passwordRecoveryModel.UserId.ToString());
             if (user == null)
             {
                 return NotFound();

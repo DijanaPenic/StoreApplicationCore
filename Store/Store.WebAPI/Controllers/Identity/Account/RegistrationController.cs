@@ -22,8 +22,8 @@ using Store.Messaging.Services.Common;
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/register")]
-    public class RegisterController : ApplicationControllerBase
+    [Route("api/registration")]
+    public class RegistrationController : ApplicationControllerBase
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
@@ -31,11 +31,11 @@ namespace Store.WebAPI.Controllers
         private readonly ILogger _logger;
         private readonly IEmailService _emailService;
 
-        public RegisterController
+        public RegistrationController
         (
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
-            ILogger<RegisterController> logger,
+            ILogger<RegistrationController> logger,
             IMapper mapper,
             IEmailService emailService,
             IQueryUtilityFacade queryUtilityFacade
@@ -110,7 +110,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [ClientAuthorization]
         //[Authorize(AuthenticationSchemes = "Identity.External")] -> Cannot combine with the ClientAuthorization scheme
-        [Route("external")]
+        [Route("external-login")]
         [Consumes("application/json")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterExternalPostApiModel registerModel)
         {
