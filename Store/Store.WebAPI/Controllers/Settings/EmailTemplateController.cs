@@ -38,13 +38,13 @@ namespace Store.WebAPI.Controllers
             _emailTemplateService = emailTemplateService;
         }
 
-        /// <summary>Uploads a new email template.</summary>
+        /// <summary>Uploads a new email template file in the system. The email template file will be replaced if it already exists.</summary>
         /// <param name="file">The email template file.</param>
         /// <param name="type">The email template type.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPost]
+        [HttpPut]
         [SectionAuthorization(SectionType.EmailTemplate, AccessType.Create)]
         public async Task<IActionResult> PostAsync([FromForm]IFormFile file, [FromForm] EmailTemplateType type)
         {
@@ -56,51 +56,13 @@ namespace Store.WebAPI.Controllers
             // Retrieve client_id for the currently logged in user
             Guid clientId = GetCurrentUserClientId();
 
-            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(clientId, type);
-            if(emailTemplateExists)
-            {
-                return BadRequest("Email template already exists.");
-            }
-
             await using Stream templateStream = file.OpenReadStream();
-            await _emailTemplateService.AddEmailTemplateAsync(clientId, type, templateStream);
+            await _emailTemplateService.AddOrUpdateEmailTemplateAsync(clientId, type, templateStream);
 
             return Ok();
         }
 
-        /// <summary>Updates the email template.</summary>
-        /// <param name="emailTemplateId">The email template identifier.</param>
-        /// <param name="file">The email template.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPatch]
-        [Route("{emailTemplateId:guid}")]
-        [SectionAuthorization(SectionType.EmailTemplate, AccessType.Update)]
-        public async Task<IActionResult> PatchAsync([FromRoute] Guid emailTemplateId, [FromForm] IFormFile file)
-        {
-            if (file?.Length == 0)
-            {
-                return BadRequest("Email template is missing.");
-            }
-            if (emailTemplateId == Guid.Empty)
-            {
-                return BadRequest("Email Template Id cannot be empty.");
-            }
-
-            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
-            if (!emailTemplateExists)
-            {
-                return NotFound();
-            }
-            
-            await using Stream templateStream = file.OpenReadStream();
-            await _emailTemplateService.UpdateEmailTemplateAsync(emailTemplateId, templateStream);
-
-            return Ok();
-        }
-
-        /// <summary>Retrieves the email template file.</summary>
+        /// <summary>Retrieves the email template file by identifier.</summary>
         /// <param name="emailTemplateId">The email template identifier.</param>
         /// <returns>
         ///   <br />

@@ -20,9 +20,7 @@ namespace Store.Service.Common.Services
 
         Task<Stream> FindEmailTemplateByClientIdAsync(Guid clientId, EmailTemplateType templateType);
 
-        Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream);
-
-        Task<ResponseStatus> AddEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream);
+        Task<ResponseStatus> AddOrUpdateEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream);
 
         Task<ResponseStatus> DeleteEmailTemplateAsync(Guid emailTemplateId);
     }

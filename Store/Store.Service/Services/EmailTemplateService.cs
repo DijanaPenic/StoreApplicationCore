@@ -55,10 +55,8 @@ namespace Store.Services
             return await _fileProvider.GetFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name));
         }
 
-        public async Task<ResponseStatus> UpdateEmailTemplateAsync(Guid emailTemplateId, Stream templateStream)
+        private async Task<ResponseStatus> UpdateEmailTemplateAsync(IEmailTemplate emailTemplate, Stream templateStream)
         {
-            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByKeyAsync(emailTemplateId);
-
             await _fileProvider.SaveFileAsync(emailTemplate.ClientId.ToString(), GetEmailTemplatePath(emailTemplate.Name), templateStream);
 
             ResponseStatus status = await _unitOfWork.EmailTemplateRepository.UpdateAsync(emailTemplate);
@@ -67,12 +65,18 @@ namespace Store.Services
             return await _unitOfWork.CommitAsync();
         }
 
-        public async Task<ResponseStatus> AddEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream)
+        public async Task<ResponseStatus> AddOrUpdateEmailTemplateAsync(Guid clientId, EmailTemplateType templateType, Stream templateStream)
         {
+            IEmailTemplate emailTemplate = await _unitOfWork.EmailTemplateRepository.FindByClientIdAsync(clientId, templateType);
+            if (emailTemplate != null)
+            {
+                return await UpdateEmailTemplateAsync(emailTemplate, templateStream);
+            }
+            
             string templateName = $"{templateType.ToString().ToSnakeCase()}.html";
             string filePath = await _fileProvider.SaveFileAsync(clientId.ToString(), GetEmailTemplatePath(templateName), templateStream);
 
-            IEmailTemplate emailTemplate = new EmailTemplate
+            emailTemplate = new EmailTemplate
             {
                 ClientId = clientId,
                 Path = filePath,
