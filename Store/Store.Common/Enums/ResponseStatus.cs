@@ -2,8 +2,8 @@
 {
     public enum ResponseStatus
     {
-        Success,
-        Error,
-        NotFound
+        Success = 1,
+        Error = 2,
+        NotFound = 3
     }
 }

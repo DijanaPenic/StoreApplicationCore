@@ -2,7 +2,7 @@
 {
     public enum ApplicationType
     {
-        JavaScript = 0,
-        NativeConfidential = 1
+        JavaScript = 1,
+        NativeConfidential = 2
     }
 }

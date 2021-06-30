@@ -2,11 +2,11 @@
 {
     public enum SectionType
     {
-        Book,
-        Bookstore,
-        Report,
-        User,
-        Role,
-        EmailTemplate
+        Book = 1,
+        Bookstore = 2,
+        Report = 3,
+        User = 4,
+        Role = 5,
+        EmailTemplate = 6
     }
 }
