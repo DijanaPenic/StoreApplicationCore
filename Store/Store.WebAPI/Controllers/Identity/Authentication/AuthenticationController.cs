@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
@@ -12,6 +11,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+
 using Store.Common.Enums;
 using Store.Common.Helpers;
 using Store.Common.Extensions;
@@ -20,31 +21,27 @@ using Store.Services.Identity;
 using Store.Service.Common.Services.Identity;
 using Store.WebAPI.Models.Identity;
 using Store.WebAPI.Infrastructure.Authorization.Attributes;
-using Store.WebAPI.Infrastructure.Authorization.Extensions;
 using Store.Messaging.Services.Common;
 using Store.Model.Common.Models.Identity;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Store.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/authenticate")]
-    public class AuthenticateController : ApplicationControllerBase
+    [Route("api/auth")]
+    public class AuthenticationController : ApplicationControllerBase
     {
         private readonly ILogger _logger;
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationAuthManager _authManager;
         private readonly ApplicationSignInManager _signInManager;
-        private readonly IAuthorizationService _authorizationService;
         private readonly IEmailService _emailService;
 
-        public AuthenticateController
+        public AuthenticationController
         (
             ApplicationUserManager userManager,
             ApplicationAuthManager authManager,
             ApplicationSignInManager signInManager,
-            IAuthorizationService authorizationService,
-            ILogger<AuthenticateController> logger,
+            ILogger<AuthenticationController> logger,
             IEmailService emailService,
             IQueryUtilityFacade queryUtilityFacade
         ) : base(queryUtilityFacade)
@@ -52,24 +49,22 @@ namespace Store.WebAPI.Controllers
             _userManager = userManager;
             _authManager = authManager;
             _signInManager = signInManager;
-            _authorizationService = authorizationService;
             _logger = logger;
             _emailService = emailService;
         }
 
-        /// <summary>Retrieves the authentication info for the currently logged in user.</summary>
+        /// <summary>Retrieves the authentication information for the currently logged in user.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpGet]
         [Authorize]
-        [Route("info")]
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateInfoAsync()
         {
             bool isUserAuthenticated = User.Identity is {IsAuthenticated: true};
 
-            AuthenticateInfoGetApiModel authInfoModel = new AuthenticateInfoGetApiModel
+            AuthenticateInfoGetApiModel authInfoModel = new()
             {
                 IsAuthenticated = isUserAuthenticated,
                 Username = isUserAuthenticated ? User.Identity.Name : string.Empty,
@@ -79,37 +74,40 @@ namespace Store.WebAPI.Controllers
 
             return Ok(authInfoModel);
         }
-
-        /// <summary>Attempts to authenticate user at the end of the account verification process (account verification: phone number and/or email verification).</summary>
+        
+        /// <summary>Renews the authentication tokens (refresh and access tokens).</summary>
+        /// <param name="refreshToken">The refresh token.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPost]
-        [Authorize(AuthenticationSchemes = "Identity.AccountVerification")]
-        [Route("account-verification")]
+        [HttpPut]
+        [Authorize]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync()
+        public async Task<IActionResult> RenewTokensAsync([FromQuery] string refreshToken)
         {
-            // Retrieve user account information from cookie
-            AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
-            if (accountVerificationInfo == null || string.IsNullOrEmpty(accountVerificationInfo.UserId))
+            try
             {
-                return Unauthorized("Account authentication has failed.");
-            }
+                // Generate new tokens
+                string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
+                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken.Base64Decode(), accessToken, GetCurrentUserClientId());
 
-            IUser user = await _userManager.FindByIdAsync(accountVerificationInfo.UserId);
-            if (user == null)
+                _logger.LogInformation("New access and refresh tokens are generated for the user.");
+
+                RenewTokenGetApiModel authenticationResponse = new()
+                {
+                    AccessToken = jwtResult.AccessToken,
+                    RefreshToken = jwtResult.RefreshToken
+                };
+
+                return Ok(authenticationResponse);
+            }
+            catch (SecurityTokenException ex)
             {
-                return NotFound("User Id not found.");
+                return BadRequest(ex.Message);
             }
-
-            Guid clientId = Guid.Parse(accountVerificationInfo.ClientId);
-            SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync(clientId);
-
-            return await AuthenticateAsync(signInResult, user, clientId);
         }
-
-        /// <summary>Attempts to authenticate user using the specified username and password combination.</summary>
+        
+        /// <summary>Attempts to authenticate user using the provided username and password combination.</summary>
         /// <param name="authenticateModel">The authenticate model.</param>
         /// <returns>
         ///   <br />
@@ -118,8 +116,7 @@ namespace Store.WebAPI.Controllers
         [ClientAuthorization]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> AuthenticateAsync(
-            [FromBody] AuthenticatePasswordPostApiModel authenticateModel)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticatePasswordPostApiModel authenticateModel)
         {
             // Check user's status
             IUser user = await _userManager.FindByNameAsync(authenticateModel.UserName);
@@ -142,64 +139,6 @@ namespace Store.WebAPI.Controllers
             return await AuthenticateAsync(signInResult, user, clientId);
         }
 
-        /// <summary>Refreshes authentication tokens (refresh and access tokens).</summary>
-        /// <param name="refreshToken">The refresh token.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPost]
-        [Authorize]
-        [Route("renew/token/{refreshToken}")]
-        [Produces("application/json")]
-        public async Task<IActionResult> RenewTokensAsync([FromRoute] string refreshToken)
-        {
-            try
-            {
-                // Generate new tokens
-                string accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                IJwtAuthResult jwtResult = await _authManager.RenewTokensAsync(refreshToken.Base64Decode(), accessToken, GetCurrentUserClientId());
-
-                _logger.LogInformation("New access and refresh tokens are generated for the user.");
-
-                RenewTokenGetApiModel authenticationResponse = new RenewTokenGetApiModel
-                {
-                    AccessToken = jwtResult.AccessToken,
-                    RefreshToken = jwtResult.RefreshToken
-                };
-
-                return Ok(authenticationResponse);
-            }
-            catch (SecurityTokenException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        /// <summary>Deletes refresh tokens that have expired.</summary>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpDelete]
-        [Route("expired-refresh-tokens")]
-        [SectionAuthorization(SectionType.User, AccessType.Full)]
-        public async Task<IActionResult> DeleteExpiredRefreshTokensAsync()
-        {
-            try
-            {
-                await _authManager.RemoveExpiredRefreshTokensAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Deletion of the expired refresh tokens has failed.", ex);
-
-                return InternalServerError();
-            }
-
-            _logger.LogInformation("Expired refresh tokens have been successfully deleted.");
-
-            return NoContent();
-        }
-
         // TODO - need to move to the web application (USE AuthenticationSchemeProvider)
         /// <summary>TODO REMOVE - Retrieves the names of the supported external login providers.</summary>
         /// <returns>
@@ -208,6 +147,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("external/providers")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> ProvidersAsync()
         {
             IEnumerable<AuthenticationScheme> schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
@@ -226,6 +166,7 @@ namespace Store.WebAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("external/initiate/{provider}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> InitiateAuthenticationAsync([FromRoute] string provider,
             [FromQuery] string returnUrl)
         {
@@ -242,7 +183,7 @@ namespace Store.WebAPI.Controllers
             return Challenge(properties, authScheme.Name);
         }
 
-        /// <summary>Authenticates the user via the external login request.</summary>
+        /// <summary>Attempts to authenticate user via the external login request.</summary>
         /// <param name="authenticateModel">The authenticate external login model.</param>
         /// <returns>
         ///   <br />
@@ -250,7 +191,7 @@ namespace Store.WebAPI.Controllers
         [HttpPost]
         [ClientAuthorization]
         //[Authorize(AuthenticationSchemes = "Identity.External")] -> Cannot combine with the ClientAuthorization scheme
-        [Route("external")]
+        [Route("external-login")]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateExternalPostApiModel authenticateModel)
@@ -316,7 +257,7 @@ namespace Store.WebAPI.Controllers
                     if (!createLoginResult.Succeeded) return BadRequest(createLoginResult.Errors);
 
                     // Send email
-                    UriTemplate template = new UriTemplate(authenticateModel.ConfirmationUrl);
+                    UriTemplate template = new(authenticateModel.ConfirmationUrl);
                     string callbackUrl = template.Resolve(new Dictionary<string, object>
                     {
                         {"userId", user.Id.ToString()},
@@ -358,13 +299,13 @@ namespace Store.WebAPI.Controllers
             return Ok(new AuthenticateGetApiModel {ExternalAuthStep = ExternalAuthStep.UserNotFound});
         }
 
-        /// <summary>Authenticates the user using the two factor authentication code.</summary>
+        /// <summary>Attempts to authenticate user using the two-factor authentication code.</summary>
         /// <param name="authenticateModel">The authenticate model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
         [HttpPost]
-        [Authorize(AuthenticationSchemes = "Identity.TwoFactorUserId, Identity.TwoFactorRememberMe")]
+        [Authorize(AuthenticationSchemes = "Identity.TwoFactorUserId")]
         [Route("two-factor")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -398,181 +339,63 @@ namespace Store.WebAPI.Controllers
             return await AuthenticateAsync(signInResult, user, clientId);
         }
 
-        /// <summary>Generates or retrieves authenticator key for the user.</summary>
-        /// <param name="userId">The user identifier.</param>
+        /// <summary>Attempts to authenticate user at the end of the account verification process (account verification: phone number and/or email verification).</summary>
         /// <returns>
         ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Authorize]
-        [Route("two-factor/{userId:guid}/authenticator")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetUserAuthenticatorKeyAsync([FromRoute] Guid userId)
-        {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
-            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
-            if (!hasPermissions)
-            {
-                return Forbid();
-            }
-
-            IUser user = await _userManager.FindUserByKeyAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
-            if (string.IsNullOrEmpty(authenticatorKey))
-            {
-                await _userManager.ResetAuthenticatorKeyAsync(user); // This will set a new AuthenticatorKey
-
-                authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user); // Now we can retrieve the new key
-                if (string.IsNullOrEmpty(authenticatorKey))
-                {
-                    return InternalServerError();
-                }
-
-                _logger.LogInformation("A new authenticator key is generated.");
-            }
-            else
-            {
-                _logger.LogInformation("The existing authenticator key is retrieved from the database.");
-            }
-
-            AuthenticatorKeyGetApiModel authenticatorDetailsResponse = new AuthenticatorKeyGetApiModel
-            {
-                SharedKey = authenticatorKey,
-                AuthenticatorUri = GenerateAuthenticatorUri(user.Email, authenticatorKey)
-            };
-
-            return Ok(authenticatorDetailsResponse);
-        }
-
-        /// <summary>Verifies the authenticator code for the user. If successful, two factor authentication will be enabled.</summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="code">The authenticator code.</param>
-        /// <returns>
-        ///   Ten two factor recovery codes.
         /// </returns>
         [HttpPost]
-        [Authorize]
-        [Route("two-factor/{userId:guid}/authenticator")]
+        [Authorize(AuthenticationSchemes = "Identity.AccountVerification")]
+        [Route("account-verification")]
         [Produces("application/json")]
-        public async Task<IActionResult> VerifyUserAuthenticatorCodeAsync([FromRoute] Guid userId, [FromQuery] string code)
+        public async Task<IActionResult> AuthenticateAsync()
         {
-            if (string.IsNullOrEmpty(code))
+            // Retrieve user account information from cookie
+            AccountVerificationInfo accountVerificationInfo = await _signInManager.GetAccountVerificationInfoAsync();
+            if (accountVerificationInfo == null || string.IsNullOrEmpty(accountVerificationInfo.UserId))
             {
-                return BadRequest("Verification Code is missing.");
-            }
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
+                return Unauthorized("Account authentication has failed.");
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
-            if (!hasPermissions)
-            {
-                return Forbid();
-            }
-
-            IUser user = await _userManager.FindUserByKeyAsync(userId);
+            IUser user = await _userManager.FindByIdAsync(accountVerificationInfo.UserId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User Id not found.");
             }
 
-            bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
+            Guid clientId = Guid.Parse(accountVerificationInfo.ClientId);
+            SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync(clientId);
 
-            if (isTwoFactorTokenValid)
-            {
-                await _userManager.SetTwoFactorEnabledAsync(user, true);
-
-                _logger.LogInformation("Two factor authentication is enabled for the user.");
-            }
-            else
-            {
-                return BadRequest("Verification Code is invalid.");
-            }
-
-            if (await _userManager.CountRecoveryCodesAsync(user) != 0) return NoContent();
-            
-            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-
-            _logger.LogInformation("Ten two factor recovery codes are generated for the user.");
-
-            TwoFactorRecoveryResponseApiModel response = new TwoFactorRecoveryResponseApiModel
-            {
-                RecoveryCodes = recoveryCodes.ToArray()
-            };
-
-            return Ok(response);
-
+            return await AuthenticateAsync(signInResult, user, clientId);
         }
-
-        /// <summary>
-        /// Generates two factor recovery codes for the user.
-        /// </summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="number">The number.</param>
+        
+        /// <summary>Deletes refresh tokens that have expired.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]
-        [Authorize]
-        [Route("two-factor/{userId:guid}/recovery-codes")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromRoute] Guid userId, [FromQuery] int number)
+        [HttpDelete]
+        [Route("refresh-tokens")]
+        [SectionAuthorization(SectionType.User, AccessType.Full)]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> DeleteRefreshTokensAsync()
         {
-            if (userId == Guid.Empty)
+            try
             {
-                return BadRequest("User Id cannot be empty.");
+                await _authManager.RemoveExpiredRefreshTokensAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Deletion of the expired refresh tokens has failed.", ex);
+
+                return InternalServerError();
             }
 
-            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
-            if (!hasPermissions)
-            {
-                return Forbid();
-            }
+            _logger.LogInformation("Expired refresh tokens have been successfully deleted.");
 
-            IUser user = await _userManager.FindUserByKeyAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (await _userManager.CountRecoveryCodesAsync(user) != 0)
-            {
-                return BadRequest("Cannot generate new recovery codes as old ones have not been used.");
-            }
-
-            IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number);
-
-            TwoFactorRecoveryResponseApiModel response = new TwoFactorRecoveryResponseApiModel
-            {
-                RecoveryCodes = recoveryCodes.ToArray()
-            };
-
-            return Ok(response);
+            return NoContent();
         }
 
         #region Helpers
-
-        private static string GenerateAuthenticatorUri(string email, string authenticatorKey)
-        {
-            return string.Format
-            (
-                "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
-                HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
-                HttpUtility.UrlPathEncode(email),
-                authenticatorKey
-            );
-        }
-
+        
         private async Task<IActionResult> AuthenticateAsync
         (
             SignInResult signInResult,
@@ -591,7 +414,7 @@ namespace Store.WebAPI.Controllers
             if (GuidHelper.IsNullOrEmpty(clientId))
                 throw new ArgumentNullException(nameof(clientId));
 
-            AuthenticateGetApiModel authResponse = new AuthenticateGetApiModel
+            AuthenticateGetApiModel authResponse = new()
             {
                 UserId = user.Id,
                 Email = user.Email,
