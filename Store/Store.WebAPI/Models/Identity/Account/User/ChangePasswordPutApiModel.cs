@@ -4,7 +4,7 @@ using Store.WebAPI.Models.Extensions;
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class ChangePasswordPatchApiModel
+    public class ChangePasswordPutApiModel
     {
         public string OldPassword { get; set; }
 
@@ -15,9 +15,9 @@ namespace Store.WebAPI.Models.Identity
         public bool SendMailNotification { get; set; }
     }
 
-    public class ChangePasswordPatchApiModelValidator : AbstractValidator<ChangePasswordPatchApiModel>
+    public class ChangePasswordPutApiModelValidator : AbstractValidator<ChangePasswordPutApiModel>
     {
-        public ChangePasswordPatchApiModelValidator()
+        public ChangePasswordPutApiModelValidator()
         {
             RuleFor(changePassword => changePassword.OldPassword);
             RuleFor(changePassword => changePassword.NewPassword).NotEmpty().Password();

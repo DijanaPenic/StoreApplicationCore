@@ -4,14 +4,14 @@ using Store.WebAPI.Models.Extensions;
 
 namespace Store.WebAPI.Models.Identity
 {
-    public class SetPasswordPatchApiModel
+    public class SetPasswordPutApiModel
     {
         public string Password { get; set; }
     }
 
-    public class SetPasswordPatchApiModelValidator : AbstractValidator<SetPasswordPatchApiModel>
+    public class SetPasswordPutApiModelValidator : AbstractValidator<SetPasswordPutApiModel>
     {
-        public SetPasswordPatchApiModelValidator()
+        public SetPasswordPutApiModelValidator()
         {
             RuleFor(setPassword => setPassword.Password).NotEmpty().Password();
         }
