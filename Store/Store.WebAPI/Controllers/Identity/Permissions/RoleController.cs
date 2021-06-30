@@ -24,45 +24,49 @@ namespace Store.WebAPI.Controllers
     public class RoleController : ApplicationControllerBase
     {
         private readonly ApplicationRoleManager _roleManager;
+        private readonly ApplicationPermissionsManager _permissionManager;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
         public RoleController
         (
             ApplicationRoleManager roleManager,
+            ApplicationPermissionsManager permissionsManager,
             IMapper mapper,
             ILogger<RoleController> logger,
             IQueryUtilityFacade queryUtilityFacade
         ) : base(queryUtilityFacade)
         {
             _roleManager = roleManager;
+            _permissionManager = permissionsManager;
             _mapper = mapper;
             _logger = logger;
         }
-
-        /// <summary>Retrieves the role by identifier.</summary>
-        /// <param name="includeProperties">The include properties.</param>
-        /// <param name="roleId">The role identifier.</param>
+        
+        /// <summary>Creates a new role.</summary>
+        /// <param name="roleModel">The role model.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]
-        [Route("{roleId:guid}")]
-        [Produces("application/json")]
-        [SectionAuthorization(SectionType.Role, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromRoute] Guid roleId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
+        [HttpPost]
+        [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Create)]
+        public async Task<IActionResult> PostAsync([FromBody] RolePostApiModel roleModel)
         {
-            if (roleId == Guid.Empty)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Role Id cannot be empty.");
+                return BadRequest(ModelState);
             }
 
-            IRole role = await _roleManager.FindRoleByIdAsync(roleId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<RoleGetApiModel, IRole>(_mapper, includeProperties)));
+            IRole role = _mapper.Map<IRole>(roleModel);
 
-            if (role != null)
-                return Ok(_mapper.Map<RoleGetApiModel>(role));
+            IdentityResult roleResult = await _roleManager.CreateAsync(role);
 
-            return NotFound();
+            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
+
+            _logger.LogInformation("A new role has been created successfully.");
+
+            return Created();
         }
 
         /// <summary>Retrieves roles by specified search criteria.</summary>
@@ -98,32 +102,31 @@ namespace Store.WebAPI.Controllers
 
             return NoContent();
         }
-
-        /// <summary>Creates a new role.</summary>
-        /// <param name="roleModel">The role model.</param>
+        
+        /// <summary>Retrieves the role by identifier.</summary>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <param name="roleId">The role identifier.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpPost]
-        [Consumes("application/json")]
-        [SectionAuthorization(SectionType.Role, AccessType.Create)]
-        public async Task<IActionResult> PostAsync([FromBody] RolePostApiModel roleModel)
+        [HttpGet]
+        [Route("{roleId:guid}")]
+        [Produces("application/json")]
+        [SectionAuthorization(SectionType.Role, AccessType.Read)]
+        public async Task<IActionResult> GetAsync([FromRoute] Guid roleId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
-            if (!ModelState.IsValid)
+            if (roleId == Guid.Empty)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Role Id cannot be empty.");
             }
 
-            IRole role = _mapper.Map<IRole>(roleModel);
+            IRole role = await _roleManager.FindRoleByIdAsync(roleId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<RoleGetApiModel, IRole>(_mapper, includeProperties)));
+         if (role != null)
+                return Ok(_mapper.Map<RoleGetApiModel>(role));
 
-            IdentityResult roleResult = await _roleManager.CreateAsync(role);
+            return NotFound();
 
-            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
-
-            _logger.LogInformation("A new role has been created successfully.");
-
-            return Created();
-        }
+           }
 
         /// <summary>Updates the role.</summary>
         /// <param name="roleId">The role identifier.</param>
@@ -169,42 +172,6 @@ namespace Store.WebAPI.Controllers
             if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
             _logger.LogInformation("Role has been updated successfully.");
-
-            return Ok();
-        }
-
-        /// <summary>Deletes the role.</summary>
-        /// <param name="roleId">The role identifier.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpDelete]
-        [Route("{roleId:guid}")]
-        [SectionAuthorization(SectionType.Role, AccessType.Delete)]
-        public async Task<IActionResult> DeleteAsync([FromRoute] Guid roleId)
-        {
-            if (roleId == Guid.Empty)
-            {
-                return BadRequest("Role Id cannot be empty.");
-            }
-
-            IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
-            if (role == null)
-            {
-                return NotFound();
-            }
-
-            int userCount = await _roleManager.GetCountByRoleNameAsync(role);
-            if(userCount > 0)
-            {
-                return BadRequest($"Unable to delete role - role is associated with {userCount} user accounts.");
-            }
-
-            IdentityResult roleResult = await _roleManager.DeleteAsync(role);
-
-            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
-
-            _logger.LogInformation("Role has been deleted successfully.");
 
             return Ok();
         }
