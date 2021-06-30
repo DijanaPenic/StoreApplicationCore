@@ -34,6 +34,65 @@ namespace Store.WebAPI.Controllers
             _bookService = bookService;
             _mapper = mapper;
         }
+        
+        /// <summary>Creates a new book.</summary>
+        /// <param name="bookModel">The book model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Book, AccessType.Create)]
+        public async Task<IActionResult> PostAsync([FromBody] BookPostApiModel bookModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            IBook book = _mapper.Map<IBook>(bookModel);
+            ResponseStatus result = await _bookService.AddBookAsync(book);
+
+            return result switch
+            {
+                ResponseStatus.Success => Created(),
+                _ => InternalServerError()
+            };
+        }
+        
+        /// <summary>Retrieves books by specified search criteria.</summary>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <param name="searchString">The search string.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="sortOrder">The sort order.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [Produces("application/json")]
+        [SectionAuthorization(SectionType.Book, AccessType.Read)]
+        public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties, 
+            [FromQuery] string searchString = DefaultParameters.SearchString,
+            [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+            [FromQuery] int pageSize = DefaultParameters.PageSize,
+            [FromQuery] string sortOrder = DefaultParameters.SortOrder)
+        {
+            IPagedList<IBook> books = await _bookService.FindBooksAsync
+            (
+                filter: FilteringFactory.Create<IFilteringParameters>(searchString), 
+                paging: PagingFactory.Create(pageNumber, pageSize), 
+                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookGetApiModel, IBook>(_mapper, sortOrder)), 
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties))
+            );
+
+            if (books != null)
+            {
+                return Ok(_mapper.Map<PagedApiResponse<BookGetApiModel>>(books));
+            }
+
+            return NoContent();
+        }
 
         /// <summary>Retrieves the book by identifier.</summary>
         /// <param name="bookId">The book identifier.</param>
@@ -62,65 +121,6 @@ namespace Store.WebAPI.Controllers
                 return Ok(_mapper.Map<BookGetApiModel>(book)); 
 
             return NotFound();
-        }
-
-        /// <summary>Retrieves books by specified search criteria.</summary>
-        /// <param name="includeProperties">The include properties.</param>
-        /// <param name="searchString">The search string.</param>
-        /// <param name="pageNumber">The page number.</param>
-        /// <param name="pageSize">Size of the page.</param>
-        /// <param name="sortOrder">The sort order.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Produces("application/json")]
-        [SectionAuthorization(SectionType.Book, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties, 
-                                                  [FromQuery] string searchString = DefaultParameters.SearchString,
-                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber,
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize,
-                                                  [FromQuery] string sortOrder = DefaultParameters.SortOrder)
-        {
-            IPagedList<IBook> books = await _bookService.FindBooksAsync
-            (
-                filter: FilteringFactory.Create<IFilteringParameters>(searchString), 
-                paging: PagingFactory.Create(pageNumber, pageSize), 
-                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookGetApiModel, IBook>(_mapper, sortOrder)), 
-                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookGetApiModel, IBook>(_mapper, includeProperties))
-            );
-
-            if (books != null)
-            {
-                return Ok(_mapper.Map<PagedApiResponse<BookGetApiModel>>(books));
-            }
-
-            return NoContent();
-        }
-
-        /// <summary>Creates a new book.</summary>
-        /// <param name="bookModel">The book model.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPost]
-        [Consumes("application/json")]
-        [SectionAuthorization(SectionType.Book, AccessType.Create)]
-        public async Task<IActionResult> PostAsync([FromBody] BookPostApiModel bookModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            IBook book = _mapper.Map<IBook>(bookModel);
-            ResponseStatus result = await _bookService.AddBookAsync(book);
-
-            return result switch
-            {
-                ResponseStatus.Success => Created(),
-                _ => InternalServerError()
-            };
         }
 
         /// <summary>Updates the book.</summary>

@@ -45,8 +45,70 @@ namespace Store.WebAPI.Controllers
             _mapper = mapper;
             _cacheProvider = cacheManager.CacheProvider;
         }
+        
+        /// <summary>Creates a new bookstore.</summary>
+        /// <param name="bookstoreModel">The bookstore model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPost]
+        [Consumes("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Create)]
+        public async Task<IActionResult> PostAsync([FromBody] BookstorePostApiModel bookstoreModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        /// <summary>Retrieves the bookstore.</summary>
+            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
+            ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
+
+            switch (result)
+            {
+                case ResponseStatus.Success:
+                    _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
+                    return Created();
+                default:
+                    return InternalServerError();
+            }
+        }
+
+        /// <summary>Retrieves bookstores by specified search criteria.</summary>
+        /// <param name="includeProperties">The include properties.</param>
+        /// <param name="searchString">The search string.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="sortOrder">The sort order.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpGet]
+        [Produces("application/json")]
+        [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
+        public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties,
+            [FromQuery] string searchString = DefaultParameters.SearchString,
+            [FromQuery] int pageNumber = DefaultParameters.PageNumber,
+            [FromQuery] int pageSize = DefaultParameters.PageSize,
+            [FromQuery] string sortOrder = DefaultParameters.SortOrder)
+        {
+            IPagedList<BookstoreExtendedDto> bookstores = await _bookstoreService.FindExtendedBookstoresAsync
+            (
+                filter: FilteringFactory.Create<IFilteringParameters>(searchString),
+                paging: PagingFactory.Create(pageNumber, pageSize),
+                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, sortOrder)),
+                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, includeProperties))
+            );
+
+            if (bookstores != null)
+            {
+                return Ok(_mapper.Map<PagedApiResponse<BookstoreGetApiModel>>(bookstores));
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>Retrieves the bookstore by identifier.</summary>
         /// <param name="bookstoreId">The bookstore identifier.</param>
         /// <param name="includeProperties">The include properties.</param>
         /// <returns>
@@ -75,7 +137,7 @@ namespace Store.WebAPI.Controllers
             return NotFound();
         }
 
-        /// <summary>Retrieves books by specified search criteria.</summary>
+        /// <summary>Retrieves information about bookstore's books.</summary>
         /// <param name="bookstoreId">The bookstore identifier.</param>
         /// <param name="includeProperties">The include properties.</param>
         /// <param name="searchString">The search string.</param>
@@ -118,7 +180,7 @@ namespace Store.WebAPI.Controllers
             return NoContent();
         }
 
-        /// <summary>Retrieves all bookstore from cache or the database.</summary>
+        /// <summary>Retrieves all bookstores from cache or the database.</summary>
         /// <param name="includeProperties">The include properties.</param>
         /// <returns>
         ///   <br />
@@ -127,6 +189,7 @@ namespace Store.WebAPI.Controllers
         [Route("all")]
         [Produces("application/json")]
         [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
             Task<IEnumerable<BookstoreExtendedDto>> GetBookstoresFuncAsync()
@@ -160,69 +223,6 @@ namespace Store.WebAPI.Controllers
                 return Ok(_mapper.Map<IEnumerable<BookstoreGetApiModel>>(bookstores));
 
             return NoContent();
-        }
-
-        /// <summary>Retrieves bookstores by specified search criteria.</summary>
-        /// <param name="includeProperties">The include properties.</param>
-        /// <param name="searchString">The search string.</param>
-        /// <param name="pageNumber">The page number.</param>
-        /// <param name="pageSize">Size of the page.</param>
-        /// <param name="sortOrder">The sort order.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpGet]
-        [Produces("application/json")]
-        [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
-        public async Task<IActionResult> GetAsync([FromQuery] string includeProperties = DefaultParameters.IncludeProperties,
-                                                  [FromQuery] string searchString = DefaultParameters.SearchString,
-                                                  [FromQuery] int pageNumber = DefaultParameters.PageNumber,
-                                                  [FromQuery] int pageSize = DefaultParameters.PageSize,
-                                                  [FromQuery] string sortOrder = DefaultParameters.SortOrder)
-        {
-            IPagedList<BookstoreExtendedDto> bookstores = await _bookstoreService.FindExtendedBookstoresAsync
-            (
-                filter: FilteringFactory.Create<IFilteringParameters>(searchString),
-                paging: PagingFactory.Create(pageNumber, pageSize),
-                sorting: SortingFactory.Create(ModelMapperHelper.GetSortPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, sortOrder)),
-                options: OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<BookstoreGetApiModel, BookstoreExtendedDto>(_mapper, includeProperties))
-            );
-
-            if (bookstores != null)
-            {
-                return Ok(_mapper.Map<PagedApiResponse<BookstoreGetApiModel>>(bookstores));
-            }
-
-            return NoContent();
-        }
-
-
-        /// <summary>Creates a new bookstore.</summary>
-        /// <param name="bookstoreModel">The bookstore model.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        [HttpPost]
-        [Consumes("application/json")]
-        [SectionAuthorization(SectionType.Bookstore, AccessType.Create)]
-        public async Task<IActionResult> PostAsync([FromBody] BookstorePostApiModel bookstoreModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            IBookstore bookstore = _mapper.Map<IBookstore>(bookstoreModel);
-            ResponseStatus result = await _bookstoreService.InsertBookstoreAsync(bookstore);
-
-            switch (result)
-            {
-                case ResponseStatus.Success:
-                    _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
-                    return Created();
-                default:
-                    return InternalServerError();
-            }
         }
 
         /// <summary>Updates the bookstore.</summary>
@@ -267,7 +267,7 @@ namespace Store.WebAPI.Controllers
                     return InternalServerError();
             }
         }
-
+        
         /// <summary>Deletes the bookstore.</summary>
         /// <param name="bookstoreId">The bookstore identifier.</param>
         /// <returns>
