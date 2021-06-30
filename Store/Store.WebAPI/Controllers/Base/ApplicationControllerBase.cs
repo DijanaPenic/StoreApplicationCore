@@ -42,12 +42,13 @@ namespace Store.WebAPI.Controllers
 
         protected Guid GetCurrentUserClientId() => GetClientId(User);
 
-        protected static bool IsUser(Guid userId, ClaimsPrincipal claimsPrincipal) => GetUserId(claimsPrincipal) == userId;
+        protected static Guid GetUserId(ClaimsPrincipal claimsPrincipal) 
+            => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.Name)?.Value ?? string.Empty);
 
-        protected static Guid GetUserId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.Name)?.Value);
-
-        protected static Guid GetClientId(ClaimsPrincipal claimsPrincipal) => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value);
+        protected static Guid GetClientId(ClaimsPrincipal claimsPrincipal) 
+            => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value ?? string.Empty);
         
-        protected Uri GetAbsoluteUri(string relativeUrl) => new Uri($"{Request.Scheme}://{Request.Host}{relativeUrl}", UriKind.Absolute);
+        protected Uri GetAbsoluteUri(string relativeUrl) 
+            => new Uri($"{Request.Scheme}://{Request.Host}{relativeUrl}", UriKind.Absolute);
     }
 }

@@ -56,9 +56,9 @@ namespace Store.Services.Identity
             // Set user claims
             IList<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.NormalizedUserName),
-                new Claim(ClaimTypes.Name, user.Id.ToString()),
-                new Claim(ApplicationClaimTypes.ClientIdentifier, clientId.ToString())
+                new(ClaimTypes.NameIdentifier, user.NormalizedUserName),
+                new(ClaimTypes.Name, user.Id.ToString()),
+                new(ApplicationClaimTypes.ClientIdentifier, clientId.ToString())
             };
 
             // Add the AuthenticationMethod claim to the user so that we can find the provider the user used to sign in to the app.
@@ -77,8 +77,7 @@ namespace Store.Services.Identity
             // Issuer will be checked by the client (web application), and audience will be checked by the resource server (in this application: Web API). 
             byte[] secret = Encoding.ASCII.GetBytes(_jwtTokenConfig.Secret);
 
-            JwtSecurityToken jwtToken = new JwtSecurityToken
-            (
+            JwtSecurityToken jwtToken = new(
                 issuer: _jwtTokenConfig.Issuer,
                 audience: _jwtTokenConfig.Audience,
                 claims: claims,
@@ -163,7 +162,7 @@ namespace Store.Services.Identity
             return claimsPrincipal;
         }
 
-        public Task<(ClaimsPrincipal, JwtSecurityToken)> DecodeAccessTokenAsync(string token)
+        private Task<(ClaimsPrincipal, JwtSecurityToken)> DecodeAccessTokenAsync(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
