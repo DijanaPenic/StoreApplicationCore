@@ -130,13 +130,14 @@ namespace Store.WebAPI.Controllers
                 return Unauthorized($"User [{user.UserName}] is not approved.");
             }
 
+            // Retrieve client_id
             Guid clientId = GetCurrentUserClientId();
 
             // Attempt to sign in
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(clientId, user,
                 authenticateModel.Password, lockoutOnFailure: true);
 
-            return await AuthenticateAsync(signInResult, user, clientId);
+            return await AuthenticateAsync(signInResult, user);
         }
 
         // TODO - need to move to the web application (USE AuthenticationSchemeProvider)
@@ -219,7 +220,9 @@ namespace Store.WebAPI.Controllers
                     bypassTwoFactor: true
                 );
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.FoundExistingExternalLogin, externalLoginInfo.LoginProvider);
+                ExternalAuthResult externalAuthResult = new() { Step = ExternalAuthStep.FoundExistingExternalLogin, LoginProvider = externalLoginInfo.LoginProvider};
+
+                return await AuthenticateAsync(signInResult, user, externalAuthResult);
             }
 
             string userEmail = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
@@ -290,7 +293,9 @@ namespace Store.WebAPI.Controllers
                     bypassTwoFactor: true
                 );
 
-                return await AuthenticateAsync(signInResult, user, clientId, ExternalAuthStep.AddedNewExternalLogin, externalLoginInfo.LoginProvider);
+                ExternalAuthResult externalAuthResult = new() { Step = ExternalAuthStep.AddedNewExternalLogin, LoginProvider = externalLoginInfo.LoginProvider};
+                
+                return await AuthenticateAsync(signInResult, user, externalAuthResult);
             }
 
             _logger.LogInformation($"There is no user account registered with {userEmail} email.");
@@ -336,7 +341,7 @@ namespace Store.WebAPI.Controllers
                 signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(clientId, authenticateModel.Code, rememberClient: false);
             }
 
-            return await AuthenticateAsync(signInResult, user, clientId);
+            return await AuthenticateAsync(signInResult, user);
         }
 
         /// <summary>Attempts to authenticate user at the end of the account verification process (account verification: phone number and/or email verification).</summary>
@@ -365,7 +370,7 @@ namespace Store.WebAPI.Controllers
             Guid clientId = Guid.Parse(accountVerificationInfo.ClientId);
             SignInResult signInResult = await _signInManager.AccountVerificationSignInAsync(clientId);
 
-            return await AuthenticateAsync(signInResult, user, clientId);
+            return await AuthenticateAsync(signInResult, user);
         }
         
         /// <summary>Deletes refresh tokens that have expired.</summary>
@@ -396,14 +401,7 @@ namespace Store.WebAPI.Controllers
 
         #region Helpers
         
-        private async Task<IActionResult> AuthenticateAsync
-        (
-            SignInResult signInResult,
-            IUser user,
-            Guid clientId,
-            ExternalAuthStep externalAuthStep = ExternalAuthStep.None,
-            string externalLoginProvider = null
-        )
+        private async Task<IActionResult> AuthenticateAsync(SignInResult signInResult, IUser user, ExternalAuthResult externalAuthResult = null)
         {
             if (signInResult == null)
                 throw new ArgumentNullException(nameof(signInResult));
@@ -411,16 +409,13 @@ namespace Store.WebAPI.Controllers
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (GuidHelper.IsNullOrEmpty(clientId))
-                throw new ArgumentNullException(nameof(clientId));
-
             AuthenticateGetApiModel authResponse = new()
             {
                 UserId = user.Id,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 VerificationStep = VerificationStep.None,
-                ExternalAuthStep = externalAuthStep
+                ExternalAuthStep = externalAuthResult?.Step ?? ExternalAuthStep.None
             };
 
             if (!signInResult.Succeeded)
@@ -450,14 +445,21 @@ namespace Store.WebAPI.Controllers
             }
 
             _logger.LogInformation($"User [{user.UserName}] has logged in the system.");
-
-            IJwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, clientId, externalLoginProvider);
+            
+            IJwtAuthResult jwtResult = await _authManager.GenerateTokensAsync(user.Id, GetCurrentUserClientId(), externalAuthResult?.LoginProvider);
 
             authResponse.Roles = jwtResult.Roles.ToArray();
             authResponse.AccessToken = jwtResult.AccessToken;
             authResponse.RefreshToken = jwtResult.RefreshToken;
 
             return Ok(authResponse);
+        }
+
+        private class ExternalAuthResult
+        {
+            public ExternalAuthStep Step { get; init; }
+
+            public string LoginProvider { get; init; }
         }
 
         #endregion
