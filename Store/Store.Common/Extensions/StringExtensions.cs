@@ -8,12 +8,6 @@ namespace Store.Common.Extensions
 {
     public static class StringExtensions
     {
-
-        public static string GetCommaSeparated(this string[] input)
-        {
-            return string.Join(',', input);
-        }
-
         public static string GetDigits(this string input)
         {
             return new string(input.Where(c => char.IsDigit(c)).ToArray());
@@ -50,16 +44,6 @@ namespace Store.Common.Extensions
             byte[] decodedBytes = Convert.FromBase64String(value);
 
             return Encoding.UTF8.GetString(decodedBytes);
-        }
-
-        public static string FirstCharToUpper(this string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return value;
-            }
-
-            return value.First().ToString().ToUpper() + value[1..];
         }
     }
 }
