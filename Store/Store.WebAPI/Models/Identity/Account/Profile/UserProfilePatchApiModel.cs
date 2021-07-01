@@ -17,10 +17,10 @@ namespace Store.WebAPI.Models.Identity
     {
         public UserProfilePatchApiModelValidator()
         {
-            RuleFor(userProfile => userProfile.Email).NotEmpty().EmailAddress();
-            RuleFor(userProfile => userProfile.ConfirmationUrl).NotEmpty();
-            RuleFor(userProfile => userProfile.FirstName).NotEmpty().MaximumLength(50);
-            RuleFor(userProfile => userProfile.LastName).NotEmpty().MaximumLength(50);
+            RuleFor(up => up.Email).NotEmpty().EmailAddress();
+            RuleFor(up => up.ConfirmationUrl).NotEmpty();
+            RuleFor(up => up.FirstName).NotEmpty().MaximumLength(50);
+            RuleFor(up => up.LastName).NotEmpty().MaximumLength(50);
         }
     }
 }

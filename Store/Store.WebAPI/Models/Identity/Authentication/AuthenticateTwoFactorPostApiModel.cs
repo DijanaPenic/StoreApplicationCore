@@ -13,7 +13,7 @@ namespace Store.WebAPI.Models.Identity
     {
         public AuthenticateTwoFactorPostApiModelValidator()
         {
-            RuleFor(authTwFactor => authTwFactor.Code).NotEmpty().Length(6, 6);
+            RuleFor(atf => atf.Code).NotEmpty().Length(6, 6);
         }
     }
 }

@@ -24,16 +24,16 @@ namespace Store.WebAPI.Models.Identity
     {
         public AccountVerificationPostApiModelValidator()
         { 
-            RuleFor(accountVerification => accountVerification.Type).NotEmpty();
+            RuleFor(av => av.Type).NotEmpty();
             
-            When(accountVerification => accountVerification.Type == AccountVerificationType.PhoneNumber, () =>
+            When(av => av.Type == AccountVerificationType.PhoneNumber, () =>
             {
-                RuleFor(accountVerification => accountVerification.IsoCountryCode).NotEmpty();
-                RuleFor(accountVerification => accountVerification.CountryCodeNumber).NotEmpty();
-                RuleFor(accountVerification => accountVerification.PhoneNumber).NotEmpty().PhoneNumber();
+                RuleFor(av => av.IsoCountryCode).NotEmpty();
+                RuleFor(av => av.CountryCodeNumber).NotEmpty();
+                RuleFor(av => av.PhoneNumber).NotEmpty().PhoneNumber();
             }).Otherwise(() =>
             {
-                RuleFor(accountVerification => accountVerification.ReturnUrl).NotEmpty();
+                RuleFor(av => av.ReturnUrl).NotEmpty();
             });
         }
     }

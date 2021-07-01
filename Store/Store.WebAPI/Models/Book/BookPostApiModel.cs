@@ -16,9 +16,9 @@ namespace Store.WebAPI.Models.Book
     {
         public BookPostApiModelValidator()
         {
-            RuleFor(book => book.Name).NotEmpty().MaximumLength(50);
-            RuleFor(book => book.Author).NotEmpty().MaximumLength(50);
-            RuleFor(book => book.BookstoreId).NotEmpty();
+            RuleFor(b => b.Name).NotEmpty().MaximumLength(50);
+            RuleFor(b => b.Author).NotEmpty().MaximumLength(50);
+            RuleFor(b => b.BookstoreId).NotEmpty();
         }
     }
 }

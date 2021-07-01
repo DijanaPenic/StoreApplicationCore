@@ -19,12 +19,12 @@ namespace Store.WebAPI.Models.Identity
     {
         public ChangePasswordPutApiModelValidator()
         {
-            RuleFor(changePassword => changePassword.OldPassword);
-            RuleFor(changePassword => changePassword.NewPassword).NotEmpty().Password();
+            RuleFor(cp => cp.OldPassword);
+            RuleFor(cp => cp.NewPassword).NotEmpty().Password();
 
-            RuleFor(changePassword => changePassword.ConfirmPassword)
+            RuleFor(cp => cp.ConfirmPassword)
                 .NotEmpty()
-                .Equal(changePassword => changePassword.NewPassword).WithMessage("The new password and confirmation password must match.");
+                .Equal(cp => cp.NewPassword).WithMessage("The new password and confirmation password must match.");
         }
     }
 }

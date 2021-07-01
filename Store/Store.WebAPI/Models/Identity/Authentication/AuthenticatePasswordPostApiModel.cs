@@ -13,8 +13,8 @@ namespace Store.WebAPI.Models.Identity
     {
         public AuthenticatePasswordPostApiModelValidator()
         {
-            RuleFor(authPassword => authPassword.UserName).NotEmpty();
-            RuleFor(authPassword => authPassword.Password).NotEmpty();
+            RuleFor(ap => ap.UserName).NotEmpty();
+            RuleFor(ap => ap.Password).NotEmpty();
         }
     }
 }

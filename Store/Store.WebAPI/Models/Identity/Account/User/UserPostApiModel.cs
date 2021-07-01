@@ -35,16 +35,16 @@ namespace Store.WebAPI.Models.Identity
     {
         public UserPostApiModelValidator()
         {
-            RuleFor(user => user.UserName).NotEmpty();
-            RuleFor(user => user.Email).NotEmpty().EmailAddress();
-            RuleFor(user => user.PhoneNumber).PhoneNumber();
-            RuleFor(user => user.FirstName).NotEmpty().MaximumLength(50);
-            RuleFor(user => user.LastName).NotEmpty().MaximumLength(50);
-            RuleFor(user => user.Password).NotEmpty().Password();
+            RuleFor(u => u.UserName).NotEmpty();
+            RuleFor(u => u.Email).NotEmpty().EmailAddress();
+            RuleFor(u => u.PhoneNumber).PhoneNumber();
+            RuleFor(u => u.FirstName).NotEmpty().MaximumLength(50);
+            RuleFor(u => u.LastName).NotEmpty().MaximumLength(50);
+            RuleFor(u => u.Password).NotEmpty().Password();
 
-            RuleFor(user => user.ConfirmPassword)
+            RuleFor(u => u.ConfirmPassword)
                 .NotEmpty()
-                .Equal(user => user.Password).WithMessage("Passwords must match.");
+                .Equal(u => u.Password).WithMessage("Passwords must match.");
         }
     }
 }

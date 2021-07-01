@@ -13,8 +13,8 @@ namespace Store.WebAPI.Models.Bookstore
     {
         public BookstorePostApiModelValidator()
         {
-            RuleFor(bookstore => bookstore.Name).NotEmpty().MaximumLength(50);
-            RuleFor(bookstore => bookstore.Location).NotEmpty().MaximumLength(50);
+            RuleFor(bs => bs.Name).NotEmpty().MaximumLength(50);
+            RuleFor(bs => bs.Location).NotEmpty().MaximumLength(50);
         }
     }
 }

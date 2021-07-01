@@ -20,14 +20,14 @@ namespace Store.WebAPI.Models.Identity
     {
         public PasswordRecoveryPutApiModelValidator()
         {
-            RuleFor(passwordRecovery => passwordRecovery.NewPassword).NotEmpty().Password();
+            RuleFor(pr => pr.NewPassword).NotEmpty().Password();
 
-            RuleFor(passwordRecovery => passwordRecovery.ConfirmNewPassword)
+            RuleFor(pr => pr.ConfirmNewPassword)
                 .NotEmpty()
-                .Equal(passwordRecovery => passwordRecovery.NewPassword).WithMessage("The new password and confirmation password must match.");
+                .Equal(pr => pr.NewPassword).WithMessage("The new password and confirmation password must match.");
 
-            RuleFor(passwordRecovery => passwordRecovery.PasswordRecoveryToken).NotEmpty();
-            RuleFor(passwordRecovery => passwordRecovery.UserId).NotEmpty();
+            RuleFor(pr => pr.PasswordRecoveryToken).NotEmpty();
+            RuleFor(pr => pr.UserId).NotEmpty();
         }
     }
 }

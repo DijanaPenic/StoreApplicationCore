@@ -17,8 +17,8 @@ namespace Store.WebAPI.Models.Identity
     {
         public RegisterExternalPostApiModelValidator()
         {
-            RuleFor(registerExternal => registerExternal.AssociateExistingAccount).NotEmpty();
-            RuleFor(registerExternal => registerExternal.ConfirmationUrl).NotEmpty();
+            RuleFor(re => re.AssociateExistingAccount).NotEmpty();
+            RuleFor(re => re.ConfirmationUrl).NotEmpty();
         }
     }
 }

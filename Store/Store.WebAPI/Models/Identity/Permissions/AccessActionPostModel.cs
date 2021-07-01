@@ -15,7 +15,7 @@ namespace Store.WebAPI.Models.Identity
     {
         public AccessActionModelValidator()
         {
-            RuleFor(action => action.Type).NotEmpty();
+            RuleFor(a => a.Type).NotEmpty();
         }
     }
 }

@@ -26,17 +26,17 @@ namespace Store.WebAPI.Models.Identity
     {
         public RegisterPostApiModelValidator(IConfiguration configuration) : base(configuration)
         {
-            RuleFor(register => register.UserName).NotEmpty();
-            RuleFor(register => register.Email).NotEmpty().EmailAddress();
-            RuleFor(register => register.FirstName).NotEmpty().MaximumLength(50);
-            RuleFor(register => register.LastName).NotEmpty().MaximumLength(50);
-            RuleFor(register => register.Password).NotEmpty().Password();
+            RuleFor(r => r.UserName).NotEmpty();
+            RuleFor(r => r.Email).NotEmpty().EmailAddress();
+            RuleFor(r => r.FirstName).NotEmpty().MaximumLength(50);
+            RuleFor(r => r.LastName).NotEmpty().MaximumLength(50);
+            RuleFor(r => r.Password).NotEmpty().Password();
         
-            RuleFor(register => register.ConfirmPassword)
+            RuleFor(r => r.ConfirmPassword)
                 .NotEmpty()
-                .Equal(register => register.Password).WithMessage("The new password and confirmation password must match.");
+                .Equal(r => r.Password).WithMessage("The new password and confirmation password must match.");
             
-            RuleFor(register => register.ActivationUrl).NotEmpty();
+            RuleFor(r => r.ActivationUrl).NotEmpty();
         }
     }
 }

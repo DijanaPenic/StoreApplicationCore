@@ -14,8 +14,8 @@ namespace Store.WebAPI.Models.Identity
     {
         public PasswordRecoveryPostApiModelValidator(IConfiguration configuration) : base(configuration)
         {
-            RuleFor(passwordRecovery => passwordRecovery.Email).NotEmpty().EmailAddress();
-            RuleFor(passwordRecovery => passwordRecovery.ConfirmationUrl).NotEmpty();
+            RuleFor(pr => pr.Email).NotEmpty().EmailAddress();
+            RuleFor(pr => pr.ConfirmationUrl).NotEmpty();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Store.WebAPI.Models.Identity
     {
         public SetPasswordPutApiModelValidator()
         {
-            RuleFor(setPassword => setPassword.Password).NotEmpty().Password();
+            RuleFor(sp => sp.Password).NotEmpty().Password();
         }
     }
 }

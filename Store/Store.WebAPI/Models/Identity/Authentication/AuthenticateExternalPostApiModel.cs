@@ -11,7 +11,7 @@ namespace Store.WebAPI.Models.Identity
     {
         public AuthenticateExternalPostApiModelValidator()
         {
-            RuleFor(authExternal => authExternal.ConfirmationUrl).NotEmpty();
+            RuleFor(ae => ae.ConfirmationUrl).NotEmpty();
         }
     }
 }

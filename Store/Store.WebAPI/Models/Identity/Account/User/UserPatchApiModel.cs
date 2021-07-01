@@ -27,10 +27,10 @@ namespace Store.WebAPI.Models.Identity
     {
         public UserPatchApiModelValidator()
         {
-            RuleFor(user => user.Email).NotEmpty().EmailAddress();
-            RuleFor(user => user.PhoneNumber).PhoneNumber();
-            RuleFor(user => user.FirstName).NotEmpty().MaximumLength(50);
-            RuleFor(user => user.LastName).NotEmpty().MaximumLength(50);
+            RuleFor(u => u.Email).NotEmpty().EmailAddress();
+            RuleFor(u => u.PhoneNumber).PhoneNumber();
+            RuleFor(u => u.FirstName).NotEmpty().MaximumLength(50);
+            RuleFor(u => u.LastName).NotEmpty().MaximumLength(50);
         }
     }
 }

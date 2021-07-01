@@ -13,7 +13,7 @@ namespace Store.WebAPI.Models.Identity
     {
         public RolePatchApiModelValidator()
         {
-            RuleFor(role => role.Name).NotEmpty();
+            RuleFor(r => r.Name).NotEmpty();
         }
     }
 }

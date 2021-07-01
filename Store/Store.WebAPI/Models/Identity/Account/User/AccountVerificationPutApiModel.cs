@@ -18,12 +18,12 @@ namespace Store.WebAPI.Models.Identity
     {
         public AccountVerificationPutApiModelValidator()
         {
-            RuleFor(accountVerification => accountVerification.Type).NotEmpty();
-            RuleFor(accountVerification => accountVerification.Token).NotEmpty();
+            RuleFor(av => av.Type).NotEmpty();
+            RuleFor(av => av.Token).NotEmpty();
             
-            When(accountVerification => accountVerification.Type == AccountVerificationType.PhoneNumber, () =>
+            When(av => av.Type == AccountVerificationType.PhoneNumber, () =>
             {
-                RuleFor(accountVerification => accountVerification.PhoneNumber).NotEmpty().PhoneNumber();
+                RuleFor(av => av.PhoneNumber).NotEmpty().PhoneNumber();
             });
         }
     }
