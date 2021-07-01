@@ -5,21 +5,22 @@ namespace Store.WebAPI.Models.Extensions
 {
     public static class RuleBuilderExtensions
     {
-        public static IRuleBuilder<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder)
+        public static void Password<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
-            return ruleBuilder
+            ruleBuilder
                 .Length(8, 100)
-                .Matches("[A-Z]").WithMessage("Password must contain a upper case ASCII character.")
-                .Matches("[a-z]").WithMessage("Password must contain a lower case ASCII character.")
-                .Matches("[0-9]").WithMessage("Password must contain a digit.")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain a non-alphanumeric character.");
+                .Matches("[A-Z]").WithMessage("{PropertyName} must contain a upper case ASCII character.")
+                .Matches("[a-z]").WithMessage("{PropertyName} must contain a lower case ASCII character.")
+                .Matches("[0-9]").WithMessage("{PropertyName} must contain a digit.")
+                .Matches("[^a-zA-Z0-9]").WithMessage("{PropertyName} must contain a non-alphanumeric character.");
         }
 
-        public static IRuleBuilder<T, string> PhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
+        public static void PhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
-            return ruleBuilder
+            ruleBuilder
                 .Matches(@"^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$")
-                .WithMessage("Phone Number is not a valid phone number.");
+                .WithMessage("{PropertyName} is not a valid phone number.");
+        }
         
         public static void Base64Encoded<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
