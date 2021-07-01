@@ -94,20 +94,20 @@ namespace Store.WebAPI.Controllers
 
             return Ok(GetAuthenticatorKeyResponse(user.Email, authenticatorKey));
         }
-        
+
         /// <summary>
-        /// Generates new two-factor recovery codes for the user. New recovery codes can be issued only if there are no recovery codes in the system for the user.
+        /// Creates or renews user's two-factor recovery codes.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="number">The number.</param>
         /// <returns>
         ///   <br />
         /// </returns>
-        [HttpGet]
+        [HttpPut]
         [Authorize]
         [Route("{userId:guid}/two-factor/recovery-codes")]
         [Produces("application/json")]
-        public async Task<IActionResult> GenerateNewRecoveryCodesAsync([FromRoute] Guid userId, [FromQuery] int number)
+        public async Task<IActionResult> AddOrUpdateRecoveryCodesAsync([FromRoute] Guid userId, [FromQuery] int number)
         {
             if (userId == Guid.Empty)
             {
@@ -126,13 +126,7 @@ namespace Store.WebAPI.Controllers
                 return NotFound();
             }
 
-            if (await _userManager.CountRecoveryCodesAsync(user) != 0)
-            {
-                return BadRequest("Cannot generate new recovery codes as old ones have not been used.");
-            }
-
             IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number);
-
             TwoFactorRecoveryResponseApiModel response = new()
             {
                 RecoveryCodes = recoveryCodes.ToArray()
