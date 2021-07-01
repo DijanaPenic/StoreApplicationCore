@@ -296,7 +296,7 @@ namespace Store.Services.Identity
             string userId = await UserManager.GetUserIdAsync(user);
             AuthenticateResult result = await Context.AuthenticateAsync(IdentityConstants.TwoFactorRememberMeScheme);
 
-            return (result?.Principal != null && result.Principal.FindFirstValue(ClaimTypes.Name) == userId);
+            return (result?.Principal != null && result.Principal.FindFirstValue(ClaimTypes.NameIdentifier) == userId);
         }
 
         /// <summary>
@@ -632,7 +632,7 @@ namespace Store.Services.Identity
         {
             ClaimsIdentity identity = new ClaimsIdentity(IdentityConstants.TwoFactorUserIdScheme);
 
-            identity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
             identity.AddClaim(new Claim(ApplicationClaimTypes.ClientIdentifier, clientId));
 
             if (loginProvider != null)
@@ -647,7 +647,7 @@ namespace Store.Services.Identity
         {
             string userId = await UserManager.GetUserIdAsync(user);
             ClaimsIdentity rememberBrowserIdentity = new ClaimsIdentity(IdentityConstants.TwoFactorRememberMeScheme);
-            rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            rememberBrowserIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
 
             if (UserManager.SupportsUserSecurityStamp)
             {
@@ -699,7 +699,7 @@ namespace Store.Services.Identity
             {
                 return new TwoFactorAuthenticationInfo
                 {
-                    UserId = result.Principal.FindFirstValue(ClaimTypes.Name),
+                    UserId = result.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
                     LoginProvider = result.Principal.FindFirstValue(ClaimTypes.AuthenticationMethod),
                     ClientId = result.Principal.FindFirstValue(ApplicationClaimTypes.ClientIdentifier)
                 };
@@ -838,7 +838,7 @@ namespace Store.Services.Identity
             {
                 return new AccountVerificationInfo
                 {
-                    UserId = result.Principal.FindFirstValue(ClaimTypes.Name),
+                    UserId = result.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
                     ClientId = result.Principal.FindFirstValue(ApplicationClaimTypes.ClientIdentifier)
                 };
             }
@@ -848,8 +848,8 @@ namespace Store.Services.Identity
 
         private static ClaimsPrincipal StoreAccountVerificationInfo(string clientId, string userId)
         {
-            ClaimsIdentity identity = new ClaimsIdentity(ApplicationIdentityConstants.AccountVerificationScheme);
-            identity.AddClaim(new Claim(ClaimTypes.Name, userId));
+            ClaimsIdentity identity = new(ApplicationIdentityConstants.AccountVerificationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
             identity.AddClaim(new Claim(ApplicationClaimTypes.ClientIdentifier, clientId));
 
             return new ClaimsPrincipal(identity);

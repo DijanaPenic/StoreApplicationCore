@@ -43,7 +43,7 @@ namespace Store.WebAPI.Controllers
         protected Guid GetCurrentUserClientId() => GetClientId(User);
 
         protected static Guid GetUserId(ClaimsPrincipal claimsPrincipal) 
-            => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.Name)?.Value ?? string.Empty);
+            => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
 
         protected static Guid GetClientId(ClaimsPrincipal claimsPrincipal) 
             => Guid.Parse(claimsPrincipal.Claims.FirstOrDefault(uc => uc.Type == ApplicationClaimTypes.ClientIdentifier)?.Value ?? string.Empty);

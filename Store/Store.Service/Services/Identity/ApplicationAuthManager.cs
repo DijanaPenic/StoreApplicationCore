@@ -56,8 +56,8 @@ namespace Store.Services.Identity
             // Set user claims
             IList<Claim> claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.NormalizedUserName),
-                new(ClaimTypes.Name, user.Id.ToString()),
+                new(ClaimTypes.Name, user.NormalizedUserName),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ApplicationClaimTypes.ClientIdentifier, clientId.ToString())
             };
 
