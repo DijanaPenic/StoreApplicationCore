@@ -44,11 +44,7 @@ namespace Store.Common.Helpers
 
                 if (!string.IsNullOrEmpty(srcProperty))
                 {
-                    result.Add(@$"
-                                {((!string.IsNullOrWhiteSpace(srcProperty)) ? srcProperty : sortFragments[0])}
-                                {SortingParameters.SortingParametersSeparator}
-                                {sortFragments[1]}"
-                    );
+                    result.Add($"{((!string.IsNullOrWhiteSpace(srcProperty)) ? srcProperty : sortFragments[0])}{SortingParameters.SortingParametersSeparator}{sortFragments[1]}");
                 }
             }
 
