@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
 
 using Store.Common.Helpers;
+using Store.Common.Extensions;
 using Store.Services.Identity;
 using Store.Service.Constants;
 
@@ -50,13 +51,13 @@ namespace Store.WebAPI.Infrastructure.Authentication.Handlers
                 return AuthenticateResult.Fail("Authorization header not formatted properly.");
             }
             
-            string base64Value = authHeaderRegex.Replace(authorizationHeader, "$1");
-            if (!IsBase64String(base64Value))
+            string headerValue = authHeaderRegex.Replace(authorizationHeader, "$1");
+            if (!headerValue.IsBase64String())
             {
                 return AuthenticateResult.Fail("Authorization header not formatted properly.");
             }
 
-            string authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(base64Value)); 
+            string authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(headerValue)); 
             string[] authSplit = authBase64.Split(':', 2);
             string authClientId = authSplit[0];
             string authClientSecret = authSplit.Length > 1 ? authSplit[1] : string.Empty;
@@ -78,13 +79,6 @@ namespace Store.WebAPI.Infrastructure.Authentication.Handlers
             ClaimsPrincipal claimsPrincipal = new(identity);
 
             return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name));
-        }
-        
-        private static bool IsBase64String(string value)
-        {
-            Span<byte> buffer = new(new byte[value.Length]);
-            
-            return Convert.TryFromBase64String(value, buffer, out int bytesParsed);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Store.WebAPI.Models.Identity
                 .NotEmpty()
                 .Equal(pr => pr.NewPassword).WithMessage("The new password and confirmation password must match.");
 
-            RuleFor(pr => pr.PasswordRecoveryToken).NotEmpty();
+            RuleFor(pr => pr.PasswordRecoveryToken).NotEmpty().Base64Encoded();
             RuleFor(pr => pr.UserId).NotEmpty();
         }
     }

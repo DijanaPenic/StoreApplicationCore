@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Store.Common.Extensions;
 
 namespace Store.WebAPI.Models.Extensions
 {
@@ -19,6 +20,12 @@ namespace Store.WebAPI.Models.Extensions
             return ruleBuilder
                 .Matches(@"^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$")
                 .WithMessage("Phone Number is not a valid phone number.");
+        
+        public static void Base64Encoded<T>(this IRuleBuilder<T, string> ruleBuilder)
+        {
+            ruleBuilder
+                .Must(v => v.IsBase64String())
+                .WithMessage("{PropertyName} must be base64 encoded value.");
         }
     }
 }

@@ -108,9 +108,9 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("User Id cannot be empty.");
             }
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(token) || !token.IsBase64String())
             {
-                return BadRequest("Token is required.");
+                return BadRequest("Provided token is not in valid format.");
             }
 
             IUser user = await _userManager.FindByIdAsync(userId.ToString());

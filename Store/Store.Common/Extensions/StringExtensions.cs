@@ -10,7 +10,7 @@ namespace Store.Common.Extensions
     {
         public static string GetDigits(this string input)
         {
-            return new string(input.Where(c => char.IsDigit(c)).ToArray());
+            return new string(input.Where(char.IsDigit).ToArray());
         }
 
         public static string ToSnakeCase(this string input)
@@ -44,6 +44,13 @@ namespace Store.Common.Extensions
             byte[] decodedBytes = Convert.FromBase64String(value);
 
             return Encoding.UTF8.GetString(decodedBytes);
+        }
+        
+        public static bool IsBase64String(this string value)
+        {
+            Span<byte> buffer = new(new byte[value.Length]);
+            
+            return Convert.TryFromBase64String(value, buffer, out int _);
         }
     }
 }

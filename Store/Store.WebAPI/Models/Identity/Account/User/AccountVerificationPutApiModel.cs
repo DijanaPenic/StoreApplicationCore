@@ -19,11 +19,14 @@ namespace Store.WebAPI.Models.Identity
         public AccountVerificationPutApiModelValidator()
         {
             RuleFor(av => av.Type).NotEmpty();
-            RuleFor(av => av.Token).NotEmpty();
-            
+       
             When(av => av.Type == AccountVerificationType.PhoneNumber, () =>
             {
                 RuleFor(av => av.PhoneNumber).NotEmpty().PhoneNumber();
+                RuleFor(av => av.Token).NotEmpty();
+            }).Otherwise
+            (() => {
+                RuleFor(av => av.Token).NotEmpty().Base64Encoded();
             });
         }
     }

@@ -85,6 +85,11 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> RenewTokensAsync([FromQuery] string refreshToken)
         {
+            if (!refreshToken.IsBase64String())
+            {
+                return BadRequest("Provided token is not in valid format.");
+            }
+            
             try
             {
                 // Generate new tokens
