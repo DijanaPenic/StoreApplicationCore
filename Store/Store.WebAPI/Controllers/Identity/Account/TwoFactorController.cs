@@ -17,7 +17,7 @@ namespace Store.WebAPI.Controllers
 {
     public partial class UserController
     {
-        /// <summary>Gets the authenticator key for the user. Authenticator key will be retrieved from the database or created (if none is found).</summary>
+        /// <summary>Retrieves the user's authenticator key.</summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>
         ///   <br />
@@ -42,42 +42,57 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return BadRequest("User cannot be found.");
             }
 
             string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
-            if (string.IsNullOrEmpty(authenticatorKey))
+            if (!string.IsNullOrEmpty(authenticatorKey))
             {
-                await _userManager.ResetAuthenticatorKeyAsync(user); // This will set a new AuthenticatorKey
-
-                authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user); // Now we can retrieve the new key
-                if (string.IsNullOrEmpty(authenticatorKey))
-                {
-                    return InternalServerError();
-                }
-
-                _logger.LogInformation("A new authenticator key is generated.");
+                return Ok(GetAuthenticatorKeyResponse(user.Email, authenticatorKey));
             }
-            else
+
+            return NotFound();
+        }
+
+        /// <summary>Creates or renews the user's authentication key.</summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        [HttpPut]
+        [Authorize]
+        [Route("{userId:guid}/two-factor/authenticator")]
+        [Produces("application/json")]
+        public async Task<IActionResult> AddOrUpdateUserAuthenticatorKeyAsync([FromRoute] Guid userId)
+        {
+            if (userId == Guid.Empty)
             {
-                _logger.LogInformation("The existing authenticator key is retrieved from the database.");
+                return BadRequest("User Id cannot be empty.");
+            }
+
+            bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
+            if (!hasPermissions)
+            {
+                return Forbid();
+            }
+
+            IUser user = await _userManager.FindUserByKeyAsync(userId);
+            if (user == null)
+            {
+                return BadRequest("User cannot be found.");
             }
             
-            string authenticatorUri = string.Format
-            (
-                "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
-                HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
-                HttpUtility.UrlPathEncode(user.Email),
-                authenticatorKey
-            );
+            await _userManager.ResetAuthenticatorKeyAsync(user); // This will set a new AuthenticatorKey
 
-            AuthenticatorKeyGetApiModel authenticatorDetailsResponse = new AuthenticatorKeyGetApiModel
+            string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user); // Now we can retrieve the new key
+            if (string.IsNullOrEmpty(authenticatorKey))
             {
-                SharedKey = authenticatorKey,
-                AuthenticatorUri = authenticatorUri
-            };
+                return InternalServerError();
+            }
 
-            return Ok(authenticatorDetailsResponse);
+            _logger.LogInformation("A new authenticator key is generated.");
+
+            return Ok(GetAuthenticatorKeyResponse(user.Email, authenticatorKey));
         }
         
         /// <summary>
@@ -224,6 +239,25 @@ namespace Store.WebAPI.Controllers
             _logger.LogInformation("Two-factor authentication is disabled for the user.");
 
             return result.Succeeded ? Ok() : BadRequest(result.Errors);
+        }
+        
+        private AuthenticatorKeyGetApiModel GetAuthenticatorKeyResponse(string email, string authenticatorKey)
+        {
+            string authenticatorUri = string.Format
+            (
+                "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
+                HttpUtility.UrlPathEncode("ASP.NET Core Identity"),
+                HttpUtility.UrlPathEncode(email),
+                authenticatorKey
+            );
+
+            AuthenticatorKeyGetApiModel authKeyResponse = new()
+            {
+                SharedKey = authenticatorKey,
+                AuthenticatorUri = authenticatorUri
+            };
+
+            return authKeyResponse;
         }
     }
 }
