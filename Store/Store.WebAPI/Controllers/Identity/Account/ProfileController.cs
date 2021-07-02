@@ -42,7 +42,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IList<UserLoginInfo> logins = await _userManager.FindLoginsAsync(user, true);
@@ -92,7 +92,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             if (user.Email != userProfileModel.Email) user.EmailConfirmed = false;

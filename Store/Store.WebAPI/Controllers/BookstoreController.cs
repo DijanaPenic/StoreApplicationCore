@@ -134,7 +134,7 @@ namespace Store.WebAPI.Controllers
             if (bookstore != null)
                 return Ok(_mapper.Map<BookstoreGetApiModel>(bookstore));
 
-            return NotFound();
+            return NotFound("Bookstore cannot be found.");
         }
 
         /// <summary>Retrieves information about bookstore's books.</summary>
@@ -249,7 +249,7 @@ namespace Store.WebAPI.Controllers
             IBookstore bookstore = await _bookstoreService.FindBookstoreByKeyAsync(bookstoreId);
             if (bookstore == null)
             {
-                return NotFound();
+                return NotFound("Bookstore cannot be found.");
             }
 
             _mapper.Map(bookstoreModel, bookstore);
@@ -258,8 +258,6 @@ namespace Store.WebAPI.Controllers
 
             switch (result)
             {
-                case ResponseStatus.NotFound:
-                    return NotFound();
                 case ResponseStatus.Success:
                     _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
                     return NoContent();
@@ -288,7 +286,7 @@ namespace Store.WebAPI.Controllers
             switch (result)
             {
                 case ResponseStatus.NotFound:
-                    return NotFound();
+                    return NotFound("Bookstore cannot be found.");
                 case ResponseStatus.Success:
                     _cacheProvider.Remove(CacheParameters.Keys.AllBookstores, CacheParameters.Groups.Bookstores);
                     return NoContent();

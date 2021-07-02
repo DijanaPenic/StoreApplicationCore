@@ -121,12 +121,11 @@ namespace Store.WebAPI.Controllers
             }
 
             IRole role = await _roleManager.FindRoleByIdAsync(roleId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<RoleGetApiModel, IRole>(_mapper, includeProperties)));
-         if (role != null)
+            if (role != null)
                 return Ok(_mapper.Map<RoleGetApiModel>(role));
 
-            return NotFound();
-
-           }
+            return NotFound("Role cannot be found.");
+        }
 
         /// <summary>Updates the role.</summary>
         /// <param name="roleId">The role identifier.</param>
@@ -152,7 +151,7 @@ namespace Store.WebAPI.Controllers
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {
-                return NotFound();
+                return NotFound("Role cannot be found.");
             }
 
             // Changing role to "not stackable" so need to verify if some users are associated with more than one role

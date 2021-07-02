@@ -69,7 +69,7 @@ namespace Store.WebAPI.Controllers.Identity
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {
-                return NotFound();
+                return NotFound("Role cannot be found.");
             }
             
             IdentityResult updatePolicyResult = await _permissionManager.UpdatePolicyAsync(role, section, _mapper.Map<IAccessAction[]>(accessActions));

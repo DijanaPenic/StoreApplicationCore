@@ -51,7 +51,7 @@ namespace Store.WebAPI.Controllers
             // User with verified email cannot be found, so return NotFound
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             // Get forgot password confirmation token
@@ -86,7 +86,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindByIdAsync(passwordRecoveryModel.UserId.ToString());
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult result = await _userManager.ResetPasswordAsync(user, passwordRecoveryModel.PasswordRecoveryToken.Base64Decode(), passwordRecoveryModel.NewPassword);

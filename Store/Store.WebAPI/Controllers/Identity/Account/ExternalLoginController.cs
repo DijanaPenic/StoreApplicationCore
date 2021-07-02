@@ -41,7 +41,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IList<UserLoginInfo> logins = await _userManager.FindLoginsAsync(user, true);
@@ -85,7 +85,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult removeLoginResult = await _userManager.RemoveLoginAsync(user, name, key);
@@ -116,7 +116,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             string decodedToken = token.Base64Decode();

@@ -170,7 +170,7 @@ namespace Store.WebAPI.Controllers
             if (user != null)
                 return Ok(_mapper.Map<UserGetApiModel>(user));
 
-            return NotFound();
+            return NotFound("User cannot be found.");
         }
 
         /// <summary>Updates the user.</summary>
@@ -198,7 +198,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId, OptionsFactory.Create(new string[] { nameof(IUser.Roles) }));
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
             
             bool isRoleSelectionValid = await _roleManager.IsValidRoleSelectionAsync(userModel.Roles);
@@ -248,7 +248,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult result = await _userManager.DeleteAsync(user);
@@ -274,7 +274,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             DateTime lockoutDate = DateTime.Now.AddYears(50);
@@ -301,7 +301,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(-1));
@@ -327,7 +327,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult result = await _userManager.ApproveUserAsync(user);
@@ -353,7 +353,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult result = await _userManager.DisapproveUserAsync(user);
@@ -451,7 +451,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             // This will set the password only if it's NULL
@@ -481,7 +481,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             // Check if provided role selection is valid
@@ -621,7 +621,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IdentityResult result;

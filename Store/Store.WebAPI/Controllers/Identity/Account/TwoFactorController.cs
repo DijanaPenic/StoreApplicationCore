@@ -42,7 +42,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return BadRequest("User cannot be found.");
+                return NotFound("User cannot be found.");
             }
 
             string authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
@@ -51,7 +51,7 @@ namespace Store.WebAPI.Controllers
                 return Ok(GetAuthenticatorKeyResponse(user.Email, authenticatorKey));
             }
 
-            return NotFound();
+            return NotFound("Authenticator key cannot be found.");
         }
 
         /// <summary>Creates or renews the user's authentication key.</summary>
@@ -79,7 +79,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return BadRequest("User cannot be found.");
+                return NotFound("User cannot be found.");
             }
             
             await _userManager.ResetAuthenticatorKeyAsync(user); // This will set a new AuthenticatorKey
@@ -123,7 +123,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             IEnumerable<string> recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number);
@@ -165,7 +165,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             bool isTwoFactorTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
@@ -220,7 +220,7 @@ namespace Store.WebAPI.Controllers
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User cannot be found.");
             }
 
             if (!await _userManager.GetTwoFactorEnabledAsync(user))

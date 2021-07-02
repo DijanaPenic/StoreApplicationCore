@@ -81,7 +81,7 @@ namespace Store.WebAPI.Controllers
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
             if (!emailTemplateExists)
             {
-                return NotFound();
+                return NotFound("Email Template cannot be found.");
             }
 
             Stream templateStream = await _emailTemplateService.FindEmailTemplateByKeyAsync(emailTemplateId);
@@ -129,7 +129,7 @@ namespace Store.WebAPI.Controllers
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
             if (!emailTemplateExists)
             {
-                return NotFound();
+                return NotFound("Email Template cannot be found.");
             }
 
             await _emailTemplateService.DeleteEmailTemplateAsync(emailTemplateId);

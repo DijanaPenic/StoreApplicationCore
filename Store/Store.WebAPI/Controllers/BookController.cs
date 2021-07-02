@@ -120,7 +120,7 @@ namespace Store.WebAPI.Controllers
             if (book != null)
                 return Ok(_mapper.Map<BookGetApiModel>(book)); 
 
-            return NotFound();
+                return NotFound("Book cannot be found.");
         }
 
         /// <summary>Updates the book.</summary>
@@ -147,7 +147,7 @@ namespace Store.WebAPI.Controllers
             IBook book = await _bookService.FindBookByKeyAsync(bookId);
             if (book == null)
             {
-                return NotFound();
+                return NotFound("Book cannot be found.");
             }
 
             _mapper.Map(bookModel, book);
@@ -156,7 +156,6 @@ namespace Store.WebAPI.Controllers
 
             return result switch
             {
-                ResponseStatus.NotFound => NotFound(),
                 ResponseStatus.Success => NoContent(),
                 _ => InternalServerError()
             };
@@ -181,7 +180,7 @@ namespace Store.WebAPI.Controllers
 
             return result switch
             {
-                ResponseStatus.NotFound => NotFound(),
+                ResponseStatus.NotFound => NotFound("Book cannot be found."),
                 ResponseStatus.Success => NoContent(),
                 _ => InternalServerError()
             };
