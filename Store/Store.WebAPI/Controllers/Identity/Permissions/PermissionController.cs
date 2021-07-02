@@ -56,11 +56,6 @@ namespace Store.WebAPI.Controllers.Identity
         [SectionAuthorization(SectionType.Role, AccessType.Full)]
         public async Task<IActionResult> PutAsync([FromRoute] SectionType section, [FromRoute] Guid roleId, [FromBody] AccessActionPostModel[] accessActions)
         {
-            if (roleId == Guid.Empty)
-            {
-                return BadRequest("Role id cannot be empty.");
-            }
-
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {

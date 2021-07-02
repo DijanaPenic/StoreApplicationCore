@@ -155,11 +155,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Read)]
         public async Task<IActionResult> GetUserAsync([FromRoute] Guid userId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<UserGetApiModel, IUser>(_mapper, includeProperties)));
 
             if (user != null)
@@ -180,11 +175,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> PatchUserAsync([FromRoute] Guid userId, [FromBody] UserPatchApiModel userModel)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             // Find the user we want to update
             IUser user = await _userManager.FindUserByKeyAsync(userId, OptionsFactory.Create(new string[] { nameof(IUser.Roles) }));
             if (user == null)
@@ -231,11 +221,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Delete)]
         public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
@@ -257,11 +242,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> LockUserAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
@@ -284,11 +264,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> UnlockUserAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
@@ -310,11 +285,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> ApproveUserAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
@@ -336,11 +306,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> DisapproveUserAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindUserByKeyAsync(userId);
             if (user == null)
             {
@@ -364,11 +329,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> ChangeUserPasswordAsync([FromRoute] Guid userId, [FromBody] ChangePasswordPutApiModel changePasswordModel)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool isCurrentUser = IsCurrentUser(userId);
             if(isCurrentUser && string.IsNullOrEmpty(changePasswordModel.OldPassword))
             {
@@ -420,11 +380,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> SetPasswordAsync([FromRoute] Guid userId, [FromBody] SetPasswordPutApiModel setPasswordModel)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
@@ -455,9 +410,9 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Update)]
         public async Task<IActionResult> AssignRolesToUserAsync([FromRoute] Guid userId, [FromBody] string[] rolesToAssign)
         {
-            if (rolesToAssign?.Length == 0 || userId == Guid.Empty)
+            if (rolesToAssign?.Length == 0)
             {
-                return BadRequest("User id and roles cannot be empty.");
+                return BadRequest("Roles cannot be empty.");
             }
 
             // Find the user we want to assign roles to
@@ -596,11 +551,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> ConfirmEmailAsync([FromRoute] Guid userId, [FromBody] AccountVerificationPutApiModel accountVerificationModel)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             IUser user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {

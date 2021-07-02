@@ -28,11 +28,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetUserAuthenticatorKeyAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
@@ -65,11 +60,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AddOrUpdateUserAuthenticatorKeyAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
@@ -109,11 +99,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> AddOrUpdateRecoveryCodesAsync([FromRoute] Guid userId, [FromQuery] int number)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
@@ -150,10 +135,6 @@ namespace Store.WebAPI.Controllers
             if (string.IsNullOrEmpty(code))
             {
                 return BadRequest("Verification Code is missing.");
-            }
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
             }
 
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
@@ -206,11 +187,6 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/two-factor/actions/disable")]
         public async Task<IActionResult> DisableUserTwoFactorAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {

@@ -28,11 +28,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetUserProfileAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
@@ -76,10 +71,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> PatchUserProfileAsync([FromRoute] Guid userId, [FromBody] UserProfilePatchApiModel userProfileModel)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
             if (!IsCurrentUser(userId))
             {
                 return Forbid();

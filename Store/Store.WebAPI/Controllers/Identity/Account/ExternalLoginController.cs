@@ -27,11 +27,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetExternalLoginAsync([FromRoute] Guid userId)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
-
             bool hasPermissions = IsCurrentUser(userId) || (await _authorizationService.AuthorizeAsync(User, SectionType.User, AccessType.Full)).Succeeded;
             if (!hasPermissions)
             {
@@ -63,10 +58,6 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/external-login")]
         public async Task<IActionResult> DisconnectExternalLoginAsync([FromRoute] Guid userId, [FromQuery] string name, [FromQuery] string key)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
             if(string.IsNullOrEmpty(name))
             {
                 return BadRequest("Login Provider cannot be empty.");
@@ -104,10 +95,6 @@ namespace Store.WebAPI.Controllers
         [Route("{userId:guid}/external-login/actions/verify")]
         public async Task<IActionResult> ConfirmExternalProviderAsync([FromRoute] Guid userId, [FromQuery] string token)
         {
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User Id cannot be empty.");
-            }
             if (string.IsNullOrWhiteSpace(token) || !token.IsBase64String())
             {
                 return BadRequest("Provided token is not in valid format.");

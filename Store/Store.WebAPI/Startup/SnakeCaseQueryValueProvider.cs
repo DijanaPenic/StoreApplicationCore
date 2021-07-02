@@ -6,7 +6,7 @@ using Store.Common.Extensions;
 
 namespace Store.WebAPI.Application.Startup
 {
-    public class SnakeCaseQueryValueProvider : QueryStringValueProvider, IValueProvider
+    public class SnakeCaseQueryValueProvider : QueryStringValueProvider
     {
         public SnakeCaseQueryValueProvider(
             BindingSource bindingSource,

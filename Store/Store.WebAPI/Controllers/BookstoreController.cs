@@ -115,11 +115,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Bookstore, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid bookstoreId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
-            if (bookstoreId == Guid.Empty)
-            {
-                return BadRequest("Bookstore Id cannot be empty.");
-            }
-
             BookstoreExtendedDto bookstore = await _bookstoreService.FindExtendedBookstoreByKeyAsync
             (
                 bookstoreId,
@@ -153,11 +148,6 @@ namespace Store.WebAPI.Controllers
                                                   [FromQuery] int pageSize = DefaultParameters.PageSize,
                                                   [FromQuery] string sortOrder = DefaultParameters.SortOrder)
         {
-            if (bookstoreId == Guid.Empty)
-            {
-                return BadRequest("Bookstore Id cannot be empty.");
-            }
-
             IPagedList<IBook> bookstores = await _bookService.FindBooksByBookstoreIdAsync
             (
                 bookstoreId,
@@ -232,11 +222,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Bookstore, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid bookstoreId, [FromBody] BookstorePatchApiModel bookstoreModel)
         {
-            if (bookstoreId == Guid.Empty)
-            {
-                return BadRequest("Book Id cannot be empty.");
-            }
-
             IBookstore bookstore = await _bookstoreService.FindBookstoreByKeyAsync(bookstoreId);
             if (bookstore == null)
             {
@@ -267,11 +252,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Bookstore, AccessType.Delete)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid bookstoreId)
         {
-            if (bookstoreId == Guid.Empty)
-            {
-                return BadRequest("Bookstore Id cannot be empty.");
-            }
-
             ResponseStatus result = await _bookstoreService.DeleteBookstoreAsync(bookstoreId);
 
             switch (result)

@@ -77,11 +77,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.EmailTemplate, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid emailTemplateId)
         {
-            if (emailTemplateId == Guid.Empty)
-            {
-                return BadRequest("Email Template Id cannot be empty.");
-            }
-
             bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
             if (!emailTemplateExists)
             {
@@ -125,11 +120,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.EmailTemplate, AccessType.Delete)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid emailTemplateId)
         {
-            if (emailTemplateId == Guid.Empty)
-            {
-                return BadRequest("Email Template Id cannot be empty.");
-            }
-
             ResponseStatus result = await _emailTemplateService.DeleteEmailTemplateAsync(emailTemplateId);
 
             return result switch

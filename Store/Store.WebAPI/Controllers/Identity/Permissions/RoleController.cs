@@ -110,11 +110,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Role, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid roleId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
-            if (roleId == Guid.Empty)
-            {
-                return BadRequest("Role Id cannot be empty.");
-            }
-
             IRole role = await _roleManager.FindRoleByIdAsync(roleId, OptionsFactory.Create(ModelMapperHelper.GetPropertyMappings<RoleGetApiModel, IRole>(_mapper, includeProperties)));
             if (role != null)
                 return Ok(_mapper.Map<RoleGetApiModel>(role));
@@ -134,11 +129,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Role, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid roleId, [FromBody] RolePatchApiModel roleModel)
         {
-            if (roleId == Guid.Empty)
-            {
-                return BadRequest("Role Id cannot be empty.");
-            }
-
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {

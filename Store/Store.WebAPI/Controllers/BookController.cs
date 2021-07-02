@@ -101,11 +101,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Book, AccessType.Read)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid bookId, [FromQuery] string includeProperties = DefaultParameters.IncludeProperties)
         {
-            if (bookId == Guid.Empty)
-            {
-                return BadRequest("Book Id cannot be empty.");
-            }
-
             IBook book = await _bookService.FindBookByKeyAsync
             (
                 bookId,
@@ -130,11 +125,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Book, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid bookId, [FromBody] BookPatchApiModel bookModel)
         {
-            if (bookId == Guid.Empty)
-            {
-                return BadRequest("Book Id cannot be empty.");
-            }
-
             IBook book = await _bookService.FindBookByKeyAsync(bookId);
             if (book == null)
             {
@@ -162,11 +152,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Book, AccessType.Delete)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid bookId)
         {
-            if (bookId == Guid.Empty)
-            {
-                return BadRequest("Book Id cannot be empty.");
-            }
-
             ResponseStatus result = await _bookService.DeleteBookByKeyAsync(bookId);
 
             return result switch
