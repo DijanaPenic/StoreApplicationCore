@@ -115,7 +115,7 @@ namespace Store.WebAPI.Controllers
             if (book != null)
                 return Ok(_mapper.Map<BookGetApiModel>(book)); 
 
-                return NotFound("Book cannot be found.");
+            return NotFound("Book cannot be found.");
         }
 
         /// <summary>Updates the book.</summary>
