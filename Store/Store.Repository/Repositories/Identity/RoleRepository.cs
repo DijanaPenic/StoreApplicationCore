@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LinqKit;
@@ -16,17 +15,15 @@ using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
 using Store.Repository.Core;
-using Store.Repository.Extensions;
 using Store.Repository.Common.Repositories.Identity;
 using Store.Model.Common.Models.Identity;
 using Store.Entities.Identity;
+using Store.Repository.Extensions;
 
 namespace Store.Repositories.Identity
 {
     internal class RoleRepository : GenericRepository, IRoleRepository
     {
-        private DbSet<RoleEntity> DbSet => DbContext.Set<RoleEntity>();
-
         public RoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
@@ -72,7 +69,7 @@ namespace Store.Repositories.Identity
         {
             string sectionType = $"{filter.SectionType}.";
 
-            IPagedList<RoleEntity> entityPagedList = await DbSet.Filter(string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString))
+            IPagedList<RoleEntity> entityPagedList = await DbContext.Roles.Filter(string.IsNullOrEmpty(filter.SearchString) ? null : r => r.Name.Contains(filter.SearchString))
                                                                  .Filter(r => r.Claims.Any(rc => rc.ClaimValue.StartsWith(sectionType)))
                                                                  .Include(r => r.Claims.Where(rc => rc.ClaimValue.StartsWith(sectionType)))
                                                                  .OrderBy(SortingMap<IRole, RoleEntity>(sorting))
@@ -83,14 +80,14 @@ namespace Store.Repositories.Identity
 
         public async Task<IRole> FindByNameAsync(string roleName)
         {
-            RoleEntity entity = await DbSet.Where(r => r.NormalizedName == roleName).SingleOrDefaultAsync();
+            RoleEntity entity = await DbContext.Roles.Where(r => r.NormalizedName == roleName).SingleOrDefaultAsync();
 
             return Mapper.Map<IRole>(entity);
         }
 
         public async Task<IEnumerable<IRole>> FindByNameAsync(string[] roleNames)
         {
-            IEnumerable<RoleEntity> entities = await DbSet.Where(r => roleNames.Contains(r.NormalizedName)).ToListAsync();
+            IEnumerable<RoleEntity> entities = await DbContext.Roles.Where(r => roleNames.Contains(r.NormalizedName)).ToListAsync();
 
             return Mapper.Map<IEnumerable<IRole>>(entities);
         }

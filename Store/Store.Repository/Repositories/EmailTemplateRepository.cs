@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LinqKit;
@@ -23,8 +22,6 @@ namespace Store.Repositories
 {
     internal class EmailTemplateRepository : GenericRepository, IEmailTemplateRepository
     {
-        private DbSet<EmailTemplateEntity> DbSet => DbContext.Set<EmailTemplateEntity>();
-
         public EmailTemplateRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
@@ -48,26 +45,26 @@ namespace Store.Repositories
 
         public async Task<IEmailTemplate> FindByClientIdAsync(Guid clientId, EmailTemplateType emailTemplateType)
         {
-            EmailTemplateEntity entity = await DbSet.FirstOrDefaultAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
+            EmailTemplateEntity entity = await DbContext.EmailTemplates.FirstOrDefaultAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
 
             return Mapper.Map<IEmailTemplate>(entity);
         }
 
         public async Task<IEnumerable<IEmailTemplate>> FindByClientIdAsync(Guid clientId)
         {
-            IEnumerable<EmailTemplateEntity> entity = await DbSet.Where(et => et.ClientId == clientId).ToListAsync();
+            IEnumerable<EmailTemplateEntity> entity = await DbContext.EmailTemplates.Where(et => et.ClientId == clientId).ToListAsync();
 
             return Mapper.Map<IEnumerable<IEmailTemplate>>(entity);
         }
 
         public Task<bool> ExistsAsync(Guid emailTemplateId)
         {
-           return DbSet.AnyAsync(et => et.Id == emailTemplateId);
+           return DbContext.EmailTemplates.AnyAsync(et => et.Id == emailTemplateId);
         }
 
         public Task<bool> ExistsAsync(Guid clientId, EmailTemplateType emailTemplateType)
         {
-            return DbSet.AnyAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
+            return DbContext.EmailTemplates.AnyAsync(et => et.ClientId == clientId && et.Type == emailTemplateType);
         }
 
         public Task<IEmailTemplate> FindByKeyAsync(Guid key, IOptionsParameters options = null)

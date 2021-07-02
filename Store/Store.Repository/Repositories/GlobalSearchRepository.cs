@@ -22,7 +22,7 @@ namespace Store.Repositories
 
         public async Task<IEnumerable<ISearchItem>> FindAsync(IGlobalFilteringParameters filter)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>
+            Dictionary<string, object> parameters = new()
             {
                 { SqlQueries.GlobalSearch.SearchAllModules.Parameters.SearchPhrase, filter.SearchString },
                 { SqlQueries.GlobalSearch.SearchAllModules.Parameters.HasBookstoreReadAccess, filter.SearchTypes.Contains(SectionType.Bookstore) },

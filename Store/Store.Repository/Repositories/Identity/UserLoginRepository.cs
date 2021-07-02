@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 using System.Collections.Generic;
 using LinqKit;
 using AutoMapper;
@@ -23,8 +22,6 @@ namespace Store.Repositories.Identity
 {
     internal class UserLoginRepository : GenericRepository, IUserLoginRepository
     {
-        private DbSet<UserLoginEntity> DbSet => DbContext.Set<UserLoginEntity>();
-
         public UserLoginRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         { 
         }
@@ -70,21 +67,21 @@ namespace Store.Repositories.Identity
 
         public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId)
         {
-            IEnumerable<UserLoginEntity> entities = await DbSet.Where(ul => ul.UserId == userId).ToListAsync();
+            IEnumerable<UserLoginEntity> entities = await DbContext.UserLogins.Where(ul => ul.UserId == userId).ToListAsync();
 
             return Mapper.Map<IEnumerable<IUserLogin>>(entities);
         }
 
         public async Task<IEnumerable<IUserLogin>> FindByUserIdAsync(Guid userId, bool isConfirmed)
         {
-            IEnumerable<UserLoginEntity> entities = await DbSet.Where(ul => ul.UserId == userId && ul.IsConfirmed == isConfirmed).ToListAsync();
+            IEnumerable<UserLoginEntity> entities = await DbContext.UserLogins.Where(ul => ul.UserId == userId && ul.IsConfirmed == isConfirmed).ToListAsync();
 
             return Mapper.Map<IEnumerable<IUserLogin>>(entities);
         }
 
         public async Task<IUserLogin> FindByUserIdAsync(Guid userId, string token)
         {
-            UserLoginEntity entities = await DbSet.Where(ul => ul.UserId == userId && ul.Token == token).SingleOrDefaultAsync();
+            UserLoginEntity entities = await DbContext.UserLogins.Where(ul => ul.UserId == userId && ul.Token == token).SingleOrDefaultAsync();
 
             return Mapper.Map<IUserLogin>(entities);
         }

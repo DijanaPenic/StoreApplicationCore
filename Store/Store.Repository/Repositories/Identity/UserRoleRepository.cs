@@ -16,9 +16,6 @@ namespace Store.Repositories.Identity
 {
     internal class UserRoleRepository : GenericRepository, IUserRoleRepository
     {
-        // NOTE - UserRole is configured as shared entity type so we must provide an entity type name.
-        private DbSet<UserRoleEntity> DbSet => DbContext.Set<UserRoleEntity>("user_role"); 
-
         public UserRoleRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
@@ -45,19 +42,19 @@ namespace Store.Repositories.Identity
 
         public async Task<IEnumerable<string>> FindRolesByUserIdAsync(Guid userId)
         {
-            return await DbSet.Where(ur => ur.UserId == userId).Select(ur => ur.Role.NormalizedName).ToListAsync();
+            return await DbContext.UserRoles.Where(ur => ur.UserId == userId).Select(ur => ur.Role.NormalizedName).ToListAsync();
         }
 
         public async Task<IEnumerable<IUser>> FindUsersByRoleNameAsync(string roleName)
         {
-            List<UserEntity> entities = await DbSet.Where(ur => ur.Role.NormalizedName == roleName).Select(ur => ur.User).ToListAsync();
+            List<UserEntity> entities = await DbContext.UserRoles.Where(ur => ur.Role.NormalizedName == roleName).Select(ur => ur.User).ToListAsync();
 
             return Mapper.Map<IEnumerable<IUser>>(entities);
         }
 
         public Task<int> GetCountByRoleNameAsync(string roleName)
         {
-            return DbSet.Where(ur => ur.Role.NormalizedName == roleName).CountAsync();
+            return DbContext.UserRoles.Where(ur => ur.Role.NormalizedName == roleName).CountAsync();
         }
 
         public Task DeleteAsync(Guid userId, string roleName)

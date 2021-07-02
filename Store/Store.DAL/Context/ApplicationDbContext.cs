@@ -28,7 +28,8 @@ namespace Store.DAL.Context
 
         public DbSet<EmailTemplateEntity> EmailTemplates { get; set; }
 
-        public DbSet<UserRoleEntity> UserRoles { get; set; }
+        // NOTE - UserRole is configured as shared entity type so we must provide an entity type name.
+        public DbSet<UserRoleEntity> UserRoles => Set<UserRoleEntity>("user_role"); 
 
         public DbSet<RoleEntity> Roles { get; set; }
 

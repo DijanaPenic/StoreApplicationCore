@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using LinqKit;
 using AutoMapper;
 using X.PagedList;
-using Microsoft.EntityFrameworkCore;
 
 using Store.Entities;
 using Store.DAL.Context;
@@ -21,8 +20,6 @@ namespace Store.Repositories
 {
     internal class BookRepository : GenericRepository, IBookRepository
     {
-        private DbSet<BookEntity> DbSet => DbContext.Set<BookEntity>();
-
         public BookRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
         }
