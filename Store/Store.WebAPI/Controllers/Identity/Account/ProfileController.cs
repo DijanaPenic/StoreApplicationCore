@@ -76,10 +76,6 @@ namespace Store.WebAPI.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> PatchUserProfileAsync([FromRoute] Guid userId, [FromBody] UserProfilePatchApiModel userProfileModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");

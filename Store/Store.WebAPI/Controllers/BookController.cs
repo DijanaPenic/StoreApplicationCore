@@ -45,11 +45,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Book, AccessType.Create)]
         public async Task<IActionResult> PostAsync([FromBody] BookPostApiModel bookModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IBook book = _mapper.Map<IBook>(bookModel);
             ResponseStatus result = await _bookService.AddBookAsync(book);
 
@@ -135,10 +130,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Book, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid bookId, [FromBody] BookPatchApiModel bookModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if (bookId == Guid.Empty)
             {
                 return BadRequest("Book Id cannot be empty.");

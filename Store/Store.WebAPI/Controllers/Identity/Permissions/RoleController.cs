@@ -53,11 +53,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Role, AccessType.Create)]
         public async Task<IActionResult> PostAsync([FromBody] RolePostApiModel roleModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IRole role = _mapper.Map<IRole>(roleModel);
 
             IdentityResult roleResult = await _roleManager.CreateAsync(role);
@@ -139,10 +134,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.Role, AccessType.Update)]
         public async Task<IActionResult> PatchAsync([FromRoute] Guid roleId, [FromBody] RolePatchApiModel roleModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if (roleId == Guid.Empty)
             {
                 return BadRequest("Role Id cannot be empty.");

@@ -84,11 +84,6 @@ namespace Store.WebAPI.Controllers
         [SectionAuthorization(SectionType.User, AccessType.Create)]
         public async Task<IActionResult> CreateUserAsync([FromBody] UserPostApiModel createUserModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IUser user = _mapper.Map<IUser>(createUserModel);
 
             IdentityResult userResult = await _userManager.CreateAsync(user, createUserModel.Password);
@@ -188,10 +183,6 @@ namespace Store.WebAPI.Controllers
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             // Find the user we want to update
@@ -377,10 +368,6 @@ namespace Store.WebAPI.Controllers
             {
                 return BadRequest("User Id cannot be empty.");
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             bool isCurrentUser = IsCurrentUser(userId);
             if(isCurrentUser && string.IsNullOrEmpty(changePasswordModel.OldPassword))
@@ -433,10 +420,6 @@ namespace Store.WebAPI.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> SetPasswordAsync([FromRoute] Guid userId, [FromBody] SetPasswordPutApiModel setPasswordModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if (userId == Guid.Empty)
             {
                 return BadRequest("User Id cannot be empty.");

@@ -61,11 +61,6 @@ namespace Store.WebAPI.Controllers.Identity
                 return BadRequest("Role id cannot be empty.");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             IRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {
