@@ -99,7 +99,7 @@ namespace Store.WebAPI.Controllers
 
             await _emailService.SendConfirmAccountAsync(clientId, user.Email, callbackUrl);
 
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>Either creates a new external login account or establishes the external provider association with the existing account (different email address).</summary>

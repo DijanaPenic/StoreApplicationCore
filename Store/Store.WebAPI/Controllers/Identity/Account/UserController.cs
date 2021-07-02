@@ -218,7 +218,7 @@ namespace Store.WebAPI.Controllers
                 if (!addRolesResult.Succeeded) return BadRequest(addRolesResult.Errors);
             }
 
-            return Ok();
+            return NoContent();
         }
         
         /// <summary>Deletes the user (soft delete).</summary>
@@ -244,7 +244,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.DeleteAsync(user);
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates user's activity status to "Locked", i.e. prevents the user from accessing the application.</summary>
@@ -271,7 +271,7 @@ namespace Store.WebAPI.Controllers
             DateTime lockoutDate = DateTime.Now.AddYears(50);
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, lockoutDate);
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates user's activity status to "Unlocked", i.e. enables user's application access.</summary>
@@ -297,7 +297,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(-1));
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates user's account status to "Approved", i.e. confirms the user.</summary>
@@ -323,7 +323,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ApproveUserAsync(user);
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates the user's account status to "Disapproved", i.e. refutes the user.</summary>
@@ -349,7 +349,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.DisapproveUserAsync(user);
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Updates the password for the user.</summary>
@@ -405,7 +405,7 @@ namespace Store.WebAPI.Controllers
                 await _emailService.SendChangePasswordEmailAsync(GetCurrentUserClientId(), user.Email, user.UserName, changePasswordModel.NewPassword);
             }
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Sets the password for the user.</summary>
@@ -440,7 +440,7 @@ namespace Store.WebAPI.Controllers
             // This will set the password only if it's NULL
             IdentityResult result = await _userManager.AddPasswordAsync(user, setPasswordModel.Password);
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
 
         /// <summary>Assigns roles to the user.</summary>
@@ -581,7 +581,7 @@ namespace Store.WebAPI.Controllers
                 }
             }
             
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>Confirms the user's email address or phone number.</summary>
@@ -617,7 +617,7 @@ namespace Store.WebAPI.Controllers
                 result = await _userManager.ChangePhoneNumberAsync(user, accountVerificationModel.PhoneNumber.GetDigits(), accountVerificationModel.Token);
             }
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
     }
 }

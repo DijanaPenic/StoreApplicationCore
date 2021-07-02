@@ -90,7 +90,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult removeLoginResult = await _userManager.RemoveLoginAsync(user, name, key);
 
-            return removeLoginResult.Succeeded ? Ok() : BadRequest(removeLoginResult.Errors);
+            return removeLoginResult.Succeeded ? NoContent() : BadRequest(removeLoginResult.Errors);
         }
         
         /// <summary>Confirms the external provider association.</summary>
@@ -134,7 +134,7 @@ namespace Store.WebAPI.Controllers
 
             if (!confirmLoginResult.Succeeded) return BadRequest(confirmLoginResult.Errors);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

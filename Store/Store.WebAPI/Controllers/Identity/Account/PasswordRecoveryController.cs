@@ -70,7 +70,7 @@ namespace Store.WebAPI.Controllers
 
             await _emailService.SendResetPasswordAsync(GetCurrentUserClientId(), passwordRecoveryModel.Email, callbackUrl, user.UserName);
 
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>Updates the user's password.</summary>
@@ -91,7 +91,7 @@ namespace Store.WebAPI.Controllers
 
             IdentityResult result = await _userManager.ResetPasswordAsync(user, passwordRecoveryModel.PasswordRecoveryToken.Base64Decode(), passwordRecoveryModel.NewPassword);
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
     }
 }

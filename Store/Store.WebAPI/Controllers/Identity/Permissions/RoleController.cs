@@ -163,7 +163,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Role has been updated successfully.");
 
-            return Ok();
+            return NoContent();
         }
     }
 }

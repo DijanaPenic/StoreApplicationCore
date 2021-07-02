@@ -119,7 +119,7 @@ namespace Store.WebAPI.Controllers
                 await _emailService.SendConfirmEmailAsync(GetCurrentUserClientId(), user.Email, callbackUrl, user.UserName);
             }
 
-            return Ok();
+            return NoContent();
         }
     }
 }

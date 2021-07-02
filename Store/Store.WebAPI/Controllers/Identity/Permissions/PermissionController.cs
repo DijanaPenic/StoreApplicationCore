@@ -72,7 +72,7 @@ namespace Store.WebAPI.Controllers.Identity
 
             _logger.LogInformation("A new policy has been updated successfully.");
 
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>Retrieves roles (with specific section policy prefetch) that match the specified search criteria.</summary>

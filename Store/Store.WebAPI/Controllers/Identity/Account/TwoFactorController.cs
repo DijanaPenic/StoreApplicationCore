@@ -232,7 +232,7 @@ namespace Store.WebAPI.Controllers
 
             _logger.LogInformation("Two-factor authentication is disabled for the user.");
 
-            return result.Succeeded ? Ok() : BadRequest(result.Errors);
+            return result.Succeeded ? NoContent() : BadRequest(result.Errors);
         }
         
         private AuthenticatorKeyGetApiModel GetAuthenticatorKeyResponse(string email, string authenticatorKey)
