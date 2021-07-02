@@ -2,7 +2,7 @@
 
 namespace Store.Entities.Identity
 {
-    public class UserLoginEntity : IDBBaseEntity, IDBChangable
+    public class UserLoginEntity : IDBBaseEntity, IDbChangeable
     {
         public string LoginProvider { get; set; }
 

@@ -52,7 +52,7 @@ namespace Store.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // Shared Type Entites
+            // Shared Type Entities
             builder.SharedTypeEntity<UserRoleEntity>("user_role");
 
             // Identity configurations
@@ -73,7 +73,7 @@ namespace Store.DAL.Context
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State is EntityState.Added or EntityState.Modified);
             DateTime utcNow = DateTime.UtcNow;
 
             foreach (EntityEntry entry in entries)
@@ -82,11 +82,11 @@ namespace Store.DAL.Context
 
                 if (entry.State == EntityState.Added)
                 {
-                    if (entity is IDBBaseEntity) (entity as IDBBaseEntity).DateCreatedUtc = utcNow;
+                    if (entity is IDBBaseEntity baseEntity) baseEntity.DateCreatedUtc = utcNow;
                     if (entry.Metadata.FindProperty("Id") != null) entry.Property("Id").CurrentValue = GuidHelper.NewSequentialGuid();
                 }
 
-                if (entity is IDBChangable) (entity as IDBChangable).DateUpdatedUtc = utcNow;
+                if (entity is IDbChangeable changeableEntity) changeableEntity.DateUpdatedUtc = utcNow;
             }
 
             return base.SaveChangesAsync(cancellationToken);

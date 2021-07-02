@@ -2,7 +2,7 @@
 
 namespace Store.Entities.Identity
 {
-    public class UserRefreshTokenEntity : IDBBaseEntity, IDBChangable
+    public class UserRefreshTokenEntity : IDBBaseEntity, IDbChangeable
     {
         public string Value { get; set; }
 

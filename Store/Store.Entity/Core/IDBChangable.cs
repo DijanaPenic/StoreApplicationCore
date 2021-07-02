@@ -2,7 +2,7 @@
 
 namespace Store.Entities
 {
-    public interface IDBChangable
+    public interface IDbChangeable
     {
         DateTime DateUpdatedUtc { get; set; }
     }

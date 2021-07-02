@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Store.Entities.Identity
 {
-    public class UserTokenEntity : IDBBaseEntity, IDBChangable
+    public class UserTokenEntity : IDBBaseEntity, IDbChangeable
     {
         public Guid UserId { get; set; }
 
