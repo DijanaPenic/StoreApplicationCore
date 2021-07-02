@@ -46,7 +46,7 @@ namespace Store.WebAPI.Controllers
         /// </returns>
         [HttpPut]
         [SectionAuthorization(SectionType.EmailTemplate, AccessType.Create)]
-        public async Task<IActionResult> PostAsync([FromForm]IFormFile file, [FromForm] EmailTemplateType type)
+        public async Task<IActionResult> PutAsync([FromForm]IFormFile file, [FromForm] EmailTemplateType type)
         {
             if (file?.Length == 0)
             {
@@ -57,9 +57,13 @@ namespace Store.WebAPI.Controllers
             Guid clientId = GetCurrentUserClientId();
 
             await using Stream templateStream = file.OpenReadStream();
-            await _emailTemplateService.AddOrUpdateEmailTemplateAsync(clientId, type, templateStream);
+            ResponseStatus result = await _emailTemplateService.AddOrUpdateEmailTemplateAsync(clientId, type, templateStream);
 
-            return Ok();
+            return result switch
+            {
+                ResponseStatus.Success => Created(),
+                _ => InternalServerError()
+            };
         }
 
         /// <summary>Retrieves the email template file by identifier.</summary>
@@ -126,15 +130,14 @@ namespace Store.WebAPI.Controllers
                 return BadRequest("Email Template Id cannot be empty.");
             }
 
-            bool emailTemplateExists = await _emailTemplateService.EmailTemplateExistsAsync(emailTemplateId);
-            if (!emailTemplateExists)
+            ResponseStatus result = await _emailTemplateService.DeleteEmailTemplateAsync(emailTemplateId);
+
+            return result switch
             {
-                return NotFound("Email Template cannot be found.");
-            }
-
-            await _emailTemplateService.DeleteEmailTemplateAsync(emailTemplateId);
-
-            return Ok();
+                ResponseStatus.NotFound => NotFound("Email Template cannot be found."),
+                ResponseStatus.Success => NoContent(),
+                _ => InternalServerError()
+            };
         }
     }
 }
