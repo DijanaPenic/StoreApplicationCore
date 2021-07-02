@@ -14,11 +14,21 @@ namespace Store.WebAPI.Application.Startup.Extensions
             {
                 automapper.AddExpressionMapping();
 
-                // Configure Profiles
-                automapper.AddProfile<AutoMapperRepositoryProfile>();
-                automapper.AddProfile<AutoMapperWebApiProfile>();
-
-            }, typeof(AutoMapperRepositoryProfile).Assembly, typeof(AutoMapperWebApiProfile).Assembly);
+                // Configure Repository Profiles
+                automapper.AddProfile<BookAutoMapperRepositoryProfile>();
+                automapper.AddProfile<BookstoreAutoMapperRepositoryProfile>();
+                automapper.AddProfile<EmailTemplateAutoMapperRepositoryProfile>();
+                automapper.AddProfile<IdentityAutoMapperRepositoryProfile>();
+                
+                // Configure Web API profiles
+                automapper.AddProfile<BookAutoMapperWebApiProfile>();
+                automapper.AddProfile<BookstoreAutoMapperWebApiProfile>();
+                automapper.AddProfile<GlobalSearchAutoMapperWebApiProfile>();
+                automapper.AddProfile<IdentityAutoMapperWebApiProfile>();
+                automapper.AddProfile<PagingAutoMapperWebApiProfile>();
+                automapper.AddProfile<SettingsAutoMapperWebApiProfile>();
+                
+            }, typeof(BookAutoMapperRepositoryProfile).Assembly, typeof(BookAutoMapperWebApiProfile).Assembly);
         }
     }
 }

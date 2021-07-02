@@ -1,42 +1,21 @@
 ﻿using AutoMapper;
 
-using Store.Models;
 using Store.Models.Identity;
-using Store.Model.Common.Models;
 using Store.Model.Common.Models.Identity;
-using Store.Entities;
 using Store.Entities.Identity;
 
 namespace Store.Repository.Mapper
 {
-    public class AutoMapperRepositoryProfile : Profile
+    public class IdentityAutoMapperRepositoryProfile : Profile
     {
-        // Need DTO objects because AutoMapper projection doesn't work for interface destinations
-        public AutoMapperRepositoryProfile()
+        public IdentityAutoMapperRepositoryProfile()
         {
-            // Bookstore mappings
-            CreateMap<IBookstore, BookstoreEntity>()
-                .ForMember(dst => dst.Books, opt => opt.Ignore())
-                .ReverseMap();
-
-            CreateMap<BookstoreEntity, BookstoreExtendedDto>()
-                    .ForMember(dst => dst.Books, opt => opt.ExplicitExpansion())
-                    .ForMember(dst => dst.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
-
-            // Book mappings
-            CreateMap<IBook, BookEntity>()
-                .ForMember(dst => dst.Bookstore, opt => opt.Ignore())
-                .ReverseMap();
-
-            CreateMap<BookEntity, BookDto>();
-
-            // Identity mappings 
             CreateMap<IRoleClaim, RoleClaimEntity>()
                 .ForMember(dst => dst.Role, opt => opt.Ignore())
                 .ReverseMap();
 
             // NOTE: If using an interface as a destination type AutoMapper will dynamically create an implementation (proxy) type.
-            // However, the proxy generation only supports properties. As a workaround we can explicitly specify how the destination objects 
+            // However, the proxy generation only supports properties (and not methods). As a workaround we can explicitly specify how the destination objects 
             // should be constructed with using one of the ConstructUsing overloads. In that case AutoMapper does not generate proxies.
             CreateMap<UserTokenEntity, IUserToken>()
                 .ForSourceMember(src => src.User, opt => opt.DoNotValidate())
@@ -71,11 +50,6 @@ namespace Store.Repository.Mapper
             CreateMap<RoleEntity, IRole>();
 
             CreateMap<IClient, ClientEntity>().ReverseMap();
-
-            // Email Template mappings
-            CreateMap<IEmailTemplate, EmailTemplateEntity>()
-                .ForMember(dst => dst.Client, opt => opt.Ignore())
-                .ReverseMap();
         }
     }
 }
