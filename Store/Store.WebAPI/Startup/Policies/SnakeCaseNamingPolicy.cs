@@ -2,7 +2,7 @@
 
 using Store.Common.Extensions;
 
-namespace Store.WebAPI.Application.Startup
+namespace Store.WebAPI.Application.Startup.Policies
 {
     public class SnakeCaseNamingPolicy : JsonNamingPolicy
     {

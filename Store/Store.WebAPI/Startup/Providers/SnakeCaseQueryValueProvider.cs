@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 using Store.Common.Extensions;
 
-namespace Store.WebAPI.Application.Startup
+namespace Store.WebAPI.Application.Startup.Providers
 {
     public class SnakeCaseQueryValueProvider : QueryStringValueProvider
     {
