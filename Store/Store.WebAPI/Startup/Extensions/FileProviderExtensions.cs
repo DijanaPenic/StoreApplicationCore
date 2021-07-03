@@ -10,9 +10,9 @@ namespace Store.WebAPI.Application.Startup.Extensions
     {
         public static void AddFileProviderServices(this IServiceCollection services, IConfiguration configuration)
         {
-            bool localStorageEnabled = configuration.GetValue<bool>("LocalStorageEnabled");
+            bool isCloud = configuration.GetValue<bool>("IsCloud");
 
-            if (localStorageEnabled)
+            if (isCloud)
             {
                 services.AddScoped<IFileProvider, LocalFileProvider>(client =>
                 {
