@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "cc45040a-0802-43cc-b291-75ea47c0f1b3",
+		"_postman_id": "71b16085-abcc-418a-aaa2-c94a53a5ca3e",
 		"name": "Settings",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -12,17 +12,28 @@
 					"name": "Get Countries",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic {{client_authentication}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{base_url}}/api/settings/countries/all",
+							"raw": "{{base_url}}/api/settings/countries?=",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"settings",
-								"countries",
-								"all"
+								"countries"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -36,7 +47,7 @@
 				{
 					"name": "Upload Email Template",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Authorization",
@@ -67,42 +78,6 @@
 							"path": [
 								"api",
 								"email-templates"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Email Template",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/D:/Temp/5c52160a-4ab4-49c6-ba5f-56df9c5730b6/templates/ResetPassword.html"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{base_url}}/api/email-templates/88a3e921-48f6-4297-7343-08d8a9efaa0b/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"email-templates",
-								"88a3e921-48f6-4297-7343-08d8a9efaa0b",
-								""
 							]
 						}
 					},

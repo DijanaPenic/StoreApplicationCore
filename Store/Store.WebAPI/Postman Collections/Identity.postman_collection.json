@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b87b14fa-bcb5-4a65-983c-faf9e62c7b92",
+		"_postman_id": "f8e4e7bd-33c1-40f8-babc-527ba82114ce",
 		"name": "Identity",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -196,538 +196,798 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"email_confirmed\": true,\r\n    \"phone_number\": \"385919440067\",\r\n    \"phone_number_confirmed\": true,\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Admin\"\r\n    ]\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"email_confirmed\": true,\r\n    \"phone_number\": \"385919440067\",\r\n    \"phone_number_confirmed\": true,\r\n    \"first_name\": \"Dijana Update\",\r\n    \"last_name\": \"Penic Update\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Customer\",\r\n        \"Store Manager\"\r\n    ]\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Unlock User",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/unlock",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"unlock"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/delete",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"delete"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Lock User",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/lock",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"lock"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Approve User",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/approve",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"approve"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Disapprove User",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/disapprove",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"disapprove"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Change Password",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"old_password\": \"aB1234567,\",\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"send_mail_notification\": false\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/change-password",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"change-password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set Password",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"aB123456,\"\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/set-password",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"set-password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Users (filter)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users?sort_order=user_name|desc&search_string=Dijana&page_size=3&page_number=1&include_properties=roles&showInactive=false",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users"
-							],
-							"query": [
-								{
-									"key": "sort_order",
-									"value": "user_name|desc"
-								},
-								{
-									"key": "search_string",
-									"value": "Dijana"
-								},
-								{
-									"key": "page_size",
-									"value": "3"
-								},
-								{
-									"key": "page_number",
-									"value": "1"
-								},
-								{
-									"key": "include_properties",
-									"value": "roles"
-								},
-								{
-									"key": "showInactive",
-									"value": "false"
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Get User Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"profile"
+									]
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User (by id)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}"
-							],
-							"query": [
-								{
-									"key": "include_properties",
-									"value": "roles",
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add User to Roles",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
 							},
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "[\r\n    \"Admin\"\r\n]"
+							"response": []
 						},
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/roles",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"roles"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Disable Two-Factor",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/two-factor/disable",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"two-factor",
-								"disable"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User Profile",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/profile",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User Profile",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/profile",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get External Login Connections",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/external",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"external"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Disconnect External Login",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/{{user_id}}/external?login_provider=Google&provider_key=109973977642590529535",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{user_id}}",
-								"external"
-							],
-							"query": [
-								{
-									"key": "login_provider",
-									"value": "Google"
+						{
+							"name": "Update User Profile",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
 								},
-								{
-									"key": "provider_key",
-									"value": "109973977642590529535"
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"profile"
+									]
 								}
-							]
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
+				},
+				{
+					"name": "External Login",
+					"item": [
+						{
+							"name": "Get External Login Connections",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/external-login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"external-login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Disconnect External Login",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/external-login?name=Google&key=109973977642590529535",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"external-login"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "Google"
+										},
+										{
+											"key": "key",
+											"value": "109973977642590529535"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify Account Verification Token",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Basic {{client_authentication}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/external-login/actions/verify?token=123456",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"external-login",
+										"actions",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "123456"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Two-Factor",
+					"item": [
+						{
+							"name": "Get Two-Factor Authenticator Key",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/authenticator",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"authenticate",
+										"two-factor",
+										"{{user_id}}",
+										"authenticator"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add/Renew Two-Factor Authenticator Key",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/authenticator",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"authenticate",
+										"two-factor",
+										"{{user_id}}",
+										"authenticator"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Enable Two-Factor",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									},
+									{
+										"key": "",
+										"type": "text",
+										"value": "",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/two-factor/actions/enable?code=837280",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"two-factor",
+										"actions",
+										"enable"
+									],
+									"query": [
+										{
+											"key": "code",
+											"value": "837280"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Disable Two-Factor",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/two-factor/actions/disable",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"two-factor",
+										"actions",
+										"disable"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Generate Two-Factor Recovery Codes",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/two-factor/recovery-codes?number=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"two-factor",
+										"recovery-codes"
+									],
+									"query": [
+										{
+											"key": "number",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "General",
+					"item": [
+						{
+							"name": "Create User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"email_confirmed\": true,\r\n    \"phone_number\": \"385919440067\",\r\n    \"phone_number_confirmed\": true,\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Admin\"\r\n    ]\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"email_confirmed\": true,\r\n    \"phone_number\": \"385919440067\",\r\n    \"phone_number_confirmed\": true,\r\n    \"first_name\": \"Dijana Update\",\r\n    \"last_name\": \"Penic Update\",\r\n    \"is_approved\": true,\r\n    \"roles\": [\r\n        \"Customer\",\r\n        \"Store Manager\"\r\n    ]\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User (by id)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}"
+									],
+									"query": [
+										{
+											"key": "include_properties",
+											"value": "roles",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Users (filter)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users?sort_order=user_name|desc&search_string=Dijana&page_size=3&page_number=1&include_properties=roles&showInactive=false",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									],
+									"query": [
+										{
+											"key": "sort_order",
+											"value": "user_name|desc"
+										},
+										{
+											"key": "search_string",
+											"value": "Dijana"
+										},
+										{
+											"key": "page_size",
+											"value": "3"
+										},
+										{
+											"key": "page_number",
+											"value": "1"
+										},
+										{
+											"key": "include_properties",
+											"value": "roles"
+										},
+										{
+											"key": "showInactive",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set Password",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\": \"aB123456,\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/set-password",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"set-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change Password",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"old_password\": \"aB1234567,\",\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"send_mail_notification\": false\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/change-password",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"change-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add User to Roles",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    \"Admin\"\r\n]"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/assign-roles",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"assign-roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Lock User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/lock",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"lock"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unlock User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/unlock",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"unlock"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Approve User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/approve",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"approve"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Disapprove User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/disapprove",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"disapprove"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Account Verification Token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"PhoneNumber\",\r\n    \"iso_country_code\": \"HRV\",\r\n    \"country_code_number\": \"+385\",\r\n    \"phone_number\": \"919440067\",\r\n    \"is_voice_call\": false\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/send-token",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"send-token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify Account Verification Token",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Basic {{client_authentication}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"PhoneNumber\",\r\n    \"token\": \"700268\",\r\n    \"phone_number\": \"+385919440067\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/users/{{user_id}}/actions/verify",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_id}}",
+										"actions",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -741,7 +1001,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
+								"value": "Basic {{client_authentication}}",
 								"type": "text"
 							},
 							{
@@ -752,7 +1012,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"email\": \"penic.dijana@gmail.com\",\r\n    \"first_name\": \"Dijana\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_re_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"martina.penic\",\r\n    \"email\": \"penic.martina@gmail.com\",\r\n    \"first_name\": \"Martina\",\r\n    \"last_name\": \"Penic\",\r\n    \"password\": \"aB123456,\",\r\n    \"confirm_password\": \"aB123456,\",\r\n    \"google_captcha\": \"enter_recaptcha\",\r\n    \"activation_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register",
@@ -794,7 +1054,7 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
+								"value": "Basic {{client_authentication}}",
 								"type": "text"
 							},
 							{
@@ -811,7 +1071,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    //\"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false,\r\n    //\"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId/email/token/{token}\"\r\n}"
+							"raw": "{\r\n    \"user_name\": \"penic.dijana@gmail.com\",\r\n    //\"associate_email\": \"penic.martina@gmail.com\",\r\n    \"associate_existing_account\": false\r\n    //\"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId/email/token/{token}\"\r\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/register/external",
@@ -839,7 +1099,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
+								"value": "Basic {{client_authentication}}",
 								"type": "text"
 							},
 							{
@@ -868,7 +1128,7 @@
 				{
 					"name": "Reset/Change Password",
 					"request": {
-						"method": "PATCH",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -877,23 +1137,22 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
+								"value": "Basic {{client_authentication}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_new_password\": \"aB123456,\",\r\n    \"password_recovery_token\": \"Q2ZESjhIVzZqaXdJY1psSm5GK3RSdDFmUjA2ckJkYlM4bFh0MHhpYmdtWVlidERvc29QMUIwb3ZrYWJPL2drWU5ZbTZRSkFQbHRlb0tCcElpR2tpQVZoZFpaRmQ1cEo3b1lPZkIrd2dzSlhVMVlWdGJ2Q1VGWnR5SmgzRkNkT0pTQUdJcnlhbWxsOUxud3BuME5XcVFwaHZRem0zZmFHaHNYWXJMUUJQejBvRjlBNURNdkl5RG8xMTBGVExyZDRVQkEybFFkdzVEczBwb2FKR3dnSFFYNFYya0tsL2xWYTRJTDZhVmFMb0FlWVpZMGh3\"\r\n}"
+							"raw": "{\r\n    \"user_id\": {{user_id}},\r\n    \"new_password\": \"aB123456,\",\r\n    \"confirm_new_password\": \"aB123456,\",\r\n    \"password_recovery_token\": \"Q2ZESjhIVzZqaXdJY1psSm5GK3RSdDFmUjA2ckJkYlM4bFh0MHhpYmdtWVlidERvc29QMUIwb3ZrYWJPL2drWU5ZbTZRSkFQbHRlb0tCcElpR2tpQVZoZFpaRmQ1cEo3b1lPZkIrd2dzSlhVMVlWdGJ2Q1VGWnR5SmgzRkNkT0pTQUdJcnlhbWxsOUxud3BuME5XcVFwaHZRem0zZmFHaHNYWXJMUUJQejBvRjlBNURNdkl5RG8xMTBGVExyZDRVQkEybFFkdzVEczBwb2FKR3dnSFFYNFYya0tsL2xWYTRJTDZhVmFMb0FlWVpZMGh3\"\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/recover-password/{{user_id}}",
+							"raw": "{{base_url}}/api/recover-password",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"recover-password",
-								"{{user_id}}"
+								"recover-password"
 							]
 						}
 					},
@@ -902,100 +1161,294 @@
 			]
 		},
 		{
-			"name": "Authenticate",
+			"name": "Authentication",
 			"item": [
 				{
-					"name": "Authenticate (by password)",
-					"event": [
+					"name": "For Removal",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var respcode = pm.response.code;\r",
-									"\r",
-									"if(respcode === 200)\r",
-									"{\r",
-									"    var json = JSON.parse(responseBody);\r",
-									"\r",
-									"    pm.globals.set(\"access_token\", json.access_token);\r",
-									"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
-								"type": "text"
+							"name": "(REMOVE) Get External Login Providers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/authenticate/external/providers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"authenticate",
+										"external",
+										"providers"
+									]
+								}
 							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"password\": \"aB123456,\"\r\n}"
+							"response": []
 						},
-						"url": {
-							"raw": "{{base_url}}/api/authenticate",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Authenticate (account verification) ",
-					"event": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var respcode = pm.response.code;\r",
-									"\r",
-									"if(respcode === 200)\r",
-									"{\r",
-									"    var json = JSON.parse(responseBody);\r",
-									"\r",
-									"    pm.globals.set(\"access_token\", json.access_token);\r",
-									"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
-									"}"
+							"name": "(REMOVE) Initiate External Authentication",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
 								],
-								"type": "text/javascript"
-							}
+								"url": {
+									"raw": "{{base_url}}/api/authenticate/external/initiate/Google?return_url=insert url",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"authenticate",
+										"external",
+										"initiate",
+										"Google"
+									],
+									"query": [
+										{
+											"key": "return_url",
+											"value": "insert url"
+										}
+									]
+								}
+							},
+							"response": []
 						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/account-verification",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"account-verification"
-							]
-						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "Authenticate Info",
+					"name": "Authenticate",
+					"item": [
+						{
+							"name": "Authenticate (by password)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var respcode = pm.response.code;\r",
+											"\r",
+											"if(respcode === 200)\r",
+											"{\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"\r",
+											"    pm.globals.set(\"access_token\", json.access_token);\r",
+											"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Basic {{client_authentication}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_name\": \"dpenic\",\r\n    \"password\": \"aB123456,\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate (account verification) ",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var respcode = pm.response.code;\r",
+											"\r",
+											"if(respcode === 200)\r",
+											"{\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"\r",
+											"    pm.globals.set(\"access_token\", json.access_token);\r",
+											"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/auth/account-verification",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"account-verification"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate (by external account)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var respcode = pm.response.code;\r",
+											"\r",
+											"if(respcode === 200)\r",
+											"{\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"\r",
+											"    pm.globals.set(\"access_token\", json.access_token);\r",
+											"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const jar = pm.cookies.jar();\r",
+											"\r",
+											"jar.unset(pm.request.url, '.AspNetCore.Identity.External', function (error) {\r",
+											"  // handle error\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic {{client_authentication}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": ".AspNetCore.Identity.External={{google_cookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": ".AspNetCore.Identity.External={{facebook_cookie}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId}/email/token/{token}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/external-login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"external-login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate (by Two-Factor Code)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var respcode = pm.response.code;\r",
+											"\r",
+											"if(respcode === 200)\r",
+											"{\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"\r",
+											"    pm.globals.set(\"access_token\", json.access_token);\r",
+											"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"226909\",\r\n    \"use_recovery_code\": false\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/two-factor",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"two-factor"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Authentication Info",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1006,14 +1459,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/info",
+							"raw": "{{base_url}}/api/auth",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"authenticate",
-								"info"
+								"auth"
 							]
 						}
 					},
@@ -1041,7 +1493,7 @@
 						}
 					],
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -1055,16 +1507,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/renew/token/{{refresh_token}}",
+							"raw": "{{base_url}}/api/auth?refreshToken={{refresh_token}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"authenticate",
-								"renew",
-								"token",
-								"{{refresh_token}}"
+								"auth"
+							],
+							"query": [
+								{
+									"key": "refreshToken",
+									"value": "{{refresh_token}}"
+								}
 							]
 						}
 					},
@@ -1086,442 +1541,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/authenticate/expired-refresh-tokens",
+							"raw": "{{base_url}}/api/auth/refresh-tokens",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"authenticate",
-								"expired-refresh-tokens"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "(REMOVE) Get External Login Providers",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/external/providers",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"external",
-								"providers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "(REMOVE) Initiate External Authentication",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/external/initiate/Google?return_url=insert url",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"external",
-								"initiate",
-								"Google"
-							],
-							"query": [
-								{
-									"key": "return_url",
-									"value": "insert url"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "External Authenticate",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var respcode = pm.response.code;\r",
-									"\r",
-									"if(respcode === 200)\r",
-									"{\r",
-									"    var json = JSON.parse(responseBody);\r",
-									"\r",
-									"    pm.globals.set(\"access_token\", json.access_token);\r",
-									"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const jar = pm.cookies.jar();\r",
-									"\r",
-									"jar.unset(pm.request.url, '.AspNetCore.Identity.External', function (error) {\r",
-									"  // handle error\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
-								"type": "text"
-							},
-							{
-								"key": "Cookie",
-								"value": ".AspNetCore.Identity.External={{google_cookie}}",
-								"type": "text"
-							},
-							{
-								"key": "Cookie",
-								"value": ".AspNetCore.Identity.External={{facebook_cookie}}",
-								"type": "text",
-								"disabled": true
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"confirmation_url\": \"{{base_url}}/api/account-verify/external/{userId}/email/token/{token}\"\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/external",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"external"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Two-Factor Authenticate",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var respcode = pm.response.code;\r",
-									"\r",
-									"if(respcode === 200)\r",
-									"{\r",
-									"    var json = JSON.parse(responseBody);\r",
-									"\r",
-									"    pm.globals.set(\"access_token\", json.access_token);\r",
-									"    pm.globals.set(\"refresh_token\", json.refresh_token);\r",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"226909\",\r\n    \"use_recovery_code\": false\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"two-factor"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Two-Factor Authenticator",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/authenticator",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"two-factor",
-								"{{user_id}}",
-								"authenticator"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Verify Two-Factor Authenticator Code",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							},
-							{
-								"key": "",
-								"type": "text",
-								"value": "",
-								"disabled": true
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/authenticator?code=837280",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"two-factor",
-								"{{user_id}}",
-								"authenticator"
-							],
-							"query": [
-								{
-									"key": "code",
-									"value": "837280"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Generate Two-Factor Recovery Codes",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/authenticate/two-factor/{{user_id}}/recovery-codes?number=10",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authenticate",
-								"two-factor",
-								"{{user_id}}",
-								"recovery-codes"
-							],
-							"query": [
-								{
-									"key": "number",
-									"value": "10"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Account Verify",
-			"item": [
-				{
-					"name": "Send Email Confirmation Token ",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"return_url\": \"{{base_url}}/api/account-verify/{userId}/email/token/{token}\"\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/account-verify/{{user_id}}/email",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"account-verify",
-								"{{user_id}}",
-								"email"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Confirm Email",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/account-verify/{{user_id}}/email/token/Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNJR3VFelBGa0hHeDh6RFVCdWR3UTNyTlZuekFOK1IvbWtsYXpGMVpodktQc0Q4N2piSHFJc3AyS3Q4ZU5oZjdLZnZOL0ErU0Q2VVVUU01JQXpUclNPdHIzN0MreU9reWRyZUNUbHN6WnN4RnFrdHlGL3RYMVRKNmlUUU1YSnQxd3JmYUF3eldxZ2xwWHJTMHhXdDBTMmJKYTc3Mit5TU1JZGVNdGJJR0U5emZJYkdaMFFYa25NK3lDZlJaa0VmV0V6Y1BheVR3Uy9zQ3B1WmlyNHd1OWorcWs2REF1Yy9jYWpZMlR1N1o0b0pFZz09",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"account-verify",
-								"{{user_id}}",
-								"email",
-								"token",
-								"Q2ZESjhEcXVFWmIzeHhOS3BCcVdTUlpmYzNJR3VFelBGa0hHeDh6RFVCdWR3UTNyTlZuekFOK1IvbWtsYXpGMVpodktQc0Q4N2piSHFJc3AyS3Q4ZU5oZjdLZnZOL0ErU0Q2VVVUU01JQXpUclNPdHIzN0MreU9reWRyZUNUbHN6WnN4RnFrdHlGL3RYMVRKNmlUUU1YSnQxd3JmYUF3eldxZ2xwWHJTMHhXdDBTMmJKYTc3Mit5TU1JZGVNdGJJR0U5emZJYkdaMFFYa25NK3lDZlJaa0VmV0V6Y1BheVR3Uy9zQ3B1WmlyNHd1OWorcWs2REF1Yy9jYWpZMlR1N1o0b0pFZz09"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Confirm External Email",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/account-verify/external/{{user_id}}/email/token/CfDJ8DquEZb3xxNKpBqWSRZfc3K43jtOzGvPtK9TwwhRG9AP8m%2BrNKxCqqGy2PE5wvbJ%2BAR3EWzFJZGlxiYR20%2BQ7m2%2BrDqb8IoN4iDEIslgjakcFgmJ4px40GCwfrGzNh7uO5kvvL%2BsshEwH3tk9zruaDlLNE9Di%2F%2FrsfPqy82cB7lObSz1ndej5Lmi9zK%2Bx1hS9ddam9n1n8rPD0nxPrf5fI%2F3F2C1fFFfyVcwLB5LvdU3a6PGk13y4aP9SjKw9hOl2w%3D%3D",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"account-verify",
-								"external",
-								"{{user_id}}",
-								"email",
-								"token",
-								"CfDJ8DquEZb3xxNKpBqWSRZfc3K43jtOzGvPtK9TwwhRG9AP8m%2BrNKxCqqGy2PE5wvbJ%2BAR3EWzFJZGlxiYR20%2BQ7m2%2BrDqb8IoN4iDEIslgjakcFgmJ4px40GCwfrGzNh7uO5kvvL%2BsshEwH3tk9zruaDlLNE9Di%2F%2FrsfPqy82cB7lObSz1ndej5Lmi9zK%2Bx1hS9ddam9n1n8rPD0nxPrf5fI%2F3F2C1fFFfyVcwLB5LvdU3a6PGk13y4aP9SjKw9hOl2w%3D%3D"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Send Phone Number Confirmation Token",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"iso_country_code\": \"HRV\",\r\n    \"country_code_number\": \"+385\",\r\n    \"phone_number\": \"91-944-0067\",\r\n    \"is_voice_call\": false\r\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/account-verify/{{user_id}}/phone-number",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"account-verify",
-								"{{user_id}}",
-								"phone-number"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Confirm Phone Number",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Basic {{client_authorization}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/account-verify/{{user_id}}/phone-number/385919440067/token/700268",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"account-verify",
-								"{{user_id}}",
-								"phone-number",
-								"385919440067",
-								"token",
-								"700268"
+								"auth",
+								"refresh-tokens"
 							]
 						}
 					},
@@ -1535,7 +1562,7 @@
 				{
 					"name": "Update Policy",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -1550,59 +1577,76 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"section\": \"Book\",\r\n    \"actions\": [\r\n        { \"type\": \"Read\", \"is_enabled\": true },\r\n        { \"type\": \"Update\", \"is_enabled\": true },\r\n        { \"type\": \"Delete\", \"is_enabled\": true },\r\n        { \"type\": \"Create\", \"is_enabled\": true }\r\n    ]\r\n}"
+							"raw": "[\r\n    { \"type\": \"Read\", \"is_enabled\": true },\r\n    { \"type\": \"Update\", \"is_enabled\": true },\r\n    { \"type\": \"Delete\", \"is_enabled\": true },\r\n    { \"type\": \"Create\", \"is_enabled\": true }\r\n]"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/permissions/9621c09c-06b1-45fb-8baf-38e0757e2f59",
+							"raw": "{{base_url}}/api/permissions/sections/{{section_type}}/roles/{{role_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"permissions",
-								"9621c09c-06b1-45fb-8baf-38e0757e2f59"
+								"sections",
+								"{{section_type}}",
+								"roles",
+								"{{role_id}}"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Policies",
+					"name": "Get roles (with specific section policy prefetch)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
 							{
 								"key": "Authorization",
 								"value": "Bearer {{access_token}}",
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    { \"type\": \"Read\", \"is_enabled\": true },\r\n    { \"type\": \"Update\", \"is_enabled\": true },\r\n    { \"type\": \"Delete\", \"is_enabled\": true },\r\n    { \"type\": \"Create\", \"is_enabled\": true }\r\n]"
+						},
 						"url": {
-							"raw": "{{base_url}}/api/permissions/{{section}}?sort_order=name|desc&search_string=Guest&page_size=3&page_number=1",
+							"raw": "{{base_url}}/api/permissions/sections/{{section_type}}/roles?search_string=Guest&page_number=1&page_size=5&sort_order=name|desc",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"permissions",
-								"{{section}}"
+								"sections",
+								"{{section_type}}",
+								"roles"
 							],
 							"query": [
-								{
-									"key": "sort_order",
-									"value": "name|desc"
-								},
 								{
 									"key": "search_string",
 									"value": "Guest"
 								},
 								{
-									"key": "page_size",
-									"value": "3"
-								},
-								{
 									"key": "page_number",
 									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "5"
+								},
+								{
+									"key": "sort_order",
+									"value": "name|desc"
 								}
 							]
 						}
@@ -1642,8 +1686,8 @@
 			"value": "9621c09c-06b1-45fb-8baf-38e0757e2f59"
 		},
 		{
-			"key": "section",
-			"value": "Book"
+			"key": "section_type",
+			"value": "book"
 		}
 	]
 }

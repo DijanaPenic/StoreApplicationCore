@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f87978d1-f181-4fc0-b1a4-44d7c41620f8",
+		"_postman_id": "2a09f3df-b528-4848-98fe-df523ca5fd54",
 		"name": "Twilio",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,18 +9,30 @@
 			"name": "Monbile Phone Verification Token",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic {{client_authentication}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "{{base_url}}/api/twilio/phone-number/token/123456",
+					"raw": "{{base_url}}/api/twilio//call/stoken?code=123456",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"api",
 						"twilio",
-						"phone-number",
-						"token",
-						"123456"
+						"",
+						"call",
+						"stoken"
+					],
+					"query": [
+						{
+							"key": "code",
+							"value": "123456"
+						}
 					]
 				}
 			},
