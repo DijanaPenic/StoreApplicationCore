@@ -150,7 +150,7 @@ namespace Store.Repository.Core
             ModelMapperHelper.GetSortPropertyMappings<TDomain, TEntity>(Mapper, sorting);
 
         protected string[] OptionsMap<TDomain, TEntity>(IOptionsParameters options) =>
-            ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.Properties);
+            ModelMapperHelper.GetPropertyMappings<TDomain, TEntity>(Mapper, options?.IncludeProperties);
 
         protected Expression<Func<TEntity, bool>>
             FilterMap<TDomain, TEntity>(Expression<Func<TDomain, bool>> filterExpression) =>

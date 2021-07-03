@@ -2,13 +2,9 @@
 {
     public class OptionsFactory : IOptionsFactory
     {
-        public OptionsFactory()
+        public IOptionsParameters Create(string[] includeProperties)
         {
-        }
-
-        public IOptionsParameters Create(string[] properties = null)
-        {
-            return new OptionsParameters(properties);
+            return new OptionsParameters(includeProperties);
         }
     }
 }

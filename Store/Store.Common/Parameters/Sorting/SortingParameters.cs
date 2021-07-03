@@ -10,39 +10,34 @@ namespace Store.Common.Parameters.Sorting
         public const string DescendingDirection = "desc";
         public const char SortingParametersSeparator = '|';
 
-        private readonly string[] _sort = null;
-
         // Setter is not private because of the model mapper (the ModelMapperHelper class)
         public IList<ISortingPair> Sorters { get; set; }
 
-        public SortingParameters(string[] sort)
+        public SortingParameters(IReadOnlyCollection<string> sort)
         {
-            _sort = sort;
-            Initialize();
+            InitializeSorting(sort);
         }
 
-        private void Initialize()
+        private void InitializeSorting(IReadOnlyCollection<string> sort)
         {
-            if (_sort.Length == 0) return;
+            if (sort.Count == 0) return;
 
             Sorters = new List<ISortingPair>();   
 
-            foreach (string sortingRequest in _sort)
+            foreach (string sortingRequest in sort)
             {
                 IList<string> sortParams = sortingRequest.Split(SortingParametersSeparator).ToList();
                 if (sortParams.Count < 1)
-                    throw new ArgumentNullException("Not a valid sorting format.");
+                    throw new ArgumentNullException($"Not a valid sorting format.");
 
-                if (!string.IsNullOrWhiteSpace(sortParams[0]))
-                {
-                    SortingPair sortingPair = new SortingPair
-                    (
-                        orderBy: sortParams[0],
-                        ascending: sortParams.Count < 2 || (sortParams[1].ToLowerInvariant().StartsWith(AscendingDirection))
-                    );
+                if (string.IsNullOrWhiteSpace(sortParams[0])) continue;
+                
+                SortingPair sortingPair = new(
+                    orderBy: sortParams[0],
+                    ascending: sortParams.Count == 1 || (sortParams[1].ToLowerInvariant().StartsWith(AscendingDirection))
+                );
 
-                    Sorters.Add(sortingPair);
-                }
+                Sorters.Add(sortingPair);
             }
         }
     }

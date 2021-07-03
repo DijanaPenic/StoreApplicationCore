@@ -2,15 +2,11 @@
 {
     public class OptionsParameters : IOptionsParameters
     {
-        public string[] Properties
-        {
-            get;
-            private set;
-        }
+        public string[] IncludeProperties { get; }
 
-        public OptionsParameters(string[] properties = null)
+        public OptionsParameters(string[] includeProperties)
         {
-            Properties = properties;
+            IncludeProperties = includeProperties;
         }
     }
 }

@@ -2,14 +2,11 @@
 
 namespace Store.Common.DataTypes
 {
-    public struct DateTimeRange
+    public readonly struct DateTimeRange
     {
-        private readonly DateTime? _max;
-        private readonly DateTime? _min;
+        public DateTime? Max { get; }
 
-        public DateTime? Max { get { return _max; } }
-
-        public DateTime? Min { get { return _min; } }
+        public DateTime? Min { get; }
 
         public DateTimeRange(DateTime? min, DateTime? max)
         {
@@ -18,14 +15,14 @@ namespace Store.Common.DataTypes
                 throw new ArgumentOutOfRangeException("Minimum value is larger than maximum value.");
             }
 
-            _min = min;
-            _max = max;
+            Min = min;
+            Max = max;
         }
 
         public bool IsBetween(DateTime dateTime)
         {
-            DateTime localMin = _min ?? DateTime.MinValue;
-            DateTime localMax = _max ?? DateTime.MaxValue;
+            DateTime localMin = Min ?? DateTime.MinValue;
+            DateTime localMax = Max ?? DateTime.MaxValue;
 
             return localMin <= dateTime && dateTime <= localMax;
         }

@@ -12,17 +12,17 @@ namespace Store.Common.Parameters.Filtering
             _serviceProvider = serviceProvider;
         }
 
-        public T Create<T>() where T : IFilteringParameters
-        {
-            return _serviceProvider.GetService<T>();
-        }
-
         public T Create<T>(string searchString) where T : IFilteringParameters
         {
             T result = Create<T>();
             result.SearchString = searchString;
 
             return result;
+        }
+        
+        private T Create<T>() where T : IFilteringParameters
+        {
+            return _serviceProvider.GetService<T>();
         }
     }
 }
