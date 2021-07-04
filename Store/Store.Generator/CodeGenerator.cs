@@ -105,20 +105,21 @@ namespace Store.Generator
             }
         }
         
+        internal static async Task RunSqlQueriesAsync()
         {
-            string roothPath = @"..\..\..\..\Store.Repository";
+            const string rootPath = @"..\..\..\..\Store.Repository";
 
-            string sourcePath = Path.Combine(roothPath, "SqlQueries");
-            string outputPath = Path.Combine(roothPath, "SqlQueries");
+            string sourcePath = Path.Combine(rootPath, "SqlQueries");
+            string outputPath = Path.Combine(rootPath, "SqlQueries");
 
             string[] directories = Directory.GetDirectories(sourcePath);
             IList<DirectoryModel> directoryModels = new List<DirectoryModel>();
 
             foreach (string directory in directories)
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(directory);
+                DirectoryInfo directoryInfo = new(directory);
 
-                DirectoryModel directoryModel = new DirectoryModel
+                DirectoryModel directoryModel = new()
                 {
                     Name = directoryInfo.Name,
                     Files = new List<FileModel>()
@@ -127,14 +128,14 @@ namespace Store.Generator
                 string[] files = Directory.GetFiles(directoryInfo.FullName, "*.sql", SearchOption.AllDirectories);
                 foreach (string file in files)
                 {
-                    FileInfo fileInfo = new FileInfo(file);
+                    FileInfo fileInfo = new(file);
 
-                    directoryModel.Files.Add(new SqlFileModel()
+                    directoryModel.Files.Add(new SqlQueryModel()
                     {
                         Name = Path.GetFileNameWithoutExtension(fileInfo.FullName),
-                        RelativePath = Path.GetRelativePath(roothPath, fileInfo.FullName),
+                        RelativePath = Path.GetRelativePath(rootPath, fileInfo.FullName),
                         FullPath = fileInfo.FullName,
-                        Parameters = GetSqlQueryParameters(fileInfo.FullName)
+                        Parameters = await GetSqlQueryParametersAsync(fileInfo.FullName)
                     });
                 }
 
@@ -146,18 +147,18 @@ namespace Store.Generator
 
             // SQL Queries
             Template sqlQueriesTemplate = Template.Parse(await LoadTemplateAsync("SqlQueries"));
-            string sqlQueriesResult = sqlQueriesTemplate.Render(Hash.FromAnonymousObject(new 
+            string sqlQueriesContent = sqlQueriesTemplate.Render(Hash.FromAnonymousObject(new 
             { 
                 SqlQueryCategories = directoryModels
             }));
-            await File.WriteAllTextAsync(Path.Combine(outputPath, "SqlQueries.generated.cs"), sqlQueriesResult);
+            await File.WriteAllTextAsync(Path.Combine(outputPath, "SqlQueries.generated.cs"), sqlQueriesContent);
         }
 
-        private static SqlParameterModel[] GetSqlQueryParameters(string path)
+        private static async Task<SqlParameterModel[]> GetSqlQueryParametersAsync(string path)
         {
-            string commandText = File.ReadAllText(path);
+            string commandText = await File.ReadAllTextAsync(path);
 
-            Regex rgxExpression = new Regex(@"\@([^=<>\s\']+)");
+            Regex rgxExpression = new(@"\@([^=<>\s\']+)");
             SqlParameterModel[] parameters = rgxExpression.Matches(commandText)
                                                           .Select(p => p.Value.TrimStart('(', '@').TrimEnd(')'))
                                                           .Distinct()

@@ -25,7 +25,7 @@ namespace Store.Repository.Queries
                 public static class Parameters
                 {
                     {%- for parameter in sqlQueryFile.parameters -%}
-                    public static string {{ parameter.display_name }} = "@{{ parameter.name }}";
+                    public static string {{ parameter.pascal_name }} = "@{{ parameter.name }}";
                     {%- endfor -%}
                 }          
            }

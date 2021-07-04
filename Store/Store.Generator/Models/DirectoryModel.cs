@@ -5,8 +5,8 @@ namespace Store.Generator.Models
 {
     internal class DirectoryModel : Drop
     {
-        public string Name { get; set; }
+        public string Name { get; init; }
 
-        public IList<FileModel> Files { get; set; }
+        public IList<FileModel> Files { get; init; }
     }
 }
