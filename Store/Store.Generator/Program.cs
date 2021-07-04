@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 
 namespace Store.Generator
 {
-    class Program
+    internal static class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             Console.WriteLine("Code generation has started!");
 
             await CodeGenerator.RunSqlQueriesAsync();
+            await CodeGenerator.RunEntitySchemasAsync();
 
             Console.WriteLine("Code generation has finished!");
         }

@@ -1,17 +1,110 @@
-﻿using DotLiquid;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DotLiquid;
 
+using static System.String;
+
+using Store.Entities;
 using Store.Generator.Models;
+using Store.Common.Extensions;
 
 namespace Store.Generator
 {
     internal static class CodeGenerator
     {
-        internal async static Task RunSqlQueriesAsync()
+        internal static async Task RunEntitySchemasAsync()
+        {
+            // Configure paths
+            const string entityPath = @"..\..\..\..\Store.Entity";
+            const string databaseAccessLayerPath = @"..\..\..\..\Store.DAL";
+            
+            string outputPath = Path.Combine(databaseAccessLayerPath, "Schema");
+
+            // Retrieve entity files
+            string[] files = Directory.GetFiles(entityPath, "*Entity.cs", SearchOption.AllDirectories)
+                .Where(d => !d.Contains("Core")).ToArray();
+
+            // Purge schema directory first and then create empty one
+            Directory.Delete(outputPath, true);
+            Directory.CreateDirectory(outputPath);
+            
+            // Load entity schema template
+            Template entitySchemaTemplate = Template.Parse(await LoadTemplateAsync("EntitySchema"));
+            
+            foreach (string file in files)
+            {
+                FileInfo fileInfo = new(file);
+                
+                // Get entity name
+                string entityName = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+                
+                // Get entity namespace
+                string entityNamespace = (await File.ReadAllLinesAsync(fileInfo.FullName))
+                    .FirstOrDefault(l => l.Contains("namespace"))
+                    ?.Replace("namespace", Empty)
+                    .Trim();
+
+                // Get entity type
+                Type entityType = typeof(IDbBaseEntity).Assembly.GetType($"{entityNamespace}.{entityName}");
+
+                // Get parent directory name, i.e. schema name
+                string parentDirectory =  Path.GetFileName(fileInfo.DirectoryName)
+                    ?.Replace("Store.Entity", Empty); 
+                
+                // Get schema class name
+                string className = entityName.Replace("Entity", Empty);
+
+                EntityModel entityModel = new()
+                {
+                    ClassName = className,
+                    Properties = GetProperties(entityType),
+                    TableName = GetTableName(entityName, parentDirectory),
+                    ClassNamespace = GetSchemaNamespace(parentDirectory)
+                };
+
+                string schemaContent = entitySchemaTemplate.Render(Hash.FromAnonymousObject(new { Entity = entityModel }));
+                
+                string schemaDirectory = Path.Combine(outputPath, parentDirectory ?? Empty);
+                CreateDirectoryIfNotExist(schemaDirectory);
+                
+                string schemaPath = Path.Combine(schemaDirectory, $"{className}Schema.generated.cs");
+                
+                await File.WriteAllTextAsync(schemaPath, schemaContent);
+            }
+        }
+
+        private static string GetSchemaNamespace(string parentDirectory)
+        {
+            const string relativeSchemaPath = "Store.DAL.Schema";
+            
+            return (IsNullOrEmpty(parentDirectory)) ? relativeSchemaPath : $"{relativeSchemaPath}.{parentDirectory}";
+        }
+        
+        private static string GetTableName(string entityName, string parentDirectory)
+        {
+            string schemaName = parentDirectory.ToSnakeCase();
+            entityName = entityName.Replace("Entity", Empty).ToSnakeCase();
+
+            return (IsNullOrEmpty(schemaName)) ? entityName : $"{schemaName}.{entityName}";
+        }
+
+        private static IEnumerable<PropertyModel> GetProperties(IReflect entityType)
+        {
+            PropertyInfo[] propertyInfos = entityType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo propertyInfo in propertyInfos)
+            {
+                yield return new PropertyModel()
+                {
+                    Name = propertyInfo.Name
+                };
+            }
+        }
+        
         {
             string roothPath = @"..\..\..\..\Store.Repository";
 
