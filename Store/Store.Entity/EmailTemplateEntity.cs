@@ -5,7 +5,7 @@ using Store.Entities.Identity;
 
 namespace Store.Entities
 {
-    public class EmailTemplateEntity : IDBBaseEntity, IDbChangeable
+    public class EmailTemplateEntity : IDbBaseEntity, IDbChangeable
     {
         public Guid Id { get; set; }
 

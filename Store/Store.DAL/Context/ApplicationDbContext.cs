@@ -83,7 +83,7 @@ namespace Store.DAL.Context
 
                 if (entry.State == EntityState.Added)
                 {
-                    if (entity is IDBBaseEntity baseEntity) baseEntity.DateCreatedUtc = utcNow;
+                    if (entity is IDbBaseEntity baseEntity) baseEntity.DateCreatedUtc = utcNow;
                     if (entry.Metadata.FindProperty("Id") != null) entry.Property("Id").CurrentValue = GuidHelper.NewSequentialGuid();
                 }
 

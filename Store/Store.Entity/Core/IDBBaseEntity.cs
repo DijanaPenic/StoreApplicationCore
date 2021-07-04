@@ -2,7 +2,7 @@
 
 namespace Store.Entities
 {
-    public interface IDBBaseEntity
+    public interface IDbBaseEntity
     {
         DateTime DateCreatedUtc { get; set; }
     }

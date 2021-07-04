@@ -2,7 +2,7 @@
 
 namespace Store.Entities
 {
-    public class BookEntity : IDBBaseEntity, IDbChangeable
+    public class BookEntity : IDbBaseEntity, IDbChangeable
     {
         public Guid Id { get; set; }
 

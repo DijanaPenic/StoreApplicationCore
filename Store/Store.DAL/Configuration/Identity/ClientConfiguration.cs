@@ -23,7 +23,7 @@ namespace Store.DAL.Configuration.Identity
             builder.Property(c => c.Secret).IsRequired();
             builder.Property(c => c.AllowedOrigin).HasMaxLength(100);
 
-            // Set indeces
+            // Set indices
             builder.HasIndex(c => c.Name).HasDatabaseName("NameIndex").IsUnique();
 
             // Seed data
