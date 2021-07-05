@@ -21,8 +21,8 @@ namespace Store.Repository.DependencyInjection
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // DbContext scope: https://docs.microsoft.com/en-us/ef/core/dbcontext-configuration/
-            string connectionString = configuration.GetConnectionString("Database");
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+            string dbConnectionString = configuration.GetConnectionString("Database");
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(dbConnectionString).UseSnakeCaseNamingConvention());
 
             services.AddScoped<IUserStore<IUser>, ApplicationUserStore>();
             services.AddScoped<IRoleStore<IRole>, ApplicationRoleStore>();
