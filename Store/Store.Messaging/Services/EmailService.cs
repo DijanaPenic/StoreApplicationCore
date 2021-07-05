@@ -34,7 +34,7 @@ namespace Store.Messaging.Services
 
         public async Task SendConfirmAccountAsync(Guid clientId, string email, string url)
         {
-            ConfirmAccountViewModel confirmAccountModel = new ConfirmAccountViewModel(url);
+            ConfirmAccountViewModel confirmAccountModel = new(url);
             string template = await GetHtmlEmailContentAsync(clientId, confirmAccountModel, EmailTemplateType.ConfirmAccount);
 
             await SendEmailAsync
@@ -47,7 +47,7 @@ namespace Store.Messaging.Services
 
         public async Task SendConfirmEmailAsync(Guid clientId, string email, string url, string userName)
         {
-            ConfirmEmailViewModel confirmEmailModel = new ConfirmEmailViewModel(userName, url);
+            ConfirmEmailViewModel confirmEmailModel = new(userName, url);
             string template = await GetHtmlEmailContentAsync(clientId, confirmEmailModel, EmailTemplateType.ConfirmEmail);
 
             await SendEmailAsync
@@ -60,7 +60,7 @@ namespace Store.Messaging.Services
 
         public async Task SendConfirmExternalAccountAsync(Guid clientId, string email, string url, string providerDisplayName)
         {
-            ConfirmExternalAccountViewModel confirmExternalAccountModel = new ConfirmExternalAccountViewModel(url, providerDisplayName);
+            ConfirmExternalAccountViewModel confirmExternalAccountModel = new(url, providerDisplayName);
             string template = await GetHtmlEmailContentAsync(clientId, confirmExternalAccountModel, EmailTemplateType.ConfirmExternalAccount);
 
             await SendEmailAsync
@@ -73,7 +73,7 @@ namespace Store.Messaging.Services
 
         public async Task SendResetPasswordAsync(Guid clientId, string email, string url, string userName)
         {
-            ResetPasswordViewModel resetPasswordModel = new ResetPasswordViewModel(url, userName);
+            ResetPasswordViewModel resetPasswordModel = new(url, userName);
             string template = await GetHtmlEmailContentAsync(clientId, resetPasswordModel, EmailTemplateType.ResetPassword);
 
             await SendEmailAsync
@@ -86,7 +86,7 @@ namespace Store.Messaging.Services
 
         public async Task SendChangePasswordEmailAsync(Guid clientId, string email, string userName, string newPassword)
         {
-            ChangePasswordViewModel changePasswordModel = new ChangePasswordViewModel(userName, newPassword);
+            ChangePasswordViewModel changePasswordModel = new(userName, newPassword);
             string template = await GetHtmlEmailContentAsync(clientId, changePasswordModel, EmailTemplateType.ChangePassword);
 
             await SendEmailAsync
@@ -118,7 +118,7 @@ namespace Store.Messaging.Services
 
         private static string ResolveEmailTemplatePlaceholders<T>(string template, T model)
         {
-            StringBuilder sb = new StringBuilder(template);
+            StringBuilder sb = new(template);
 
             PropertyInfo[] propertyInfos = typeof(T).GetProperties();
             foreach (PropertyInfo propertyInfo in propertyInfos)
@@ -131,7 +131,7 @@ namespace Store.Messaging.Services
 
         private Task SendEmailAsync(string email, string subject, string message)
         {
-            SendGridMessage msg = new SendGridMessage()
+            SendGridMessage msg = new()
             {
                 From = new EmailAddress(_config.FromEmail, "Store Email Server"), 
                 Subject = subject,

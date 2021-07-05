@@ -31,15 +31,14 @@ namespace Store.Messaging.Templates.Services.Email
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model)
+        public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel viewModel)
         {
             ActionContext actionContext = GetActionContext();
             IView view = FindView(actionContext, viewName);
 
-            await using StringWriter output = new StringWriter();
+            await using StringWriter output = new();
 
-            ViewContext viewContext = new ViewContext
-            (
+            ViewContext viewContext = new(
                 actionContext,
                 view,
                 new ViewDataDictionary<TModel>
@@ -47,7 +46,7 @@ namespace Store.Messaging.Templates.Services.Email
                     metadataProvider: new EmptyModelMetadataProvider(),
                     modelState: new ModelStateDictionary()
                 )
-                { Model = model },
+                { Model = viewModel },
                 new TempDataDictionary(actionContext.HttpContext, _tempDataProvider),
                 output,
                 new HtmlHelperOptions()
@@ -84,7 +83,7 @@ namespace Store.Messaging.Templates.Services.Email
 
         private ActionContext GetActionContext()
         {
-            DefaultHttpContext httpContext = new DefaultHttpContext
+            DefaultHttpContext httpContext = new()
             {
                 RequestServices = _serviceProvider
             };
