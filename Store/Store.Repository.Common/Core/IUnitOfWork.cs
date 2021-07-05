@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Store.Common.Enums;
 using Store.Repository.Common.Repositories;
@@ -6,7 +7,7 @@ using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Common.Core
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         IRoleRepository RoleRepository { get; }
 

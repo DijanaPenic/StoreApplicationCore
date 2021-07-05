@@ -47,8 +47,10 @@ namespace Store.DAL.Context
 
         public DbSet<ClientEntity> Clients { get; set; }
 
-        public IDbConnection Connection => Database.GetDbConnection();  // multiple calls will return the same connection
+        // NOTE - Multiple calls will return the same connection; this will only cast the existing connection to IDbConnection
+        public IDbConnection Connection => Database.GetDbConnection();
 
+        // NOTE - This will only cast transaction to IDbTransaction; transaction is created in UoW class
         public IDbTransaction Transaction => Database.CurrentTransaction?.GetDbTransaction();
 
         protected override void OnModelCreating(ModelBuilder builder)

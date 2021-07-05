@@ -1,6 +1,7 @@
-﻿using Dapper;
-using AutoMapper;
+﻿using System;
 using System.Threading.Tasks;
+using Dapper;
+using AutoMapper;
 
 using Store.DAL.Context;
 using Store.Common.Enums;
@@ -12,7 +13,7 @@ using Store.Repository.Common.Repositories.Identity;
 
 namespace Store.Repository.Core
 {
-    internal class UnitOfWork : IUnitOfWork
+    internal sealed class UnitOfWork : IUnitOfWork
     {
         #region Fields
 
@@ -53,14 +54,12 @@ namespace Store.Repository.Core
             _dbContext = dbContext;
             _mapper = mapper;
 
-            _dbContext.Connection.Open();
+            _dbContext.Connection.Open(); // open database connection explicitly
             _dbContext.Database.BeginTransaction();
 
             // Dapper configuration
             DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
-
-        #region IUnitOfWork Members
 
         public IRoleRepository RoleRepository => _roleRepository ??= new RoleRepository(_dbContext, _mapper);
 
@@ -111,7 +110,29 @@ namespace Store.Repository.Core
                 await _dbContext.Database.BeginTransactionAsync();
             }
         }
+        
+        private bool _disposed;
+        
+        public void Dispose()
+        {
+            // Dispose of unmanaged resources.
+            Dispose(true);
+            
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
 
-        #endregion
+        // Protected implementation of Dispose pattern.
+        private void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            
+            if(disposing)
+            {
+                _dbContext.Transaction?.Dispose();
+            }
+            
+            _disposed = true;
+        }
     }
 }
