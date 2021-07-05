@@ -68,8 +68,8 @@ namespace Store.Common.Helpers
         {
             IList<string> result = new List<string>();
 
-            if (properties is {Length: 0}) return default;
-            
+            if (properties is not {Length: > 0}) return default;
+
             Type dstType = typeof(TDestination);
             Type srcType = typeof(TSource);
 
