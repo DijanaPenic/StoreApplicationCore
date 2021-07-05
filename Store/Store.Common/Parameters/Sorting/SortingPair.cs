@@ -20,7 +20,7 @@ namespace Store.Common.Parameters.Sorting
             (
                 "{0}{1}{2}", 
                 OrderBy, 
-                SortingParameters.SortingParametersSeparator, 
+                SortingParameters.Separator, 
                 Ascending ? SortingParameters.AscendingDirection : SortingParameters.DescendingDirection
             );
         }

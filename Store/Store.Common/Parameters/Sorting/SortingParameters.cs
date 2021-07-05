@@ -8,7 +8,7 @@ namespace Store.Common.Parameters.Sorting
     {
         public const string AscendingDirection = "asc";
         public const string DescendingDirection = "desc";
-        public const char SortingParametersSeparator = '|';
+        public const char Separator = '|';
 
         // Setter is not private because of the model mapper (the ModelMapperHelper class)
         public IList<ISortingPair> Sorters { get; set; }
@@ -26,7 +26,7 @@ namespace Store.Common.Parameters.Sorting
 
             foreach (string sortingRequest in sort)
             {
-                IList<string> sortParams = sortingRequest.Split(SortingParametersSeparator).ToList();
+                IList<string> sortParams = sortingRequest.Split(Separator).ToList();
                 if (sortParams.Count < 1)
                     throw new ArgumentNullException($"Not a valid sorting format.");
 

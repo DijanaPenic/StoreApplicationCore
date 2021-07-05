@@ -12,8 +12,8 @@ namespace Store.Common.Helpers
 {
     public static class ModelMapperHelper
     {
-        private static readonly ConcurrentDictionary<string, string> SorterModelMappings = new();
-        private static readonly ConcurrentDictionary<string, string> PropertyModelMappings = new();
+        private static readonly ConcurrentDictionary<string, string> SortPropertyMappings = new();
+        private static readonly ConcurrentDictionary<string, string> PropertyMappings = new();
 
         public static string[] GetSortPropertyMappings<TDestination, TSource>(IMapper mapper, string sortExpression)
         {
@@ -31,20 +31,20 @@ namespace Store.Common.Helpers
 
             foreach (string property in properties)
             {
-                if (!property.Contains(SortingParameters.SortingParametersSeparator)) continue;
+                if (!property.Contains(SortingParameters.Separator)) continue;
                 
-                string[] sortFragments = property.Split(SortingParameters.SortingParametersSeparator);
+                string[] sortFragments = property.Split(SortingParameters.Separator);
                 if (sortFragments.Length != 2) continue;
                     
-                string srcProperty = SorterModelMappings.GetOrAdd
+                string srcProperty = SortPropertyMappings.GetOrAdd
                 (
                     $"{srcType.FullName}{dstType.FullName}{sortFragments[0].ToPascalCase()}",
-                    (string key) => GetSourceProperty(mapper, mapping, property: sortFragments[0])
+                    GetSourceProperty(mapper, mapping, property: sortFragments[0])
                 );
 
-                if (!string.IsNullOrEmpty(srcProperty))
+                if (!string.IsNullOrWhiteSpace(srcProperty))
                 {
-                    result.Add($"{((!string.IsNullOrWhiteSpace(srcProperty)) ? srcProperty : sortFragments[0])}{SortingParameters.SortingParametersSeparator}{sortFragments[1]}");
+                    result.Add($"{sortFragments[0]}{SortingParameters.Separator}{sortFragments[1]}");
                 }
             }
 
@@ -68,7 +68,7 @@ namespace Store.Common.Helpers
         {
             IList<string> result = new List<string>();
 
-            if (properties is not {Length: > 0}) return default;
+            if (properties is {Length: 0}) return default;
             
             Type dstType = typeof(TDestination);
             Type srcType = typeof(TSource);
@@ -77,13 +77,13 @@ namespace Store.Common.Helpers
 
             foreach (string property in properties)
             {
-                string srcProperty = PropertyModelMappings.GetOrAdd
+                string srcProperty = PropertyMappings.GetOrAdd
                 (
                     $"{srcType.FullName}{dstType.FullName}{property.ToPascalCase()}", 
-                    (string key) => GetSourceProperty(mapper, mapping, property)
+                    GetSourceProperty(mapper, mapping, property)
                 );
 
-                if(!string.IsNullOrEmpty(srcProperty))
+                if(!string.IsNullOrWhiteSpace(srcProperty))
                     result.Add(srcProperty);
             }
 
