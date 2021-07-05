@@ -146,7 +146,7 @@ namespace Store.WebAPI.Controllers
         }
 
         // TODO - need to move to the web application (USE AuthenticationSchemeProvider)
-        /// <summary>TODO REMOVE - Retrieves the names of the supported external login providers.</summary>
+        /// <summary>REMOVE - Retrieves the names of the supported external login providers.</summary>
         /// <returns>
         ///   <br />
         /// </returns>
@@ -163,7 +163,7 @@ namespace Store.WebAPI.Controllers
         }
 
         // TODO - need to move to the web application (USE AuthenticationSchemeProvider). Current test: https://store.com:5000/api/authenticate/external/initiate/Google?return_url=https%3A%2F%2Fstore.com%3A5000%2F
-        /// <summary>TODO REMOVE - Initiates the external login authentication process and redirects the user to the provider auth page.</summary>
+        /// <summary>REMOVE - Initiates the external login authentication process and redirects the user to the provider auth page.</summary>
         /// <param name="provider">Provider name or Id which uniquely identifies social login for which access token should be issued.</param>
         /// <param name="returnUrl">The return url.</param>
         /// <returns>
