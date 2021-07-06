@@ -13,15 +13,15 @@ namespace Store.WebAPI.Application.Startup.Extensions
         public static void AddMessagingServices(this IServiceCollection services, IConfiguration configuration)
         {
             // SMS & Voice
-            services.AddTransient<ISmsService, SmsService>();
-            services.AddTransient<IVoiceService, VoiceService>();
+            services.AddScoped<ISmsService, SmsService>();
+            services.AddScoped<IVoiceService, VoiceService>();
             services.Configure<TwilioAuthOptions>(configuration.GetSection(TwilioAuthOptions.Position));
 
             // Email
-            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.Configure<SendGridAuthOptions>(configuration.GetSection(SendGridAuthOptions.Position));
 
-            services.AddTransient<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
+            services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
             services.AddRazorPages();
         }
     }

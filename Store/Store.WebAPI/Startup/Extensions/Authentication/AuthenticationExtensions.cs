@@ -51,19 +51,19 @@ namespace Store.WebAPI.Application.Startup.Extensions
             })
             .AddRoles<IRole>()
             //.AddSignInManager<ApplicationSignInManager>()   // ApplicationSignInManager doesn't derive from SignInManager<IUser> so cannot register service using the AddSignInManager method
-            .AddUserManager<ApplicationUserManager>()       // Scoped - TODO - need to confirm
+            .AddUserManager<ApplicationUserManager>()       // Scoped
             .AddRoleManager<ApplicationRoleManager>()       // Scoped
             .AddDefaultTokenProviders();
 
             // ApplicationSignInManager dependencies
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<ApplicationSignInManager>(); // TODO - need to confirm
+            services.AddScoped<ApplicationSignInManager>();
 
             // ApplicationAuthManager dependencies
-            services.AddTransient<ApplicationAuthManager>();  // TODO - need to confirm
+            services.AddScoped<ApplicationAuthManager>();
 
             // ApplicationPermissionsManager dependencies
-            services.AddTransient<ApplicationPermissionsManager>(); // TODO - need to confirm
+            services.AddScoped<ApplicationPermissionsManager>();
 
             // Cookies configuration
             // Caution: need to enable cookies because of SignInManager: "All the authentication logic is tied to sign in manager which is tied to cookies in general."
@@ -103,7 +103,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
 
             // Note: Web API will be used as authentication and resource server - it will issue and validate incoming tokens.
             // Note: The following configuration is used to validate incoming access (JWT) tokens.
-            TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
+            TokenValidationParameters tokenValidationParameters = new()
             {
                 ValidateIssuer = false,     // Issuer will be checked by the client (web application)
                 ValidateIssuerSigningKey = true,    // TODO - can I disable this?

@@ -9,11 +9,11 @@ namespace Store.Service.DependencyInjection
     {
         public static void AddServiceComponents(this IServiceCollection services)
         {
-            services.AddTransient<IBookstoreService, BookstoreService>();
-            services.AddTransient<IBookService, BookService>();
-            services.AddTransient<IEmailTemplateService, EmailTemplateService>();
-            services.AddTransient<IGlobalSearchService, GlobalSearchService>();
-            services.AddTransient<ICountriesService, CountriesService>();
+            services.AddScoped<IBookstoreService, BookstoreService>();
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+            services.AddScoped<IGlobalSearchService, GlobalSearchService>();
+            services.AddScoped<ICountriesService, CountriesService>();
         }
     }
 }
