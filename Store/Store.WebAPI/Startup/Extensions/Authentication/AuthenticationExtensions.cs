@@ -106,7 +106,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             TokenValidationParameters tokenValidationParameters = new()
             {
                 ValidateIssuer = false,     // Issuer will be checked by the client (web application)
-                ValidateIssuerSigningKey = true,    // TODO - can I disable this?
+                ValidateIssuerSigningKey = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
                 ValidateAudience = true,    // Audience is checked by the resource server (in this project: Web API)
                 ValidAudience = jwtTokenConfig.Audience,
