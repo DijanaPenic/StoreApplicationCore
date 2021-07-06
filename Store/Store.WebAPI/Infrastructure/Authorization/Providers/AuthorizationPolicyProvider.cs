@@ -55,7 +55,7 @@ namespace Store.WebAPI.Infrastructure.Authorization.Providers
                 SectionType sectionType = Enum.Parse<SectionType>(policyData[0]);
                 AccessType accessAction = Enum.Parse<AccessType>(policyData[1]);
 
-                AuthorizationPolicyBuilder policy = new AuthorizationPolicyBuilder();
+                AuthorizationPolicyBuilder policy = new();
                 policy.AddRequirements(new SectionPolicyRequirement(sectionType, accessAction));
 
                 return Task.FromResult(policy.Build());

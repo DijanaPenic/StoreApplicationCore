@@ -12,10 +12,10 @@ namespace Store.WebAPI.Application.Startup.Extensions
         public static void AddAuthorizationServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Authorization policy provider
-            services.AddTransient<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
             // Handlers must be provided for the requirements of the authorization policies
-            services.AddTransient<IAuthorizationHandler, SectionAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, SectionAuthorizationHandler>();
         }
     }
 }
