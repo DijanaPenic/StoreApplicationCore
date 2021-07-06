@@ -207,7 +207,7 @@ namespace Store.Services.Identity
                 {
                     return $"Client secret should be provided for client '{clientId}'";
                 }
-                else if (client.Secret != HashHelper.GetSHA512Hash(clientSecret))
+                else if (client.Secret != HashHelper.GetSha512Hash(clientSecret))
                 {
                     return $"Client secret is not valid for client '{clientId}'";
                 }

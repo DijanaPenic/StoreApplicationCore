@@ -5,7 +5,7 @@ namespace Store.Common.Helpers
 {
     public static class HashHelper
     {
-        public static string GetSHA512Hash(string input)
+        public static string GetSha512Hash(string input)
         {
             HashAlgorithm hashAlgorithm = new SHA512CryptoServiceProvider();
 

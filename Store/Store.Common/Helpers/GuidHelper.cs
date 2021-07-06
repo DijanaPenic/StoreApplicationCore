@@ -17,7 +17,7 @@ namespace Store.Common.Helpers
             }
         }
 
-        public static Guid NewSequentialGuid() => SequentialGuidGenerator.Next(null);
+        public static Guid NewSequentialGuid() => SequentialGuidGenerator.Next(null!);
 
         public static bool IsNullOrEmpty(object value)
         {

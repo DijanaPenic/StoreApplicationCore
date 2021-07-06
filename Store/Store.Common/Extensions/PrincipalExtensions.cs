@@ -8,7 +8,7 @@ namespace Store.Common.Extensions
 
         public static bool IsInRoles(this IPrincipal source, params string[] roles)
         {
-            return roles.Any(role => source.IsInRole(role));
+            return roles.Any(source.IsInRole);
         }
     }
 }
