@@ -7,13 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
 
-using Store.Cache.DependencyInjection;
-using Store.Common.DependencyInjection;
 using Store.WebAPI.Application.Startup.Policies;
 using Store.WebAPI.Application.Startup.Providers;
 using Store.WebAPI.Application.Startup.Extensions;
-using Store.Service.DependencyInjection;
-using Store.Repository.DependencyInjection;
 
 namespace Store.WebAPI
 {

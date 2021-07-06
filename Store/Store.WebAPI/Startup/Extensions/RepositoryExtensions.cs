@@ -10,7 +10,7 @@ using Store.Repository.Common.Repositories.Identity.Stores;
 using Store.Repositories.Identity.Stores;
 using Store.Model.Common.Models.Identity;
 
-namespace Store.Repository.DependencyInjection
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class RepositoryExtensions
     {

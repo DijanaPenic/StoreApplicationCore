@@ -6,7 +6,7 @@ using Store.Common.Parameters.Sorting;
 using Store.Common.Parameters.Options;
 using Store.Common.Parameters.Filtering;
 
-namespace Store.Common.DependencyInjection
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class CommonExtensions
     {

@@ -9,22 +9,22 @@ using Store.Service.Common.Services;
 
 namespace Store.Services
 {
-    internal class GlobalSearchService : ParametersService, IGlobalSearchService
+    public class GlobalSearchService : IGlobalSearchService
     {
-        private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-        public GlobalSearchService
-        (
-            IUnitOfWork unitOfWork,
-            IQueryUtilityFacade queryUtilityFacade
-        ) : base (queryUtilityFacade)
-        {
-            _unitOfWork = unitOfWork;
-        }
+    public GlobalSearchService
+    (
+        IUnitOfWork unitOfWork,
+        IQueryUtilityFacade queryUtilityFacade
+    )
+    {
+        _unitOfWork = unitOfWork;
+    }
 
-        public Task<IEnumerable<ISearchItem>> FindAsync(IGlobalFilteringParameters filtering)
-        {
-            return _unitOfWork.GlobalSearchRepository.FindAsync(filtering);
-        }
+    public Task<IEnumerable<ISearchItem>> FindAsync(IGlobalFilteringParameters filtering)
+    {
+        return _unitOfWork.GlobalSearchRepository.FindAsync(filtering);
+    }
     }
 }

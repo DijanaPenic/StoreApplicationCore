@@ -15,7 +15,7 @@ using Store.Common.Parameters.Filtering;
 
 namespace Store.Services
 {
-    internal class BookstoreService : IBookstoreService
+    public class BookstoreService : IBookstoreService
     {
         private readonly IUnitOfWork _unitOfWork;
 

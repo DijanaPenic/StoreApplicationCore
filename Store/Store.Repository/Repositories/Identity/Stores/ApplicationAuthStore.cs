@@ -9,7 +9,7 @@ using Store.Model.Common.Models.Identity;
 
 namespace Store.Repositories.Identity.Stores
 {
-    internal sealed class ApplicationAuthStore : IApplicationAuthStore
+    public sealed class ApplicationAuthStore : IApplicationAuthStore
     {
         private readonly IUnitOfWork _unitOfWork;
 

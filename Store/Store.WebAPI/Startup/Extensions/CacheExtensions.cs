@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Store.Cache;
 using Store.Cache.Common;
 using Store.Cache.Common.Providers;
 using Store.Cache.Providers;
 
-namespace Store.Cache.DependencyInjection
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class CacheExtensions
     {

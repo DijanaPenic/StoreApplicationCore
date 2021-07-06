@@ -3,7 +3,7 @@
 using Store.Services;
 using Store.Service.Common.Services;
 
-namespace Store.Service.DependencyInjection
+namespace Store.WebAPI.Application.Startup.Extensions
 {
     public static class ServiceExtensions
     {

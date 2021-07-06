@@ -9,22 +9,23 @@ using Store.Cache.Common.Providers;
 
 namespace Store.Cache.Providers
 {
-    public class RedisCacheProvider : IRedisCacheProvider
+    public sealed class RedisCacheProvider : IRedisCacheProvider
     {
-        private static readonly object padLock = new object();
-        private static readonly object padLockDatabase = new object();
-        private static volatile IDatabase _database = null;         // volatile - variable must never be cached
-        private readonly string _configuration; 
+        private static volatile IDatabase _database;         // volatile - variable must never be cached
+        private readonly string _configuration;
+        
+        private static readonly object PadLock = new();
+        private static readonly object PadLockDatabase = new();
 
         public string KeyPrefix { get; set; }
 
-        public virtual IDatabase Database
+        private IDatabase Database
         {
             get
             {
                 if (_database == null)
                 {
-                    lock (padLockDatabase)
+                    lock (PadLockDatabase)
                     {
                         ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(_configuration);
                         _database = connection.GetDatabase();
@@ -32,10 +33,6 @@ namespace Store.Cache.Providers
                 }
 
                 return _database;
-            }
-            private set
-            {
-                _database = value;
             }
         }
 
@@ -61,8 +58,8 @@ namespace Store.Cache.Providers
             {
                 return JsonSerializer.Deserialize<T>(obj.ToString(), JsonSerializerInit.GetJsonSerializerOptions());
             }
-            else
-                return default;
+
+            return default;
         }
 
         public bool Contains(string key, string group = null)
@@ -72,7 +69,7 @@ namespace Store.Cache.Providers
 
         public bool Remove(string key, string group = null)
         {
-            lock (padLock)
+            lock (PadLock)
             {
                 try
                 {
@@ -90,7 +87,7 @@ namespace Store.Cache.Providers
         {
             if (value != null)
             {
-                lock (padLock)
+                lock (PadLock)
                 {
                     try
                     {

@@ -18,7 +18,7 @@ using Store.Common.Parameters.Filtering;
 
 namespace Store.Repositories.Identity.Stores
 {
-    internal sealed class ApplicationUserStore :
+    public sealed class ApplicationUserStore :
             IUserPasswordStore<IUser>,
             IUserEmailStore<IUser>,
             IUserRoleStore<IUser>,

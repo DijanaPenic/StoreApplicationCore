@@ -10,38 +10,23 @@ using Store.Service.Common.Services;
 
 namespace Store.Services
 {
-    internal class CountriesService : ICountriesService
+    public class CountriesService : ICountriesService
     {
-        private readonly string _countriesURL;
-        private HttpClient _httpClient = null;
+        private readonly string _countriesUrl;
+        private HttpClient _httpClient;
 
-        public HttpClient HttpClient
-        {
-            get
-            {
-                if (_httpClient == null)
-                {
-                    _httpClient = new HttpClient();
-                }
-
-                return _httpClient;
-            }
-            private set
-            {
-                _httpClient = value;
-            }
-        }
+        private HttpClient HttpClient => _httpClient ??= new HttpClient();
 
         public CountriesService(IConfiguration configuration)
         {
-            _countriesURL = configuration.GetSection("RESTCountriesURL").Value;
+            _countriesUrl = configuration.GetSection("RESTCountriesURL").Value;
         }
 
         public async Task<IList<ICountry>> GetCountriesAsync()
         {
             try
             {
-                HttpRequestMessage requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{_countriesURL}all");
+                HttpRequestMessage requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{_countriesUrl}all");
                 HttpResponseMessage responseMsg = await HttpClient.SendAsync(requestMsg);
 
                 string jsonResponse = await responseMsg.Content.ReadAsStringAsync();
@@ -59,7 +44,7 @@ namespace Store.Services
         {
             try
             {
-                HttpRequestMessage requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{_countriesURL}alpha/{code}");
+                HttpRequestMessage requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{_countriesUrl}alpha/{code}");
                 HttpResponseMessage responseMsg = await HttpClient.SendAsync(requestMsg);
 
                 string jsonResponse = await responseMsg.Content.ReadAsStringAsync();

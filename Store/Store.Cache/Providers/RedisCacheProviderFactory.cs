@@ -3,7 +3,7 @@ using Store.Cache.Common.Providers;
 
 namespace Store.Cache.Providers
 {
-    class RedisCacheProviderFactory : ICacheProviderFactory
+    public class RedisCacheProviderFactory : ICacheProviderFactory
     {
         private readonly IRedisCacheProvider _redisCacheProvider;
 
