@@ -39,8 +39,8 @@ namespace Store.WebAPI.Infrastructure.Authorization.Providers
 
             options.Value.AddPolicy
             (
-            "ClientAuthentication",
-            new AuthorizationPolicyBuilder("ClientAuthenticationScheme").RequireAuthenticatedUser().Build()
+                "ClientAuthentication",
+                new AuthorizationPolicyBuilder("ClientAuthenticationScheme").RequireAuthenticatedUser().Build()
             );
 
             FallbackPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
