@@ -1,24 +1,23 @@
-version: '3.7'
+version: '3'
 
 services:
-      
   redis-master:
-    image: redis:3
+    image: redis:6
     ports:
       - 6379:6379
  
   redis-slave-1:
-    image: redis:3
+    image: redis:6
     command: redis-server --slaveof redis-master 6379
-    links:
+    depends_on:
       - redis-master
     ports:
       - 6380:6379
       
   redis-slave-2:
-    image: redis:3
+    image: redis:6
     command: redis-server --slaveof redis-master 6379
-    links:
+    depends_on:
       - redis-master
     ports:
       - 6381:6379
@@ -28,5 +27,9 @@ services:
       context: ./redis-sentinel
     deploy:
       replicas: 3
-    links:
+    depends_on:
       - redis-master
+
+# Redis as a slave: https://redis.io/topics/config
+# Redis Sentinel: https://redis.io/topics/sentinel
+# Docker Context: https://docs.docker.com/engine/context/working-with-contexts/
