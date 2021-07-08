@@ -54,12 +54,7 @@ namespace Store.Cache.Providers
             catch (InvalidOperationException) { }
             catch (RedisConnectionException) { }
 
-            if (obj.HasValue)
-            {
-                return JsonSerializer.Deserialize<T>(obj.ToString(), JsonSerializerInit.GetJsonSerializerOptions());
-            }
-
-            return default;
+            return obj.HasValue ? JsonSerializer.Deserialize<T>(obj.ToString(), JsonSerializerInit.GetJsonSerializerOptions()) : default;
         }
 
         public bool Contains(string key, string group = null)
@@ -103,10 +98,8 @@ namespace Store.Cache.Providers
                             TimeSpan expiry = absoluteExpiration - DateTime.UtcNow;
                             return Database.StringSet(key, obj, expiry);
                         }
-                        else
-                        {
-                            return Database.StringSet(key, obj);
-                        }
+
+                        return Database.StringSet(key, obj);
                     }
                     catch (InvalidCastException) { }
                     catch (InvalidOperationException) { }
