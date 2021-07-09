@@ -29,12 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Cache.Common", "Store
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Reporting", "Store.Reporting\Store.Reporting.csproj", "{B1DE8FCC-7A41-4D9E-A334-B21A1343743A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Repository.Tests", "Store.Repository.Tests\Store.Repository.Tests.csproj", "{788C28D3-320D-476B-BCE0-87533D7A1A16}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Service.Tests", "Store.Service.Tests\Store.Service.Tests.csproj", "{2D5ADF1B-7798-4D52-8074-D71A43F264AF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.WebAPI.Tests", "Store.WebAPI.Tests\Store.WebAPI.Tests.csproj", "{E005D5DB-3C02-43C0-B595-908FB8648448}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Messaging", "Store.Messaging\Store.Messaging.csproj", "{70AD5AAD-E254-4DBE-A1EB-2BDA55B5F9B9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Messaging.Common", "Store.Messaging.Common\Store.Messaging.Common.csproj", "{09120B3D-CB17-4328-80D2-1995206E54D0}"
