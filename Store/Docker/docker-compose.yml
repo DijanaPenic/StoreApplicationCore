@@ -22,7 +22,7 @@ services:
   postgres-server:
     image: postgres:13
     ports: 
-      - 5432:5432
+      - 5060:5432
     restart: always
     environment: 
       POSTGRES_USER: postgres
@@ -30,10 +30,6 @@ services:
       POSTGRES_DB: Store
     depends_on:
       - web-api
-    #volumes:
-    #  - ../Queries/data-seed/book.sql:/docker-entrypoint-initdb.d/book.sql
-    # volumes:
-    #   - local_postgres_data:/var/lib/postgresql/data  # to persist our data
 
   # pgadmin:
   #   image: dpage/pgadmin4:5
