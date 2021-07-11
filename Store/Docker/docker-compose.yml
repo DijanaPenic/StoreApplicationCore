@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  web-api:
+    build:
+      context: ../
+      dockerfile: ./Store.WebAPI/Dockerfile
+    restart: always
+    ports:
+      - "5000:80"
+
+  database-update:
+    build:
+      context: ../
+      dockerfile: ./Docker/database-update/Dockerfile
+      #restart: always -> we need it once
+    depends_on:
+      - postgres-server
+    volumes:
+      - ../:/app
+
+  postgres-server:
+    image: postgres:13
+    ports: 
+      - 5432:5432
+    restart: always
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0k6aamsucNq57XV7aOHC   #TODO - should be a secret
+      POSTGRES_DB: Store
+    depends_on:
+      - web-api
+    #volumes:
+    #  - ../Queries/data-seed/book.sql:/docker-entrypoint-initdb.d/book.sql
+    # volumes:
+    #   - local_postgres_data:/var/lib/postgresql/data  # to persist our data
+
+  # pgadmin:
+  #   image: dpage/pgadmin4:5
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root   #TODO - should be a secret
+  #   ports:
+  #     - "5050:80"
+
+  redis-master:
+    image: redis:6
+    ports:
+      - 6379:6379
+    depends_on:
+      - web-api
+  
+  # Redis as a slave: https://redis.io/topics/config
+  redis-slave-1:
+    image: redis:6
+    command: redis-server --slaveof redis-master 6379
+    depends_on:
+      - redis-master
+    ports:
+      - 6380:6379
+      
+  redis-slave-2:
+    image: redis:6
+    command: redis-server --slaveof redis-master 6379
+    depends_on:
+      - redis-master
+    ports:
+      - 6381:6379
+      
+  # Redis Sentinel: https://redis.io/topics/sentinel
+  redis-sentinel:
+    build: 
+      context: ./redis-sentinel-cluster
+    deploy:
+      replicas: 3
+    depends_on:
+      - redis-master
+
+# GENERAL:
+## Docker Context: https://docs.docker.com/engine/context/working-with-contexts/
+## Volume is mapped only when the Dockerfile has been built successfully.

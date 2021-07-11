@@ -11,13 +11,13 @@ RUN mkdir -p /redis
 WORKDIR /redis
 
 COPY sentinel.conf .
-COPY sentinel-entrypoint.sh /usr/local/bin/
+COPY entrypoint.sh /usr/local/bin/
 
 # chown - change owner (redis user and group redis:redis)
 # chmod + x - allow executable permissions
 RUN chown redis:redis ./* && \
-    chmod +x /usr/local/bin/sentinel-entrypoint.sh
+    chmod +x /usr/local/bin/entrypoint.sh
  
 EXPOSE 26379
  
-ENTRYPOINT ["sentinel-entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
