@@ -4,7 +4,7 @@
     {
         public const string Position = "JwtToken";
 
-        public string Secret { get; set; }
+        public string SecretKey { get; set; }
 
         public string Issuer { get; set; }
 

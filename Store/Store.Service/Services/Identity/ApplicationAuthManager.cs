@@ -75,7 +75,7 @@ namespace Store.Services.Identity
             // Set jwt security token
             // Web API has a role of the authentication server - audience and issuer need to be set in JWT token. 
             // Issuer will be checked by the client (web application), and audience will be checked by the resource server (in this application: Web API). 
-            byte[] secret = Encoding.ASCII.GetBytes(_jwtTokenConfig.Secret);
+            byte[] secret = Encoding.ASCII.GetBytes(_jwtTokenConfig.SecretKey);
 
             JwtSecurityToken jwtToken = new(
                 issuer: _jwtTokenConfig.Issuer,

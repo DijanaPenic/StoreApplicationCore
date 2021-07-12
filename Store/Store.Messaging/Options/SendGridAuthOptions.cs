@@ -6,7 +6,7 @@
 
         public string User { get; set; }
 
-        public string Key { get; set; }
+        public string ApiKey { get; set; }
 
         public string FromEmail { get; set; }
     }

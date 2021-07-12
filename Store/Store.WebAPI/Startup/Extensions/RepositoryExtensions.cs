@@ -21,7 +21,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // DbContext scope: https://docs.microsoft.com/en-us/ef/core/dbcontext-configuration/
-            string dbConnectionString = configuration.GetConnectionString("Database");
+            string dbConnectionString = configuration.GetConnectionString("LocalDatabase");
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(dbConnectionString).UseSnakeCaseNamingConvention());
 
             services.AddScoped<IUserStore<IUser>, ApplicationUserStore>();

@@ -107,7 +107,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
             {
                 ValidateIssuer = false,     // Issuer will be checked by the client (web application)
                 ValidateIssuerSigningKey = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.SecretKey)),
                 ValidateAudience = true,    // Audience is checked by the resource server (in this project: Web API)
                 ValidAudience = jwtTokenConfig.Audience,
                 ValidateLifetime = true,
