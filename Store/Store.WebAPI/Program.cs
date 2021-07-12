@@ -15,7 +15,7 @@ namespace Store.WebAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    config.AddEnvironmentVariables();
+                    config.AddEnvironmentVariables(prefix: "StoreApp_");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
