@@ -20,6 +20,8 @@ services:
       - postgres-server
     volumes:
       - ../:/app
+    env_file:
+      - ../Store.WebAPI/variables.env
 
   postgres-server:
     image: postgres:13
