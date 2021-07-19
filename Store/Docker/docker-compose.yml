@@ -26,19 +26,16 @@ services:
     ports: 
       - 5060:5432
     restart: always
-    environment: 
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 0k6aamsucNq57XV7aOHC   #TODO - should be a secret
-      POSTGRES_DB: Store
+    env_file:
+      - postgres-variables.env
     depends_on:
       - web-api
 
   # pgadmin:
   #   image: dpage/pgadmin4:5
   #   restart: always
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
-  #     PGADMIN_DEFAULT_PASSWORD: root   #TODO - should be a secret
+  #   env_file:
+  #     - pgadmin-variables.env
   #   ports:
   #     - "5050:80"
 
