@@ -29,7 +29,7 @@ COPY Store.Generator/*.csproj ./Store.Generator/
 
 RUN dotnet restore
 
-# Release Web API application
+# Copy and release Web API application
 COPY . .
 
 WORKDIR /app/Store.WebAPI
@@ -39,7 +39,7 @@ RUN dotnet publish -c Release -o ../out
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
 WORKDIR /app
 
-# Copy files from /app/out/ from the build image (that’s why we gave it a name in the first line) to current working directory (/app)
+# Copy files from /app/out/ from the build image (that’s why we gave it a name in the first line) to the current working directory (/app)
 COPY --from=build /app/out .
 
 ENTRYPOINT ["dotnet", "Store.WebAPI.dll"]

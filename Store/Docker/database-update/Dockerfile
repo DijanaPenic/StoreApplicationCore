@@ -5,10 +5,10 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 RUN dotnet tool install --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
+# /app is mounted - the entire solution
 WORKDIR /app
 
 COPY ./Docker/database-update/entrypoint.sh /usr/local/bin/
-
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
