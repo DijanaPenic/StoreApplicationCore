@@ -34,6 +34,7 @@ services:
       - ./postgres-server/variables.env
     depends_on:
       - web-api
+    hostname: localhost
 
   # pgadmin:
   #   image: dpage/pgadmin4:5
