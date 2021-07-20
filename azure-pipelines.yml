@@ -1,0 +1,30 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+steps:
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    dockerComposeFile: '**/docker-compose.yml'
+    dockerComposeFileArgs: |
+      PGADMIN_DEFAULT_PASSWORD=root
+      POSTGRES_PASSWORD=0k6aamsucNq57XV7aOHC
+      StoreApp_ExternalLogin__Facebook__ClientSecret=964204485c2b279e09c1ff1e79dfe434
+      StoreApp_ExternalLogin__Google__ClientSecret=pX3BiYz-Cw4Lp7jqVtX07rUk
+      StoreApp_GoogleReCaptcha__SecretKey=6LeFDPAZAAAAANV_ZpeL0W3JENY_QtvwKTmXKlgd
+      StoreApp_JwtToken__SecretKey=aNdRfUjXn2r5u8x/
+      StoreApp_SendGrid__ApiKeyValue=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
+      StoreApp_Twilio__AuthToken=f916690a850db32f064db23f81ba4d9f
+      StoreApp_TwoFactorAuthentication__EncryptionKey=pRTtfJxySM9PsjVaU49AVfuP529GTzlRcd
+    action: 'Build services'
+
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
+    azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+    action: 'Push services'
