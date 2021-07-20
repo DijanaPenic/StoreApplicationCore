@@ -15,7 +15,6 @@ services:
     build:
       context: ../
       dockerfile: ./Docker/database-update/Dockerfile
-      #restart: always -> we need it once
     depends_on:
       - postgres-server
     volumes:
@@ -28,16 +27,21 @@ services:
     ports: 
       - 5060:5432
     restart: always
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_DB: Store
     env_file:
-      - postgres-variables.env
+      - ./postgres-server/variables.env
     depends_on:
       - web-api
 
   # pgadmin:
   #   image: dpage/pgadmin4:5
   #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
   #   env_file:
-  #     - pgadmin-variables.env
+  #     - ./pgadmin/variables.env
   #   ports:
   #     - 5050:80
 
