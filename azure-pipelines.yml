@@ -5,10 +5,17 @@
 trigger:
 - master
 
+variables:
+  azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
+  azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+
 steps:
 - task: DockerCompose@0
+  displayName: Build services
   inputs:
     containerregistrytype: 'Azure Container Registry'
+    azureSubscription: $(azureSubscription)
+    azureContainerRegistry: $(azureContainerRegistry)  
     dockerComposeFile: '**/docker-compose.yml'
     dockerComposeFileArgs: |
       PGADMIN_DEFAULT_PASSWORD=root
