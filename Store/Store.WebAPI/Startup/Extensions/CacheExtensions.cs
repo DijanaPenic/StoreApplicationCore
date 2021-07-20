@@ -12,7 +12,7 @@ namespace Store.WebAPI.Application.Startup.Extensions
     {
         public static void AddCacheComponents(this IServiceCollection services, IConfiguration configuration)
         {
-            string connectionString = configuration.GetConnectionString("LocalRedis");
+            string connectionString = configuration.GetConnectionString("Redis");
 
             services.AddScoped<ICacheManager, CacheManager>();
             services.AddScoped<ICacheProviderFactory, RedisCacheProviderFactory>();

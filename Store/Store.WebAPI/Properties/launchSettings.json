@@ -16,12 +16,20 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Store.WebAPI": {
+    "Store.WebAPI - Development": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://store.com:5000",
+      "applicationUrl": "https://local.store.com:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Store.WebAPI - Test": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://test.store.com:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Test"
       }
     }
   }
