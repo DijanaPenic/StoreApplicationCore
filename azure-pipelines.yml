@@ -12,7 +12,10 @@ steps:
     dockerComposeFile: '**/docker-compose.yml'
     dockerComposeFileArgs: |
       PGADMIN_DEFAULT_PASSWORD=root
+      PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.com
       POSTGRES_PASSWORD=0k6aamsucNq57XV7aOHC
+      POSTGRES_USER=postgres
+      POSTGRES_DB=Store
       StoreApp_ExternalLogin__Facebook__ClientSecret=964204485c2b279e09c1ff1e79dfe434
       StoreApp_ExternalLogin__Google__ClientSecret=pX3BiYz-Cw4Lp7jqVtX07rUk
       StoreApp_GoogleReCaptcha__SecretKey=6LeFDPAZAAAAANV_ZpeL0W3JENY_QtvwKTmXKlgd
