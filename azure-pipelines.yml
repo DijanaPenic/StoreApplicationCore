@@ -25,7 +25,7 @@ stages:
         containerregistrytype: 'Azure Container Registry'
         azureSubscription: $(azureSubscription)
         azureContainerRegistry: $(azureContainerRegistry)  
-        dockerComposeFile: '**/docker-compose.yml'
+        dockerComposeFile: '**/docker-compose-test.yml'
         dockerComposeFileArgs: |
           PGADMIN_DEFAULT_PASSWORD=root
           PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.com
