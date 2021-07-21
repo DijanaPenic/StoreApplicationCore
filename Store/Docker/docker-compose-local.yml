@@ -36,16 +36,6 @@ services:
       - web-api
     hostname: localhost
 
-  # pgadmin:
-  #   image: dpage/pgadmin4:5
-  #   restart: always
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
-  #   env_file:
-  #     - ./pgadmin/variables.env
-  #   ports:
-  #     - 5050:80
-
   redis-master:
     image: redis:6
     ports:
