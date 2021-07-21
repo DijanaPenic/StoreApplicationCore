@@ -12,24 +12,24 @@ services:
       - 5000:80
     environment: 
       ASPNETCORE_ENVIRONMENT: Test
+    depends_on:
+        - postgres-server
+        - redis-master
 
   database-update:
     build:
       context: ../
       dockerfile: ./Docker/database-update/Dockerfile
-    depends_on:
-      - postgres-server
     volumes:
       - ../:/app
+    depends_on:
+        - postgres-server
 
   postgres-server:
     image: postgres:13
     ports: 
       - 5432:5432
     restart: always
-    depends_on:
-      - web-api
-    hostname: localhost
 
   pgadmin:
     image: dpage/pgadmin4:5
@@ -41,8 +41,6 @@ services:
     image: redis:6
     ports:
       - 6379:6379
-    depends_on:
-      - web-api
   
   redis-slave-1:
     image: redis:6
