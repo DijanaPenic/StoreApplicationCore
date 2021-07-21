@@ -39,6 +39,7 @@ stages:
           StoreApp_SendGrid__ApiKeyValue=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
           StoreApp_Twilio__AuthToken=f916690a850db32f064db23f81ba4d9f
           StoreApp_TwoFactorAuthentication__EncryptionKey=pRTtfJxySM9PsjVaU49AVfuP529GTzlRcd
+          StoreApp_ConnectionStrings__Database=server=postgres-server;userid=postgres;password=0k6aamsucNq57XV7aOHC;port=5432;database=Store;application name=StoreApplicationCore;
         action: 'Build services'
 
     # - task: DockerCompose@0
