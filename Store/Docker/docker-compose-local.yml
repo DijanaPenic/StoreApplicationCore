@@ -14,17 +14,20 @@ services:
       - ../Store.WebAPI/variables.env
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - postgres-server
+      - redis-master
 
   database-update:
     build:
       context: ../
       dockerfile: ./Docker/database-update/Dockerfile
-    depends_on:
-      - postgres-server
     volumes:
       - ../:/app
     env_file:
       - ../Store.WebAPI/variables.env
+    depends_on:
+        - postgres-server
 
   postgres-server:
     image: postgres:13
@@ -36,16 +39,11 @@ services:
       POSTGRES_DB: Store
     env_file:
       - ./postgres-server/variables.env
-    depends_on:
-      - web-api
-    hostname: localhost
 
   redis-master:
     image: redis:6
     ports:
       - 6379:6379
-    depends_on:
-      - web-api
   
   # Redis as a slave: https://redis.io/topics/config
   redis-slave-1:
