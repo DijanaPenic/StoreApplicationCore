@@ -1,6 +1,8 @@
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Store.WebAPI
 {
@@ -15,6 +17,11 @@ namespace Store.WebAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
+                    IHostEnvironment env = hostingContext.HostingEnvironment;
+                    
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                    config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    
                     config.AddEnvironmentVariables(prefix: "StoreApp_");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
