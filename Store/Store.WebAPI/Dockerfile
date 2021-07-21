@@ -32,8 +32,9 @@ RUN dotnet restore
 # Copy and release Web API application
 COPY . .
 
+ARG PUBLISH_MODE
 WORKDIR /app/Store.WebAPI
-RUN dotnet publish -c Release -o ../out
+RUN dotnet publish -c ${PUBLISH_MODE} -o ../out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime

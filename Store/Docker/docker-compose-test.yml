@@ -5,9 +5,13 @@ services:
     build:
       context: ../
       dockerfile: ./Store.WebAPI/Dockerfile
+      args:
+        PUBLISH_MODE: Release
     restart: always
     ports:
       - 5000:80
+    environment: 
+      ASPNETCORE_ENVIRONMENT: Test
 
   database-update:
     build:
