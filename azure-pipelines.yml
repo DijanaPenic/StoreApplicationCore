@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- azure-pipelines
 
 variables:
   azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
