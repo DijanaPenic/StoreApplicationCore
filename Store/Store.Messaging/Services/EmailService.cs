@@ -29,7 +29,7 @@ namespace Store.Messaging.Services
             _config = options.Value;
             _razorViewToStringRenderer = razorViewToStringRenderer;
             _emailTemplateService = emailTemplateService;
-            _client = new SendGridClient(_config.ApiKey);
+            _client = new SendGridClient(_config.ApiKeyValue);
         }
 
         public async Task SendConfirmAccountAsync(Guid clientId, string email, string url)

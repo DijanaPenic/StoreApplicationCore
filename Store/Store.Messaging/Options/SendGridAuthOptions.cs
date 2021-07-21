@@ -4,7 +4,7 @@
     {
         public const string Position = "SendGrid";
 
-        public string ApiKey { get; set; }
+        public string ApiKeyValue { get; set; }
 
         public string FromEmail { get; set; }
     }
