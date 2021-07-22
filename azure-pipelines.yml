@@ -8,6 +8,7 @@ trigger:
 variables:
   azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
   azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+  dockerComposeFile: '**/docker-compose-test.yml'
 
 pool:
     vmImage: 'ubuntu-latest'
@@ -25,7 +26,7 @@ stages:
         containerregistrytype: 'Azure Container Registry'
         azureSubscription: $(azureSubscription)
         azureContainerRegistry: $(azureContainerRegistry)  
-        dockerComposeFile: '**/docker-compose-test.yml'
+        dockerComposeFile: $(dockerComposeFile)
         dockerComposeFileArgs: |
           PGADMIN_DEFAULT_PASSWORD=root
           PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.com
@@ -47,6 +48,7 @@ stages:
     - task: DockerCompose@0
       inputs:
         containerregistrytype: 'Azure Container Registry'
-        azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
-        azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+        azureSubscription: $(azureSubscription)
+        azureContainerRegistry: $(azureContainerRegistry)
+        dockerComposeFile: $(dockerComposeFile)
         action: 'Push services'
