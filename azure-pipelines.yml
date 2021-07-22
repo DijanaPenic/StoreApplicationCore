@@ -10,7 +10,7 @@ variables:
   azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
 
 pool:
-  name: Default
+  name: 'ubuntu-latest'
 
 stages:
 - stage: BuildAndPush
