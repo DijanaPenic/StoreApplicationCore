@@ -42,7 +42,6 @@ stages:
           StoreApp_TwoFactorAuthentication__EncryptionKey=pRTtfJxySM9PsjVaU49AVfuP529GTzlRcd
           StoreApp_ConnectionStrings__Database=server=postgres-server;userid=postgres;password=0k6aamsucNq57XV7aOHC;port=5432;database=Store;application name=StoreApplicationCore;
         action: 'Build services'
-        includeLatestTag: false
     - task: DockerCompose@0
       displayName: Push services
       inputs:
@@ -51,16 +50,3 @@ stages:
         azureContainerRegistry: $(azureContainerRegistry)
         dockerComposeFile: $(dockerComposeFile)
         action: 'Push services'
-        includeLatestTag: false
- 
-  # - job: Push
-  #   displayName: Push job
-  #   steps:
-  #   - task: DockerCompose@0
-  #     inputs:
-  #       containerregistrytype: 'Azure Container Registry'
-  #       azureSubscription: $(azureSubscription)
-  #       azureContainerRegistry: $(azureContainerRegistry)
-  #       dockerComposeFile: $(dockerComposeFile)
-  #       action: 'Push services'
-  #       includeLatestTag: false
