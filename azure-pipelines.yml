@@ -42,7 +42,7 @@ stages:
           StoreApp_TwoFactorAuthentication__EncryptionKey=pRTtfJxySM9PsjVaU49AVfuP529GTzlRcd
           StoreApp_ConnectionStrings__Database=server=postgres-server;userid=postgres;password=0k6aamsucNq57XV7aOHC;port=5432;database=Store;application name=StoreApplicationCore;
         action: 'Build services'
-        includeLatestTag: true
+        includeLatestTag: false
   - job: Push
     displayName: Push job
     steps:
@@ -53,4 +53,4 @@ stages:
         azureContainerRegistry: $(azureContainerRegistry)
         dockerComposeFile: $(dockerComposeFile)
         action: 'Push services'
-        includeLatestTag: true
+        includeLatestTag: false
