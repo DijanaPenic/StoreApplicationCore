@@ -41,10 +41,12 @@ stages:
           StoreApp_TwoFactorAuthentication__EncryptionKey=pRTtfJxySM9PsjVaU49AVfuP529GTzlRcd
           StoreApp_ConnectionStrings__Database=server=postgres-server;userid=postgres;password=0k6aamsucNq57XV7aOHC;port=5432;database=Store;application name=StoreApplicationCore;
         action: 'Build services'
-
-    # - task: DockerCompose@0
-    #   inputs:
-    #     containerregistrytype: 'Azure Container Registry'
-    #     azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
-    #     azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
-    #     action: 'Push services'
+  - job: Push
+    displayName: Push job
+    steps:
+    - task: DockerCompose@0
+      inputs:
+        containerregistrytype: 'Azure Container Registry'
+        azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
+        azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+        action: 'Push services'
