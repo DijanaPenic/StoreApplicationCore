@@ -14,11 +14,11 @@ pool:
     vmImage: 'ubuntu-latest'
 
 stages:
-- stage: BuildAndPush
-  displayName: Build and push stage
+- stage: Deploy
+  displayName: Deploy
   jobs:
-  - job: Build
-    displayName: Build job
+  - job: BuildAndPush
+    displayName: Build and push job
     steps:
     - task: DockerCompose@0
       displayName: Build services
@@ -43,10 +43,8 @@ stages:
           StoreApp_ConnectionStrings__Database=server=postgres-server;userid=postgres;password=0k6aamsucNq57XV7aOHC;port=5432;database=Store;application name=StoreApplicationCore;
         action: 'Build services'
         includeLatestTag: false
-  - job: Push
-    displayName: Push job
-    steps:
     - task: DockerCompose@0
+      displayName: Push services
       inputs:
         containerregistrytype: 'Azure Container Registry'
         azureSubscription: $(azureSubscription)
@@ -54,3 +52,15 @@ stages:
         dockerComposeFile: $(dockerComposeFile)
         action: 'Push services'
         includeLatestTag: false
+ 
+  # - job: Push
+  #   displayName: Push job
+  #   steps:
+  #   - task: DockerCompose@0
+  #     inputs:
+  #       containerregistrytype: 'Azure Container Registry'
+  #       azureSubscription: $(azureSubscription)
+  #       azureContainerRegistry: $(azureContainerRegistry)
+  #       dockerComposeFile: $(dockerComposeFile)
+  #       action: 'Push services'
+  #       includeLatestTag: false
