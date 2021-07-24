@@ -5,15 +5,9 @@ services:
     build:
       context: ../
       dockerfile: ./Store.WebAPI/Dockerfile
-      args:
-        PUBLISH_MODE: Debug
     restart: always
     ports:
       - 5000:80
-    env_file:
-      - ../Store.WebAPI/variables.env
-    environment: 
-      ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - postgres-server
       - redis-master
