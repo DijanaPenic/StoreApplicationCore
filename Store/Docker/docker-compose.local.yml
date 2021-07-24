@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web-api:
+    build:
+      args:
+        PUBLISH_MODE: Debug
+    env_file:
+      - ../Store.WebAPI/variables.env
+    environment: 
+      ASPNETCORE_ENVIRONMENT: Development
+
+  database-update:
+    env_file:
+      - ../Store.WebAPI/variables.env
+
+  postgres-server:
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_DB: Store
+    env_file:
+      - ./postgres-server/variables.env

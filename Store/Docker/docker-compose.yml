@@ -24,8 +24,6 @@ services:
       dockerfile: ./Docker/database-update/Dockerfile
     volumes:
       - ../:/app
-    env_file:
-      - ../Store.WebAPI/variables.env
     depends_on:
         - postgres-server
 
@@ -34,11 +32,6 @@ services:
     ports: 
       - 5432:5432
     restart: always
-    environment: 
-      POSTGRES_USER: postgres
-      POSTGRES_DB: Store
-    env_file:
-      - ./postgres-server/variables.env
 
   redis-master:
     image: redis:6
