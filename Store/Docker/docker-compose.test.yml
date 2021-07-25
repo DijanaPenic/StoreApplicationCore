@@ -22,3 +22,11 @@ services:
       POSTGRES_DB: Store
     env_file:
       - ./postgres-server/variables.env
+
+  pgadmin:
+    image: dpage/pgadmin4:5
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+    ports:
+      - 5050:80
