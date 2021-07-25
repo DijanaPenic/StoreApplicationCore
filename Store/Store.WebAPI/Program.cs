@@ -26,6 +26,10 @@ namespace Store.WebAPI
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseKestrel((context, serverOptions) =>
+                    {
+                        serverOptions.Configure(context.Configuration.GetSection("Kestrel"));
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }

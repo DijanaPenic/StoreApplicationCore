@@ -7,7 +7,11 @@ services:
       dockerfile: ./Store.WebAPI/Dockerfile
     restart: always
     ports:
-      - 5000:80
+      - 5000:443
+    # Hosting ASP.NET Core images with Docker Compose over HTTPS:
+    # https://docs.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-5.0
+    volumes:
+      - ~/.aspnet/https:/https:ro
     depends_on:
       - postgres-server
       - redis-master

@@ -6,9 +6,11 @@ services:
       args:
         PUBLISH_MODE: Debug
     env_file:
-      - ../Store.WebAPI/variables.env
+      - ../Store.WebAPI/variables.env # need to move this to vault
     environment: 
       ASPNETCORE_ENVIRONMENT: Test
+      ASPNETCORE_URLS: https://+:443
+      StoreApp_Kestrel__Certificates__Default__Path: /https/penic-solutions.com_self-signed.pfx
 
   database-update:
     env_file:

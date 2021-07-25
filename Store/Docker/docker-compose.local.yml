@@ -9,6 +9,8 @@ services:
       - ../Store.WebAPI/variables.env
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443
+      StoreApp_Kestrel__Certificates__Default__Path: /https/penic-solutions.com_self-signed.pfx
 
   database-update:
     env_file:
