@@ -60,7 +60,6 @@ namespace Store.WebAPI
                 {
                     webBuilder.UseKestrel((context, serverOptions) =>
                     {
-                        // TODO - potentially pull certificate from store
                         serverOptions.Configure(context.Configuration.GetSection("Kestrel"));
                     });
                     webBuilder.UseStartup<Startup>();
