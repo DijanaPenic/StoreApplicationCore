@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -27,33 +28,48 @@ namespace Store.WebAPI
                     
                     config.AddEnvironmentVariables(prefix: "StoreApp_");
                     
+                    // Azure Key Vault for applications that are not hosted in Azure
+                    // Use for local environment if you decide to move secrets from environment variables to Azure kv.
+                    
+                    // if (context.HostingEnvironment.IsDevelopment())
+                    // {
+                    //     IConfigurationRoot builtConfig = config.Build();
+                    //
+                    //     using X509Store store = new(StoreLocation.CurrentUser);
+                    //     store.Open(OpenFlags.ReadOnly);
+                    //     
+                    //     X509Certificate2Collection certs = store.Certificates.Find
+                    //     (
+                    //         X509FindType.FindByThumbprint,
+                    //         builtConfig["AzureADCertThumbprint"], 
+                    //         false
+                    //     );
+                    //
+                    //     config.AddAzureKeyVault
+                    //     (
+                    //         new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                    //         new ClientCertificateCredential
+                    //         (
+                    //             builtConfig["AzureADDirectoryId"], 
+                    //             builtConfig["AzureADApplicationId"], 
+                    //             certs.OfType<X509Certificate2>().Single()
+                    //         ),
+                    //         new KeyVaultSecretManager()
+                    //     );
+                    //
+                    //     store.Close();
+                    // }
+                    
+                    // Azure Key Vault for applications that are hosted in Azure
                     if (!context.HostingEnvironment.IsDevelopment())
                     {
                         IConfigurationRoot builtConfig = config.Build();
-
-                        using X509Store store = new(StoreLocation.CurrentUser);
-                        store.Open(OpenFlags.ReadOnly);
-                        
-                        X509Certificate2Collection certs = store.Certificates.Find
-                        (
-                            X509FindType.FindByThumbprint,
-                            builtConfig["AzureADCertThumbprint"], 
-                            false
-                        );
-        
-                        config.AddAzureKeyVault
+                        SecretClient secretClient = new
                         (
                             new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
-                            new ClientCertificateCredential
-                            (
-                                builtConfig["AzureADDirectoryId"], 
-                                builtConfig["AzureADApplicationId"], 
-                                certs.OfType<X509Certificate2>().Single()
-                            ),
-                            new KeyVaultSecretManager()
+                            new DefaultAzureCredential()
                         );
-        
-                        store.Close();
+                        config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
