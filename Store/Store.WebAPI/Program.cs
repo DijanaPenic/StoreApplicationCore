@@ -27,8 +27,7 @@ namespace Store.WebAPI
                     
                     config.AddEnvironmentVariables(prefix: "StoreApp_");
                     
-                    // TODO - need extension method for Test environment
-                    if (context.HostingEnvironment.IsProduction())
+                    if (!context.HostingEnvironment.IsDevelopment())
                     {
                         IConfigurationRoot builtConfig = config.Build();
 
