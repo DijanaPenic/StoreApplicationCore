@@ -5,28 +5,24 @@ services:
     build:
       args:
         PUBLISH_MODE: Debug
-    env_file:
-      - ../Store.WebAPI/variables.env # need to move this to vault
     environment: 
       StoreApp_Environment: Test
       StoreApp_Urls: https://+:443
       StoreApp_Kestrel__Certificates__Default__Path: /https/penic-solutions.com_self-signed.pfx
-
-  database-update:
-    env_file:
-      - ../Store.WebAPI/variables.env
 
   postgres-server:
     environment: 
       POSTGRES_USER: postgres
       POSTGRES_DB: Store
     env_file:
-      - ./postgres-server/variables.env
+      - ./postgres-server/variables.env  # TODO - need to move this to vault
 
   pgadmin:
     image: dpage/pgadmin4:5
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+    env_file:
+      - ./pgadmin/variables.env # TODO - need to move this to vault
     ports:
       - 5050:80
