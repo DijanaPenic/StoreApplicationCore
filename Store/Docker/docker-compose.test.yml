@@ -8,7 +8,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Test
       ASPNETCORE_URLS: https://+:443
-      KESTREL__CERTIFICATES__DEFAULT__PATH: /https/penic-solutions.com_self-signed.pfx
+      STOREAPP_KESTREL__CERTIFICATES__DEFAULT__PATH: /https/penic-solutions.com_self-signed.pfx
 
   postgres-server:
     environment: 
