@@ -5,10 +5,10 @@ services:
     build:
       args:
         PUBLISH_MODE: Debug
-    environment: 
-      StoreApp_Environment: Test
-      StoreApp_Urls: https://+:443
-      StoreApp_Kestrel__Certificates__Default__Path: /https/penic-solutions.com_self-signed.pfx
+    environment:
+      ASPNETCORE_ENVIRONMENT: Test
+      ASPNETCORE_URLS: https://+:443
+      KESTREL__CERTIFICATES__DEFAULT__PATH: /https/penic-solutions.com_self-signed.pfx
 
   postgres-server:
     environment: 
