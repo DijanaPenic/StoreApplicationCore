@@ -1,5 +1,8 @@
-using System.IO;
-using System.Reflection;
+using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using Azure.Identity;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,19 +18,50 @@ namespace Store.WebAPI
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
+                .ConfigureAppConfiguration((context, config) =>
                 {
-                    IHostEnvironment env = hostingContext.HostingEnvironment;
+                    IHostEnvironment env = context.HostingEnvironment;
                     
                     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
                     config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
                     
                     config.AddEnvironmentVariables(prefix: "StoreApp_");
+                    
+                    // TODO - need extension method for Test environment
+                    if (context.HostingEnvironment.IsProduction())
+                    {
+                        IConfigurationRoot builtConfig = config.Build();
+
+                        using X509Store store = new(StoreLocation.CurrentUser);
+                        store.Open(OpenFlags.ReadOnly);
+                        
+                        X509Certificate2Collection certs = store.Certificates.Find
+                        (
+                            X509FindType.FindByThumbprint,
+                            builtConfig["AzureADCertThumbprint"], 
+                            false
+                        );
+        
+                        config.AddAzureKeyVault
+                        (
+                            new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                            new ClientCertificateCredential
+                            (
+                                builtConfig["AzureADDirectoryId"], 
+                                builtConfig["AzureADApplicationId"], 
+                                certs.OfType<X509Certificate2>().Single()
+                            ),
+                            new KeyVaultSecretManager()
+                        );
+        
+                        store.Close();
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseKestrel((context, serverOptions) =>
                     {
+                        // TODO - potentially pull certificate from store
                         serverOptions.Configure(context.Configuration.GetSection("Kestrel"));
                     });
                     webBuilder.UseStartup<Startup>();
