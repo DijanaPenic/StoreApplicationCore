@@ -32,7 +32,7 @@ stages:
         displayName: 'Copy environment variable files to: $(dockerPath)'
         inputs:
           SourceFolder: '$(Agent.TempDirectory)'
-          Contents: '**\*.env'
+          Contents: '*.env'
           TargetFolder: $(dockerPath) 
       - task: DockerCompose@0
         displayName: Build services     
