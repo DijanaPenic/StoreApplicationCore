@@ -9,6 +9,7 @@ variables:
   additionalDockerComposeFiles: 'docker-compose.test.yml'
   sshEndpoint: 'SSH-END-POINT-NAME-FROM-SERVICE-CONNECTIONS'
   dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
+  projectName: 'StoreApplication'
 
 stages:
   - stage: Build_and_push_docker_containers
@@ -42,7 +43,7 @@ stages:
           azureContainerRegistry: $(azureContainerRegistry)  
           dockerComposeFile: $(dockerComposeFile)
           additionalDockerComposeFiles: $(additionalDockerComposeFiles)
-          projectName: $(Build.Repository.Name)
+          projectName: $(projectName)
           action: 'Build services'
       - task: DockerCompose@0
         displayName: Push services
@@ -53,7 +54,7 @@ stages:
           azureContainerRegistry: $(azureContainerRegistry)
           dockerComposeFile: $(dockerComposeFile)
           additionalDockerComposeFiles: $(additionalDockerComposeFiles)
-          projectName: $(Build.Repository.Name)        
+          projectName: $(projectName)       
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: '$(Pipeline.Workspace)'
