@@ -5,7 +5,8 @@
 variables:
   azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
   azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
-  dockerComposeFile: '**/docker-compose.test.yml'
+  dockerComposeFile: '**/docker-compose.yml'
+  additionalDockerComposeFiles: '**/docker-compose.test.yml'
   sshEndpoint: 'SSH-END-POINT-NAME-FROM-SERVICE-CONNECTIONS'
 
 stages:
@@ -23,6 +24,7 @@ stages:
           azureSubscription: $(azureSubscription)
           azureContainerRegistry: $(azureContainerRegistry)  
           dockerComposeFile: $(dockerComposeFile)
+          additionalDockerComposeFiles: $(additionalDockerComposeFiles)
           projectName: $(Build.Repository.Name)
           action: 'Build services'
       - task: DockerCompose@0
@@ -33,6 +35,7 @@ stages:
           azureSubscription: $(azureSubscription)
           azureContainerRegistry: $(azureContainerRegistry)
           dockerComposeFile: $(dockerComposeFile)
+          additionalDockerComposeFiles: $(additionalDockerComposeFiles)
           projectName: $(Build.Repository.Name)        
       - task: PublishPipelineArtifact@1
         inputs:
