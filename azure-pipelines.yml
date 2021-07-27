@@ -10,6 +10,7 @@ variables:
   sshEndpoint: 'SSH-END-POINT-NAME-FROM-SERVICE-CONNECTIONS'
   dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
   projectName: 'StoreApplication'
+  vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
 
 stages:
   - stage: Build_and_push_docker_containers
@@ -36,11 +37,11 @@ stages:
           Contents: '*.env'
           TargetFolder: $(dockerPath) 
       - task: DockerCompose@0
-        displayName: Build services     
+        displayName: Build services
         inputs:
           containerregistrytype: 'Azure Container Registry'
           azureSubscription: $(azureSubscription)
-          azureContainerRegistry: $(azureContainerRegistry)  
+          azureContainerRegistry: $(azureContainerRegistry)
           dockerComposeFile: $(dockerComposeFile)
           additionalDockerComposeFiles: $(additionalDockerComposeFiles)
           projectName: $(projectName)
@@ -54,41 +55,41 @@ stages:
           azureContainerRegistry: $(azureContainerRegistry)
           dockerComposeFile: $(dockerComposeFile)
           additionalDockerComposeFiles: $(additionalDockerComposeFiles)
-          projectName: $(projectName)       
+          projectName: $(projectName)
       - task: PublishPipelineArtifact@1
+        displayName: Publish pipeline artifact
         inputs:
           targetPath: '$(Pipeline.Workspace)'
           artifact: 'docker-compose'
-          publishLocation: 'pipeline'       
+          publishLocation: 'pipeline'
   
-  # - stage: 'Deploy_to_test'
-  #   jobs:
-  #   - deployment: Test
-  #     pool:
-  #       vmImage: 'ubuntu-latest'
-  #     environment: 'StoreTestEnvironment'
-  #     strategy:
-  #       runOnce:
-  #         deploy:
-  #           steps:
-  #           - task: CopyFilesOverSSH@0
-  #             inputs:
-  #               sshEndpoint: $(sshEndpoint)
-  #               sourceFolder: '$(Pipeline.Workspace)/docker-compose/s/'
-  #               contents: |
-  #                 docker-compose.yaml
-  #                 .env
-  #               targetFolder: 'TARGET-PATH'
-  #           - task: SSH@0
-  #             inputs:
-  #               sshEndpoint: $(sshEndpoint)
-  #               runOptions: 'inline'
-  #               inline: |
-  #                 sed -i 's/##BUILD##/$(Build.BuildId)/g' docker-compose.yaml
-  #           - task: SSH@0
-  #             inputs:
-  #               sshEndpoint: $(sshEndpoint)
-  #               runOptions: 'inline'
-  #               inline: |
-  #                 docker-compose up -d 2> docker-compose.log
-  #                 cat docker-compose.log
+  - stage: 'Deploy_to_test'
+    jobs:
+    - deployment: Test
+      pool:
+        vmImage: 'ubuntu-latest'
+      environment: 'StoreTestEnvironment'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: CopyFilesOverSSH@0
+              inputs:
+                sshEndpoint: $(sshEndpoint)
+                sourceFolder: '$(Pipeline.Workspace)/docker-compose/s/'
+                contents: '**'
+                targetFolder: $(vmProjectPath)
+                overwrite: true
+            # - task: SSH@0
+            #   inputs:
+            #     sshEndpoint: $(sshEndpoint)
+            #     runOptions: 'inline'
+            #     inline: |
+            #       sed -i 's/##BUILD##/$(Build.BuildId)/g' docker-compose.yaml
+            # - task: SSH@0
+            #   inputs:
+            #     sshEndpoint: $(sshEndpoint)
+            #     runOptions: 'inline'
+            #     inline: |
+            #       docker-compose up -d 2> docker-compose.log
+            #       cat docker-compose.log
