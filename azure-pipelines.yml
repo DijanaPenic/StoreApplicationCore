@@ -7,7 +7,7 @@ variables:
   azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
   dockerComposeFile: '**/docker-compose.yml'
   additionalDockerComposeFiles: 'docker-compose.test.yml'
-  sshEndpoint: 'SSH-END-POINT-NAME-FROM-SERVICE-CONNECTIONS'
+  sshEndpoint: 'azureuser@137.116.221.238'
   dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
   projectName: 'StoreApplication'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
@@ -74,22 +74,20 @@ stages:
           deploy:
             steps:
             - task: CopyFilesOverSSH@0
+              displayName: Copy store application repo over SSH
               inputs:
                 sshEndpoint: $(sshEndpoint)
                 sourceFolder: '$(Pipeline.Workspace)/docker-compose/s/'
                 contents: '**'
                 targetFolder: $(vmProjectPath)
                 overwrite: true
-            # - task: SSH@0
-            #   inputs:
-            #     sshEndpoint: $(sshEndpoint)
-            #     runOptions: 'inline'
-            #     inline: |
-            #       sed -i 's/##BUILD##/$(Build.BuildId)/g' docker-compose.yaml
-            # - task: SSH@0
-            #   inputs:
-            #     sshEndpoint: $(sshEndpoint)
-            #     runOptions: 'inline'
-            #     inline: |
-            #       docker-compose up -d 2> docker-compose.log
-            #       cat docker-compose.log
+            - task: SSH@0
+              displayName: Run docker compose
+              inputs:
+                sshEndpoint: $(sshEndpoint)
+                runOptions: 'inline'
+                inline: |
+                  cd $(vmProjectPath)/Store/Docker/
+                  docker-compose down
+                  docker-compose -f docker-compose.yml -f docker-compose.test.yml build
+                  docker-compose -f docker-compose.yml -f docker-compose.test.yml up --force-recreate
