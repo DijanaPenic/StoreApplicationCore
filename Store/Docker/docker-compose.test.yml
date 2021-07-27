@@ -15,7 +15,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: Store
     env_file:
-      - ./postgres-server/variables.env  # TODO - need to move this to vault
+      - ./postgres-server_variables.env
 
   pgadmin:
     image: dpage/pgadmin4:5
@@ -23,6 +23,6 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
     env_file:
-      - ./pgadmin/variables.env # TODO - need to move this to vault
+      - ./pgadmin_variables.env
     ports:
       - 5050:80
