@@ -1,0 +1,73 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+variables:
+  azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
+  azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+  dockerComposeFile: '**/docker-compose-test.yml'
+  sshEndpoint: 'SSH-END-POINT-NAME-FROM-SERVICE-CONNECTIONS'
+
+stages:
+  - stage: Build_and_push_docker_containers
+    jobs:
+    - job: Build
+      pool:
+        vmImage: 'Ubuntu-16.04'
+      continueOnError: true
+      steps:
+      - task: DockerCompose@0
+        displayName: Build services     
+        inputs:
+          containerregistrytype: 'Azure Container Registry'
+          azureSubscription: $(azureSubscription)
+          azureContainerRegistry: $(azureContainerRegistry)  
+          dockerComposeFile: $(dockerComposeFile)
+          projectName: $(Build.Repository.Name)
+          action: 'Build services'
+      - task: DockerCompose@0
+        displayName: Push services
+        inputs:
+          action: 'Push services'
+          containerregistrytype: 'Azure Container Registry'
+          azureSubscription: $(azureSubscription)
+          azureContainerRegistry: $(azureContainerRegistry)
+          dockerComposeFile: $(dockerComposeFile)
+          projectName: $(Build.Repository.Name)        
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Pipeline.Workspace)'
+          artifact: 'docker-compose'
+          publishLocation: 'pipeline'       
+  
+  # - stage: 'Deploy_to_test'
+  #   jobs:
+  #   - deployment: Test
+  #     pool:
+  #       vmImage: 'Ubuntu-16.04'
+  #     environment: 'StoreTestEnvironment'
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+  #           - task: CopyFilesOverSSH@0
+  #             inputs:
+  #               sshEndpoint: $(sshEndpoint)
+  #               sourceFolder: '$(Pipeline.Workspace)/docker-compose/s/'
+  #               contents: |
+  #                 docker-compose.yaml
+  #                 .env
+  #               targetFolder: 'TARGET-PATH'
+  #           - task: SSH@0
+  #             inputs:
+  #               sshEndpoint: $(sshEndpoint)
+  #               runOptions: 'inline'
+  #               inline: |
+  #                 sed -i 's/##BUILD##/$(Build.BuildId)/g' docker-compose.yaml
+  #           - task: SSH@0
+  #             inputs:
+  #               sshEndpoint: $(sshEndpoint)
+  #               runOptions: 'inline'
+  #               inline: |
+  #                 docker-compose up -d 2> docker-compose.log
+  #                 cat docker-compose.log
