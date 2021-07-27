@@ -3,13 +3,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 variables:
-  azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
-  azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
-  dockerComposeFile: '**/docker-compose.yml'
-  additionalDockerComposeFiles: 'docker-compose.test.yml'
+  #azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
+  #azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+  dockerComposeFileExpression: '**/docker-compose.yml'
+  defaultDockerComposeFile: 'docker-compose.yml'
+  testDockerComposeFile: 'docker-compose.test.yml'
   sshEndpoint: 'azureuser@137.116.221.238'
   dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
-  projectName: 'StoreApplication'
+  #projectName: 'StoreApplication'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
 
 stages:
@@ -42,8 +43,8 @@ stages:
       #     containerregistrytype: 'Azure Container Registry'
       #     azureSubscription: $(azureSubscription)
       #     azureContainerRegistry: $(azureContainerRegistry)
-      #     dockerComposeFile: $(dockerComposeFile)
-      #     additionalDockerComposeFiles: $(additionalDockerComposeFiles)
+      #     dockerComposeFile: $(dockerComposeFileExpression)
+      #     additionalDockerComposeFiles: $(testDockerComposeFile)
       #     projectName: $(projectName)
       #     action: 'Build services'
       # - task: DockerCompose@0
@@ -53,8 +54,8 @@ stages:
       #     containerregistrytype: 'Azure Container Registry'
       #     azureSubscription: $(azureSubscription)
       #     azureContainerRegistry: $(azureContainerRegistry)
-      #     dockerComposeFile: $(dockerComposeFile)
-      #     additionalDockerComposeFiles: $(additionalDockerComposeFiles)
+      #     dockerComposeFile: $(dockerComposeFileExpression)
+      #     additionalDockerComposeFiles: $(testDockerComposeFile)
       #     projectName: $(projectName)
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
@@ -89,5 +90,5 @@ stages:
                 inline: |
                   cd $(vmProjectPath)/Store/Docker/
                   docker-compose down
-                  docker-compose -f docker-compose.yml -f docker-compose.test.yml build
-                  docker-compose -f docker-compose.yml -f docker-compose.test.yml up --force-recreate
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --force-recreate
