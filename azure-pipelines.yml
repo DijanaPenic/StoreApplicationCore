@@ -36,26 +36,26 @@ stages:
           SourceFolder: '$(Agent.TempDirectory)'
           Contents: '*.env'
           TargetFolder: $(dockerPath) 
-      - task: DockerCompose@0
-        displayName: Build services
-        inputs:
-          containerregistrytype: 'Azure Container Registry'
-          azureSubscription: $(azureSubscription)
-          azureContainerRegistry: $(azureContainerRegistry)
-          dockerComposeFile: $(dockerComposeFile)
-          additionalDockerComposeFiles: $(additionalDockerComposeFiles)
-          projectName: $(projectName)
-          action: 'Build services'
-      - task: DockerCompose@0
-        displayName: Push services
-        inputs:
-          action: 'Push services'
-          containerregistrytype: 'Azure Container Registry'
-          azureSubscription: $(azureSubscription)
-          azureContainerRegistry: $(azureContainerRegistry)
-          dockerComposeFile: $(dockerComposeFile)
-          additionalDockerComposeFiles: $(additionalDockerComposeFiles)
-          projectName: $(projectName)
+      # - task: DockerCompose@0
+      #   displayName: Build services
+      #   inputs:
+      #     containerregistrytype: 'Azure Container Registry'
+      #     azureSubscription: $(azureSubscription)
+      #     azureContainerRegistry: $(azureContainerRegistry)
+      #     dockerComposeFile: $(dockerComposeFile)
+      #     additionalDockerComposeFiles: $(additionalDockerComposeFiles)
+      #     projectName: $(projectName)
+      #     action: 'Build services'
+      # - task: DockerCompose@0
+      #   displayName: Push services
+      #   inputs:
+      #     action: 'Push services'
+      #     containerregistrytype: 'Azure Container Registry'
+      #     azureSubscription: $(azureSubscription)
+      #     azureContainerRegistry: $(azureContainerRegistry)
+      #     dockerComposeFile: $(dockerComposeFile)
+      #     additionalDockerComposeFiles: $(additionalDockerComposeFiles)
+      #     projectName: $(projectName)
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
