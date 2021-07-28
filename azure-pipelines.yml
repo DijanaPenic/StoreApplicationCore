@@ -13,12 +13,14 @@ variables:
   #projectName: 'StoreApplication'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 stages:
-  - stage: Build_and_push_docker_containers
+  - stage: Prepare_application_code
+           #Build_and_push_docker_containers
     jobs:
-    - job: Build
-      pool:
-        vmImage: 'ubuntu-latest'
+    - job:
       continueOnError: true
       steps:
       - task: DownloadSecureFile@1
@@ -61,14 +63,12 @@ stages:
         displayName: Publish pipeline artifact
         inputs:
           targetPath: '$(Pipeline.Workspace)'
-          artifact: 'docker-compose'
+          artifact: 'source-code'
           publishLocation: 'pipeline'
   
   - stage: 'Deploy_to_test'
     jobs:
     - deployment: Test
-      pool:
-        vmImage: 'ubuntu-latest'
       environment: 'StoreTestEnvironment'
       strategy:
         runOnce:
@@ -84,7 +84,7 @@ stages:
               displayName: Copy store application repo over SSH
               inputs:
                 sshEndpoint: $(sshEndpoint)
-                sourceFolder: '$(Pipeline.Workspace)/docker-compose/s/'
+                sourceFolder: '$(Pipeline.Workspace)/source-code/s/'
                 contents: '**'
                 targetFolder: $(vmProjectPath)
                 overwrite: true
