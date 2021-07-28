@@ -69,9 +69,10 @@ stages:
           artifact: 'source-code'
           publishLocation: 'pipeline'
   
-  - stage: 'Deploy_to_test'
+  - stage: 'Deploy'
     jobs:
-    - deployment: Test
+    - deployment: Deploy_to_test_environment
+      displayName: Deploying to test environment 
       environment: 'StoreTestEnvironment'
       strategy:
         runOnce:
