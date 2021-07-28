@@ -16,11 +16,11 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
-      - ../Store.WebAPI/variables.env
+      - ./postgres-server_variables.env
 
   postgres-server:
     environment: 
       POSTGRES_USER: postgres
       POSTGRES_DB: Store
     env_file:
-      - ./postgres-server/variables.env
+      - ./pgadmin_variables.env
