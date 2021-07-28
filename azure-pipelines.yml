@@ -8,7 +8,7 @@ variables:
   dockerComposeFileExpression: '**/docker-compose.yml'
   defaultDockerComposeFile: 'docker-compose.yml'
   testDockerComposeFile: 'docker-compose.test.yml'
-  sshEndpoint: 'azureuser@store-test-westeu:22'
+  sshEndpoint: 'azureuser@137.116.221.238:22'
   dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
   #projectName: 'StoreApplication'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
