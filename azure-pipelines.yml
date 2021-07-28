@@ -19,9 +19,9 @@ pool:
 stages:
   - stage: Prepare_application_code
            #Build_and_push_docker_containers
-    jobs:
-    - job:
-      continueOnError: true
+    jobs: 
+    - job: Prepare_environment_variables
+      displayName: Preparing environment variables
       steps:
       - task: DownloadSecureFile@1
         displayName: 'Download environment variables file - postgres server'
@@ -59,6 +59,9 @@ stages:
       #     dockerComposeFile: $(dockerComposeFileExpression)
       #     additionalDockerComposeFiles: $(testDockerComposeFile)
       #     projectName: $(projectName)
+    - job: Publish_pipeline_artifact
+      displayName: Publishing pipeline artifact
+      steps:
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
