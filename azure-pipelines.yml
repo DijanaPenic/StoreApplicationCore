@@ -5,12 +5,12 @@
 variables:
   #azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
   #azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+  #projectName: 'StoreApplication'
   dockerComposeFileExpression: '**/docker-compose.yml'
   defaultDockerComposeFile: 'docker-compose.yml'
   testDockerComposeFile: 'docker-compose.test.yml'
   sshEndpoint: 'store-test-westeu-ssh'
   dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
-  #projectName: 'StoreApplication'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
 
 pool:
@@ -61,6 +61,7 @@ stages:
       #     projectName: $(projectName)
     - job: Publish_pipeline_artifact
       displayName: Publishing pipeline artifact
+      dependsOn: Prepare_environment_variables
       steps:
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
