@@ -78,14 +78,8 @@ stages:
         runOnce:
           deploy:
             steps:
-            # - task: InstallSSHKey@0
-            #   displayName: 'Install an SSH key'
-            #   inputs:
-            #     knownHostsEntry: 'store-test-westeu'
-            #     sshPublicKey: '$(myPubKey)'
-            #     sshKeySecureFile: 'store-test-westeu-vm_key.pem'
             - task: CopyFilesOverSSH@0
-              displayName: Copy store application repo over SSH
+              displayName: Copy store source code over SSH
               inputs:
                 sshEndpoint: $(sshEndpoint)
                 sourceFolder: '$(Pipeline.Workspace)/source-code/s/'
