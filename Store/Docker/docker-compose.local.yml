@@ -13,6 +13,8 @@ services:
       STOREAPP_KESTREL__CERTIFICATES__DEFAULT__PATH: /https/penic-solutions.com_self-signed.pfx
 
   database-update:
+    environment: 
+      ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - ../Store.WebAPI/variables.env
 
