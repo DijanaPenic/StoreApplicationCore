@@ -15,12 +15,10 @@ services:
   database-update:
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
-    env_file:
-      - ./postgres-server_variables.env
 
   postgres-server:
     environment: 
       POSTGRES_USER: postgres
       POSTGRES_DB: Store
     env_file:
-      - ./pgadmin_variables.env
+      - ./postgres-server_variables.env
