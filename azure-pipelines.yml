@@ -92,4 +92,4 @@ stages:
                   cd $(vmProjectPath)/Store/Docker/
                   docker-compose down --remove-orphans
                   docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --force-recreate
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up
