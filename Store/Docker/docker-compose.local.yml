@@ -15,6 +15,8 @@ services:
   database-update:
     environment: 
       ASPNETCORE_ENVIRONMENT: Development
+    env_file:
+      - ../Store.WebAPI/variables.env
 
   postgres-server:
     environment: 
