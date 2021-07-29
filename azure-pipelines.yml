@@ -1,16 +1,11 @@
-# Docker
-# Build and push an image to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 variables:
   #azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
   #azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
+  #projectName: 'StoreApplication'
   dockerComposeFileExpression: '**/docker-compose.yml'
   defaultDockerComposeFile: 'docker-compose.yml'
   testDockerComposeFile: 'docker-compose.test.yml'
   sshEndpoint: 'store-test-westeu-ssh'
-  dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
-  #projectName: 'StoreApplication'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
 
 pool:
@@ -20,8 +15,8 @@ stages:
   - stage: Prepare_application_code
            #Build_and_push_docker_containers
     jobs: 
-    - job: Prepare_environment_variables
-      displayName: Preparing environment variables
+    - job: Prepare_application_code
+      displayName: Preparing application code
       steps:
       - task: DownloadSecureFile@1
         displayName: 'Download environment variables file - postgres server'
@@ -34,11 +29,17 @@ stages:
           secureFile: pgadmin_variables.env
           retryCount: 3
       - task: CopyFiles@2
-        displayName: 'Copy environment variable files to: $(dockerPath)'
+        displayName: 'Copy environment variable files into the Docker folder'
         inputs:
           SourceFolder: '$(Agent.TempDirectory)'
           Contents: '*.env'
-          TargetFolder: $(dockerPath) 
+          TargetFolder: '$(System.DefaultWorkingDirectory)/Store/Docker/'
+      - task: PublishPipelineArtifact@1
+        displayName: Publish pipeline artifact
+        inputs:
+          targetPath: '$(Pipeline.Workspace)'
+          artifact: 'source-code'
+          publishLocation: 'pipeline'
       # - task: DockerCompose@0
       #   displayName: Build services
       #   inputs:
@@ -59,15 +60,6 @@ stages:
       #     dockerComposeFile: $(dockerComposeFileExpression)
       #     additionalDockerComposeFiles: $(testDockerComposeFile)
       #     projectName: $(projectName)
-    - job: Publish_pipeline_artifact
-      displayName: Publishing pipeline artifact
-      steps:
-      - task: PublishPipelineArtifact@1
-        displayName: Publish pipeline artifact
-        inputs:
-          targetPath: '$(Pipeline.Workspace)'
-          artifact: 'source-code'
-          publishLocation: 'pipeline'
   
   - stage: 'Deploy'
     jobs:
@@ -91,8 +83,9 @@ stages:
               inputs:
                 sshEndpoint: $(sshEndpoint)
                 runOptions: 'inline'
+                failOnStdErr: false
                 inline: |
                   cd $(vmProjectPath)/Store/Docker/
                   docker-compose down --remove-orphans
                   docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --force-recreate
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up
