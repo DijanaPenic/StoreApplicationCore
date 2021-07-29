@@ -10,7 +10,6 @@ variables:
   defaultDockerComposeFile: 'docker-compose.yml'
   testDockerComposeFile: 'docker-compose.test.yml'
   sshEndpoint: 'store-test-westeu-ssh'
-  dockerPath: '$(System.DefaultWorkingDirectory)/Store/Docker/'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
 
 pool:
@@ -34,11 +33,11 @@ stages:
           secureFile: pgadmin_variables.env
           retryCount: 3
       - task: CopyFiles@2
-        displayName: 'Copy environment variable files to: $(dockerPath)'
+        displayName: 'Copy environment variable files into the Docker folder'
         inputs:
           SourceFolder: '$(Agent.TempDirectory)'
           Contents: '*.env'
-          TargetFolder: $(dockerPath) 
+          TargetFolder: '$(System.DefaultWorkingDirectory)/Store/Docker/'
       # - task: DockerCompose@0
       #   displayName: Build services
       #   inputs:
