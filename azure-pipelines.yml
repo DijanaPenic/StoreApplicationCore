@@ -88,12 +88,18 @@ stages:
                 failOnStdErr: false
                 inline: |
                   cd $(vmDockerFolderPath)
+
                   echo "docker-compose down --remove-orphans"
-                  docker-compose down --remove-orphans
-                  echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) builds"
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build
+                  docker-compose down --remove-orphans > docker-compose-down.txt 2>&1
+                  type docker-compose-down.txt
+
+                  echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build"
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > docker-compose-build.txt 2>&1
+                  type docker-compose-build.txt
+
                   echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
                   docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach
+
                   echo "sleep 5m"
                   sleep 5m
             - task: PowerShell@2
