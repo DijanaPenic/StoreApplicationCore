@@ -65,5 +65,5 @@ else
     foreach ($Container in $FinishedContainers)
     {
         Check-DockerContainer -ContainerName $Container -ExpectedStatus "exited"
-}
+    }
 }
