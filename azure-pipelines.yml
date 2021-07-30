@@ -92,7 +92,7 @@ stages:
                   docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach
                   sleep 5m
             - task: PowerShell@2
-              displayName: Check deploy status
+              displayName: Perform container healthcheck
               inputs:             
                 targetType: 'filePath'
                 filePath: $(System.DefaultWorkingDirectory)\check-deploy-status.ps1
