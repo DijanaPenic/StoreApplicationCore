@@ -102,10 +102,13 @@ stages:
 
                   echo "sleep 5m"
                   sleep 4m
-            - task: PowerShell@2
+
+            - task: SSH@0
               displayName: Perform container healthcheck
-              inputs:             
-                targetType: 'filePath'
-                filePath: '$(pipelineArtifactPath)/check-deploy-status.ps1'
-                arguments:
+              inputs:
+                sshEndpoint: $(sshEndpoint)
+                runOptions: 'script'
+                failOnStdErr: true
+                scriptPath: '$(pipelineArtifactPath)/check-deploy-status.ps1'
+                args: 
                   -DockerFolderPath $(vmDockerFolderPath)
