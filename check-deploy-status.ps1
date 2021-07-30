@@ -1,4 +1,7 @@
-﻿# Functions
+﻿# Set parameters
+param ($DockerFolderPath)
+
+# Functions
 function Check-DockerContainer {
     param (
         [string]$ContainerName,
@@ -21,8 +24,7 @@ function Check-DockerContainer {
     }
 }
 
-# Set parameters and variables
-param ($DockerFolderPath)
+# Set variables
 Set-Variable -Name "DockerComposeUpFileName" -Value "docker-compose-up.txt"
 
 # Output docker-compose logs
