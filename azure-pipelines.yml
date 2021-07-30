@@ -7,6 +7,7 @@ variables:
   testDockerComposeFile: 'docker-compose.test.yml'
   sshEndpoint: 'store-test-westeu-ssh'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
+  vmDockerFolderPath: $(vmProjectPath)/Store/Docker/
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -66,7 +67,6 @@ stages:
     - deployment: Deploy_to_test_environment
       displayName: Deploying to test environment 
       environment: 'StoreTestEnvironment'
-      timeoutInMinutes: 5
       strategy:
         runOnce:
           deploy:
@@ -85,9 +85,18 @@ stages:
                 sshEndpoint: $(sshEndpoint)
                 runOptions: 'inline'
                 failOnStdErr: false
-                
                 inline: |
-                  cd $(vmProjectPath)/Store/Docker/
+                  cd $(vmDockerFolderPath)
                   docker-compose down --remove-orphans
                   docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach
+            - task: Delay@1
+              inputs:
+                delayForMinutes: '4'
+            - task: PowerShell@2
+              displayName: Check deploy status
+              inputs:             
+                targetType: 'filePath'
+                filePath: $(System.DefaultWorkingDirectory)\check-deploy-status.ps1
+                arguments:
+                  -DockerFolderPath $(vmDockerFolderPath)
