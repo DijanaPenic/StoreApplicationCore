@@ -98,7 +98,7 @@ stages:
                   cat docker-compose-build.txt
 
                   echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > docker-compose-up.txt 2>&1
 
                   echo "sleep 5m"
                   sleep 4m
