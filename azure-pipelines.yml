@@ -95,6 +95,6 @@ stages:
               displayName: Perform container healthcheck
               inputs:             
                 targetType: 'filePath'
-                filePath: $(System.DefaultWorkingDirectory)\check-deploy-status.ps1
+                filePath: $(System.DefaultWorkingDirectory)/check-deploy-status.ps1
                 arguments:
                   -DockerFolderPath $(vmDockerFolderPath)
