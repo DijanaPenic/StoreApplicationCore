@@ -34,11 +34,11 @@ docker-compose ps
 $SEL = Select-String -Path $DockerComposeUpFileName -Pattern "Error"
 if ($SEL -ne $null)
 {
-    Write-Error "Error: docker-compose run command FAILED! Check output logs for more information."
+    Write-Error "Error: docker-compose run command FAILED! Check output logs for more information (Store > Docker > Logs)."
 }
 else
 {
-    Write-Host "docker-compose run command SUCCEEDED!"
+    Write-Output "docker-compose run command SUCCEEDED!"
 
     # Check containers status
     $RunningContainers = 
