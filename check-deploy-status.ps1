@@ -1,4 +1,6 @@
-﻿# Set parameters
+﻿#!/usr/bin/pwsh
+
+# Set parameters
 param ($DockerFolderPath)
 
 # Functions
@@ -16,9 +18,7 @@ function Check-DockerContainer {
     {
         Write-Output "Error: $ContainerName is not assigned the expected status or exit code."
         Write-Output "Expected status: $ExpectedStatus"
-        Write-Output "Current status: $ContainerState.Status"
         Write-Output "Expected exit code: $ExpectedExitCode"
-        Write-Output "Current exit code: $ContainerState.ExitCode"
 
         return 1
     }
@@ -29,8 +29,8 @@ Set-Variable -Name "DockerComposeUpFileName" -Value "docker-compose-up.txt"
 
 # Output docker-compose logs
 cd $DockerFolderPath
-docker-compose logs
 docker-compose logs > $DockerComposeUpFileName
+docker-compose ps
 
 # Check id docker-compose output contains errors
 $SEL = Select-String -Path $DockerComposeUpFileName -Pattern "Error"
