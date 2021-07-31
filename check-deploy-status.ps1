@@ -19,8 +19,6 @@ function Check-DockerContainer {
         Write-Error "Error: $ContainerName is not assigned the expected status or exit code."
         Write-Output "Expected status: $ExpectedStatus"
         Write-Output "Expected exit code: $ExpectedExitCode"
-
-        return 1
     }
 }
 
@@ -37,8 +35,6 @@ $SEL = Select-String -Path $DockerComposeUpFileName -Pattern "Error"
 if ($SEL -ne $null)
 {
     Write-Error "Error: docker-compose run command FAILED! Check output logs for more information."
-
-    return 1
 }
 else
 {
