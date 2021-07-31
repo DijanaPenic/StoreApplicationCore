@@ -8,7 +8,7 @@ variables:
   sshEndpoint: 'store-test-westeu-ssh'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore'
   vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
-  pipelineArtifactPath: '$(Pipeline.Workspace)/source-code/s'
+  sourceCodeArtifactPath: '$(Pipeline.Workspace)/pipeline-artifact/s'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -40,7 +40,7 @@ stages:
         displayName: Publish pipeline artifact
         inputs:
           targetPath: '$(Pipeline.Workspace)'
-          artifact: 'source-code'
+          artifact: 'pipeline-artifact'
           publishLocation: 'pipeline'
       # - task: DockerCompose@0
       #   displayName: Build services
@@ -76,7 +76,7 @@ stages:
               displayName: Copy store source code over SSH
               inputs:
                 sshEndpoint: $(sshEndpoint)
-                sourceFolder: $(pipelineArtifactPath)
+                sourceFolder: $(sourceCodeArtifactPath)
                 contents: '**'
                 targetFolder: $(vmProjectPath)
                 overwrite: true
@@ -110,6 +110,6 @@ stages:
                 sshEndpoint: $(sshEndpoint)
                 runOptions: 'script'
                 failOnStdErr: true
-                scriptPath: '$(pipelineArtifactPath)/check-deploy-status.ps1'
+                scriptPath: '$(sourceCodeArtifactPath)/check-deploy-status.ps1'
                 args: 
                   -DockerFolderPath $(vmDockerFolderPath)
