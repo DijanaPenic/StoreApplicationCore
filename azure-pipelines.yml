@@ -6,6 +6,7 @@ variables:
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore'
   vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
   sourceCodeArtifactPath: '$(Pipeline.Workspace)/pipeline-artifact/s'
+  logsPath: 'logs'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -65,15 +66,15 @@ stages:
                   cd $(vmDockerFolderPath)
 
                   echo "docker-compose down --remove-orphans"
-                  docker-compose down --remove-orphans > docker-compose-down.txt 2>&1
-                  cat docker-compose-down.txt
+                  docker-compose down --remove-orphans > $(logsPath)/docker-compose-down.txt 2>&1
+                  cat $(logsPath)/docker-compose-down.txt
 
                   echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build"
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > docker-compose-build.txt 2>&1
-                  cat docker-compose-build.txt
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > $(logsPath)/docker-compose-build.txt 2>&1
+                  cat $(logsPath)/docker-compose-build.txt
 
                   echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > docker-compose-up.txt 2>&1
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > $(logsPath)/docker-compose-up.txt 2>&1
 
                   echo "sleep 4m"
                   sleep 4m
@@ -89,3 +90,4 @@ stages:
                 scriptPath: '$(sourceCodeArtifactPath)/check-deploy-status.ps1'
                 args: 
                   -DockerFolderPath $(vmDockerFolderPath)
+                  -LogsPath $(logsPath)
