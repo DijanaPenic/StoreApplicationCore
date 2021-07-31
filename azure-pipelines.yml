@@ -65,7 +65,7 @@ stages:
                 inline: |
                   cd $(vmDockerFolderPath)
                   
-                  mkdir logs
+                  mkdir -p logs
 
                   echo "docker-compose down --remove-orphans"
                   docker-compose down --remove-orphans > $(logsPath)/docker-compose-down.txt 2>&1
