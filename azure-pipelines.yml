@@ -80,29 +80,29 @@ stages:
                 contents: '**'
                 targetFolder: $(vmProjectPath)
                 overwrite: true
-            # - task: SSH@0
-            #   displayName: Run docker compose
-            #   inputs:
-            #     sshEndpoint: $(sshEndpoint)
-            #     runOptions: 'inline'
-            #     failOnStdErr: false
-            #     inline: |
-            #       cd $(vmDockerFolderPath)
+            - task: SSH@0
+              displayName: Run docker compose
+              inputs:
+                sshEndpoint: $(sshEndpoint)
+                runOptions: 'inline'
+                failOnStdErr: false
+                inline: |
+                  cd $(vmDockerFolderPath)
 
-            #       echo "docker-compose down --remove-orphans"
-            #       docker-compose down --remove-orphans > docker-compose-down.txt 2>&1
-            #       cat docker-compose-down.txt
+                  echo "docker-compose down --remove-orphans"
+                  docker-compose down --remove-orphans > docker-compose-down.txt 2>&1
+                  cat docker-compose-down.txt
 
-            #       echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build"
-            #       docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > docker-compose-build.txt 2>&1
-            #       cat docker-compose-build.txt
+                  echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build"
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > docker-compose-build.txt 2>&1
+                  cat docker-compose-build.txt
 
-            #       echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
-            #       docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > docker-compose-up.txt 2>&1
+                  echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
+                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > docker-compose-up.txt 2>&1
 
-            #       echo "sleep 4m"
-            #       sleep 4m
-            #       docker-compose logs
+                  echo "sleep 4m"
+                  sleep 4m
+                  docker-compose logs
 
             - task: SSH@0
               displayName: Perform container healthcheck
