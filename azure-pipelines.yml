@@ -1,7 +1,4 @@
 variables:
-  #azureSubscription: 'Visual Studio Enterprise Subscription – MPN(45a48931-c96a-4b38-80cf-be5fff673f85)'
-  #azureContainerRegistry: '{"loginServer":"storetestwesteu.azurecr.io", "id" : "/subscriptions/45a48931-c96a-4b38-80cf-be5fff673f85/resourceGroups/ContainerRegistry-West-EU/providers/Microsoft.ContainerRegistry/registries/storetestwesteu"}'
-  #projectName: 'StoreApplication'
   dockerComposeFileExpression: '**/docker-compose.yml'
   defaultDockerComposeFile: 'docker-compose.yml'
   testDockerComposeFile: 'docker-compose.test.yml'
@@ -15,7 +12,6 @@ pool:
 
 stages:
   - stage: Prepare_application_code
-           #Build_and_push_docker_containers
     jobs: 
     - job: Prepare_application_code
       displayName: Preparing application code
@@ -42,27 +38,6 @@ stages:
           targetPath: '$(Pipeline.Workspace)'
           artifact: 'pipeline-artifact'
           publishLocation: 'pipeline'
-      # - task: DockerCompose@0
-      #   displayName: Build services
-      #   inputs:
-      #     containerregistrytype: 'Azure Container Registry'
-      #     azureSubscription: $(azureSubscription)
-      #     azureContainerRegistry: $(azureContainerRegistry)
-      #     dockerComposeFile: $(dockerComposeFileExpression)
-      #     additionalDockerComposeFiles: $(testDockerComposeFile)
-      #     projectName: $(projectName)
-      #     action: 'Build services'
-      # - task: DockerCompose@0
-      #   displayName: Push services
-      #   inputs:
-      #     action: 'Push services'
-      #     containerregistrytype: 'Azure Container Registry'
-      #     azureSubscription: $(azureSubscription)
-      #     azureContainerRegistry: $(azureContainerRegistry)
-      #     dockerComposeFile: $(dockerComposeFileExpression)
-      #     additionalDockerComposeFiles: $(testDockerComposeFile)
-      #     projectName: $(projectName)
-  
   - stage: 'Deploy'
     jobs:
     - deployment: Deploy_to_test_environment
@@ -102,6 +77,7 @@ stages:
 
                   echo "sleep 4m"
                   sleep 4m
+
                   docker-compose logs
 
             - task: SSH@0
