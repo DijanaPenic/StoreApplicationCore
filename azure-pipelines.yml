@@ -100,7 +100,7 @@ stages:
             #       echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
             #       docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > docker-compose-up.txt 2>&1
 
-            #       echo "sleep 5m"
+            #       echo "sleep 4m"
             #       sleep 4m
             #       docker-compose logs
 
