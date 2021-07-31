@@ -6,3 +6,4 @@ Learning/
 .idea/
 *.env
 VM/
+Store/Docker/logs

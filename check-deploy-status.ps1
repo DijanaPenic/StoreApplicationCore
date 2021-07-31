@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
 # Set parameters
-param ($DockerFolderPath)
+param ($DockerFolderPath, $LogsPath)
 
 # Functions
 function Check-DockerContainer {
@@ -23,15 +23,15 @@ function Check-DockerContainer {
 }
 
 # Set variables
-Set-Variable -Name "DockerComposeUpFileName" -Value "docker-compose-up.txt"
+Set-Variable -Name "DockerComposeUpFilePath" -Value "$LogsPath/docker-compose-up.txt"
 
 # Output docker-compose logs
 cd $DockerFolderPath
-docker-compose logs > $DockerComposeUpFileName
+docker-compose logs > $DockerComposeUpFilePath
 docker-compose ps
 
 # Check id docker-compose output contains errors
-$SEL = Select-String -Path $DockerComposeUpFileName -Pattern "Error"
+$SEL = Select-String -Path $DockerComposeUpFilePath -Pattern "Error"
 if ($SEL -ne $null)
 {
     Write-Error "Error: docker-compose run command FAILED! Check output logs for more information (Store > Docker > Logs)."
