@@ -72,14 +72,14 @@ stages:
         runOnce:
           deploy:
             steps:
-            # - task: CopyFilesOverSSH@0
-            #   displayName: Copy store source code over SSH
-            #   inputs:
-            #     sshEndpoint: $(sshEndpoint)
-            #     sourceFolder: $(pipelineArtifactPath)
-            #     contents: '**'
-            #     targetFolder: $(vmProjectPath)
-            #     overwrite: true
+            - task: CopyFilesOverSSH@0
+              displayName: Copy store source code over SSH
+              inputs:
+                sshEndpoint: $(sshEndpoint)
+                sourceFolder: $(pipelineArtifactPath)
+                contents: '**'
+                targetFolder: $(vmProjectPath)
+                overwrite: true
             # - task: SSH@0
             #   displayName: Run docker compose
             #   inputs:
