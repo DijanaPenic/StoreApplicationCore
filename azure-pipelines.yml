@@ -109,6 +109,6 @@ stages:
                 sshEndpoint: $(sshEndpoint)
                 runOptions: 'script'
                 failOnStdErr: true
-                scriptPath: '$(vmProjectPath)/check-deploy-status.ps1'
+                scriptPath: '$(pipelineArtifactPath)/check-deploy-status.ps1'
                 args: 
                   -DockerFolderPath $(vmDockerFolderPath)
