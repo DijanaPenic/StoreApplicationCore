@@ -102,6 +102,7 @@ stages:
 
             #       echo "sleep 5m"
             #       sleep 4m
+            #       docker-compose logs
 
             - task: SSH@0
               displayName: Perform container healthcheck
