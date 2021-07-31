@@ -61,7 +61,7 @@ stages:
               inputs:
                 sshEndpoint: $(sshEndpoint)
                 runOptions: 'inline'
-                failOnStdErr: false
+                failOnStdErr: true
                 inline: |
                   cd $(vmDockerFolderPath)
                   
