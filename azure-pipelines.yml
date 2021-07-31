@@ -6,9 +6,9 @@ variables:
   defaultDockerComposeFile: 'docker-compose.yml'
   testDockerComposeFile: 'docker-compose.test.yml'
   sshEndpoint: 'store-test-westeu-ssh'
-  vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore/'
-  vmDockerFolderPath: $(vmProjectPath)/Store/Docker/
-  pipelineArtifactPath: '$(Pipeline.Workspace)/source-code/s/'
+  vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore'
+  vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
+  pipelineArtifactPath: '$(Pipeline.Workspace)/source-code/s'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -35,7 +35,7 @@ stages:
         inputs:
           SourceFolder: '$(Agent.TempDirectory)'
           Contents: '*.env'
-          TargetFolder: '$(System.DefaultWorkingDirectory)/Store/Docker/'
+          TargetFolder: '$(System.DefaultWorkingDirectory)/Store/Docker'
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
@@ -72,40 +72,44 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: CopyFilesOverSSH@0
-              displayName: Copy store source code over SSH
-              inputs:
-                sshEndpoint: $(sshEndpoint)
-                sourceFolder: $(pipelineArtifactPath)
-                contents: '**'
-                targetFolder: $(vmProjectPath)
-                overwrite: true
+            # - task: CopyFilesOverSSH@0
+            #   displayName: Copy store source code over SSH
+            #   inputs:
+            #     sshEndpoint: $(sshEndpoint)
+            #     sourceFolder: $(pipelineArtifactPath)
+            #     contents: '**'
+            #     targetFolder: $(vmProjectPath)
+            #     overwrite: true
+            # - task: SSH@0
+            #   displayName: Run docker compose
+            #   inputs:
+            #     sshEndpoint: $(sshEndpoint)
+            #     runOptions: 'inline'
+            #     failOnStdErr: false
+            #     inline: |
+            #       cd $(vmDockerFolderPath)
+
+            #       echo "docker-compose down --remove-orphans"
+            #       docker-compose down --remove-orphans > docker-compose-down.txt 2>&1
+            #       cat docker-compose-down.txt
+
+            #       echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build"
+            #       docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > docker-compose-build.txt 2>&1
+            #       cat docker-compose-build.txt
+
+            #       echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
+            #       docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach > docker-compose-up.txt 2>&1
+
+            #       echo "sleep 5m"
+            #       sleep 4m
+            #       docker-compose logs
+
             - task: SSH@0
-              displayName: Run docker compose
+              displayName: Perform container healthcheck
               inputs:
                 sshEndpoint: $(sshEndpoint)
-                runOptions: 'inline'
-                failOnStdErr: false
-                inline: |
-                  cd $(vmDockerFolderPath)
-
-                  echo "docker-compose down --remove-orphans"
-                  docker-compose down --remove-orphans > docker-compose-down.txt 2>&1
-                  type docker-compose-down.txt
-
-                  echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build"
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) build > docker-compose-build.txt 2>&1
-                  type docker-compose-build.txt
-
-                  echo "docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach"
-                  docker-compose -f $(defaultDockerComposeFile) -f $(testDockerComposeFile) up --detach
-
-                  echo "sleep 5m"
-                  sleep 5m
-            - task: PowerShell@2
-              displayName: Perform container healthcheck
-              inputs:             
-                targetType: 'filePath'
-                filePath: '$(pipelineArtifactPath)/check-deploy-status.ps1'
-                arguments:
+                runOptions: 'script'
+                failOnStdErr: true
+                scriptPath: '$(pipelineArtifactPath)/check-deploy-status.ps1'
+                args: 
                   -DockerFolderPath $(vmDockerFolderPath)
