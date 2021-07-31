@@ -16,7 +16,7 @@ function Check-DockerContainer {
 
     if ($ContainerState.Status -ne $ExpectedStatus -or $ContainerState.ExitCode -ne $ExpectedExitCode)
     {
-        Write-Output "Error: $ContainerName is not assigned the expected status or exit code."
+        Write-Error "Error: $ContainerName is not assigned the expected status or exit code."
         Write-Output "Expected status: $ExpectedStatus"
         Write-Output "Expected exit code: $ExpectedExitCode"
 
@@ -36,7 +36,8 @@ docker-compose ps
 $SEL = Select-String -Path $DockerComposeUpFileName -Pattern "Error"
 if ($SEL -ne $null)
 {
-    Write-Host "Error: docker-compose run command FAILED! Check output logs for more information."
+    Write-Error "Error: docker-compose run command FAILED! Check output logs for more information."
+
     return 1
 }
 else
@@ -60,7 +61,7 @@ else
         Check-DockerContainer -ContainerName $Container -ExpectedStatus "running"
     }
 
-     $FinishedContainers = 
+    $FinishedContainers = 
     @(
         'database-update_1'
      )
