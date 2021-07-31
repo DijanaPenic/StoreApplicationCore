@@ -1,4 +1,4 @@
-﻿#!/usr/bin/pwsh
+#!/usr/bin/env pwsh
 
 # Set parameters
 param ($DockerFolderPath)
