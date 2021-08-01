@@ -32,12 +32,12 @@ stages:
           SourceFolder: '$(Agent.TempDirectory)'
           Contents: '*.env'
           TargetFolder: '$(System.DefaultWorkingDirectory)/Store/Docker'
-      - task: PublishPipelineArtifact@1
-        displayName: Publish pipeline artifact
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core SDK'
         inputs:
-          targetPath: '$(System.DefaultWorkingDirectory)'
-          artifact: 'source-code'
-          publishLocation: 'pipeline' 
+          packageType: sdk
+          version: 5.x
+          installationPath: $(Agent.ToolsDirectory)/dotnet
       - task: DotNetCoreCLI@2
         displayName: Restore nuget packages
         inputs:
@@ -72,6 +72,12 @@ stages:
           projects: 'Store.sln'
           arguments: '-c Debug'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: PublishPipelineArtifact@1
+        displayName: Publish pipeline artifact
+        inputs:
+          targetPath: '$(System.DefaultWorkingDirectory)'
+          artifact: 'source-code'
+          publishLocation: 'pipeline' 
   # - stage: 'Deploy'
   #   jobs:
   #   - deployment: Deploy_to_test_environment
