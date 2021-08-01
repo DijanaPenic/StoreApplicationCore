@@ -31,7 +31,7 @@ docker-compose logs > $DockerComposeUpFilePath
 docker-compose ps
 
 # Check id docker-compose output contains errors
-$SEL = Select-String -Path $DockerComposeUpFilePath -Pattern "Error"
+$SEL = Select-String -Path $DockerComposeUpFilePath -Pattern "Error", "error"
 if ($SEL -ne $null)
 {
     Write-Error "Error: docker-compose run command FAILED! Check output logs for more information (Store > Docker > Logs)."
