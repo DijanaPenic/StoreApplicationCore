@@ -42,7 +42,27 @@ stages:
         displayName: Build application
         inputs:
           command: 'build'
-          projects: '**/*.csproj'
+          projects:  |
+            Store.sln .
+            **/Store.WebAPI.csproj
+            **/Store.Cache.csproj
+            **/Store.FileProvider.Common.csproj
+            **/Store.FileProvider.csproj
+            **/Store.Messaging.Common.csproj
+            **/Store.Messaging.Templates.csproj
+            **/Store.Messaging.csproj
+            **/Store.Model.csproj
+            **/Store.Repository.csproj
+            **/Store.Service.Common.csproj
+            **/Store.Service.csproj
+            **/Store.Entity.csproj
+            **/Store.DAL.csproj
+            **/Store.Common.csproj
+            **/Store.Model.Common.csproj
+            **/Store.Repository.Common.csproj
+            **/Store.Cache.Common.csproj
+            **/Store.Reporting.csproj
+            **/Store.Generator.csproj
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       
   # - stage: 'Deploy'
