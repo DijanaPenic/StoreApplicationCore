@@ -33,7 +33,7 @@ stages:
           Contents: '*.env'
           TargetFolder: '$(System.DefaultWorkingDirectory)/Store/Docker'
       - task: UseDotNet@2
-        displayName: 'Use .NET Core SDK'
+        displayName: 'Use .NET Core SDK 5.x'
         inputs:
           packageType: sdk
           version: 5.x
@@ -99,6 +99,8 @@ stages:
           targetPath: '$(System.DefaultWorkingDirectory)'
           artifact: 'source-code'
           publishLocation: 'pipeline' 
+  
+  # DEPLOY CODE
   # - stage: 'Deploy'
   #   jobs:
   #   - deployment: Deploy_to_test_environment
