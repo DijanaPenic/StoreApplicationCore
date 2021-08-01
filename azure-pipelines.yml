@@ -37,13 +37,15 @@ stages:
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)'
           artifact: 'source-code'
-          publishLocation: 'pipeline'
+          publishLocation: 'pipeline' 
       - task: DotNetCoreCLI@2
-        displayName: Build application
+        displayName: Restore nuget packages
         inputs:
-          command: 'build'
+          command: 'restore'
+          feedsToUse: 'select'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
           projects:  |
-            Store.sln .
+            Store.sln
             **/Store.WebAPI.csproj
             **/Store.Cache.csproj
             **/Store.FileProvider.Common.csproj
@@ -63,8 +65,13 @@ stages:
             **/Store.Cache.Common.csproj
             **/Store.Reporting.csproj
             **/Store.Generator.csproj
+      - task: DotNetCoreCLI@2
+        displayName: Build application
+        inputs:
+          command: 'build'
+          projects: 'Store.sln'
+          arguments: '-c Debug'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-      
   # - stage: 'Deploy'
   #   jobs:
   #   - deployment: Deploy_to_test_environment
