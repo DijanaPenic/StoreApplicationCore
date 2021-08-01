@@ -38,6 +38,13 @@ stages:
           targetPath: '$(System.DefaultWorkingDirectory)'
           artifact: 'source-code'
           publishLocation: 'pipeline'
+      - task: DotNetCoreCLI@2
+        displayName: Build application
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+      
   # - stage: 'Deploy'
   #   jobs:
   #   - deployment: Deploy_to_test_environment
