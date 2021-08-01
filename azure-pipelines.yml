@@ -11,10 +11,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  - stage: Prepare_application_code
+  - stage: Build_application_code
     jobs: 
-    - job: Prepare_application_code
-      displayName: Preparing application code
+    - job: build_application_code
+      displayName: Building application code
       steps:
       - task: DownloadSecureFile@1
         displayName: 'Download environment variables file - postgres server'
