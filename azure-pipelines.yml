@@ -1,12 +1,11 @@
 variables:
-  dockerComposeFileExpression: '**/docker-compose.yml'
-  defaultDockerComposeFile: 'docker-compose.yml'
-  testDockerComposeFile: 'docker-compose.test.yml'
-  sshEndpoint: 'store-test-westeu-ssh'
-  vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore'
-  vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
-  sourceCodeArtifactPath: '$(Pipeline.Workspace)/source-code'
-  logsPath: 'logs'
+  #defaultDockerComposeFile: 'docker-compose.yml'
+  #testDockerComposeFile: 'docker-compose.test.yml'
+  #sshEndpoint: 'store-test-westeu-ssh'
+  #vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore'
+  #vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
+  #sourceCodeArtifactPath: '$(Pipeline.Workspace)/source-code'
+  #logsPath: 'logs'
 
 pool:
   vmImage: 'ubuntu-latest'
