@@ -1,4 +1,4 @@
-variables:
+#variables:
   #defaultDockerComposeFile: 'docker-compose.yml'
   #testDockerComposeFile: 'docker-compose.test.yml'
   #sshEndpoint: 'store-test-westeu-ssh'
