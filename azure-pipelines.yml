@@ -5,7 +5,7 @@ variables:
   sshEndpoint: 'store-test-westeu-ssh'
   vmProjectPath: '/home/azureuser/Projects/StoreApplicationCore'
   vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
-  sourceCodeArtifactPath: '$(Pipeline.Workspace)/pipeline-artifact'
+  sourceCodeArtifactPath: '$(Pipeline.Workspace)/source-code'
   logsPath: 'logs'
 
 pool:
@@ -37,7 +37,7 @@ stages:
         displayName: Publish pipeline artifact
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)'
-          artifact: 'pipeline-artifact'
+          artifact: 'source-code'
           publishLocation: 'pipeline'
   - stage: 'Deploy'
     jobs:
