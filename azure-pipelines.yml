@@ -49,7 +49,7 @@ stages:
           deploy:
             steps:
             - task: CopyFilesOverSSH@0
-              displayName: Copy store source code over SSH
+              displayName: Copy application source code over SSH
               inputs:
                 sshEndpoint: $(sshEndpoint)
                 sourceFolder: $(sourceCodeArtifactPath)
