@@ -93,3 +93,7 @@ stages:
                 args: 
                   -DockerFolderPath $(vmDockerFolderPath)
                   -LogsPath $(logsPath)
+
+# home/vsts/work/_temp -> Agent.TempDirectory
+# home/vsts/work/1 -> Pipeline.Workspace
+# home/vsts/work/1/s -> System.DefaultWorkingDirectory
