@@ -24,6 +24,7 @@ function Check-DockerContainer {
 
 # Set variables
 Set-Variable -Name "DockerComposeUpFilePath" -Value "$LogsPath/docker-compose-up.txt"
+Set-Variable -Name "DockerComposeBuildFilePath" -Value "$LogsPath/docker-compose-build.txt"
 
 # Output docker-compose logs
 cd $DockerFolderPath
@@ -31,10 +32,11 @@ docker-compose logs > $DockerComposeUpFilePath
 docker-compose ps
 
 # Check id docker-compose output contains errors
-$SEL = Select-String -Path $DockerComposeUpFilePath -Pattern "Error", "error"
-if ($SEL -ne $null)
+$composeUpSel = Select-String -Path $DockerComposeUpFilePath -Pattern "Error", "error"
+$composeBuildSel = Select-String -Path $DockerComposeBuildFilePath -Pattern "Error", "error"
+if ($composeUpSel -ne $null -or $composeBuildSel -ne $null)
 {
-    Write-Error "Error: docker-compose run command FAILED! Check output logs for more information (Store > Docker > Logs)."
+    Write-Error "Error: docker-compose command FAILED! Check output logs for more information (Store > Docker > Logs)."
 }
 else
 {
