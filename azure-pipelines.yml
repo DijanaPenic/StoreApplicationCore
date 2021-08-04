@@ -97,7 +97,7 @@ stages:
         displayName: Publish pipeline artifact
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)'
-          artifact: 'source-code'
+          artifact: 'app-build'
           publishLocation: 'pipeline' 
   
   # DEPLOY CODE
