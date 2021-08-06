@@ -1,4 +1,4 @@
-#variables:
+variables:
   #defaultDockerComposeFile: 'docker-compose.yml'
   #testDockerComposeFile: 'docker-compose.test.yml'
   #sshEndpoint: 'store-test-westeu-ssh'
@@ -6,15 +6,16 @@
   #vmDockerFolderPath: '$(vmProjectPath)/Store/Docker'
   #sourceCodeArtifactPath: '$(Pipeline.Workspace)/source-code'
   #logsPath: 'logs'
+  project: '**/Store.sln'
 
 pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  - stage: Build_application_code
+  - stage: Build_and_publish_application_code
     jobs: 
-    - job: build_application_code
-      displayName: Building application code
+    - job: build_and_publish_application_code
+      displayName: Building/Publishing application code
       steps:
       - task: DownloadSecureFile@1
         displayName: 'Download environment variables file - postgres server'
@@ -43,13 +44,13 @@ stages:
         inputs:
           command: restore
           feedsToUse: 'select'
+          projects: $(project)
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-          projects: '**/Store.sln'
       - task: DotNetCoreCLI@2
         displayName: Build application
         inputs:
           command: build
-          projects: '**/Store.sln'
+          projects: $(project)
           arguments: '-c Debug'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
@@ -57,7 +58,7 @@ stages:
         inputs:
           command: publish
           nobuild: true
-          projects: '**/Store.sln'
+          projects: $(project)
           arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
           zipAfterPublish: true
           modifyOutputPath: true
