@@ -3,6 +3,7 @@ version: '3.8'
 services:
   web-api:
     build:
+      dockerfile: ./Store.WebAPI/local.Dockerfile
       args:
         PUBLISH_MODE: Debug
     env_file:
