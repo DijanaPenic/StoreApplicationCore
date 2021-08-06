@@ -63,6 +63,11 @@ stages:
           zipAfterPublish: true
           modifyOutputPath: true
           workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: CopyFiles@2
+        displayName: 'Copy Docker folder into the publish output'
+        inputs:
+          SourceFolder: '$(System.DefaultWorkingDirectory)/Store/Docker'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/Output' 
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
