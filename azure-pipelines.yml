@@ -63,11 +63,14 @@ stages:
           zipAfterPublish: true
           modifyOutputPath: true
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-      - task: CopyFiles@2
-        displayName: 'Copy Docker folder into the publish output'
+      - task: ArchiveFiles@2
+        displayName: 'Create archived Docker file'
         inputs:
-          SourceFolder: '$(System.DefaultWorkingDirectory)/Store/Docker'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/Output' 
+          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/Store/Docker' 
+          includeRootFolder: false 
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/Output/Docker.zip' 
+          replaceExistingArchive: true 
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
