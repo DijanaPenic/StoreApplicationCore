@@ -41,33 +41,33 @@ stages:
       - task: DotNetCoreCLI@2
         displayName: Restore nuget packages
         inputs:
-          command: 'restore'
+          command: restore
           feedsToUse: 'select'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           projects: '**/Store.sln'
-      # - task: DotNetCoreCLI@2
-      #   displayName: Build application
-      #   inputs:
-      #     command: 'build'
-      #     projects: '**/Store.sln'
-      #     arguments: '-c Debug'
-      #     workingDirectory: '$(System.DefaultWorkingDirectory)'
-      
+      - task: DotNetCoreCLI@2
+        displayName: Build application
+        inputs:
+          command: build
+          projects: '**/Store.sln'
+          arguments: '-c Debug'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
         displayName: Publish application
         inputs:
-          command: 'publish'
+          command: publish
+          nobuild: true
           projects: '**/Store.sln'
           arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
           zipAfterPublish: true
           modifyOutputPath: true
-      
-      # - task: PublishPipelineArtifact@1
-      #   displayName: Publish pipeline artifact
-      #   inputs:
-      #     targetPath: '$(System.DefaultWorkingDirectory)'
-      #     artifact: 'app-build'
-      #     publishLocation: 'pipeline' 
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: PublishPipelineArtifact@1
+        displayName: Publish pipeline artifact
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/Output'
+          artifact: 'publish-output'
+          publishLocation: 'pipeline' 
   
   # DEPLOY CODE
   # - stage: 'Deploy'
