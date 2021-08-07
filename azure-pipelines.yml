@@ -68,7 +68,7 @@ stages:
         displayName: 'Prepare publish scripts'
         inputs:
           contents: '$(System.DefaultWorkingDirectory)/PublishScripts/**'
-          targetFolder: '$(Build.ArtifactStagingDirectory)/Output/PublishScripts'
+          targetFolder: '$(Build.ArtifactStagingDirectory)/Output/'
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
