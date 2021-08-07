@@ -15,6 +15,9 @@
     <Content Remove="Postman Collections\**" />
     <EmbeddedResource Remove="Postman Collections\**" />
     <None Remove="Postman Collections\**" />
+    <None Update="test.Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
