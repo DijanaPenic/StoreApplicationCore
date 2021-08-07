@@ -57,21 +57,18 @@ stages:
           modifyOutputPath: true
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: ArchiveFiles@2
-        displayName: 'Create Docker zip'
+        displayName: 'Prepare Docker'
         inputs:
           rootFolderOrFile: '$(System.DefaultWorkingDirectory)/Store/Docker' 
           includeRootFolder: false 
           archiveType: 'zip'
           archiveFile: '$(Build.ArtifactStagingDirectory)/Output/Docker.zip' 
-          replaceExistingArchive: true 
-      - task: ArchiveFiles@2
-        displayName: 'Create PublishScripts zip'
+          replaceExistingArchive: true
+      - task: CopyFiles@2
+        displayName: 'Prepare publish scripts'
         inputs:
-          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/PublishScripts' 
-          includeRootFolder: false 
-          archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/Output/PublishScripts.zip' 
-          replaceExistingArchive: true 
+          contents: '$(System.DefaultWorkingDirectory)/PublishScripts/**'
+          targetFolder: '$(Build.ArtifactStagingDirectory)/Output/PublishScripts'
       - task: PublishPipelineArtifact@1
         displayName: Publish pipeline artifact
         inputs:
