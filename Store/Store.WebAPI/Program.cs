@@ -1,12 +1,17 @@
 using System;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+//using System.Linq;
+//using System.Security.Cryptography.X509Certificates;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+
+using Store.DAL.Context;
 
 namespace Store.WebAPI
 {
@@ -14,7 +19,41 @@ namespace Store.WebAPI
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CommandLineApplication commandLineApplication = new(false);
+            CommandOption doMigrate = commandLineApplication.Option
+            (
+                "--ef-migrate",
+                "Apply entity framework migrations and exit",
+                CommandOptionType.NoValue
+            );
+            
+            commandLineApplication.HelpOption("-? | -h | --help");
+            commandLineApplication.OnExecute(() =>
+            {
+                ExecuteApp(args, doMigrate);
+                
+                return 0;
+            });
+            commandLineApplication.Execute(args);
+        } 
+        private static void ExecuteApp(string[] args, CommandOption dbMigrate)
+        {
+            Console.WriteLine("Loading host.");
+            IHost host = CreateHostBuilder(args).Build();
+
+            if (dbMigrate.HasValue())
+            {
+                Console.WriteLine("Applying Entity Framework migrations.");
+                
+                using IServiceScope serviceScope = host.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+                using ApplicationDbContext context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+                
+                context?.Database.Migrate();
+                        
+                Console.WriteLine("Entity Framework migrations finished.");
+            }
+            
+            host.Run();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>

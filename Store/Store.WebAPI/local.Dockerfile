@@ -43,4 +43,4 @@ WORKDIR /app
 # Copy files from /app/out/ from the build image (that’s why we gave it a name in the first line) to the current working directory (/app)
 COPY --from=build /app/out .
 
-ENTRYPOINT ["dotnet", "Store.WebAPI.dll"]
+ENTRYPOINT ["dotnet", "Store.WebAPI.dll", "--ef-migrate"]

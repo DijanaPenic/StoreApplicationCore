@@ -15,15 +15,6 @@ services:
       - postgres-server
       - redis-master
 
-  database-update:
-    build:
-      context: ../
-      dockerfile: ./Docker/database-update/Dockerfile
-    volumes:
-      - ../:/app
-    depends_on:
-        - postgres-server
-
   postgres-server:
     image: postgres:13
     ports: 

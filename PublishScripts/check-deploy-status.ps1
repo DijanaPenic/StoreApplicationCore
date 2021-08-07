@@ -58,13 +58,4 @@ else
     {
         Check-DockerContainer -ContainerName $Container -ExpectedStatus "running"
     }
-
-    $FinishedContainers = 
-    @(
-        'database-update_1'
-     )
-    foreach ($Container in $FinishedContainers)
-    {
-        Check-DockerContainer -ContainerName $Container -ExpectedStatus "exited"
-    }
 }
