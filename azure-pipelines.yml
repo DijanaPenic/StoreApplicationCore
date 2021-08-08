@@ -1,6 +1,11 @@
 variables:
   project: '**/Store.sln'
 
+trigger:
+  branches:
+    include:
+      - master
+
 pool:
   vmImage: 'ubuntu-latest'
 
