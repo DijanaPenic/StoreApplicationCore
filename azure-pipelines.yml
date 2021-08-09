@@ -1,5 +1,6 @@
 variables:
   project: '**/Store.sln'
+  buildConfiguration: 'Debug'
 
 trigger:
   branches:
@@ -49,7 +50,7 @@ stages:
         inputs:
           command: build
           projects: $(project)
-          arguments: '-c Debug'
+          arguments: '-c $(buildConfiguration)'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
         displayName: Publish application
