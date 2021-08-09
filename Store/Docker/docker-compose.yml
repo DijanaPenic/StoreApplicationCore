@@ -12,8 +12,10 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
     depends_on:
-      - postgres-server
-      - redis-master
+      postgres-server:
+        condition: service_healthy
+      redis-master:
+        condition: service_started
 
   postgres-server:
     image: postgres:13
