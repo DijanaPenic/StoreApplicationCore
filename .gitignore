@@ -7,3 +7,4 @@ Learning/
 *.env
 VM/
 Store/Docker/logs
+/Store/out
