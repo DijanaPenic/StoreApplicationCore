@@ -1,5 +1,6 @@
 variables:
   project: '**/Store.sln'
+  buildConfiguration: 'Debug'
 
 trigger:
   branches:
@@ -10,10 +11,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  - stage: Build_and_publish_application_code
+  - stage: Build_and_publish
     jobs: 
-    - job: build_and_publish_application_code
-      displayName: Building/Publishing application code
+    - job: build_and_publish
+      displayName: Building and publishing application
       steps:
       - task: DownloadSecureFile@1
         displayName: 'Download environment variables file - postgres server'
@@ -49,7 +50,7 @@ stages:
         inputs:
           command: build
           projects: $(project)
-          arguments: '-c Debug'
+          arguments: '-c $(buildConfiguration)'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
         displayName: Publish application
