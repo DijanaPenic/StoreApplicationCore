@@ -22,7 +22,7 @@ services:
     ports: 
       - 5432:5432
     restart: always
-    healthcheck: # Need to add a healthcheck to prevent the web-api service from initiating the database migration when postgres is not ready to accept connections.
+    healthcheck: # Need to add a healthcheck to prevent the web-api service from initiating the database migration when postgres server is not ready to accept connections.
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
