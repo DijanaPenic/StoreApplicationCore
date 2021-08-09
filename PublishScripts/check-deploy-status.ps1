@@ -32,30 +32,33 @@ docker-compose logs > $DockerComposeUpFilePath
 docker-compose ps
 
 # Check id docker-compose output contains errors
+
+Write-Output "Checking log output..."
+
 $composeUpSel = Select-String -Path $DockerComposeUpFilePath -Pattern "Error", "error"
 $composeBuildSel = Select-String -Path $DockerComposeBuildFilePath -Pattern "Error", "error"
+
 if ($composeUpSel -ne $null -or $composeBuildSel -ne $null)
 {
-    Write-Error "Error: docker-compose command FAILED! Check output logs for more information (Store > Docker > Logs)."
+    Write-Error "Error: detected docker-compose errors! Check output logs for more information (Store > Docker > Logs)."
 }
-else
-{
-    Write-Output "docker-compose run command SUCCEEDED!"
 
-    # Check containers status
-    $RunningContainers = 
-    @(
-        'postgres-server_1',
-        'redis-master_1',
-        'redis-sentinel_1',
-        'redis-sentinel_2',
-        'redis-sentinel_3', 
-        'redis-slave-1_1', 
-        'redis-slave-2_1', 
-        'web-api_1'
-     )
-    foreach ($Container in $RunningContainers)
-    {
-        Check-DockerContainer -ContainerName $Container -ExpectedStatus "running"
-    }
+# Check containers status
+
+Write-Output "Checking containers status..."
+
+$RunningContainers = 
+@(
+    'postgres-server_1',
+    'redis-master_1',
+    'redis-sentinel_1',
+    'redis-sentinel_2',
+    'redis-sentinel_3', 
+    'redis-slave-1_1', 
+    'redis-slave-2_1', 
+    'web-api_1'
+    )
+foreach ($Container in $RunningContainers)
+{
+    Check-DockerContainer -ContainerName $Container -ExpectedStatus "running"
 }
