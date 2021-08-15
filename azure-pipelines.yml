@@ -1,6 +1,5 @@
 variables:
   project: '**/Store.sln'
-  buildConfiguration: 'Debug'
 
 trigger:
   branches:
@@ -14,7 +13,7 @@ stages:
   - stage: Build_and_publish
     jobs: 
     - job: build_and_publish
-      displayName: Building and publishing application
+      displayName: Building and publishing
       steps:
       - task: DownloadSecureFile@1
         displayName: 'Download environment variables file - postgres server'
@@ -46,19 +45,36 @@ stages:
           projects: $(project)
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
-        displayName: Build application
+        displayName: Build application - Debug
         inputs:
           command: build
           projects: $(project)
-          arguments: '-c $(buildConfiguration)'
+          arguments: '-c Debug'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
-        displayName: Publish application
+        displayName: Publish application - Debug
         inputs:
           command: publish
           nobuild: true
           projects: $(project)
-          arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/Debug'
+          zipAfterPublish: true
+          modifyOutputPath: true
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: DotNetCoreCLI@2
+        displayName: Build application - Release
+        inputs:
+          command: build
+          projects: $(project)
+          arguments: '-c Release'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: DotNetCoreCLI@2
+        displayName: Publish application - Release
+        inputs:
+          command: publish
+          nobuild: true
+          projects: $(project)
+          arguments: '-o $(Build.ArtifactStagingDirectory)/Release'
           zipAfterPublish: true
           modifyOutputPath: true
           workingDirectory: '$(System.DefaultWorkingDirectory)'
@@ -76,11 +92,23 @@ stages:
           contents: '$(System.DefaultWorkingDirectory)/PublishScripts/**'
           targetFolder: '$(Build.ArtifactStagingDirectory)/Output/'
       - task: PublishPipelineArtifact@1
-        displayName: Publish pipeline artifact
+        displayName: Publish pipeline artifact - Output
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)/Output'
           artifact: 'publish-output'
-          publishLocation: 'pipeline' 
+          publishLocation: 'pipeline'
+      - task: PublishPipelineArtifact@1
+        displayName: Publish pipeline artifact - Debug
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/Debug'
+          artifact: 'publish-debug'
+          publishLocation: 'pipeline'
+      - task: PublishPipelineArtifact@1
+        displayName: Publish pipeline artifact - Release
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/Release'
+          artifact: 'publish-release'
+          publishLocation: 'pipeline'
 
 # home/vsts/work/_temp -> Agent.TempDirectory
 # home/vsts/work/1 -> Pipeline.Workspace
